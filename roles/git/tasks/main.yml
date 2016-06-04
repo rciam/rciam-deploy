@@ -1,0 +1,7 @@
+---
+
+# Install OS-specific packages
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+#- include: install-CentOS.yml
+#  when: ansible_os_family == 'CentOS'
