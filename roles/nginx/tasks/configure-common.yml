@@ -1,0 +1,39 @@
+---
+
+- name: Ensure nginx service is configured
+  template:
+    src: nginx-{{ ansible_os_family }}.conf.j2
+    dest: "{{ nginx_conf_path }}/nginx.conf"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify: Restart nginx
+
+- name: Remove default nginx vhost from sites-enabled
+  file:
+    path: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_default_vhost_filename }}"
+    state: absent
+  become: yes
+  notify: Restart nginx
+  when: nginx_remove_default_vhost
+
+- name: Add nginx vhosts configuration
+  template:
+    src: "vhosts.conf.j2"
+    dest: "{{ nginx_conf_path }}/sites-available/{{ nginx_vhosts_filename }}"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify: Restart nginx
+  when: nginx_create_vhosts
+
+- name: Enable nginx vhosts configuration
+  file:
+    src: "{{ nginx_conf_path }}/sites-available/{{ nginx_vhosts_filename }}"
+    dest: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_vhosts_filename }}"
+    state: link
+  become: yes
+  notify: Restart nginx
+  when: nginx_create_vhosts

@@ -1,0 +1,41 @@
+##
+# {{ ansible_managed }}
+##
+
+{% for upstream_group in nginx_upstream_groups %}
+upstream {{ upstream_group.name }} {
+{% if upstream_group.load_balancing_method is defined %}
+	{{ upstream_group.load_balancing_method }};
+{% endif %}
+{% for upstream_server in upstream_group.servers %}
+        server {{ upstream_server.address }} 
+               weight={{ upstream_server.weight | default(1) }}
+{% if upstream_server.backup is defined and upstream_server.backup %}
+               backup
+{% endif %}
+{% if upstream_server.down is defined and upstream_server.down %}
+               down
+{% endif %}
+               max_fails={{ upstream_server.max_fails | default(1) }};
+{% endfor %}
+}
+{% endfor %}
+
+
+{% for vhost in nginx_vhosts %}
+server {
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
+
+        ssl_certificate     {{ vhost.certificate_file }};
+        ssl_certificate_key {{ vhost.certificate_key_file }};
+
+	server_name {{ vhost.server_name }};
+
+        root {{ vhost.root }};
+
+{% if vhost.extra_parameters is defined %}
+	{{ vhost.extra_parameters }}
+{% endif %}
+}
+{% endfor %}
