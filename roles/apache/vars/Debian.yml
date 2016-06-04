@@ -1,0 +1,6 @@
+---
+
+apache_service: apache2
+apache_conf_path: /etc/apache2
+
+apache_default_vhost_filename: 000-default.conf

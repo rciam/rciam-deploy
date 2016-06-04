@@ -1,0 +1,42 @@
+---
+
+- name: Enable required Apache modules (Debian)
+  apache2_module: state=present name={{ item }}
+  with_items: apache_mods_enabled
+  become: yes
+  notify:
+    - restart apache
+
+- name: Disable unnecessary Apache modules (Debian)
+  apache2_module: state=absent name={{ item }}
+  with_items: apache_mods_disabled
+  become: yes
+  notify:
+    - restart apache
+
+- name: Remove default vhost from sites-enabled (Debian)
+  file:
+    path: "{{ apache_conf_path }}/sites-enabled/{{ apache_default_vhost_filename }}"
+    state: absent
+  become: yes
+  notify: restart apache
+  when: apache_remove_default_vhost
+
+- name: Add Apache vhosts configuration (Debian)
+  template:
+    src: "vhosts.conf.j2"
+    dest: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify: restart apache
+  when: apache_create_vhosts
+
+- name: Enable Apache vhosts configuration (Debian)
+  file:
+    src: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
+    dest: "{{ apache_conf_path }}/sites-enabled/{{ apache_vhosts_filename }}"
+    state: link
+  notify: restart apache
+  when: apache_create_vhosts
