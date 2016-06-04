@@ -1,0 +1,11 @@
+---
+
+- name: Ensure memcached service is configured
+  template:
+    src: memcached-{{ ansible_os_family }}.conf.j2
+    dest: "{{ memcached_config_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify: Restart memcached
