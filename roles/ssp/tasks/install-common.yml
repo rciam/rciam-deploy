@@ -1,0 +1,35 @@
+---
+
+- name: Checkout SSP source
+  git:
+    repo: "{{ ssp_repo_url }}"
+    dest: "{{ ssp_path }}"
+    version: "{{ ssp_repo_version }}"
+    accept_hostkey: yes
+    force: yes
+  become: yes
+
+- name: Download Composer
+  get_url: url=https://getcomposer.org/installer dest={{ ssp_path }}/composer-installer validate_certs=no
+  become: yes
+
+- name: Install Composer
+  command: php -f {{ ssp_path }}/composer-installer -- --install-dir={{ ssp_path }}
+  args:
+    creates: "{{ ssp_path }}/composer.phar"
+  become: true
+
+- name: Run Composer
+  command: php "{{ ssp_path }}/composer.phar" install --no-dev --prefer-dist -o -d "{{ ssp_path }}"
+  args:
+    creates: "{{ ssp_path }}/vendor/autoload.php"
+  become: true
+
+- name: Ensure required SSP dirs exist
+  file: path={{ ssp_path }}/{{ item }} state=directory
+  with_items:
+    - config
+    - metadata
+    - cert
+    - log
+  become: yes

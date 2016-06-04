@@ -1,0 +1,40 @@
+---
+
+- name: Update package cache (Debian)
+  apt: update_cache=yes cache_valid_time=86400
+  become: yes
+
+- name: Ensure latest versions of PHP dependencies are installed (Debian)
+  apt: pkg={{ item }} state=latest install_recommends=no
+  with_items:
+    - libapache2-mod-php5
+    - php-openid
+    - php-pear
+    - php-xml-parser
+    - php5-curl
+    - php5-gmp
+    - php5-mcrypt
+    - php5-readline
+  become: true
+
+- name: Ensure latest CA certificates are installed (Debian)
+  apt: pkg={{ item }} state=latest install_recommends=no
+  with_items:
+    - ca-certificates
+  become: true
+
+- name: Ensure latest SSP cron module dependencies are installed (Debian)
+  apt: pkg={{ item }} state=latest install_recommends=no
+  with_items:
+    - curl
+  when: "'cron' in ssp_mods_enabled"
+  become: true
+
+- name: Ensure latest memcached dependencies are installed (Debian)
+  apt: pkg={{ item }} state=latest install_recommends=no
+  with_items:
+    - php5-memcache
+  when: "ssp_store_type is defined and ssp_store_type == 'memcache'"
+  become: true
+  notify:
+    - restart apache

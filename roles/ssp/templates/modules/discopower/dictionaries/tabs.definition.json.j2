@@ -1,0 +1,48 @@
+{
+	"norway": {
+		"en": "Norway"
+	},
+	"kalmar": {
+		"en": "Kalmar"
+	},
+	"finland": {
+		"en": "Finland"
+	},
+	"sweden": {
+		"en": "Sweden"
+	},
+	"iceland": {
+		"en": "Iceland"
+	},
+	"denmark": {
+		"en": "Denmark"
+	},
+	"switzerland": {
+		"en": "Switzerland"
+	},
+	"edugain": {
+		"en": "Europe (eduGAIN)"
+	},
+	"misc": {
+		"en": "Miscellaneous"
+	},
+	"incommon": {
+		"en": "InCommon"
+	},
+	"ukacessfederation": {
+		"en": "UK Access Federation"
+{% if ssp_mod_discopower_dictionaries is defined %}
+{% for entry in ssp_mod_discopower_dictionaries %}
+{% for tab, translations in entry.iteritems() %}
+{% for lang, translation in translations.iteritems() %}
+{% if lang == 'en' %}
+	},
+	"{{ tab }}": {
+		"{{ lang }}": "{{ translation }}"
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+	}
+}

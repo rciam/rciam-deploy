@@ -1,0 +1,175 @@
+---
+
+- name: Generate SHA-256 encrypted hash of SSP admin password
+  script: ssha256pwgen.php {{ ssp_path }} "{{ ssp_adminpassword }}" creates="{{ ssp_path }}/config/config.php"
+  register: ssp_adminpasswordhash_new
+
+- name: Check existing SHA-256 encrypted hash of SSP admin password
+  script: SimpleSAML_Configuration.php {{ ssp_path }} {{ ssp_adminpassword_key }} removes="{{ ssp_path }}/config/config.php"
+  register: ssp_adminpasswordhash_old
+
+- name: Configure SHA-256 encrypted hash of SSP admin password
+  set_fact:
+    ssp_adminpasswordhash: "{{ ssp_adminpasswordhash_new.stdout if ssp_adminpasswordhash_new | changed else ssp_adminpasswordhash_old.stdout }}"
+
+- name: Generate SSP secret salt
+  shell: tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 status=none
+  args:
+    creates: "{{ ssp_path }}/config/config.php"
+  register: ssp_secretsalt_new
+
+- name: Check existing SSP secret salt
+  script: SimpleSAML_Configuration.php {{ ssp_path }} {{ ssp_secretsalt_key }} removes="{{ ssp_path }}/config/config.php"
+  register: ssp_secretsalt_old
+
+- name: Configure SSP secret salt
+  set_fact:
+    ssp_secretsalt: "{{ ssp_secretsalt_new.stdout if ssp_secretsalt_new | changed else ssp_secretsalt_old.stdout }}"
+
+- name: Configure SSP
+  template:
+    src: config/config.php.j2
+    dest: "{{ ssp_path }}/config/config.php"
+    backup: yes
+    force: yes
+  become: yes
+  notify:
+    - restart apache
+
+- name: Generate self-signed SP certificates
+  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/C=/ST=/L=/O=/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
+  args:
+    chdir: "{{ ssp_path }}/cert"
+    creates: "{{ ssp_path }}/cert/sp-{{ item.name }}.key"
+  with_items: "{{ ssp_authsources_saml }}"
+  when: item.generate_ssl_certificate
+  become: yes
+
+- name: Configure SSP authN sources
+  template:
+    src: config/authsources.php.j2
+    dest: "{{ ssp_path }}/config/authsources.php"
+    backup: yes
+    force: yes
+  become: yes
+
+- name: Generate self-signed IdP certificates
+  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/C=/ST=/L=/O=/CN={{ item.ssl_certificate_cn }}" -nodes -out idp-{{ item.entity_id }}.crt -keyout idp-{{ item.entity_id }}.key
+  args:
+    chdir: "{{ ssp_path }}/cert"
+    creates: "{{ ssp_path }}/cert/idp-{{ item.entity_id }}.key"
+  with_items: "{{ ssp_idp_hosts }}"
+  when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
+  become: yes
+
+- name: Configure SSP hosted SAML 2.0 IdP metadata
+  template:
+    src: metadata/saml20-idp-hosted.php.j2
+    dest: "{{ ssp_path }}/metadata/saml20-idp-hosted.php"
+    backup: yes
+    force: yes
+  when: ssp_idp_saml20_enabled
+  become: yes
+
+- name: Configure SSP hosted SAML 1.1 IdP metadata
+  template:
+    src: metadata/shib13-idp-hosted.php.j2
+    dest: "{{ ssp_path }}/metadata/shib13-idp-hosted.php"
+    backup: yes
+    force: yes
+  when: ssp_idp_shib13_enabled
+  become: yes
+
+- name: Enable required SSP modules
+  command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
+  args:
+    creates: "{{ ssp_path }}/modules/{{ item }}/enable"
+  with_items: ssp_mods_enabled
+  become: yes
+
+- name: Disable unnecessary SSP modules
+  command: touch "{{ ssp_path }}/modules/{{ item }}/disable"
+  args:
+    creates: "{{ ssp_path }}/modules/{{ item }}/disable"
+  with_items: ssp_mods_disabled
+  become: yes
+
+- name: Ensure required SSP metarefresh module dirs exist
+  file: path={{ ssp_path }}/metadata/{{ item.output_dir }} state=directory owner=www-data group=www-data
+  with_items: ssp_mod_metarefresh_sets
+  when: "'metarefresh' in ssp_mods_enabled"
+  become: yes
+
+- name: Configure SSP metarefresh module
+  template:
+    src: config/config-metarefresh.php.j2
+    dest: "{{ ssp_path }}/config/config-metarefresh.php"
+    backup: yes
+    force: yes
+  when: "'metarefresh' in ssp_mods_enabled"
+  register: ssp_mod_metarefresh_config
+  become: yes
+
+- name: Generate SSP cron module secret
+  shell: tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 status=none
+  args:
+    creates: "{{ ssp_path }}/config/module_cron.php"
+  when: "'cron' in ssp_mods_enabled"
+  register: ssp_mod_cron_secret_new
+
+- name: Check existing SSP cron module secret
+  command: awk -F"'" '/key/ { print $4 }' "{{ ssp_path }}/config/module_cron.php"
+  args:
+    removes: "{{ ssp_path }}/config/module_cron.php"
+  when: "'cron' in ssp_mods_enabled"
+  register: ssp_mod_cron_secret_old
+
+- name: Configure SSP cron module secret
+  set_fact:
+    ssp_mod_cron_secret: "{{ ssp_mod_cron_secret_new.stdout if ssp_mod_cron_secret_new | changed else ssp_mod_cron_secret_old.stdout }}"
+  when: "'cron' in ssp_mods_enabled"
+
+- name: Configure SSP cron module
+  template:
+    src: config/module_cron.php.j2
+    dest: "{{ ssp_path }}/config/module_cron.php"
+    backup: yes
+    force: yes
+  when: "'cron' in ssp_mods_enabled"
+  become: yes
+
+- name: Configure SSP cron module hourly cron job
+  cron: user="root" name="SSP metarefresh [hourly]" minute="15" job="curl -k --silent \"https://localhost/{{ ssp_alias }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag=hourly\" > /dev/null 2>&1"
+  when: "'cron' in ssp_mods_enabled"
+  become: yes
+
+- name: Configure SSP cron module daily cron job
+  cron: user="root" name="SSP metarefresh [daily]" minute="30" hour="3" job="curl -k --silent \"https://localhost/{{ ssp_alias }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag=daily\" > /dev/null 2>&1"
+  when: "'cron' in ssp_mods_enabled"
+  become: yes
+
+#TODO- name: Refresh SSP remote SAML metadata
+#  shell: "curl -k --silent \"https://localhost/{{ ssp_alias }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag={{ item }}\" > /dev/null 2>&1"
+#  with_items:
+#    - hourly
+#    - daily
+#  when: "ssp_mod_metarefresh_config | changed"
+#  become: yes
+
+- name: Configure SSP discopower module
+  template:
+    src: config/module_discopower.php.j2
+    dest: "{{ ssp_path }}/config/module_discopower.php"
+    backup: yes
+    force: yes
+  when: "'discopower' in ssp_mods_enabled"
+  become: yes
+
+- name: Update SSP discopower module dictionary definitions
+  template:
+    src: modules/discopower/dictionaries/tabs.definition.json.j2
+    dest: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
+    backup: yes
+    force: yes
+  when: "'discopower' in ssp_mods_enabled"
+  become: yes
