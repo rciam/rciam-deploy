@@ -1,0 +1,5 @@
+---
+
+- hosts: authservers
+  roles:
+    - ssp
