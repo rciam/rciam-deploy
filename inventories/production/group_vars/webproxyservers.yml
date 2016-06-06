@@ -1,0 +1,33 @@
+---
+
+nginx_create_vhosts: true
+nginx_vhosts_filename: "vhosts.conf"
+nginx_remove_default_vhost: true
+
+nginx_upstream_groups:
+  - name: "web_backend"
+    servers:
+      - address: "192.168.168.1"
+        weight: 1
+      - address: "192.168.168.2"
+        weight: 1
+
+nginx_vhosts:
+  - server_name: "aai.example.eu"
+    certificate_file: "/etc/ssl/private/aai_example_eu.chained.crt"
+    certificate_key_file: "/etc/ssl/private/aai_example_eu.key"
+    root: "/var/www/html"
+    extra_parameters: |
+      location / {
+          # First attempt to serve request as file, then
+          # as directory, then fall back to displaying a 404.
+          try_files $uri $uri/ =404;
+      }
+
+      location /proxy {
+          proxy_pass     http://web_backend/proxy;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto https;
+      }
