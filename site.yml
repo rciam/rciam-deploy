@@ -1,0 +1,7 @@
+---
+
+- include: cacheservers.yml
+
+- include: authservers.yml
+
+- include: webproxyservers.yml
