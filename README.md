@@ -32,3 +32,7 @@ On the control machine, you need a recent version of Ansible. We recommend insta
 Assuming root access to the target machines, simple run the following command to execute the master playbook using the inventory file at the default location (see `ansible.cfg`): 
 
     ansible-playbook -v site.yml
+
+# License
+
+Licensed under the Apache 2.0 license, for details see `LICENSE`.
