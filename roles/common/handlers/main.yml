@@ -1,0 +1,5 @@
+---
+
+- name: Update timezone
+  command: "{{ common_set_tz_cmd }}"
+  become: yes

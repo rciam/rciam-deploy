@@ -1,0 +1,22 @@
+---
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Install OS-specific packages
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+#- include: install-CentOS.yml
+#  when: ansible_os_family == 'CentOS'
+
+# Run OS-independent installation tasks
+#- include: install-common.yml
+
+# Apply OS-specific configuration
+- include: configure-Debian.yml
+  when: ansible_os_family == 'Debian'
+#- include: configure-CentOS.yml
+#  when: ansible_os_family == 'CentOS'
+
+# Apply OS-independent configuration
+- include: configure-common.yml

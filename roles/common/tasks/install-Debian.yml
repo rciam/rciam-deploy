@@ -1,0 +1,13 @@
+---
+
+- name: Update package cache (Debian)
+  apt: update_cache=yes cache_valid_time=86400
+  become: yes
+
+- name: Ensure latest versions of common packages are installed (Debian)
+  apt: pkg={{ item }} state=latest install_recommends=no
+  with_items:
+    - aptitude
+    - ca-certificates
+    - vim-nox
+  become: true

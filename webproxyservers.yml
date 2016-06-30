@@ -2,4 +2,5 @@
 
 - hosts: webproxyservers
   roles:
+    - common
     - nginx

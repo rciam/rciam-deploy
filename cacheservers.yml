@@ -1,5 +1,6 @@
 ---
 
-- hosts: sessionservers
+- hosts: cacheservers
   roles:
+    - common
     - memcached
