@@ -3,6 +3,17 @@
 apache_http_port: 80
 apache_https_port: 443
 
+apache_listen_directives: |
+  Listen {{ apache_http_port }}
+
+  <IfModule ssl_module>
+    Listen {{ apache_https_port }}
+  </IfModule>
+
+  <IfModule mod_gnutls.c>
+    Listen {{ apache_https_port }}
+  </IfModule>
+
 apache_create_vhosts: true
 apache_vhosts_filename: "vhosts.conf"
 

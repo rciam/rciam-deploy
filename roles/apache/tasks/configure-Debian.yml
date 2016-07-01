@@ -24,6 +24,16 @@
 
 - name: Add Apache vhosts configuration (Debian)
   template:
+    src: "ports.conf.j2"
+    dest: "{{ apache_conf_path }}/ports.conf"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify: restart apache
+
+- name: Add Apache vhosts configuration (Debian)
+  template:
     src: "vhosts.conf.j2"
     dest: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
     owner: root
