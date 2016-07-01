@@ -11,12 +11,14 @@ apache_vhosts_filename: "vhosts.conf"
 apache_remove_default_vhost: true
 
 apache_vhosts:
-  # Additional properties: `serveradmin`, `serveralias`, `extra_parameters`.
+  # Additional properties: `serveradmin`, `serveralias`, `usecanonicalname`, 
+  # `extra_parameters`.
   - servername: "{{ inventory_hostname }}"
     documentroot: "/var/www/html"
 
 apache_vhosts_ssl: []
-  # Additional properties: `serveradmin`, `serveralias`, `extra_parameters`.
+  # Additional properties: `serveradmin`, `serveralias`, `usecanonicalname`,
+  # `extra_parameters`.
   # - servername: "www.example.com"
   #   documentroot: "/var/www/html"
   #   certificate_file: "/path/to/certificate.crt"

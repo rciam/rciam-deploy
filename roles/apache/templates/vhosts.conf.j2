@@ -6,6 +6,9 @@
 {% if vhost.serveralias is defined %}
   ServerAlias {{ vhost.serveralias }}
 {% endif %}
+{% if vhost.usecanonicalname is defined %}
+  UseCanonicalName {{ vhost.usecanonicalname }}
+{% endif %}
 {% if vhost.documentroot is defined %}
   DocumentRoot {{ vhost.documentroot }}
 {% endif %}
@@ -34,6 +37,9 @@
   ServerName {{ vhost.servername }}
 {% if vhost.serveralias is defined %}
   ServerAlias {{ vhost.serveralias }}
+{% endif %}
+{% if vhost.usecanonicalname is defined %}
+  UseCanonicalName {{ vhost.usecanonicalname }}
 {% endif %}
 {% if vhost.documentroot is defined %}
   DocumentRoot {{ vhost.documentroot }}
