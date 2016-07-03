@@ -53,6 +53,50 @@ ssp_timezone: 'null'
 # DEBUG        Full debug logs - not recommended for production
 ssp_logging_level: NOTICE
 
+ssp_language_available:
+  - "en"
+  - "no"
+  - "nn"
+  - "se"
+  - "da"
+  - "de"
+  - "sv"
+  - "fi"
+  - "es"
+  - "fr"
+  - "it"
+  - "nl"
+  - "lb"
+  - "cs"
+  - "sl"
+  - "lt"
+  - "hr"
+  - "hu"
+  - "pl"
+  - "pt"
+  - "pt-br"
+  - "tr"
+  - "ja"
+  - "zh"
+  - "zh-tw"
+  - "ru"
+  - "et"
+  - "he"
+  - "id"
+  - "sr"
+  - "lv"
+  - "ro"
+  - "eu"
+
+ssp_language_rtl:
+  - "ar"
+  - "dv"
+  - "fa"
+  - "ur"
+  - "he"
+
+ssp_language_default: "en"
+
 ssp_authsources_saml:
   # Additional properties: `entity_id`, `idp`.
   - name: default-sp

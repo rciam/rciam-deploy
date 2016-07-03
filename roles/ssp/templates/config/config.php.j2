@@ -403,12 +403,16 @@ $config = array(
      * Languages available, RTL languages, and what language is default
      */
     'language.available' => array(
-        'en', 'no', 'nn', 'se', 'da', 'de', 'sv', 'fi', 'es', 'fr', 'it', 'nl', 'lb', 'cs',
-        'sl', 'lt', 'hr', 'hu', 'pl', 'pt', 'pt-br', 'tr', 'ja', 'zh', 'zh-tw', 'ru', 'et',
-        'he', 'id', 'sr', 'lv', 'ro', 'eu'
+{% for language in ssp_language_available %}
+        '{{ language }}',
+{% endfor %}
     ),
-    'language.rtl' => array('ar', 'dv', 'fa', 'ur', 'he'),
-    'language.default' => 'en',
+    'language.rtl' => array(
+{% for language in ssp_language_rtl %}
+        '{{ language }}',
+{% endfor %}
+    ),
+    'language.default' => '{{ ssp_language_default }}',
 
     /*
      * Options to override the default settings for the language parameter
