@@ -40,6 +40,9 @@ ssp_debug: false
 ssp_showerrors: false
 ssp_errorreporting: true
 
+ssp_admin_protectindexpage: false
+ssp_admin_protectmetadata: false
+
 # Let SSP figure out timezone based on the host machine
 ssp_timezone: 'null'
 # otherwise set it explicitly, e.g.:

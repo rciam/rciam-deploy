@@ -76,8 +76,8 @@ $config = array(
      * You can also put a hash here; run "bin/pwgen.php" to generate one.
      */
     'auth.adminpassword' => '{{ ssp_adminpasswordhash }}',
-    'admin.protectindexpage' => false,
-    'admin.protectmetadata' => false,
+    'admin.protectindexpage' => {{ ssp_admin_protectindexpage }},
+    'admin.protectmetadata' => {{ ssp_admin_protectmetadata }},
 
     /**
      * This is a secret salt used by SimpleSAMLphp when it needs to generate a secure hash
