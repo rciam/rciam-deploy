@@ -139,17 +139,17 @@
   become: yes
 
 - name: Configure SSP cron module hourly cron job
-  cron: user="root" name="SSP metarefresh [hourly]" minute="15" job="curl -k --silent \"https://localhost/{{ ssp_alias }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag=hourly\" > /dev/null 2>&1"
+  cron: user="root" name="SSP metarefresh [hourly]" minute="15" job="curl -k --silent \"https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag=hourly\" > /dev/null 2>&1"
   when: "'cron' in ssp_mods_enabled"
   become: yes
 
 - name: Configure SSP cron module daily cron job
-  cron: user="root" name="SSP metarefresh [daily]" minute="30" hour="3" job="curl -k --silent \"https://localhost/{{ ssp_alias }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag=daily\" > /dev/null 2>&1"
+  cron: user="root" name="SSP metarefresh [daily]" minute="30" hour="3" job="curl -k --silent \"https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag=daily\" > /dev/null 2>&1"
   when: "'cron' in ssp_mods_enabled"
   become: yes
 
 #TODO- name: Refresh SSP remote SAML metadata
-#  shell: "curl -k --silent \"https://localhost/{{ ssp_alias }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag={{ item }}\" > /dev/null 2>&1"
+#  shell: "curl -k --silent \"https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag={{ item }}\" > /dev/null 2>&1"
 #  with_items:
 #    - hourly
 #    - daily

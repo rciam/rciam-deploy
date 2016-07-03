@@ -21,7 +21,7 @@ $config = array(
      * external url, no matter where you come from (direct access or via the
      * reverse proxy).
      */
-    'baseurlpath' => '{{ ssp_alias }}/',
+    'baseurlpath' => '{{ ssp_external_baseurlpath | default(ssp_baseurlpath) }}/',
     'certdir' => 'cert/',
     'loggingdir' => 'log/',
     'datadir' => 'data/',
@@ -787,7 +787,11 @@ $config = array(
      * than one instance is using memcache, you probably want to assign
      * a unique value per instance to this setting to avoid data collision.
      */
-    'memcache_store.prefix' => '{{ ssp_alias }}',
+{% if ssp_memcache_store_prefix is defined %}
+    'memcache_store.prefix' => '{{ ssp_memcache_store_prefix}}',
+{% else %}
+    'memcache_store.prefix' => null,
+{% endif %}
 
 
     /*

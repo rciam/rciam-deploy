@@ -1,9 +1,13 @@
 ---
 
-ssp_repo_url: git://github.com/simplesamlphp/simplesamlphp.git
-ssp_repo_version: master
-ssp_path: /opt/share/simplesamlphp
-ssp_alias: ssp
+ssp_repo_url: "git://github.com/simplesamlphp/simplesamlphp.git"
+ssp_repo_version: "master"
+ssp_path: "/var/simplesamlphp"
+# The base path of the URLs to the content of the SimpleSAMPphp www folder.
+ssp_baseurlpath: "simplesaml"
+# Specify base URL path with the external scheme (protocol) and FQDN if your 
+# SimpleSAMLphp installation is hosted behind a reverse proxy.
+#ssp_external_baseurlpath: "https://example.com/simplesaml"
 
 ssp_theme: "default"
 
@@ -29,6 +33,8 @@ ssp_authtoken_cookiename: "SimpleSAMLAuthToken"
 #  - # Group B
 #    - "memcached3.acme.com"
 #    - "memcached4.acme.com"
+
+#ssp_memcache_store_prefix: "simpleSAMLphp"
 
 ssp_debug: false
 ssp_showerrors: false
