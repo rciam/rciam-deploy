@@ -12,7 +12,10 @@ ssp_baseurlpath: "simplesaml"
 ssp_theme: "default"
 
 ssp_session_cookie_name: "SimpleSAMLSessionID"
+ssp_session_cookie_secure: false
 ssp_authtoken_cookiename: "SimpleSAMLAuthToken"
+
+ssp_tempdir: "/tmp/simplesaml"
 
 # Select where to store session information:
 # `phpsession` Uses the built-in session management in PHP (default).
@@ -48,6 +51,10 @@ ssp_timezone: 'null'
 # otherwise set it explicitly, e.g.:
 #ssp_timezone: "'Europe/Athens'"
 
+# The process name that should be used when logging to syslog
+ssp_logging_processname: "simplesamlphp"
+# The name of the logfile when using the file handler for logging
+ssp_logging_logfile: "simplesamlphp.log"
 # Available log levels are:
 # ERR          No statistics, only errors
 # WARNING      No statistics, only warnings/errors
@@ -382,6 +389,8 @@ ssp_mods_disabled: []
 # Configuration options for automated SAML metadata management.
 # Requires `metarefresh` and `cron` modules in `ssp_mods_enabled`.  
 #
+# Cron module URL
+ssp_mod_cron_url: "https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php"
 # Global blacklist: Optional list of entityIDs that should be excluded from ALL
 # metadata sets.
 #ssp_mod_metarefresh_blacklist: 

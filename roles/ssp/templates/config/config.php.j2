@@ -31,7 +31,7 @@ $config = array(
      *
      * SimpleSAMLphp will attempt to create this directory if it doesn't exist.
      */
-    'tempdir' => '/tmp/simplesaml',
+    'tempdir' => '{{ ssp_tempdir }}',
 
 
     /*
@@ -171,11 +171,11 @@ $config = array(
      * The process name that should be used when logging to syslog.
      * The value is also written out by the other logging handlers.
      */
-    'logging.processname' => 'simplesamlphp',
+    'logging.processname' => '{{ ssp_logging_processname }}',
 
     /* Logging: file - Logfilename in the loggingdir from above.
      */
-    'logging.logfile' => 'simplesamlphp.log',
+    'logging.logfile' => '{{ ssp_logging_processname }}',
 
     /* (New) statistics output configuration.
      *
@@ -347,7 +347,7 @@ $config = array(
      * through https. If the user can access the service through
      * both http and https, this must be set to FALSE.
      */
-    'session.cookie.secure' => false,
+    'session.cookie.secure' => {{ ssp_session_cookie_secure }},
 
     /*
      * Enable secure POST from HTTPS to HTTP.
