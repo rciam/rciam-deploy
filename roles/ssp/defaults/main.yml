@@ -220,9 +220,13 @@ ssp_authsources_saml:
    # App ID or API key (requests with App ID should be faster; https://github.com/facebook/php-sdk/issues/214)
    #api_key: "123456789012345"
    #secret: "1ab23456cdef78g90123h4ij56k789l0"
-   # Optional list of additional permissions to request from user
+   # Optional list of additional permissions to request from user.
    # See https://developers.facebook.com/docs/facebook-login/permissions
    #req_perms: "email"
+   # Optional list of user profile fields to request.
+   # When empty, only the app-specific user id and name will be returned
+   # See https://developers.facebook.com/docs/graph-api/reference/v2.6/user for the full list
+   #user_fields: "email,birthday,third_party_id,name,first_name,last_name"
 
 # IdP configuration
 # Enable SAML 2.0 IdP functionality
