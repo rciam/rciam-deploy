@@ -228,6 +228,29 @@ ssp_authsources_saml:
    # See https://developers.facebook.com/docs/graph-api/reference/v2.6/user for the full list
    #user_fields: "email,birthday,third_party_id,name,first_name,last_name"
 
+# Requires `authlinkedin` and `oauth` modules in `ssp_mods_enabled`.
+#ssp_authsources_linkedin:
+# - name: "linkedin"
+   #key: "xxxxxxxxxxxxxx"
+   #secret: "xxxxxxxxxxxxxxxx"
+   # See https://developer.linkedin.com/docs/fields/basic-profile for the full list
+   #user_fields: "id,formatted-name,first-name,last-name,email-address"
+
+# Requires `authlinkedin` and `oauth` module in `ssp_mods_enabled`.
+#ssp_authsources_facebook:
+# - name: facebook
+   # Register your Facebook application at http://www.facebook.com/developers
+   # App ID or API key (requests with App ID should be faster; https://github.com/facebook/php-sdk/issues/214)
+   #api_key: "123456789012345"
+   #secret: "1ab23456cdef78g90123h4ij56k789l0"
+   # Optional list of additional permissions to request from user.
+   # See https://developers.facebook.com/docs/facebook-login/permissions
+   #req_perms: "email"
+   # Optional list of user profile fields to request.
+   # When empty, only the app-specific user id and name will be returned
+   # See https://developers.facebook.com/docs/graph-api/reference/v2.6/user for the full list
+   #user_fields: "email,birthday,third_party_id,name,first_name,last_name"
+
 # IdP configuration
 # Enable SAML 2.0 IdP functionality
 ssp_idp_saml20_enabled: false

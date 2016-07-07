@@ -222,15 +222,17 @@ $config = array(
 
 {% endfor %}
 {% endif %}
-    /*
-    // LinkedIn OAuth Authentication API.
-    // Register your application to get an API key here:
-    //  https://www.linkedin.com/secure/developer
-    'linkedin' => array(
+{% if ssp_authsources_linkedin is defined %}
+{% for authsource in ssp_authsources_linkedin %}
+    '{{ authsource.name }}' => array(
         'authlinkedin:LinkedIn',
-        'key' => 'xxxxxxxxxxxxxxxx',
-        'secret' => 'xxxxxxxxxxxxxxxx',
+        'key' => '{{ authsource.key }}',
+        'secret' => '{{ authsource.secret }}',
+{% if authsource.user_fields is defined %}
+        'user_fields' => '{{ authsource.user_fields }}',
+{% endif %}
     ),
-    */
 
+{% endfor %}
+{% endif %}
 );
