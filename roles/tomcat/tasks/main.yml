@@ -1,0 +1,20 @@
+---
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Install OS-specific packages
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+#- include: install-CentOS.yml
+#  when: ansible_os_family == 'CentOS'
+
+# Apply OS-independent configuration
+- include: configure-common.yml
+
+- name: Ensure Tomcat service is started and enabled on boot
+  service:
+    name: "{{ tomcat_service }}"
+    state: "started"
+    enabled: yes
+  become: yes

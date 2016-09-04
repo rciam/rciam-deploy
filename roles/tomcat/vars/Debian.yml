@@ -1,0 +1,5 @@
+---
+
+tomcat_service: "tomcat{{ tomcat_version }}"
+tomcat_default_path: "/etc/default"
+tomcat_conf_path: "/etc/tomcat{{ tomcat_version }}"
