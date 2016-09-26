@@ -91,6 +91,31 @@ $config = array(
 {% endfor %}
         ),
 {% endif %}
+{% if authsource.organization_name is defined %}
+        // Localised names of the organisation responsible for this SP.
+        'OrganizationName' => array(
+{% for key, value in authsource.organization_name.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% endif %}
+{% if authsource.organization_display_name is defined %}
+        // Localised user-friendly names of the organisation responsible for
+        // this SP.
+        'OrganizationDisplayName' => array(
+{% for key, value in authsource.organization_display_name.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% endif %}
+{% if authsource.organization_url is defined %}
+        // Localised URLs of the organisation responsible for this SP.
+        'OrganizationURL' => array(
+{% for key, value in authsource.organization_url.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% endif %}
 {% if authsource.contacts is defined %}
         // List of contacts in addition to the technical contact configured
         // through config/config.php

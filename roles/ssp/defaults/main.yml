@@ -193,6 +193,16 @@ ssp_authsources_saml:
         #email_address: "mailto:jane.doe@acme.example.com"
         # Optional telephone number of the contact person.
         #telephone_numbers: "+31(0)12345678"
+    # Localised names of the organisation responsible for this SP.
+    #organization_name: 
+    #  en: ACME 
+    # Localised user-friendly names of the organisation responsible for this
+    # SP.
+    #organization_display_name: 
+    #  en: ACME
+    # Localised URLs of the organisation responsible for this SP.
+    #organization_url: 
+    #  en: "https://www.acme.example.com/en"
     # List of attributes this SP requests from the IdP. This list will be added
     # to the generated metadata.
     # The attributes will be added without a `NameFormat` by default. Use the 
