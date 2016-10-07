@@ -2,14 +2,14 @@
 
 - name: Enable required Apache modules (Debian)
   apache2_module: state=present name={{ item }}
-  with_items: apache_mods_enabled
+  with_items: "{{ apache_mods_enabled }}"
   become: yes
   notify:
     - restart apache
 
 - name: Disable unnecessary Apache modules (Debian)
   apache2_module: state=absent name={{ item }}
-  with_items: apache_mods_disabled
+  with_items: "{{ apache_mods_disabled }}"
   become: yes
   notify:
     - restart apache
