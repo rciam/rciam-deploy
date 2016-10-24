@@ -90,6 +90,7 @@ $config = array(
 {{ src.extra_parameters | indent(width=24, indentfirst=True) }}
 {% endif %} 
                     ),
+{% if src.types is defined %}
                     /*
                      * The sets of entities to load, any combination of:
                      *  - 'saml20-idp-remote'
@@ -102,7 +103,12 @@ $config = array(
                      *
                      * This option takes precedence over the same option per metadata set.
                      */
-                     //'types' => array(),
+                     'types' => array(
+{% for type in src.types %}
+                         '{{ type }}',
+{% endfor %}
+                     ),
+{% endif %} 
                 ),
 {% endfor %}
             ),
@@ -114,6 +120,7 @@ $config = array(
              * Can be 'flatfile' or 'serialize'. 'flatfile' is the default.
              */
             'outputFormat' => '{{ set.output_format }}',
+{% if set.types is defined %}
             /*
              * The sets of entities to load, any combination of:
              *  - 'saml20-idp-remote'
@@ -124,7 +131,12 @@ $config = array(
              *
              * All of them will be used by default.
              */
-            //'types' => array(),
+            'types' => array(
+{% for type in set.types %}
+                '{{ type }}',
+{% endfor %}
+            ),
+{% endif %} 
         ),
 {% endfor %}
     ),
