@@ -5,7 +5,7 @@
   become: yes
 
 - name: Ensure latest Apache HTTP server is installed (Debian)
-  apt: name={{ item }} state=latest install_recommends=no
+  apt: name={{ item }} state=present install_recommends=no
   with_items:
     - apache2
   become: yes
