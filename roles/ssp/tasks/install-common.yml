@@ -6,7 +6,8 @@
     dest: "{{ ssp_path }}"
     version: "{{ ssp_repo_version }}"
     accept_hostkey: yes
-    force: yes
+    force: no
+    update: no
   become: yes
 
 - name: Download Composer
