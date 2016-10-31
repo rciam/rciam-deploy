@@ -264,4 +264,14 @@ $config = array(
 
 {% endfor %}
 {% endif %}
+{% if ssp_authsources_orcid is defined %}
+{% for authsource in ssp_authsources_orcid %}
+    '{{ authsource.name }}' => array(
+        'authorcid:ORCID',
+        'clientId' => '{{ authsource.client_id }}',
+        'clientSecret' => '{{ authsource.client_secret }}',
+    ),
+
+{% endfor %}
+{% endif %}
 );
