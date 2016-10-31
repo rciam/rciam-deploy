@@ -224,7 +224,11 @@ $config = array(
 {% endif %}
 {% if authsource.name_id_policy is defined %}
         // The format of the NameID we request from the IdP.
+{% if authsource.name_id_policy != None %}
         'NameIDPolicy' => '{{ authsource.name_id_policy }}',
+{% else %}
+        'NameIDPolicy' => null,
+{% endif %}
 {% endif %}
     ),
 {% endfor %}
