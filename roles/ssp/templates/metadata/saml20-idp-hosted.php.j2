@@ -207,6 +207,12 @@ $metadata['{{ idp.entity_id }}'] = array(
 {% for key, value in filter_params.iteritems() %}
 {% if value == None %}
                 '{{ key }}',
+{% elif value is iterable and value is not string %}
+                '{{ key }}' => array(
+{% for item in value %}
+                    '{{ item }}',
+{% endfor %}
+                ),
 {% elif value == true or value == false %}
                 '{{ key }}' => {{ value }},
 {% else %}
