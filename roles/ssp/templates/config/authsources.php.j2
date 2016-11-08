@@ -230,6 +230,31 @@ $config = array(
         'NameIDPolicy' => null,
 {% endif %}
 {% endif %}
+{% if authsource.authproc is defined %}
+        'authproc' => array(
+{% for entry in authsource.authproc %}
+{% for priority, filter_params in entry.iteritems() %}
+            {{ priority }} => array(
+{% for key, value in filter_params.iteritems() %}
+{% if value == None %}
+                '{{ key }}',
+{% elif value is iterable and value is not string %}
+                '{{ key }}' => array(
+{% for item in value %}
+                    '{{ item }}',
+{% endfor %}
+                ),
+{% elif value == true or value == false %}
+                '{{ key }}' => {{ value }},
+{% else %}
+                '{{ key }}' => '{{ value }}',
+{% endif %}
+{% endfor %}
+            ),
+{% endfor %}
+{% endfor %}
+        ),
+{% endif %}
     ),
 {% endfor %}
 
