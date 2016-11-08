@@ -107,6 +107,30 @@ ssp_language_rtl:
 
 ssp_language_default: "en"
 
+# Authentication processing filters that will be executed for all IdPs
+ssp_authproc_idp:
+  - "30":
+      # Adopts language from attribute to use in UI
+      class: "core:LanguageAdaptor"
+  - "45":
+      # Add a realm attribute from edupersonprincipalname
+      class: "core:StatisticsWithAttribute"
+      attributename: "realm"
+      type: "saml20-idp-SSO"
+  - "50":
+       # Filter attributes by checking the 'attributes' parameter in metadata
+       # on IdP hosted and SP remote.
+       class: "core:AttributeLimit"
+  - "99":
+       # If language is set in Consent module it will be added as an attribute.
+       class: "core:LanguageAdaptor"
+
+# Authentication processing filters that will be executed for all SPs
+ssp_authproc_sp: 
+  - "90":
+      # Adopts language from attribute to use in UI
+      class: "core:LanguageAdaptor"
+
 ssp_authsources_saml:
   # Additional properties: `entity_id`, `idp`.
   - name: default-sp
