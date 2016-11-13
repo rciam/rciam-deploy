@@ -213,23 +213,23 @@ $config = array(
      * Ensure that you have the required PDO database driver installed
      * for your connection string.
      */
-    'database.dsn' => 'mysql:host=localhost;dbname=saml',
+    'database.dsn' => '{{ ssp_database.dsn }}',
 
     /*
      * SQL database credentials
      */
-    'database.username' => 'simplesamlphp',
-    'database.password' => 'secret',
+    'database.username' => '{{ ssp_database.username }}',
+    'database.password' => '{{ ssp_database.password }}',
 
     /*
      * (Optional) Table prefix
      */
-    'database.prefix' => '',
+    'database.prefix' => '{{ ssp_database.prefix }}',
 
     /*
      * True or false if you would like a persistent database connection
      */
-    'database.persistent' => false,
+    'database.persistent' => {{ ssp_database.persistent }},
 
     /*
      * Database slave configuration is optional as well. If you are only
@@ -242,14 +242,14 @@ $config = array(
      * prefix.
      */
     'database.slaves' => array(
-        /*
+{% for database_slave in ssp_database_slaves %}
         array(
-            'dsn' => 'mysql:host=myslave;dbname=saml',
-            'username' => 'simplesamlphp',
-            'password' => 'secret',
-            'persistent' => false,
+            'dsn' => '{{ database_slave.dsn }}',
+            'username' => '{{ database_slave.username }}',
+            'password' => '{{ database_slave.password }}',
+            'persistent' => {{ database_slave.persistent }},
         ),
-        */
+{% endfor %}
     ),
 
 

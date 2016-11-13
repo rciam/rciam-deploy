@@ -39,6 +39,21 @@ ssp_tempdir: "/tmp/simplesaml"
 
 #ssp_memcache_store_prefix: "simpleSAMLphp"
 
+# Database configuration is optional. If you are not using core functionality
+# or modules that require a database, you can skip this configuration
+ssp_database:
+  dsn: "mysql:host=localhost;dbname=saml"
+  username: "simplesamlphp"
+  password: "secret"
+  prefix: ""
+  persistent: no
+
+ssp_database_slaves: []
+#  - dsn: "mysql:host=myslave;dbname=saml"
+#    username: "simplesamlphp"
+#    password: "secret" 
+#    persistent: no
+
 ssp_debug: false
 ssp_showerrors: false
 ssp_errorreporting: true
