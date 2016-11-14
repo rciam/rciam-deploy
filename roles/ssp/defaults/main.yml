@@ -261,6 +261,14 @@ ssp_authsources_saml:
     # The format of the NameID we request from the IdP. Defaults to the 
     # transient format if unspecified.
     #name_id_policy: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+    # List of supported ACS bindings. If unspecified, all will be added.
+    # Possible values:
+    # - urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+    # - urn:oasis:names:tc:SAML:1.0:profiles:browser-post
+    # - urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact
+    # - urn:oasis:names:tc:SAML:1.0:profiles:artifact-01
+    # - urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser 
+    #acs_bindings:
 
 # Requires `authfacebook` module in `ssp_mods_enabled`.
 #ssp_authsources_facebook:
