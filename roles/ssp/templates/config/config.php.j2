@@ -529,7 +529,7 @@ $config = array(
                 '{{ item }}',
 {% endfor %}
             ),
-{% elif value == true or value == false %}
+{% elif value == true or value == false or value is number %}
             '{{ key }}' => {{ value }},
 {% else %}
             '{{ key }}' => '{{ value }}',
@@ -558,7 +558,7 @@ $config = array(
                 '{{ item }}',
 {% endfor %}
             ),
-{% elif value == true or value == false %}
+{% elif value == true or value == false or value is number %}
             '{{ key }}' => {{ value }},
 {% else %}
             '{{ key }}' => '{{ value }}',
