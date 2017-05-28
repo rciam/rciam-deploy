@@ -35,7 +35,7 @@ server {
         root {{ vhost.root }};
 
 {% if vhost.extra_parameters is defined %}
-	{{ vhost.extra_parameters }}
+	{{ vhost.extra_parameters | indent(width=8, indentfirst=False) }}
 {% endif %}
 }
 {% endfor %}
