@@ -14,6 +14,9 @@ nginx_remove_default_vhost: false
 
 #nginx_vhosts:
 #  - server_name: "www.example.org"
+#    listen:
+#      - "443 ssl default_server"
+#      - "[::]:443 ssl default_server"
 #    certificate_file: "/etc/ssl/private/www_example_org.chained.crt"
 #    certificate_key_file: "/etc/ssl/private/www_example_org.key"
 #    root: "/var/www/html"
