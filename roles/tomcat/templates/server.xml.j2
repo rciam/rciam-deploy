@@ -74,11 +74,17 @@
 {% for connector in tomcat_connectors %}
     <Connector port="{{ connector.port }}" 
                protocol="{{ connector.protocol }}"
+{% if connector.address is defined %}
+               address="{{ connector.address }}"
+{% endif %}
 {% if connector.connection_timeout is defined %}
                connectionTimeout="{{ connector.connection_timeout }}"
 {% endif %}
 {% if connector.executor is defined %}
                executor="{{ connector.executor }}"
+{% endif %}
+{% if connector.proxy_name is defined %}
+               proxyName="{{ connector.proxy_name }}"
 {% endif %}
 {% if connector.proxy_port is defined %}
                proxyPort="{{ connector.proxy_port }}"
