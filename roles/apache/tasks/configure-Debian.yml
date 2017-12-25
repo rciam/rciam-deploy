@@ -22,7 +22,7 @@
   notify: restart apache
   when: apache_remove_default_vhost
 
-- name: Add Apache vhosts configuration (Debian)
+- name: Configure Apache ports (Debian)
   template:
     src: "ports.conf.j2"
     dest: "{{ apache_conf_path }}/ports.conf"
