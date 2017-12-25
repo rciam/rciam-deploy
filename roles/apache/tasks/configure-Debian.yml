@@ -48,5 +48,6 @@
     src: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
     dest: "{{ apache_conf_path }}/sites-enabled/{{ apache_vhosts_filename }}"
     state: link
+  become: yes
   notify: restart apache
   when: apache_create_vhosts
