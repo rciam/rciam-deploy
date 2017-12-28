@@ -1,0 +1,5 @@
+---
+shibboleth_sp_service: "shibd"
+shibboleth_sp_conf_path: "/etc/shibboleth"
+shibboleth_sp_user: "_shibd"
+shibboleth_sp_group: "_shibd"

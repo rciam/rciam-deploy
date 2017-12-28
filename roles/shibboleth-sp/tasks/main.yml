@@ -1,0 +1,23 @@
+---
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Install OS-specific packages
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+#- include: install-CentOS.yml
+#  when: ansible_os_family == 'CentOS
+
+# Run OS-independent installation tasks
+- include: install-common.yml
+
+# Apply OS-independent configuration
+- include: configure-common.yml
+
+- name: Ensure Shibboleth SP service is started and enabled on boot
+  service:
+    name: "{{ shibboleth_sp_service }}"
+    state: "started"
+    enabled: yes
+  become: yes

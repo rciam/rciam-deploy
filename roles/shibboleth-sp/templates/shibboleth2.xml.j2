@@ -1,0 +1,149 @@
+<!--
+    {{ ansible_managed }}
+-->
+<SPConfig xmlns="urn:mace:shibboleth:2.0:native:sp:config"
+    xmlns:conf="urn:mace:shibboleth:2.0:native:sp:config"
+    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"    
+    xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+    clockSkew="180">
+{% if shibboleth_sp_ext_libraries|length > 0 %}
+
+    <!-- Configuration for out-of-process extension libraries -->
+    <OutOfProcess logger="shibd.logger">
+        <Extensions>
+{% for ext_library in shibboleth_sp_ext_libraries %}
+            <Library path="{{ ext_library.path }}" fatal="{{ ext_library.fatal|default("false") }}"/>
+{% endfor %}
+        </Extensions>
+    </OutOfProcess>
+{% endif %}
+{% if shibboleth_sp_extra_conf is defined %}
+
+    {{ shibboleth_sp_extra_conf | indent(width=4, indentfirst=False) }}
+{% endif %}
+
+    <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
+    <ApplicationDefaults entityID="{{ shibboleth_sp_entity_id }}"
+{% if shibboleth_sp_remote_user != None %}
+                         REMOTE_USER="{{ shibboleth_sp_remote_user }}"
+{% endif %}
+    >
+
+        <!--
+        Controls session lifetimes, address checks, cookie handling, and the protocol handlers.
+        You MUST supply an effectively unique handlerURL value for each of your applications.
+        The value defaults to /Shibboleth.sso, and should be a relative path, with the SP computing
+        a relative value based on the virtual host. Using handlerSSL="true", the default, will force
+        the protocol to be https. You should also set cookieProps to "https" for SSL-only sites.
+        Note that while we default checkAddress to "false", this has a negative impact on the
+        security of your site. Stealing sessions via cookie theft is much easier with this disabled.
+        -->
+        <Sessions lifetime="{{ shibboleth_sp_session.lifetime }}" 
+                  timeout="{{ shibboleth_sp_session.timeout }}" 
+                  relayState="{{ shibboleth_sp_session.relay_state }}"
+                  checkAddress="{{ shibboleth_sp_session.check_address }}" 
+                  handlerSSL="{{ shibboleth_sp_session.handler_ssl }}" 
+                  cookieProps="{{ shibboleth_sp_session.cookie_props }}"
+{% if shibboleth_sp_session.consistent_address is defined %}
+                  consistentAddress="{{ shibboleth_sp_session.consistent_address }}"
+{% endif %}
+{% if shibboleth_sp_session.handler_url is defined %}
+                  handlerURL="{{ shibboleth_sp_session.handler_url }}"
+{% endif %}
+        >
+
+            <!--
+            Configures SSO for a default IdP. To allow for >1 IdP, remove
+            entityID property and adjust discoveryURL to point to discovery service.
+            (Set discoveryProtocol to "WAYF" for legacy Shibboleth WAYF support.)
+            You can also override entityID on /Login query string, or in RequestMap/htaccess.
+            -->
+            <SSO 
+{% if shibboleth_sp_sso.entity_id is defined %}
+                 entityID="{{ shibboleth_sp_sso.entity_id }}"
+{% endif %}
+{% if shibboleth_sp_sso.discovery_protocol is defined %}
+                 discoveryProtocol="{{ shibboleth_sp_sso.discovery_protocol }}" 
+{% endif %}
+{% if shibboleth_sp_sso.discovery_url is defined %}
+                 discoveryURL="{{ shibboleth_sp_sso.discovery_url }}"
+{% endif %}
+            >
+              {{ shibboleth_sp_sso.protocols }}
+            </SSO>
+
+            <!-- SAML and local-only logout. -->
+            <Logout>{{ shibboleth_sp_logout.protocols }}</Logout>
+            
+            <!-- Extension service that generates "approximate" metadata based on SP configuration. -->
+            <Handler type="MetadataGenerator" Location="/Metadata" signing="false"/>
+
+            <!-- Status reporting service. -->
+            <Handler type="Status" Location="/Status" acl="127.0.0.1 ::1"/>
+
+            <!-- Session diagnostic service. -->
+            <Handler type="Session" Location="/Session" showAttributeValues="false"/>
+
+            <!-- JSON feed of discovery information. -->
+            <Handler type="DiscoveryFeed" Location="/DiscoFeed"/>
+        </Sessions>
+
+        <!--
+        Allows overriding of error template information/filenames. You can
+        also add attributes with values that can be plugged into the templates.
+        -->
+        <Errors supportContact="{{ shibboleth_sp_supportcontact_email }}"
+            helpLocation="/about.html"
+            styleSheet="/shibboleth-sp/main.css"/>
+        
+{% for metadata in shibboleth_sp_metadata_providers %}
+        <MetadataProvider type="XML" 
+{% if metadata.uri is defined %}
+            uri="{{ metadata.uri }}"
+{% endif %}
+{% if metadata.backing_file_path is defined %}
+            backingFilePath="{{ metadata.backing_file_path }}" 
+{% endif %}
+{% if metadata.reload_interval is defined %}
+            reloadInterval="{{ metadata.reload_interval }}"
+{% endif %}
+{% if metadata.file is defined %}
+            file="{{ metadata.file }}"
+{% endif %}
+        >
+        </MetadataProvider>
+{% endfor %}
+
+        <!-- Map to extract attributes from SAML assertions. -->
+        <AttributeExtractor type="XML" validate="true" reloadChanges="false" path="attribute-map.xml"/>
+        
+{% for resolver in shibboleth_sp_attribute_resolvers %}
+        <AttributeResolver type="{{ resolver.type }}" 
+{% if resolver.subject_match is defined %}
+            subjectMatch="{{ resolver.subject_match }}"
+{% endif %}
+        />
+{% endfor %}
+
+        <!-- Default filtering policy for recognized attributes, lets other data pass. -->
+        <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
+
+        <!-- Simple file-based resolver for using a single keypair. -->
+        <CredentialResolver type="File" key="cert/sp-key.pem" certificate="cert/sp-crt.pem"/>
+
+        <!--
+        The default settings can be overridden by creating ApplicationOverride elements (see
+        the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApplicationOverride topic).
+        Resource requests are mapped by web server commands, or the RequestMapper, to an
+        applicationId setting.
+        -->
+    </ApplicationDefaults>
+    
+    <!-- Policies that determine how to process and authenticate runtime messages. -->
+    <SecurityPolicyProvider type="XML" validate="true" path="security-policy.xml"/>
+
+    <!-- Low-level configuration about protocols and bindings available for use. -->
+    <ProtocolProvider type="XML" validate="true" reloadChanges="false" path="protocols.xml"/>
+
+</SPConfig>

@@ -1,0 +1,6 @@
+---
+- name: Restart Shibboleth SP
+  service:
+    name: "{{ shibboleth_sp_service }}"
+    state: "restarted"
+  become: yes

@@ -1,0 +1,65 @@
+---
+# Set to yes/true to generate self-signed SSL certificate for signing requests/
+# response received from/sent to the IdP, as well as for receiving encrypted
+# responses.
+shibboleth_sp_ssl_cert_generate: no
+# SSL certificate subject (ignored when shibboleth_sp_ssl_cert_generate is set
+# to no/false.
+#shibboleth_sp_ssl_cert_subj: "/C=/ST=/L=/O=/CN=sp.example.org"
+
+# ApplicationDefaults
+# The SAML entityID of this SP
+shibboleth_sp_entity_id: "https://sp.example.org/shibboleth"
+# One or more attributes used for the primary identifier of the browser user
+# passed through the REMOTE_USER server variable.
+# Set to null to disable setting the variable. 
+shibboleth_sp_remote_user: "eppn persistent-id targeted-id"
+
+shibboleth_sp_session:
+  lifetime: 28000
+  timeout: 3600
+  relay_state: "ss:mem"
+  check_address: "false"
+  handler_ssl: "false"
+  cookie_props: "http"
+#  consistent_address: "true"
+#  handler_url: "/Shibboleth.sso"
+
+# SSO settings. To allow for >1 IdP, remove entity_id property and adjust
+# discovery_url to point to discovery service.
+shibboleth_sp_sso:
+  protocols: "SAML2 SAML1"
+  entity_id: "https://idp.example.org/idp/shibboleth"
+  discovery_protocol: "SAMLDS"
+  discovery_url: "https://ds.example.org/DS/WAYF"
+
+shibboleth_sp_logout:
+  protocols: "SAML2 Local"
+
+shibboleth_sp_supportcontact_email: "root@localhost"
+
+# TODO Add support for metadata filters
+shibboleth_sp_metadata_providers: []
+#  - type: "XML"
+#    uri: "http://federation.org/federation-metadata.xml"
+#    backing_file_path: "federation-metadata.xml"
+#    reload_interval: 7200
+#  - type: "XML" 
+#    file: "partner-metadata.xml"
+
+shibboleth_sp_attribute_resolvers:
+  - type: "Query"
+    subject_match: "true"
+
+# TODO The default settings can be overridden by creating ApplicationOverride
+# elements
+shibboleth_sp_overrides: []
+#  - id: "admin"
+#    entity_id: "https://admin.example.org/shibboleth" 
+
+shibboleth_sp_ext_libraries: []
+# Path to the library to load
+#  - path: "plugin.so"
+# If "true", a failure to load the library will fatally terminate the overall
+# initialisation of the SP. Defaults to "false".
+#    fatal: "false"
