@@ -6,14 +6,14 @@
 # Install OS-specific packages
 - include: install-Debian.yml
   when: ansible_os_family == 'Debian'
-- include: install-CentOS.yml
-  when: ansible_os_family == 'CentOS'
+- include: install-RedHat.yml
+  when: ansible_os_family == 'RedHat'
 
 # Apply OS-specific configuration
 - include: configure-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: configure-CentOS.yml
-#  when: ansible_os_family == 'CentOS'
+#- include: configure-RedHat.yml
+#  when: ansible_os_family == 'RedHat'
 
 - name: Ensure Apache service is at selected state and enabled on boot
   service:
