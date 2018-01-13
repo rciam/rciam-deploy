@@ -14,6 +14,15 @@ apache_listen_directives: |
     Listen {{ apache_https_port }}
   </IfModule>
 
+# Set to one of:  Full | OS | Minimal | Minor | Major | Prod
+# where Full conveys the most information, and Prod the least.
+apache_server_tokens: "OS"
+# Set to one of:  On | Off | EMail 
+# Set to "EMail" to also include a mailto: link to the ServerAdmin.
+apache_server_signature: "On"
+# Set to one of:  On | Off | extended
+apache_trace_enable: "Off"
+
 apache_create_vhosts: true
 apache_vhosts_filename: "vhosts.conf"
 
