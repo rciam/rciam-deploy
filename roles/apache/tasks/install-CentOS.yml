@@ -1,0 +1,7 @@
+---
+
+- name: Ensure Apache HTTP server is installed (CentOS)
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - httpd
+  become: yes
