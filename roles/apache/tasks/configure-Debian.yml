@@ -32,6 +32,24 @@
   become: yes
   notify: restart apache
 
+- name: Configure Apache security settings (Debian)
+  template:
+    src: "security.conf.j2"
+    dest: "{{ apache_conf_path }}/conf-available/security.conf"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify: restart apache
+
+- name: Enable Apache security configuration (Debian)
+  file:
+    src: "{{ apache_conf_path }}/conf-available/security.conf"
+    dest: "{{ apache_conf_path }}/conf-enabled/security.conf"
+    state: link
+  become: yes
+  notify: restart apache
+
 - name: Add Apache vhosts configuration (Debian)
   template:
     src: "vhosts.conf.j2"
