@@ -1,5 +1,14 @@
 ---
 
+- name: Ensure file with custom DH parameters for DHE ciphers exists
+  shell: openssl dhparam -dsaparam -out {{ nginx_dhparam_file }} {{ nginx_dhparam_size }}
+  args:
+    chdir: "{{ nginx_conf_path }}"
+    creates: "{{ nginx_conf_path }}/{{ nginx_dhparam_file }}"
+  become: yes
+  notify: Restart nginx
+  when: nginx_dhparam_file is defined
+
 - name: Ensure nginx service is configured
   template:
     src: nginx-{{ ansible_os_family }}.conf.j2
