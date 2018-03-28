@@ -26,11 +26,18 @@
     creates: "{{ ssp_path }}/vendor/autoload.php"
   become: true
 
-- name: Ensure required SSP dirs exist
-  file: path={{ ssp_path }}/{{ item }} state=directory
-  with_items:
-    - config
-    - metadata
-    - cert
-    - log
+- name: Ensure SSP config dir exists
+  file: path={{ ssp_configdir }} state=directory
+  become: yes
+
+- name: Ensure SSP logging dir exists
+  file: path={{ ssp_loggingdir }} state=directory
+  become: yes
+
+- name: Ensure SSP data dir exists
+  file: path={{ ssp_datadir }} state=directory
+  become: yes
+
+- name: Ensure SSP metadata dir exists
+  file: path={{ ssp_metadatadir }} state=directory
   become: yes

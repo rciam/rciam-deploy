@@ -2,4 +2,3 @@
 
 dependencies:
   - { role: git }
-  - { role: apache }

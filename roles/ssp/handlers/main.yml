@@ -1,0 +1,7 @@
+---
+  
+- name: restart webserver
+  service:
+    name: "{{ ssp_webserver }}"
+    state: restarted
+  become: yes

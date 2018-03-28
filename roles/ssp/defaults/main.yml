@@ -9,6 +9,12 @@ ssp_baseurlpath: "simplesaml"
 # SimpleSAMLphp installation is hosted behind a reverse proxy.
 #ssp_external_baseurlpath: "https://example.com/simplesaml"
 
+ssp_configdir: "{{ ssp_path }}/config/"
+ssp_certdir: "{{ ssp_path }}/cert/"
+ssp_loggingdir: "{{ ssp_path }}/log/"
+ssp_datadir: "{{ ssp_path }}/data/"
+ssp_metadatadir: "{{ ssp_path }}/metadata/"
+
 ssp_theme: "default"
 
 ssp_session_cookie_name: "SimpleSAMLSessionID"

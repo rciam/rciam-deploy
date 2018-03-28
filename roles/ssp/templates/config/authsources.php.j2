@@ -50,11 +50,11 @@ $config = array(
         // this SP should be validated. 
         'redirect.validate' => {{ authsource.redirect_validate }},
 {% endif %}
-{% if authsource.sign_authnrequest %}
+{% if authsource.sign_authnrequest is defined %}
         // Whether to sign authentication requests sent from this SP.
         'sign.authnrequest' => {{ authsource.sign_authnrequest }},
 {% endif %}
-{% if authsource.sign_logout %}
+{% if authsource.sign_logout is defined %}
         // Whether to sign logout messages sent from this SP.
         'sign.logout' => {{ authsource.sign_logout }},
 {% endif %}
@@ -264,8 +264,8 @@ $config = array(
         ),
 {% endif %}
     ),
-{% endfor %}
 
+{% endfor %}
 {% if ssp_authsources_facebook is defined %}
 {% for authsource in ssp_authsources_facebook %}
     '{{ authsource.name }}' => array(
@@ -306,5 +306,9 @@ $config = array(
     ),
 
 {% endfor %}
+{% endif %}
+{% if ssp_authsources_extra_config is defined %}
+  {{ ssp_authsources_extra_config | indent(width=4, indentfirst=False) }}
+
 {% endif %}
 );

@@ -22,9 +22,9 @@ $config = array(
      * reverse proxy).
      */
     'baseurlpath' => '{{ ssp_external_baseurlpath | default(ssp_baseurlpath) }}/',
-    'certdir' => 'cert/',
-    'loggingdir' => 'log/',
-    'datadir' => 'data/',
+    'certdir' => '{{ ssp_certdir }}',
+    'loggingdir' => '{{ ssp_loggingdir }}',
+    'datadir' => '{{ ssp_datadir }}',
 
     /*
      * A directory where SimpleSAMLphp can save temporary files.
