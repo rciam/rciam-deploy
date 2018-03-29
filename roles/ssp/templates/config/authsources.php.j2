@@ -138,6 +138,13 @@ $config = array(
 {% if contact.telephone_number is defined %}
                 'telephoneNumber'   => '{{ contact.telephone_number }}',
 {% endif %}
+{% if contact.attributes is defined %}
+                'attributes'        => array(
+{% for key, value in contact.attributes.items() %}
+                    '{{ key }}' => '{{ value }}',
+{% endfor %}
+                ),
+{% endif %}
             ),
 {% endfor %}
         ),
