@@ -1,0 +1,6 @@
+---
+postgresql_service: "postgresql"
+postgresql_conf_path: "/etc/postgresql/{{ postgresql_version }}"
+postgresql_data_path: "/var/lib/postgresql/{{ postgresql_version }}"
+postgresql_user: "postgres"
+postgresql_group: "postgres"
