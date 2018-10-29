@@ -47,7 +47,7 @@
 
   SSLEngine on
 {% if apache_ssl_cipher_suite is defined %}
-  SSLCipherSuite {{ apache_ssl_cipher_suite }}
+  SSLCipherSuite "{{ apache_ssl_cipher_suite }}"
 {% endif %}
 {% if apache_ssl_protocol is defined %}
   SSLProtocol {{ apache_ssl_protocol }}
