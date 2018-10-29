@@ -25,8 +25,11 @@
 
     <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
     <ApplicationDefaults entityID="{{ shibboleth_sp_entity_id }}"
-{% if shibboleth_sp_remote_user != None %}
+{% if shibboleth_sp_remote_user is defined %}
                          REMOTE_USER="{{ shibboleth_sp_remote_user }}"
+{% endif %}
+{% if shibboleth_sp_home_url is defined %}
+                         homeURL="{{ shibboleth_sp_home_url }}"
 {% endif %}
     >
 
@@ -138,6 +141,38 @@
         Resource requests are mapped by web server commands, or the RequestMapper, to an
         applicationId setting.
         -->
+{% if shibboleth_sp_overrides is defined %}
+{% for override in shibboleth_sp_overrides %}
+        <ApplicationOverride id="{{ override.id }}" entityID="{{ override.entity_id }}"
+{% if override.remote_user is defined %}
+                             REMOTE_USER="{{ override.remote_user }}"
+{% endif %}
+{% if override.home_url is defined %}
+                             homeURL="{{ override.home_url }}"
+{% endif %}
+        >
+{% if override.session is defined %}
+            <Sessions lifetime="{{ override.session.lifetime }}"
+                      timeout="{{ override.session.timeout }}"
+                      relayState="{{ override.session.relay_state }}"
+                      checkAddress="{{ override.session.check_address }}"
+                      handlerSSL="{{ override.session.handler_ssl }}"
+                      cookieProps="{{ override.session.cookie_props }}"
+{% if override.session.consistent_address is defined %}
+                      consistentAddress="{{ override.session.consistent_address }}"
+{% endif %}
+{% if override.session.handler_url is defined %}
+                      handlerURL="{{ override.session.handler_url }}"
+{% endif %}
+            />
+{% endif %}
+{% if override.extra_conf is defined %}
+
+    {{ override.extra_conf | indent(width=12, indentfirst=False) }}
+{% endif %}
+        </ApplicationOverride>
+{% endfor %}
+{% endif %}
     </ApplicationDefaults>
     
     <!-- Policies that determine how to process and authenticate runtime messages. -->

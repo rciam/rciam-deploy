@@ -14,6 +14,9 @@ shibboleth_sp_entity_id: "https://sp.example.org/shibboleth"
 # passed through the REMOTE_USER server variable.
 # Set to null to disable setting the variable. 
 shibboleth_sp_remote_user: "eppn persistent-id targeted-id"
+# Where the SP redirects the client to when there is nothing else that can be
+# done with a request and can be set to a standard home page or index page.
+#shibboleth_sp_home_url: "/"
 
 shibboleth_sp_session:
   lifetime: 28000
@@ -51,11 +54,28 @@ shibboleth_sp_attribute_resolvers:
   - type: "Query"
     subject_match: "true"
 
-# TODO The default settings can be overridden by creating ApplicationOverride
-# elements
+# The default settings can be overridden by creating ApplicationOverride
+# elements. When you use virtual hosting, there is no special handler
+# configuration needed; you can simply inherit the default settings because the
+# handlers will automatically be specific to each virtual host.
+# In contrast, when you divide things by path, you have to explicitly add XML
+# to the configuration to establish a special handlerURL for the new
+# application.
+# remote_user, home_url and session are optional
 shibboleth_sp_overrides: []
-#  - id: "admin"
-#    entity_id: "https://admin.example.org/shibboleth" 
+# - id: "admin"
+#   entity_id: "https://admin.example.org/shibboleth"
+#   remote_user: "eppn persistent-id targeted-id"
+#   home_url: "/"
+#   session:
+#     lifetime: 28000
+#     timeout: 3600
+#     relay_state: "ss:mem"
+#     check_address: "false"
+#     handler_ssl: "false"
+#     cookie_props: "http"
+#     consistent_address: "true" (optional)
+#     handler_url: "/Shibboleth.sso" (optional)
 
 shibboleth_sp_ext_libraries: []
 # Path to the library to load
@@ -63,3 +83,9 @@ shibboleth_sp_ext_libraries: []
 # If "true", a failure to load the library will fatally terminate the overall
 # initialisation of the SP. Defaults to "false".
 #    fatal: "false"
+
+# Path to file containing attribute mappings
+shibboleth_sp_attribute_map_file: "attribute-map.xml"
+
+# Path to file containing attribute policies
+shibboleth_sp_attribute_policy_file: "attribute-policy.xml"

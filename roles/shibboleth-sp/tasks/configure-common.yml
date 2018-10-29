@@ -34,20 +34,7 @@
   notify:
     - Restart Shibboleth SP
 
-- name: Configure Shibboleth SP attribute mappings (default)
-  copy:
-    src: "attribute-map.xml"
-    dest: "{{ shibboleth_sp_conf_path }}/attribute-map.xml"
-    owner: "root"
-    group: "root"
-    mode: 0644
-    backup: yes
-  when: not shibboleth_sp_attribute_map_file is defined
-  become: yes
-  notify:
-    - Restart Shibboleth SP
-
-- name: Configure Shibboleth SP attribute mappings (custom)
+- name: Configure Shibboleth SP attribute mappings
   copy:
     src: "{{ shibboleth_sp_attribute_map_file }}"
     dest: "{{ shibboleth_sp_conf_path }}/attribute-map.xml"
@@ -60,20 +47,7 @@
   notify:
     - Restart Shibboleth SP
 
-- name: Configure Shibboleth SP attribute policy (default)
-  copy:
-    src: "attribute-policy.xml"
-    dest: "{{ shibboleth_sp_conf_path }}/attribute-policy.xml"
-    owner: "root"
-    group: "root"
-    mode: 0644
-    backup: yes
-  when: not shibboleth_sp_attribute_policy_file is defined
-  become: yes
-  notify:
-    - Restart Shibboleth SP
-
-- name: Configure Shibboleth SP attribute policy (custom)
+- name: Configure Shibboleth SP attribute policies
   copy:
     src: "{{ shibboleth_sp_attribute_policy_file }}"
     dest: "{{ shibboleth_sp_conf_path }}/attribute-policy.xml"
