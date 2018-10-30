@@ -93,19 +93,19 @@
   command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/enable"
-  with_items: ssp_mods_enabled
+  with_items: "{{ ssp_mods_enabled }}"
   become: yes
 
 - name: Disable unnecessary SSP modules
   command: touch "{{ ssp_path }}/modules/{{ item }}/disable"
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/disable"
-  with_items: ssp_mods_disabled
+  with_items: "{{ ssp_mods_disabled }}"
   become: yes
 
 - name: Ensure required SSP metarefresh module dirs exist
   file: path={{ ssp_metadatadir }}/{{ item.output_dir }} state=directory owner={{ssp_webuser }} group={{ ssp_webgroup }}
-  with_items: ssp_mod_metarefresh_sets
+  with_items: "{{ ssp_mod_metarefresh_sets }}"
   when: "'metarefresh' in ssp_mods_enabled"
   become: yes
   tags:
