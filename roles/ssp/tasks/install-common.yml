@@ -41,3 +41,7 @@
 - name: Ensure SSP metadata dir exists
   file: path={{ ssp_metadatadir }} state=directory
   become: yes
+
+- name: Ensure SSP cert dir exists
+  file: path={{ ssp_certdir }} state=directory
+  become: yes
