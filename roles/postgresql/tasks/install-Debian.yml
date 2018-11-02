@@ -1,0 +1,17 @@
+---
+
+- name: Update package cache (Debian)
+  apt: update_cache=yes cache_valid_time=86400
+  become: yes
+
+- name: Ensure PostgreSQL is installed (Debian)
+  apt: name=postgresql state=present install_recommends=no
+  become: yes
+
+# The postgresql_user module requires psycopg2, a Python PostgreSQL database 
+# adapter. We must ensure that psycopg2 is installed on the remote host before
+# using this module.
+- name: Ensure PostgreSQL python module is installed (Debian)
+  apt: name=python-psycopg2 state=present install_recommends=no
+  when: "{{ postgresql_users | length }} > 0"
+  become: yes

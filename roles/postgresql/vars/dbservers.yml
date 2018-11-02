@@ -1,0 +1,27 @@
+---
+postgresql_version: 9.6
+postgresql_replication_user: "repuser"
+postgresql_replication_password: "uLkfYtyM49e&Sx@C"
+
+# What IP address(es) to listen on
+postgresql_listen_addresses: "localhost,{{ inventory_hostname }}"
+
+postgresql_max_connections: 200
+
+# Min 128kB
+postgresql_shared_buffers: "512MB"
+
+# Enables/disables the use of huge memory pages for PostgreSQL. 
+# Valid values are: 
+# - try (default) 
+# - on
+# - off
+# The use of huge pages results in smaller page tables and less CPU time spent
+# on memory management, increasing performance.
+postgresql_huge_pages_mode: "on"
+
+# Number of huge memory pages to be allocated
+postgresql_huge_pages_number: 384
+
+# Min 64kB
+postgresql_work_mem: "32MB"

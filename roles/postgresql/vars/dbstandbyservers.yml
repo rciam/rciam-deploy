@@ -1,0 +1,66 @@
+---
+# Standby server settings (ignored on a master server)
+
+postgresql_clients:
+  - connection_type: "local"
+    database: "all"
+    user: "postgres"
+    method: "peer"
+  - connection_type: "local"
+    database: "all"
+    user: "all"
+    method: "peer"
+  - connection_type: "host"
+    database: "all"
+    user: "all"
+    address: "127.0.0.1"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "all"
+    user: "all"
+    address: "::1"
+    netmask: "128"
+    method: "md5"
+  - connection_type: "host"
+    database: "cmregistry"
+    user: "all"
+    address: "{{ groups.rciam_services }}"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "replication"
+    user: "{{ postgresql_replication_user}}"
+    address: "{{ groups.dbstandbyservers }}"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "replication"
+    user: "{{ postgresql_replication_user}}"
+    address: "{{ groups.dbmasterserver }}"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "cmregistry"
+    user: "all"
+    address: "{{ groups.dbmasterserver }}"
+    netmask: "32"
+    method: "md5"  
+
+# Master/primary server host
+postgresql_master_host: "{{ groups['dbmasterserver'][0] }}"
+
+# "on" allows queries during recovery
+postgresql_hot_standby_mode: "on"
+
+# If set, the PostgreSQL server will try to connect to the primary using this
+# connection string and receive XLOG records continuously.
+# e.g. 'host=={{ postgresql_master_host }} port={{ postgresql_master_port }}'
+postgresql_master_conninfo: "host={{ postgresql_master_host }} port={{ postgresql_master_port }} user={{ postgresql_replication_user }} password={{ postgresql_replication_password }}"
+
+# By default, a standby server keeps restoring XLOG records from the primary
+# indefinitely. If you want to stop the standby mode, finish recovery and open
+# the system in read/write mode, specify a path to a trigger file. The server
+# will poll the trigger file path periodically and start as a primary server
+# when it's found.
+postgresql_trigger_file: "/tmp/postgresql.trigger.5432"

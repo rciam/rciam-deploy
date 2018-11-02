@@ -1,0 +1,143 @@
+---
+# Master server settings (ignored on a standby server)
+
+postgresql_clients:
+  - connection_type: "local"
+    database: "all"
+    user: "postgres"
+    method: "peer"
+  - connection_type: "local"
+    database: "all"
+    user: "all"
+    method: "peer"
+  - connection_type: "host"
+    database: "all"
+    user: "all"
+    address: "127.0.0.1"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "all"
+    user: "all"
+    address: "::1"
+    netmask: "128"
+    method: "md5"
+  - connection_type: "host"
+    database: "cmregistry"
+    user: "all"
+    address: "{{ groups.rciam_services }}"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "replication"
+    user: "{{ postgresql_replication_user}}"
+    address: "{{ groups.dbstandbyservers }}"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "replication"
+    user: "{{ postgresql_replication_user}}"
+    address: "{{ groups.dbmasterserver }}"
+    netmask: "32"
+    method: "md5"
+  - connection_type: "host"
+    database: "cmregistry"
+    user: "all"
+    address: "{{ groups.dbmasterserver }}"
+    netmask: "32"
+    method: "md5" 
+
+postgresql_users:
+  # createuser -U postgres repuser -P -c 5 --replication
+  - name: "{{ postgresql_replication_user}}"
+    encrypted: yes
+    password: "{{ postgresql_replication_password }}"
+    role_attr_flags: "REPLICATION"
+    connection_limit: "{{ groups['dbservers']|length + 1 }}"
+  # CREATE USER cmregistryadmin WITH PASSWORD 'secret';
+  - name: "cmregistryadmin"
+    encrypted: yes
+    password: "EB96e9wVsC4-cLur"
+  # CREATE ROLE cmregistryro;
+  # GRANT CONNECT ON DATABASE registry TO cmregistryro;
+  - name: "cmregistryro"
+    db: "cmregistry"
+    priv: "CONNECT"
+    role_attr_flags: "NOLOGIN"
+  # CREATE USER cmregistryuser_proxy WITH PASSWORD 'secret'
+  - name: "cmregistryuser_proxy"
+    db: "cmregistry"
+    encrypted: yes
+    password: "5ZKnXW9KS%p+9^EC"
+    role_attr_flags: "INHERIT"
+  # CREATE USER oidcserveradmin WITH PASSWORD 'secret'
+  - name: "oidcserveradmin"
+    db: "oidcserver"
+    encrypted: yes
+    password: "3E?AZW56dKA^6g?d"
+
+postgresql_databases:
+  # CREATE DATABASE cmregistry OWNER cmregistryadmin;
+  - name: "cmregistry"
+    owner: "cmregistryadmin"
+    encoding: "UTF8" 
+    lc_collate: "en_US.UTF-8"
+    lc_ctype: "en_US.UTF-8"
+  # CREATE DATABASE oidcserver OWNER oidcserveradmin;
+  - name: "oidcserver"
+    owner: "oidcserveradmin"
+    encoding: "UTF8" 
+    lc_collate: "en_US.UTF-8"
+    lc_ctype: "en_US.UTF-8"
+
+postgresql_privs:
+  # GRANT USAGE ON SCHEMA public TO cmregistryro;
+  - database: "cmregistry"
+    roles: "cmregistryro"
+    grant_option: yes
+    privs: "USAGE"
+    type: "schema"
+    objs: "public"
+  # GRANT SELECT ON ALL TABLES IN SCHEMA public TO cmregistryro;
+  - database: "cmregistry"
+    roles: "cmregistryro"
+    grant_option: yes
+    privs: "SELECT"
+    type: "table"
+    objs: "ALL_IN_SCHEMA" 
+  # GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO cmregistryro;
+  - database: "cmregistry"
+    roles: "cmregistryro"
+    grant_option: yes
+    privs: "SELECT"
+    type: "sequence"
+    objs: "ALL_IN_SCHEMA" 
+  # ALTER DEFAULT PRIVILEGES FOR USER cmregistryadmin IN SCHEMA public GRANT SELECT ON TABLES TO cmregistryro;
+  - database: "cmregistry"
+    target: "cmregistryadmin"
+    roles: "cmregistryro"
+    grant_option: yes
+    privs: "SELECT"
+    type: "TABLES"
+  # ALTER DEFAULT PRIVILEGES FOR USER cmregistryadmin IN SCHEMA public GRANT SELECT ON SEQUENCES TO cmregistryro;
+  - database: "cmregistry"
+    target: "cmregistryadmin"
+    roles: "cmregistryro"
+    grant_option: yes
+    privs: "SELECT"
+    type: "SEQUENCES"
+  # GRANT cmregistryro to cmregistryuser_proxy; 
+  # (or CREATE USER cmregistryuser_proxy IN ROLE cmregistryro;)
+  - database: "postgres"
+    roles: "cmregistryuser_proxy"
+    type: "group"
+    objs: "cmregistryro"
+
+# minimal, archive, hot_standby, or logical
+postgresql_wal_level: "hot_standby"
+
+# Max number of walsender processes
+postgresql_max_wal_senders: "{{ groups['dbservers']|length + 1 }}" 
+
+# Number of logfile segments, 16MB each; 0 disables
+postgresql_wal_keep_segments: 32
