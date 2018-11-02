@@ -1,6 +1,9 @@
 ---
-# E.g. 9.4 for Debian 8 "Jessie"
-postgresql_version: "9.6"
+# Only 9.4 (Debian 8 "Jessie")
+postgresql_version: "9.4"
+# Debian 9 "Stretch"
+# postgresql_version: "9.6"
+
 
 postgresql_clients:
     # Connection type:
@@ -41,12 +44,14 @@ postgresql_clients:
   - connection_type: "host"
     database: "all"
     user: "all"
-    address: "127.0.0.1/32"
+    address: "127.0.0.1"
+    netmask: "32"
     method: "md5"
   - connection_type: "host"
     database: "all"
     user: "all"
-    address: "::1/128"
+    address: "::1"
+    netmask: "128"
     method: "md5"
 
 #postgresql_replication_user: "repuser"
