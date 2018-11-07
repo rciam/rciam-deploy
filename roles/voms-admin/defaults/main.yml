@@ -1,0 +1,16 @@
+---
+
+ansible_os_family: Debian
+# voms-admin variables
+voms_repo: https://github.com/italiangrid/voms-admin-client.git
+voms_dest: /opt/voms-admin-client
+voms_exec: /opt/voms-admin-client/src
+voms_virtualenv: .venv
+voms_version: 2.x
+test_vo: voms.test.gr
+# ca configuration variables
+certificate_apache_user_path: /var/www/.globus/
+ca_anchors_egi_installation: /etc/grid-security/certificates/
+ca_default_path: /usr/lib/ssl/certs/
+security_key: "put the body of your key here"
+security_cert: "put the body of your certificate here"

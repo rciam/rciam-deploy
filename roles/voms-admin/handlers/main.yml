@@ -1,0 +1,47 @@
+---
+
+# Handlers for voms-admin installation
+
+- name: check voms-admin
+  shell: "{{ voms_dest }}/{{ voms_virtualenv }}/bin/python {{ item }}"
+  with_items:
+    - voms-admin
+    - "voms-admin --verbose --vo checkin-integration --host {{ test_vo }} list-users"
+  register: voms_admin_installed
+  args:
+    chdir: "{{ voms_exec }}"
+    executable: /bin/bash
+  become: yes
+  become_user: www-data
+  failed_when: "'CERTIFICATE_VERIFY_FAILED' in voms_admin_installed.stdout"
+  changed_when: false
+
+
+# Handlers for CA installation
+- name: check pem files copied successfully
+  stat:
+   path: "{{ certificate_apache_user_path }}/{{ item }}"
+  with_items:
+    - userkey.pem
+    - usercert.pem
+  register: stat_result
+  failed_when: not stat_result.stat.exists
+  changed_when: false
+
+- name: check EGI installed
+  apt:
+    name={{ item }}
+    state=installed
+  with_items:
+   - ca-policy-egi-core
+  become: yes
+
+- name: Check all EGI anchors copied to default path
+  find:
+    paths: "{{ ca_anchors_egi_installation }}"
+    recurse: yes
+    hidden: true
+    file_type: any
+  register: egi_achors
+  failed_when: find_achors.examined|int < 1000
+  become: yes

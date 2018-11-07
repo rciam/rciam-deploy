@@ -1,0 +1,12 @@
+---
+
+- name: include variables
+  include_vars: main.yml
+
+- name: install ca configuration
+  include: install-ca.yml
+  when: ansible_os_family == 'Debian'
+
+- name: install voms admin client
+  include: install-voms.yml
+  when: ansible_os_family == 'Debian'
