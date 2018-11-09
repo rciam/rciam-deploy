@@ -1,0 +1,45 @@
+---
+
+create_database: true
+create_email: true
+create_core: true
+create_bootstrap: true
+
+database:
+  - datasource: "Database/Postgres"
+    persistent: false
+    host: "localhost"
+    login: "registry_user"
+    password: "registry_pass"
+    database: "registry"
+    prefix: "cm_"
+    encoding: "utf8"
+
+email:
+  - transport: "Smtp"
+    cc: "john@doe.gr"
+    from: "array"
+    charset: "utf-8"
+    headerCharset: "utf-8"
+    host: "smtp.sendgrid.net"
+    port: 587
+    timeout: 30
+    username: "bob@builder.gr"
+    password: "mypassword"
+    client: null
+    tls: true
+    log: true
+
+core:
+  - fullbaseurl: "https://dev.localhost.eu"
+    memachesone: "127.0.0.1:11211"
+    engine: "Memcached"
+
+bootstart:
+  - memachesone: "127.0.0.1:11211"
+    engine: "Memcached"
+
+admin_name: admin 
+admin_surname: admin
+admin_username: admin
+enable_pooling: Yes

@@ -1,0 +1,77 @@
+---
+- name: Create install directory
+  file: 
+    path={{ comanage_dest }}
+    state=directory
+  become: yes
+
+- name: Create cache directory
+  file:
+    path={{ comanage_cache }}
+    state=directory
+    owner=www-data
+    group=www-data
+    mode=0744
+  become: yes
+
+- name: Clone COmanage 3.x RCIAM 
+  git:
+    repo: "{{ comanage_repo }}"
+    dest: "{{ comanage_dest }}"
+    accept_hostkey: yes
+    force: yes
+  become: yes
+
+- name: Ensure COmanage Registry directory tree is owned by webserver
+  file: 
+    path: "{{ comanage_dest }}"
+    owner: www-data
+    group: www-data
+    mode: 0744
+    recurse: yes
+  become: yes
+
+- name: Create shortcut from file COmanage clone to registry-current
+  file:
+    src: "{{ comanage_dest }}"
+    dest: "{{ comanage_live }}"
+    owner: www-data
+    group: www-data
+    mode: 0744
+    state: link
+
+- name: Create shortcut in apache directory
+  file:
+    src: "{{ comanage_live }}/app/webroot"
+    dest: "{{ comanage_apache_shortcut }}"
+    owner: www-data
+    group: www-data
+    mode: 0744
+    state: link
+  become: yes
+
+- name: Copy tmp.dist
+  shell: "cp -ar tmp.dist/* {{ comanage_cache }}"
+  args:
+    chdir: "{{ comanage_dest }}/app"
+    executable: /bin/bash
+  become: yes
+
+- name: Ensure COmanage Registry temp directory exists and is writable by webserver only
+  file: 
+    path: "{{ comanage_cache }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0744
+    recurse: yes
+  become: yes
+
+- name: Create symlink for COmanage cache
+  file:
+    src: "{{ comanage_cache }}"
+    dest: "{{ comanage_dest }}/local/tmp"
+    owner: www-data
+    group: www-data
+    mode: 0744
+    state: link

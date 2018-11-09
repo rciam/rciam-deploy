@@ -1,0 +1,141 @@
+---
+
+- name: Add database configuration (Debian)
+  template:
+    src: "database.php.j2"
+    dest: "{{ comanage_live }}/app/Config/database.php"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: create_database
+
+- name: Add email configuration (Debian)
+  template:
+    src: "email.php.j2"
+    dest: "{{ comanage_live }}/app/Config/email.php"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: create_email
+
+- name: Add bootstrap configuration
+  template:
+    src: "bootstrap.php.j2"
+    dest: "{{ comanage_live }}/app/Config/bootstrap.php"
+    owner: www-data
+    group: www-data
+    mode: 0644
+  become: yes
+  when: create_bootstrap
+
+- name: Add core.php configuration
+  template:
+    src: "core.php.j2"
+    dest: "{{ comanage_live }}/app/Config/core.php"
+    owner: www-data
+    group: www-data
+    mode: 0644
+  become: yes
+  when: create_core
+
+# - name: Ensure COmanage Registry logo is copied
+#   copy:
+#     src: "{{ comanage_logo }}"
+#     dest: "{{ comanage_path }}/local/webroot/img/logo.png"
+#     owner: "root"
+#     group: "root"
+#     mode: 0644
+#     backup: yes
+#   when: comanage_logo is defined
+#   become: yes
+
+# - name: Ensure COmanage Registry favicon is copied
+#   copy:
+#     src: "{{ comanage_favicon }}"
+#     dest: "{{ comanage_path }}/app/webroot/favicon.ico"
+#     owner: "root"
+#     group: "root"
+#     mode: 0644
+#     backup: yes
+#   when: comanage_favicon is defined
+#   become: yes
+
+# - name: Ensure COmanage Registry public static pages are copied
+#   copy:
+#     src: "{{ comanage_public_pages_dir }}/"
+#     dest: "{{ comanage_path }}/local/View/Pages/public/"
+#     owner: "root"
+#     group: "root"
+#     mode: 0644
+#     backup: yes
+#   when: comanage_public_pages_dir is defined
+#   become: yes
+
+# - name: Configure COmanage Registry logout location
+#   replace:
+#     dest: "{{ comanage_path }}/app/webroot/auth/logout/index.php"
+#     backup: yes
+#     regexp: '\/registry\/users\/logout'
+#     replace: "{{ comanage_logout_location }}"
+#   when: comanage_logout_location is defined
+#   become: yes
+
+# - name: Configure COmanage Registry timezone cookie name
+#   replace:
+#     dest: "{{ item }}"
+#     backup: yes
+#     regexp: "cm_registry_tz_auto"
+#     replace: "{{ comanage_timezone_cookie_name }}"
+#   with_items:
+#      - "{{ comanage_path }}/app/Controller/AppController.php"
+#      - "{{ comanage_path }}/app/View/Layouts/default.ctp"
+#      - "{{ comanage_path }}/app/View/Layouts/lightbox.ctp"
+#   when: comanage_timezone_cookie_name is defined
+#   become: yes
+
+# here you should define as executable the /bin/sh and not
+# the /bin/bash
+- name: Setup the schema
+  shell: Console/cake database
+  args:
+    chdir: "{{ comanage_live }}/app"
+    executable: /bin/sh
+  become: true
+  become_user: www-data
+  run_once: true
+
+- name: Copy security salt file
+  copy: 
+    src: roles/comanage/files/security.salt
+    dest: "{{ comanage_live }}/local/Config/security.salt"
+    owner: www-data
+    group: www-data
+    mode: 0644
+    force: no
+  become: yes
+
+- name: Copy security seed file
+  copy: 
+    src: roles/comanage/files/security.seed
+    dest: "{{ comanage_live }}/local/Config/security.seed"
+    owner: www-data
+    group: www-data
+    mode: 0644
+    force: no 
+  become: yes
+
+- name: Registry Setup Script
+  shell: Console/cake setup --admin-given-name "{{ admin_name }}" --admin-family-name \""{{ admin_surname }}"\" --admin-username \""{{admin_username}}"\" --enable-pooling="{{enable_pooling}}"
+  args:
+    chdir: "{{ comanage_live }}/app"
+  run_once: true
+  become: true
+  become_user: www-data
+
+- cron:
+    name: "cron"
+    minute: "0"
+    hour: "1"
+    job: "cd {{ comanage_live }}/app && Console/cake job -q"
