@@ -371,7 +371,7 @@ Cache::config('{{cache.prefix}}', array(
 	'persistent' => true,
 	'servers' => array(
 		{%- for memcache in cache.memcache -%}
-		'{{memcache}}'{%- if not loop.last %},{% endif -%}
+		{% for host in memcache.host %}'{{host}}:{{memcache.port}}'{%- if not loop.last %},{% endif -%}{% endfor -%}
 		{% endfor -%}
 		)
 ));
