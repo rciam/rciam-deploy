@@ -5,6 +5,13 @@ create_email: true
 create_core: true
 create_bootstrap: true
 
+# comanage variables
+comanage_repo: https://github.com/ioigoume/comanage-rciam.git
+comanage_dest: /opt/share/comanage-registry_rciam
+comanage_live: /opt/share/registry-current
+comanage_apache_shortcut: /var/www/html/registry
+comanage_cache: /var/opt/comanage-registry
+
 database:
   - datasource: "Database/Postgres"
     persistent: false
@@ -32,14 +39,27 @@ email:
 
 core:
   - fullbaseurl: "https://dev.localhost.eu"
-    memachesone: "127.0.0.1:11211"
-    engine: "Memcached"
+  - memcache: 
+        - host: "127.0.0.1" # This entry can be a list of servers
+          port: "11211"
+      engine: "Memcached"
+      prefix: "cake_core_"
+    - memcache: 
+        - host: "127.0.0.1" # This entry can be a list of servers
+          port: "11211"
+      engine: "Memcached"
+      prefix: "cake_model_"
 
 bootstart:
-  - memachesone: "127.0.0.1:11211"
+  - memcache: 
+        - host: "127.0.0.1" # This entry can be a list of servers
+          port: "11211"
     engine: "Memcached"
 
 admin_name: admin 
 admin_surname: admin
 admin_username: admin
 enable_pooling: Yes
+
+security_salt: "qGfHXofJVEEecqCU4QbLilcoB6a8YMy16p8Z8z6M"
+security_seed: "41836042044248570016399197461"
