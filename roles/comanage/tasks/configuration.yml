@@ -107,7 +107,7 @@
   run_once: true
 
 - name: Copy security salt file
-  template: 
+  template:
     src: "security.salt.j2"
     dest: "{{ comanage_live }}/local/Config/security.salt"
     owner: www-data
@@ -117,13 +117,13 @@
   become: yes
 
 - name: Copy security seed file
-  template: 
+  template:
     src: "security.seed.j2"
     dest: "{{ comanage_live }}/local/Config/security.seed"
     owner: www-data
     group: www-data
     mode: 0644
-    force: no 
+    force: no
   become: yes
 
 - name: Registry Setup Script

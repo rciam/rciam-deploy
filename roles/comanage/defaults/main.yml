@@ -39,24 +39,24 @@ email:
 
 core:
   - fullbaseurl: "https://dev.localhost.eu"
-  - memcache: 
+  - memcache:
         - host: "127.0.0.1" # This entry can be a list of servers
           port: "11211"
       engine: "Memcached"
       prefix: "cake_core_"
-    - memcache: 
+    - memcache:
         - host: "127.0.0.1" # This entry can be a list of servers
           port: "11211"
       engine: "Memcached"
       prefix: "cake_model_"
 
 bootstart:
-  - memcache: 
+  - memcache:
         - host: "127.0.0.1" # This entry can be a list of servers
           port: "11211"
     engine: "Memcached"
 
-admin_name: admin 
+admin_name: admin
 admin_surname: admin
 admin_username: admin
 enable_pooling: Yes
