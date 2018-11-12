@@ -107,8 +107,8 @@
   run_once: true
 
 - name: Copy security salt file
-  copy: 
-    src: roles/comanage/files/security.salt
+  template: 
+    src: "security.salt.j2"
     dest: "{{ comanage_live }}/local/Config/security.salt"
     owner: www-data
     group: www-data
@@ -117,8 +117,8 @@
   become: yes
 
 - name: Copy security seed file
-  copy: 
-    src: roles/comanage/files/security.seed
+  template: 
+    src: "security.seed.j2"
     dest: "{{ comanage_live }}/local/Config/security.seed"
     owner: www-data
     group: www-data
