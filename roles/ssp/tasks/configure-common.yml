@@ -46,12 +46,32 @@
     - restart apache
 
 - name: Generate self-signed SP certificates
-  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/C=/ST=/L=/O=/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
+  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
   args:
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
   with_items: "{{ ssp_authsources_saml }}"
   when: item.generate_ssl_certificate
+  become: yes
+
+- name: Ensure SP certificate keys are installed
+  file:
+    state: file
+    path: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0600"
+  with_items: "{{ ssp_authsources_saml }}"
+  become: yes
+
+- name: Ensure SP certificates are installed
+  file:
+    state: file
+    path: "{{ ssp_certdir }}/sp-{{ item.name }}.crt"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0644"
+  with_items: "{{ ssp_authsources_saml }}"
   become: yes
 
 - name: Configure SSP authN sources
@@ -63,10 +83,32 @@
   become: yes
 
 - name: Generate self-signed IdP certificates
-  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/C=/ST=/L=/O=/CN={{ item.ssl_certificate_cn }}" -nodes -out idp-{{ item.entity_id }}.crt -keyout idp-{{ item.entity_id }}.key
+  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out idp-{{ item.entity_id }}.crt -keyout idp-{{ item.entity_id }}.key
   args:
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
+  with_items: "{{ ssp_idp_hosts }}"
+  when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
+  become: yes
+
+- name: Ensure IdP certificate keys are installed
+  file:
+    state: file
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0600"
+  with_items: "{{ ssp_idp_hosts }}"
+  when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
+  become: yes
+
+- name: Ensure IdP certificates are installed
+  file:
+    state: file
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.crt"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0644"
   with_items: "{{ ssp_idp_hosts }}"
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
   become: yes
