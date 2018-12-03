@@ -201,15 +201,28 @@
   tags:
     - metarefresh
 
-- name: Configure SSP cron module hourly cron job
-  cron: user="root" name="SSP metarefresh [hourly]" minute="15" job="curl -k --silent \"{{ ssp_mod_cron_url }}?key={{ ssp_mod_cron_secret }}&tag=hourly\" > /dev/null 2>&1"
+- name: Configure SSP cron jobs
+  cron:
+    name: "{{ item.name }}"
+    user: "{{ item.user | default('root') }}"
+    cron_file: "{{ item.file }}"
+    job: "curl -k --silent \"{{ ssp_mod_cron_url }}?key={{ ssp_mod_cron_secret }}&tag={{ item.tag }}\""
+    minute: "{{ item.minute | default(omit) }}"
+    hour: "{{ item.hour | default(omit) }}"
+    day: "{{ item.day | default(omit) }}"
+    month: "{{ item.month | default(omit) }}"
+  with_items: "{{ ssp_mod_cron_entries }}"
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
     - metarefresh
 
-- name: Configure SSP cron module daily cron job
-  cron: user="root" name="SSP metarefresh [daily]" minute="30" hour="3" job="curl -k --silent \"{{ ssp_mod_cron_url }}?key={{ ssp_mod_cron_secret }}&tag=daily\" > /dev/null 2>&1"
+- name: Configure SSP cron job variables
+  cronvar:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    cron_file: "{{ item.file }}"
+  with_items: "{{ ssp_mod_cron_vars }}"
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
