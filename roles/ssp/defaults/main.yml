@@ -83,6 +83,8 @@ ssp_logging_logfile: "simplesamlphp.log"
 # INFO         Verbose logs
 # DEBUG        Full debug logs - not recommended for production
 ssp_logging_level: NOTICE
+# syslog,file,errorlog
+ssp_logging_handler: syslog
 
 ssp_language_available:
   - "en"

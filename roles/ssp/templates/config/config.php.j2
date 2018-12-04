@@ -122,7 +122,7 @@ $config = array(
      *
      */
     'logging.level' => SimpleSAML\Logger::{{ ssp_logging_level }},
-    'logging.handler' => 'syslog',
+    'logging.handler' => '{{ ssp_logging_handler }}',
 
     /*
      * Specify the format of the logs. Its use varies depending on the log handler used (for instance, you cannot
