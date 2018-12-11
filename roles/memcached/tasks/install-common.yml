@@ -1,0 +1,5 @@
+---
+
+- name: Ensure memcached server is installed
+  package: name=memcached state=present
+  become: yes
