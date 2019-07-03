@@ -68,11 +68,5 @@
 # Put your actual configuration here
 # ----------------------------------
 {% for client in postgresql_clients %}
-{% if client.address is defined and client.address is not string %}
-{% for address in client.address %}
-{{ client.connection_type }} {{ client.database }} {{ client.user }} {% if client.connection_type != "local" %}{{ address }}/{{ client.netmask }}{% endif %} {{client.method}}
-{% endfor %}
-{% else %}
-{{ client.connection_type }} {{ client.database }} {{ client.user }} {% if client.connection_type != "local" %}{{ client.address }}/{{ client.netmask }}{% endif %} {{client.method}}
-{% endif %}
+{{ client.connection_type }} {{ client.database }} {{ client.user }} {% if client.connection_type != "local" %}{{ client.address }}{% endif %} {{client.method}}
 {% endfor %}

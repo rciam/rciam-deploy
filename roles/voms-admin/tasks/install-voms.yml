@@ -1,0 +1,35 @@
+---
+
+- name: download voms-client from github
+  git:
+    repo={{ voms_repo }}
+    dest={{ voms_dest }}
+    version={{ voms_version }}
+  become: yes
+
+- name: create the virtual environment manually
+  command: "python -m virtualenv {{ voms_dest }}/{{voms_virtualenv}}"
+  become: yes
+
+
+- name: enable virtualenv manually
+  shell: "source {{voms_dest}}/{{voms_virtualenv}}/bin/activate"
+  args:
+    executable: /bin/bash
+  become: yes
+
+- name: install python modules simplejson, chevah-ZSI
+  pip:
+    name: simplejson,chevah-ZSI
+    chdir: "{{voms_dest}}/{{voms_virtualenv}}"
+    virtualenv: "{{voms_dest}}/{{voms_virtualenv}}"
+  become: yes
+
+- name: execute voms-client setup manually
+  command: "python setup.py install --prefix={{voms_dest}}"
+  args:
+    chdir: "{{ voms_dest }}"
+  register: setupreg
+  become: yes
+  notify: check voms-admin
+

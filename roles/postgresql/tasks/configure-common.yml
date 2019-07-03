@@ -120,25 +120,3 @@
 
 - include: init-standby-common.yml
   when: "'dbstandbyservers' in group_names and not postgresql_is_in_recovery"
-
-# Iptables configuration for postgresql
-- name: Open postgresql port for known servers
-  iptables:
-    chain: INPUT
-    source: "{{ item }}"
-    jump: ACCEPT
-    protocol: tcp
-    destination_port: "{{ postgresql_port }}"
-    comment: Accept incoming traffic from rciam_services known servers
-  become: yes
-  with_items: "{{groups['rciam_services']}}"
-
-- name: Secure postgresql port for unknown servers
-  iptables:
-    chain: INPUT
-    source: 0.0.0.0
-    jump: DROP
-    protocol: tcp
-    destination_port: "{{ postgresql_port }}"
-    comment: Drop all incoming traffic for unknown servers
-  become: yes

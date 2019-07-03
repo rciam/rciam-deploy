@@ -1,0 +1,57 @@
+---
+
+- name: copy certificate under .globus directory
+  copy:
+    src: files/
+    dest: "{{ certificate_apache_user_path }}"
+    owner: www-data
+    group: www-data
+  notify: check pem files copied successfully
+  become: yes
+
+# - name: copy key under .globus directory
+#   template:
+#     src: "userkey.pem.j2"
+#     dest: "{{ certificate_apache_user_path }}/userkey.pem"
+#     owner: www-data
+#     group: www-data
+#   notify: check pem files copied successfully
+#   become: yes
+
+- name: Install the EUGridPMA PGP key for apt
+  apt_key:
+    url: https://dist.eugridpma.info/distribution/igtf/current/GPG-KEY-EUGridPMA-RPM-3
+    state: present
+  become: yes
+
+- name: Add specified repository into sources list.
+  apt_repository:
+    repo: deb http://repository.egi.eu/sw/production/cas/1/current egi-igtf core
+    state: present
+  become: yes
+
+- name: install EGI IGTF trust anchors
+  apt:
+    update_cache=yes
+    name=ca-policy-egi-core
+    state=latest
+  become: yes
+  notify: check EGI installed
+
+- name: Check find all EGI anchors fetched
+  find:
+    paths: "{{ ca_anchors_egi_installation }}"
+    recurse: yes
+    hidden: true
+    file_type: any
+  register: find_achors
+  failed_when: find_achors.examined|int == 0
+  become: yes
+
+- name: Symlink trust anchors under /usr/lib/ssl/certs certificate_apache_user_path
+  shell: "cp -a * {{ ca_default_path }}"
+  args:
+    chdir: "{{ ca_anchors_egi_installation }}"
+    executable: /bin/bash
+    warn: no
+  become: yes
