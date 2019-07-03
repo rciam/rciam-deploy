@@ -1,5 +1,6 @@
 ---
 
+# Do not forget to provide your cert and key file under ./files directory
 - name: copy certificate under .globus directory
   copy:
     src: files/
