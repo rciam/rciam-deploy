@@ -1,7 +1,8 @@
 ---
+ssp_version: "1.17"
 
 ssp_repo_url: "git://github.com/simplesamlphp/simplesamlphp.git"
-ssp_repo_version: "master"
+ssp_repo_version: "simplesamlphp-{{ ssp_version }}"
 ssp_path: "/var/simplesamlphp"
 # The base path of the URLs to the content of the SimpleSAMPphp www folder.
 ssp_baseurlpath: "simplesaml"

@@ -37,7 +37,7 @@
 
 - name: Configure SSP
   template:
-    src: config/config.php.j2
+    src: "config/config-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_configdir }}/config.php"
     backup: yes
     force: yes
