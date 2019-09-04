@@ -96,6 +96,7 @@ ssp_language_available:
   - "sv"
   - "fi"
   - "es"
+  - "ca"
   - "fr"
   - "it"
   - "nl"
@@ -120,6 +121,10 @@ ssp_language_available:
   - "lv"
   - "ro"
   - "eu"
+  - "el"
+  - "af"
+  - "zu"
+  - "xh"
 
 ssp_language_rtl:
   - "ar"
