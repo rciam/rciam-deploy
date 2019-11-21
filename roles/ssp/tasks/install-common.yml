@@ -31,7 +31,12 @@
   become: yes
 
 - name: Ensure SSP logging dir exists
-  file: path={{ ssp_loggingdir }} state=directory
+  file:
+    state: directory
+    path: "{{ ssp_loggingdir }}"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0750"
   become: yes
 
 - name: Ensure SSP data dir exists
