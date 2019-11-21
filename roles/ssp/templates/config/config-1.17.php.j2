@@ -1051,7 +1051,7 @@ $config = [
         ['type' => 'flatfile'],
 {% if 'metarefresh' in ssp_mods_enabled %}
 {% for set in ssp_mod_metarefresh_sets %}
-        ['type' => '{{ set.output_format }}', 'directory' => 'metadata/{{ set.output_dir }}'],
+        ['type' => '{{ set.output_format }}', 'directory' => '{{ ssp_metadatadir }}{{ set.output_dir }}'],
 {% endfor %}
 {% endif %}
     ],
