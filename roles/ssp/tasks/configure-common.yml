@@ -10,11 +10,15 @@
 #    - restart apache
 
 - name: Generate SHA-256 encrypted hash of SSP admin password
-  script: ssha256pwgen.php {{ ssp_path }} "{{ ssp_adminpassword }}" creates="{{ ssp_configdir }}/config.php"
+  script: "ssha256pwgen-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_adminpassword }}"
+  args:
+    creates: "{{ ssp_configdir }}/config.php"
   register: ssp_adminpasswordhash_new
 
 - name: Check existing SHA-256 encrypted hash of SSP admin password
-  script: SimpleSAML_Configuration.php {{ ssp_path }} {{ ssp_adminpassword_key }} removes="{{ ssp_configdir }}/config.php"
+  script: "SimpleSAML_Configuration-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_adminpassword_key }}"
+  args:
+    removes: "{{ ssp_configdir }}/config.php"
   register: ssp_adminpasswordhash_old
 
 - name: Configure SHA-256 encrypted hash of SSP admin password
@@ -28,7 +32,9 @@
   register: ssp_secretsalt_new
 
 - name: Check existing SSP secret salt
-  script: SimpleSAML_Configuration.php {{ ssp_path }} {{ ssp_secretsalt_key }} removes="{{ ssp_configdir }}/config.php"
+  script: "SimpleSAML_Configuration-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_secretsalt_key }}"
+  args:
+    removes: "{{ ssp_configdir }}/config.php"
   register: ssp_secretsalt_old
 
 - name: Configure SSP secret salt
