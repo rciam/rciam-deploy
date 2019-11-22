@@ -115,7 +115,7 @@
 
 - name: Register PostgreSQL standby server recovery status
   set_fact:
-    postgresql_is_in_recovery: "{{ postgresql_is_in_recovery_status|success and postgresql_is_in_recovery_status.stdout_lines[2].find('t') == 1 }}"
+    postgresql_is_in_recovery: "{{ postgresql_is_in_recovery_status is success and postgresql_is_in_recovery_status.stdout_lines[2].find('t') == 1 }}"
   when: "'dbstandby' in group_names"
 
 - include: init-standby-common.yml
