@@ -106,7 +106,7 @@
 
 - name: Check if PostreSQL standby server is in recovery 
   command: psql -U {{ postgresql_user }} -c 'SELECT pg_is_in_recovery();'
-  when: "'dbstandbyservers' in group_names"
+  when: "'dbstandby' in group_names"
   register: postgresql_is_in_recovery_status
   ignore_errors: yes
   changed_when: no
@@ -116,7 +116,7 @@
 - name: Register PostgreSQL standby server recovery status
   set_fact:
     postgresql_is_in_recovery: "{{ postgresql_is_in_recovery_status|success and postgresql_is_in_recovery_status.stdout_lines[2].find('t') == 1 }}"
-  when: "'dbstandbyservers' in group_names"
+  when: "'dbstandby' in group_names"
 
 - include: init-standby-common.yml
-  when: "'dbstandbyservers' in group_names and not postgresql_is_in_recovery"
+  when: "'dbstandby' in group_names and not postgresql_is_in_recovery"
