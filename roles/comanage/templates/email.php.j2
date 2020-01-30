@@ -1,0 +1,231 @@
+<?php
+/**
+ * Email configuration file.
+ * {{ ansible_managed }}
+ *
+ * PHP 5
+ *
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
+ * @package       app.Config
+ * @since         CakePHP(tm) v 2.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+/**
+ * In this file you set up your send email details.
+ *
+ * @package       cake.config
+ */
+/**
+ * Email configuration class.
+ * You can specify multiple configurations for production, development and testing.
+ *
+ * transport => The name of a supported transport; valid options are as follows:
+ *		Mail 		- Send using PHP mail function
+ *		Smtp		- Send using SMTP
+ *		Debug		- Do not send the email, just return the result
+ *
+ * You can add custom transports (or override existing transports) by adding the
+ * appropriate file to app/Network/Email.  Transports should be named 'YourTransport.php',
+ * where 'Your' is the name of the transport.
+ *
+ * from =>
+ * The origin email. See CakeEmail::from() about the valid values
+ *
+ */
+class EmailConfig {
+
+{% for mailer in comanage_mailers %}
+    public ${{ mailer.instance }} = array(
+        'transport' => '{{ mailer.transport }}',
+{% if mailer.from is defined %}
+{% if mailer.from == None %}
+        'from' => null,
+{% elif mailer.from is mapping %}
+        'from' => array(
+{% for key, value in mailer.from.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'from' => '{{ mailer.from }}',
+{% endif %}
+{% endif %}
+{% if mailer.sender is defined %}
+{% if mailer.sender == None %}
+        'sender' => null,
+{% elif mailer.from is mapping %}
+        'sender' => array(
+{% for key, value in mailer.sender.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'sender' => '{{ mailer.sender }}',
+{% endif %}
+{% endif %}
+{% if mailer.to is defined %}
+{% if mailer.to == None %}
+        'to' => null,
+{% elif mailer.to is mapping %}
+        'to' => array(
+{% for key, value in mailer.to.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'to' => '{{ mailer.to }}',
+{% endif %}
+{% endif %}
+{% if mailer.cc is defined %}
+{% if mailer.cc == None %}
+        'cc' => null,
+{% elif mailer.cc is mapping %}
+        'cc' => array(
+{% for key, value in mailer.cc.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'cc' => '{{ mailer.cc }}',
+{% endif %}
+{% endif %}
+{% if mailer.bcc is defined %}
+{% if mailer.bcc == None %}
+        'bcc' => null,
+{% elif mailer.cc is mapping %}
+        'bcc' => array(
+{% for key, value in mailer.bcc.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'bcc' => '{{ mailer.bcc }}',
+{% endif %}
+{% endif %}
+{% if mailer.reply_to is defined %}
+{% if mailer.reply_to == None %}
+        'replyTo' => null,
+{% elif mailer.reply_to is mapping %}
+        'replyTo' => array(
+{% for key, value in mailer.reply_to.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'replyTo' => '{{ mailer.reply_to }}',
+{% endif %}
+{% endif %}
+{% if mailer.read_receipt is defined %}
+{% if mailer.read_receipt == None %}
+        'readReceipt' => null,
+{% elif mailer.read_receipt is mapping %}
+        'readReceipt' => array(
+{% for key, value in mailer.read_receipt.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'readReceipt' => '{{ mailer.read_receipt }}',
+{% endif %}
+{% endif %}
+{% if mailer.return_path is defined %}
+{% if mailer.return_path == None %}
+        'returnPath' => null,
+{% elif mailer.read_receipt is mapping %}
+        'returnPath' => array(
+{% for key, value in mailer.return_path.iteritems() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ),
+{% else %}
+        'returnPath' => '{{ mailer.return_path }}',
+{% endif %}
+{% endif %}
+{% if mailer.subject is defined %}
+{% if mailer.subject == None %}
+        'subject' => null,
+{% else %}
+        'subject' => '{{ mailer.subject }}',
+{% endif %}
+{% endif %}
+{% if mailer.charset is defined %}
+{% if mailer.charset == None %}
+        'charset' => null,
+{% else %}
+        'charset' => '{{ mailer.charset }}',
+{% endif %}
+{% endif %}
+{% if mailer.header_charset is defined %}
+{% if mailer.header_charset == None %}
+        'headerCharset' => null,
+{% else %}
+        'headerCharset' => '{{ mailer.header_charset }}',
+{% endif %}
+{% endif %}
+{% if mailer.host is defined %}
+{% if mailer.host == None %}
+        'host' => null,
+{% else %}
+        'host' => '{{ mailer.host }}',
+{% endif %}
+{% endif %}
+{% if mailer.port is defined %}
+{% if mailer.port == None %}
+        'port' => null,
+{% else %}
+        'port' => {{ mailer.port }},
+{% endif %}
+{% endif %}
+{% if mailer.timeout is defined %}
+{% if mailer.timeout == None %}
+        'timeout' => null,
+{% else %}
+        'timeout' => {{ mailer.timeout }},
+{% endif %}
+{% endif %}
+{% if mailer.username is defined %}
+{% if mailer.username == None %}
+        'username' => null,
+{% else %}
+        'username' => '{{ mailer.username }}',
+{% endif %}
+{% endif %}
+{% if mailer.password is defined %}
+{% if mailer.password == None %}
+        'password' => null,
+{% else %}
+        'password' => '{{ mailer.password }}',
+{% endif %}
+{% endif %}
+{% if mailer.client is defined %}
+{% if mailer.client == None %}
+        'client' => null,
+{% else %}
+        'client' => '{{ mailer.client }}',
+{% endif %}
+{% endif %}
+{% if mailer.tls is defined %}
+{% if mailer.tls == None %}
+        'tls' => null,
+{% else %}
+        'tls' => {{ mailer.tls }},
+{% endif %}
+{% endif %}
+{% if mailer.log is defined %}
+{% if mailer.log == None %}
+        'log' => null,
+{% else %}
+        'log' => {{ mailer.log }},
+{% endif %}
+{% endif %}
+    );
+
+{% endfor %}
+}
