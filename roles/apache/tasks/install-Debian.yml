@@ -1,11 +1,23 @@
 ---
 
 - name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
+  apt: 
+    update_cache: yes
+    cache_valid_time: 86400
   become: yes
 
 - name: Ensure Apache HTTP server is installed (Debian)
-  apt: name={{ item }} state=present install_recommends=no
-  with_items:
-    - apache2
+  apt: 
+    name: apache2
+    state:  present 
+    install_recommends: no
   become: yes
+
+- name: Install Modules for Apache
+  apt: 
+    name: "{{ apache_mods_installed }}"
+    state:  present
+  become: yes
+  notify:
+    - restart apache
+    
