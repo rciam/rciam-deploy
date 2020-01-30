@@ -51,7 +51,7 @@
     group: "root"
     mode: 0644
     backup: yes
-  when: 'comanage_logo is defined and GCOmanageCheck.changed'
+  when: 'comanage_logo is defined'
   become: yes
 
 - name: Ensure COmanage Registry favicon is copied
@@ -62,7 +62,7 @@
     group: "root"
     mode: 0644
     backup: yes
-  when: 'comanage_favicon is defined and GCOmanageCheck.changed'
+  when: 'comanage_favicon is defined'
   become: yes
 
 - name: Ensure COmanage Registry public static pages are copied
@@ -73,7 +73,7 @@
     group: "root"
     mode: 0644
     backup: yes
-  when: 'comanage_public_pages_dir is defined and GCOmanageCheck.changed'
+  when: 'comanage_public_pages_dir is defined'
   become: yes
 
 - name: Configure COmanage Registry app/webroot/.htaccess
@@ -123,7 +123,7 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     insertafter: "EOF"
     content: "Configure::write('App.fullBaseUrl', '{{ comanage_full_base_url }}');"
-  when: 'comanage_full_base_url is defined and GCOmanageCheck.changed'
+  when: 'comanage_full_base_url is defined'
   become: yes
 
 - name: Configure COmanage Registry logout location
@@ -132,7 +132,7 @@
     backup: yes
     regexp: '\/registry\/users\/logout'
     replace: "{{ comanage_logout_location }}"
-  when: 'comanage_logout_location is defined and GCOmanageCheck.changed'
+  when: 'comanage_logout_location is defined'
   become: yes
 
 - name: Configure COmanage Registry timezone cookie name
@@ -145,7 +145,7 @@
      - "{{ comanage_path }}/app/Controller/AppController.php"
      - "{{ comanage_path }}/app/View/Layouts/default.ctp"
      - "{{ comanage_path }}/app/View/Layouts/lightbox.ctp"
-  when: 'comanage_timezone_cookie_name is defined and GCOmanageCheck.changed'
+  when: 'comanage_timezone_cookie_name is defined'
   become: yes
 
 - name: Add Columns Dictionary
