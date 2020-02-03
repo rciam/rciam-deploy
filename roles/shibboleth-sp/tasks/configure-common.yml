@@ -22,6 +22,7 @@
       mode: "0600"
   become: yes
 
+#Have in mind that you must have installed locally (where you execute playbook) the dnspython library
 - name: Configure Shibboleth SP main settings
   template:
     src: "shibboleth2.xml.j2"
