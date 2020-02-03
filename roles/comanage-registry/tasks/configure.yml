@@ -41,7 +41,8 @@
   become: yes
   register: CManageReg
   when: GCOmanageCheck.changed
-  failed_when: 'CManageReg.stderr != "" and "relation \"cm_users\" already exists" not in CManageReg.stderr'
+  ignore_errors: True
+  #failed_when: 'CManageReg.stderr != "" and "relation \"cm_users\" already exists" not in CManageReg.stderr'
 
 - name: Ensure COmanage Registry logo is copied
   copy:
