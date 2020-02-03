@@ -1,4 +1,11 @@
 ---
+# rsync is required from this role to run properly
+- name: Ensure RSYNC is installed
+  apt:
+    name: rsync
+    state: present
+    install_recommends: no
+  become: yes
 
 - name: Ensure COmanage Registry root directory exists
   file:
@@ -8,6 +15,7 @@
     group: root
   become: yes
 
+# update: if no, do not retrieve new revisions from the origin repository
 - name: Ensure COmanage Registry source is cloned under root directory
   git:
     repo: "{{ comanage_repo }}"
@@ -51,31 +59,22 @@
   become: yes
   when: GCOmanageCheck.changed
 
-- name: Ensure COmanage Registry temp directory tree is initialised
-  command: "cp -r {{ comanage_path }}/app/tmp.dist {{ comanage_temp_dir }}"
-  args:
-    creates: "{{ comanage_temp_dir }}"
-  become: yes
-  when: GCOmanageCheck.changed
+# Print check output
+- name: Debug msg inventory_hostname
+  debug:
+    msg: "{{ inventory_hostname }}"
+    verbosity: 1
 
-- name: Ensure COmanage Registry temp directory exists and is writable by webserver only
-  file:
-    path: "{{ comanage_temp_dir }}"
-    state: directory
-    owner: "{{ comanage_webserver_user }}"
-    group: "{{ comanage_webserver_group }}"
-    mode: 0700
+- name: Configure /var/cache/registry directory
+  synchronize:
+    src: "{{ comanage_path }}/app/tmp.dist/"
+    dest: "{{ comanage_temp_dir }}"
+    recursive: yes
+    rsync_opts:
+      - "--chmod=Du=rwx,Fu=rwx"
+      - "--chown=www-data:www-data"
   become: yes
-  when: GCOmanageCheck.changed
-
-- name: Ensure COmanage Registry temp directory tree is owned by webserver
-  file:
-    path: "{{ comanage_temp_dir }}"
-    owner: "{{ comanage_webserver_user }}"
-    group: "{{ comanage_webserver_group }}"
-    recurse: yes
-  become: yes
-  when: GCOmanageCheck.changed
+  delegate_to: "{{ inventory_hostname }}"
 
 - name: Ensure link to COmanage Registry temp directory exists
   file:
@@ -86,3 +85,4 @@
     group: root
   become: yes
   when: GCOmanageCheck.changed
+...

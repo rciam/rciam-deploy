@@ -1,0 +1,25 @@
+---
+# The creation of the database should be executed only when installing for
+# the first time. This command has no effect after the initial setup and
+# it would be better to exclude it
+- name: Configure COmanage Registry database schema
+  shell: Console/cake database
+  args:
+    chdir: "{{ comanage_path }}/app"
+  become: yes
+  run_once: true
+  become_user: "{{ comanage_webserver_user }}"
+
+- name: Configure COmanage Registry platform admin and org identity pooling
+  shell: Console/cake setup --admin-given-name "{{ comanage_admin.given_name }}" --admin-family-name "{{ comanage_admin.family_name }}" --admin-username "{{ comanage_admin.username }}" --enable-pooling={{ comanage_org_identity_pooling }}
+  args:
+    chdir: "{{ comanage_path }}/app"
+    creates: "{{ comanage_path }}/local/Config/security.salt"
+  become: yes
+  register: CManageReg
+  run_once: true
+  when: GCOmanageCheck.changed # run only during the first installation
+  failed_when:
+    - CManageReg.stderr is defined
+    - CManageReg.stderr != ""
+...

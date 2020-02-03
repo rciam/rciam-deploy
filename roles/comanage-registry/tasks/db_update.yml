@@ -1,0 +1,22 @@
+---
+- name: Add Columns Dictionary
+  debug:
+    msg: "table={{item.key}} column={{item.value}}"
+    verbosity: 2
+  with_dict: "{{ comanage_schema_updates | default({}) }}"
+
+- debug:
+    var: comanage_databases[0]
+    verbosity: 2
+
+- name: Add new columns to the schema
+  postgresql_query:
+    db: "{{comanage_databases[0]['name']}}"
+    login_host: "{{comanage_databases[0]['host']}}"
+    login_user: "{{comanage_databases[0]['user']}}"
+    login_password: "{{comanage_databases[0]['password']}}"
+    query: "ALTER TABLE {{item.key}} ADD COLUMN {{item.value}}"
+    #query: "ALTER TABLE {{item.key}} ADD COLUMN IF NOT EXISTS {{item.value}}" # This is valid for >=PG9.6
+  with_dict: "{{ comanage_schema_updates | default({}) }}"
+  ignore_errors: yes # TODO: remove ignore errors as soon as we migrate to PSQL 9.6 or greater
+...

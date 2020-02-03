@@ -7,8 +7,8 @@ comanage_org_identity_pooling: "No"
 #  family_name: "Jones Smith"
 #  username: "pat.jones.smith@university.edu"
 
-comanage_version: "rciam-3.1.x"
-comanage_repo: "https://github.com/rciam/comanage-registry.git"
+comanage_version: "master"
+comanage_repo: "https://github.com/Internet2/comanage-registry.git"
 comanage_root_dir: "/srv/comanage"
 comanage_path: "{{ comanage_root_dir }}/comanage-registry-current"
 comanage_webroot: "/var/www/html/registry"
@@ -90,5 +90,8 @@ comanage_mailers:
 
 # Directory containing public static pages to copy
 #comanage_public_pages_dir: "{{ inventory_dir }}/public"
+
+#comanage_schema_updates:
+#  cm_cos: status varchar(2)
 
 comanage_session_name: "CAKEPHP"

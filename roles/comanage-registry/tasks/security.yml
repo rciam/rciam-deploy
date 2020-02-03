@@ -1,0 +1,54 @@
+---
+# Create the salt and seed strings according to CakePHP definition
+# salt: A random string used in security hashing methods. Should be at least 40 characters long
+- name: Generate and store the salt string
+  shell: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1 | xargs echo -n
+  register: saltString
+  run_once: true
+  args:
+    executable: /bin/bash
+  become: yes
+
+# Print salt string
+- name: Print the salt string
+  debug:
+    msg: "{{ saltString.stdout }}"
+    verbosity: 1
+
+# seed: A random numeric string (digits only) used to encrypt/decrypt strings. Should be at least 29
+- name: Generate and store the seed string
+  shell: cat /dev/urandom | tr -dc '0-9' | fold -w 29 | head -n 1 | xargs echo -n
+  register: seedString
+  run_once: true
+  args:
+    executable: /bin/bash
+  become: yes
+
+# Print salt string
+- name: Print the seed string
+  debug:
+    msg: "{{ seedString.stdout }}"
+    verbosity: 1
+
+# Update salt file
+- name: Add/edit security.salt file
+  copy:
+    dest: "{{ comanage_path }}/local/Config/security.salt"
+    content: "{{saltString.stdout}}"
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: 0644
+  become: yes
+
+# Update seed file
+- name: Add/edit security.seed file
+  copy:
+    dest: "{{ comanage_path }}/local/Config/security.seed"
+    content: "{{seedString.stdout}}"
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: 0644
+  become: yes
+...
