@@ -8,7 +8,10 @@
 
 - name: Ensure common packages are installed (Debian)
   apt: 
-    pkg: ['aptitude', 'ca-certificates', 'vim-nox']
+    pkg: 
+      - aptitude
+      - ca-certificates
+      - vim-nox
     state: present 
     install_recommends: no
   become: true
