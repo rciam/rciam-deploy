@@ -231,10 +231,20 @@ $config = [
 {% endif %}
 {% if authsource.name_id_policy is defined %}
         // The format of the NameID we request from the IdP.
-{% if authsource.name_id_policy != None %}
+{% if authsource.name_id_policy == false %}
+        // Set to false to omit sending any specific NameIDPolicy in the AuthnRequest.
+        'NameIDPolicy' => false,
+{% elif authsource.name_id_policy == None %}
+        // null is equivalent to transient - DEPRECATED
+        'NameIDPolicy' => null,
+{% elif authsource.name_id_policy is string %}
+        // Using string to specify format - DEPRECATED
         'NameIDPolicy' => '{{ authsource.name_id_policy }}',
 {% else %}
-        'NameIDPolicy' => null,
+        'NameIDPolicy' => [
+            'Format' => '{{ authsource.name_id_policy.format }}',
+            'AllowCreate' => {{ authsource.name_id_policy.allow_create }},
+        ],
 {% endif %}
 {% endif %}
 {% if authsource.acs_bindings is defined %}
