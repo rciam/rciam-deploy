@@ -82,7 +82,7 @@
 
 - name: Configure SSP authN sources
   template:
-    src: config/authsources.php.j2
+    src: "config/authsources-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_configdir }}/authsources.php"
     backup: yes
     force: yes
