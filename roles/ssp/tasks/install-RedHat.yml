@@ -1,18 +1,15 @@
 ---
-  
+
 - name: Ensure latest CA certificates are installed (RedHat)
   yum:
-    name: "{{ item }}"
+    name: ca-certificates
     state: latest
-  with_items:
-    - ca-certificates
   become: true
 
 - name: Ensure SSP cron module dependencies are installed (RedHat)
   yum:
-    name: "{{ item }}"
+    name: "{{ ssp_mod_cron_deps }}"
     state: present
-  with_items: "{{ ssp_mod_cron_deps }}"
   when: "'cron' in ssp_mods_enabled"
   become: true
 
