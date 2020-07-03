@@ -42,12 +42,12 @@ $config = [
 {% endif %}
 {% if authsource.redirect_sign is defined %}
         // Whether authentication requests, logout requests and logout responses
-        // sent from this SP should be signed. 
+        // sent from this SP should be signed.
         'redirect.sign' => {{ authsource.redirect_sign }},
 {% endif %}
 {% if authsource.redirect_validate is defined %}
         // Whether logout requests and logout responses received received by
-        // this SP should be validated. 
+        // this SP should be validated.
         'redirect.validate' => {{ authsource.redirect_validate }},
 {% endif %}
 {% if authsource.sign_authnrequest is defined %}
@@ -61,21 +61,21 @@ $config = [
 {% endif %}
 {% if authsource.display_name is defined %}
         'name' => [
-    {% for key, value in authsource.display_name.iteritems() %}
+    {% for key, value in authsource.display_name.items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
     ],
 {% endif %}
 {% if authsource.description is defined %}
         'description' => [
-    {% for key, value in authsource.description.iteritems() %}
+    {% for key, value in authsource.description.items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
     ],
 {% endif %}
 {% if authsource.privacy_statement_url is defined %}
         'privacypolicy' => [
-    {% for key, value in authsource.privacy_statement_url.iteritems() %}
+    {% for key, value in authsource.privacy_statement_url.items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
     ],
@@ -94,7 +94,7 @@ $config = [
 {% if authsource.organization_name is defined %}
         // Localised names of the organisation responsible for this SP.
         'OrganizationName' => [
-{% for key, value in authsource.organization_name.iteritems() %}
+{% for key, value in authsource.organization_name.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ],
@@ -103,7 +103,7 @@ $config = [
         // Localised user-friendly names of the organisation responsible for
         // this SP.
         'OrganizationDisplayName' => [
-{% for key, value in authsource.organization_display_name.iteritems() %}
+{% for key, value in authsource.organization_display_name.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ],
@@ -111,7 +111,7 @@ $config = [
 {% if authsource.organization_url is defined %}
         // Localised URLs of the organisation responsible for this SP.
         'OrganizationURL' => [
-{% for key, value in authsource.organization_url.iteritems() %}
+{% for key, value in authsource.organization_url.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ],
@@ -152,14 +152,14 @@ $config = [
         'UIInfo' => [
 {% if authsource.display_name is defined %}
             'DisplayName' => [
-    {% for key, value in authsource.display_name.iteritems() %}
+    {% for key, value in authsource.display_name.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
         ],
 {% endif %}
 {% if authsource.description is defined %}
             'Description' => [
-    {% for key, value in authsource.description.iteritems() %}
+    {% for key, value in authsource.description.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
         ],
@@ -180,14 +180,14 @@ $config = [
 {% endif %}
 {% if authsource.information_url is defined %}
             'InformationURL' => [
-    {% for key, value in authsource.information_url.iteritems() %}
+    {% for key, value in authsource.information_url.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
         ],
 {% endif %}
 {% if authsource.privacy_statement_url is defined %}
             'PrivacyStatementURL' => [
-    {% for key, value in authsource.privacy_statement_url.iteritems() %}
+    {% for key, value in authsource.privacy_statement_url.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
         ],
@@ -195,19 +195,19 @@ $config = [
         ],
 {% if authsource.attributes is defined %}
         /*
-         * The attributes parameter contains an array of all attributes 
+         * The attributes parameter contains an array of all attributes
          * requested by the SP (both optional and mandatory).
-         * The attributes can be expressed as an array of names or as an 
+         * The attributes can be expressed as an array of names or as an
          * associative array in the form of 'friendlyName' => 'name'.
          */
         'attributes' => [
 {% if authsource.attributes['required'] is defined %}
-    {% for key, value in authsource.attributes['required'].iteritems() %}
+    {% for key, value in authsource.attributes['required'].items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
 {% endif %}
 {% if authsource.attributes['optional'] is defined %}
-    {% for key, value in authsource.attributes['optional'].iteritems() %}
+    {% for key, value in authsource.attributes['optional'].items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
 {% endif %}
@@ -216,11 +216,11 @@ $config = [
         /*
          * The attributes.required parameter contains the attributes
          * required by the SP (mandatory).
-         * The attributes can be expressed as an array of names or as an 
+         * The attributes can be expressed as an array of names or as an
          * associative array in the form of 'friendlyName' => 'name'.
          */
         'attributes.required' => [
-    {% for key, value in authsource.attributes['required'].iteritems() %}
+    {% for key, value in authsource.attributes['required'].items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
     ],
@@ -258,9 +258,9 @@ $config = [
 {% if authsource.authproc is defined %}
         'authproc' => [
 {% for entry in authsource.authproc %}
-{% for priority, filter_params in entry.iteritems() %}
+{% for priority, filter_params in entry.items() %}
             {{ priority }} => [
-{% for key, value in filter_params.iteritems() %}
+{% for key, value in filter_params.items() %}
 {% if value == None %}
                 '{{ key }}',
 {% elif value is iterable and value is not string %}
