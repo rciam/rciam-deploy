@@ -23,6 +23,16 @@
     Require all granted
   </Directory>
 {% endif %}
+{% if vhost.redirects is defined %}
+{%   for redirect in vhost.redirects %}
+  Redirect {{ redirect.from }} {{ redirect.to }}
+{%   endfor %}
+{% endif %}
+{% if vhost.redirects_match is defined %}
+{%   for redirect_match in vhost.redirects_match %}
+  RedirectMatch {{ redirect_match.from }} {{ redirect_match.to }}
+{%   endfor %}
+{% endif %}
 {% if vhost.extra_parameters is defined %}
   {{ vhost.extra_parameters | indent(width=2, indentfirst=False) }}
 {% endif %}
@@ -58,6 +68,16 @@
   SSLCertificateChainFile {{ vhost.certificate_chain_file }}
 {% endif %}
 
+{% if vhost.redirects is defined %}
+{%   for redirect in vhost.redirects %}
+  Redirect {{ redirect.from }} {{ redirect.to }}
+{%   endfor %}
+{% endif %}
+{% if vhost.redirects_match is defined %}
+{%   for redirect_match in vhost.redirects_match %}
+  RedirectMatch {{ redirect_match.from }} {{ redirect_match.to }}
+{%   endfor %}
+{% endif %}
 {% if vhost.serveradmin is defined %}
   ServerAdmin {{ vhost.serveradmin }}
 {% endif %}
