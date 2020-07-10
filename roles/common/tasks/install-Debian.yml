@@ -5,9 +5,11 @@
   become: yes
 
 - name: Ensure common packages are installed (Debian)
-  apt: pkg={{ item }} state=present install_recommends=no
-  with_items:
-    - aptitude
-    - ca-certificates
-    - vim-nox
+  apt:
+    pkg:
+      - aptitude
+      - ca-certificates
+      - vim-nox
+    state: present
+    install_recommends: no
   become: true
