@@ -87,6 +87,8 @@
     backup: yes
     force: yes
   become: yes
+  tags:
+    - authsources
 
 - name: Generate self-signed IdP certificates
   command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out idp-{{ item.entity_id }}.crt -keyout idp-{{ item.entity_id }}.key
@@ -127,6 +129,8 @@
     force: yes
   when: ssp_idp_saml20_enabled
   become: yes
+  tags:
+    - saml20-idp-hosted
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
   template:
