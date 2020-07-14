@@ -6,7 +6,7 @@
 
 $config = [
 
-    /* 
+    /*
      * Set this option to true to activate the new UI based on Twig templates.
      * When this option is activated the index file redirects to the login page
      * where the a list of authentication sources (excluded admin) is displayed.
@@ -905,9 +905,9 @@ $config = [
      */
     'authproc.idp' => [
 {% for entry in ssp_authproc_idp %}
-{% for priority, filter_params in entry.iteritems() %}
+{% for priority, filter_params in entry.items() %}
         {{ priority }} => [
-{% for key, value in filter_params.iteritems() %}
+{% for key, value in filter_params.items() %}
 {% if value == None %}
             '{{ key }}',
 {% elif value is iterable and value is not string %}
@@ -933,9 +933,9 @@ $config = [
      */
     'authproc.sp' => [
 {% for entry in ssp_authproc_sp %}
-{% for priority, filter_params in entry.iteritems() %}
+{% for priority, filter_params in entry.items() %}
         {{ priority }} => [
-{% for key, value in filter_params.iteritems() %}
+{% for key, value in filter_params.items() %}
 {% if value == None %}
             '{{ key }}',
 {% elif value is iterable and value is not string %}

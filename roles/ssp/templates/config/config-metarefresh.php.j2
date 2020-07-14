@@ -70,9 +70,9 @@ $config = array(
 {% if src.authproc is defined %}
                         'authproc' => array(
 {% for entry in src.authproc %}
-{% for priority, filter_params in entry.iteritems() %}
+{% for priority, filter_params in entry.items() %}
                             {{ priority }} => array(
-{% for key, value in filter_params.iteritems() %}
+{% for key, value in filter_params.items() %}
 {% if value == None %}
                                 '{{ key }}',
 {% elif value is iterable and value is not string %}
@@ -94,7 +94,7 @@ $config = array(
 {% endif %}
 {% if src.extra_parameters is defined %}
 {{ src.extra_parameters | indent(width=24, indentfirst=True) }}
-{% endif %} 
+{% endif %}
                     ),
 {% if src.types is defined %}
                     /*
@@ -114,7 +114,7 @@ $config = array(
                          '{{ type }}',
 {% endfor %}
                      ),
-{% endif %} 
+{% endif %}
                 ),
 {% endfor %}
             ),
@@ -142,7 +142,7 @@ $config = array(
                 '{{ type }}',
 {% endfor %}
             ),
-{% endif %} 
+{% endif %}
         ),
 {% endfor %}
     ),

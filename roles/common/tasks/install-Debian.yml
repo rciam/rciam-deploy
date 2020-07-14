@@ -7,11 +7,11 @@
   become: yes
 
 - name: Ensure common packages are installed (Debian)
-  apt: 
-    pkg: 
+  apt:
+    pkg:
       - aptitude
       - ca-certificates
       - vim-nox
-    state: present 
+    state: present
     install_recommends: no
   become: true

@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * The configuration of SimpleSAMLphp
  * {{ ansible_managed }}
  */
@@ -518,9 +518,9 @@ $config = array(
      */
     'authproc.idp' => array(
 {% for entry in ssp_authproc_idp %}
-{% for priority, filter_params in entry.iteritems() %}
+{% for priority, filter_params in entry.items() %}
         {{ priority }} => array(
-{% for key, value in filter_params.iteritems() %}
+{% for key, value in filter_params.items() %}
 {% if value == None %}
             '{{ key }}',
 {% elif value is iterable and value is not string %}
@@ -547,9 +547,9 @@ $config = array(
      */
     'authproc.sp' => array(
 {% for entry in ssp_authproc_sp %}
-{% for priority, filter_params in entry.iteritems() %}
+{% for priority, filter_params in entry.items() %}
         {{ priority }} => array(
-{% for key, value in filter_params.iteritems() %}
+{% for key, value in filter_params.items() %}
 {% if value == None %}
             '{{ key }}',
 {% elif value is iterable and value is not string %}
@@ -820,14 +820,14 @@ $config = array(
      */
     'proxy' => null,
 
-    
+
     /*
      * Username/password authentication to proxy (Proxy-Authorization: Basic)
      * Example:
      *   'proxy.auth' = 'myuser:password'
      */
     'proxy.auth' => false,
-    
+
     /*
      * Array of domains that are allowed when generating links or redirections
      * to URLs. SimpleSAMLphp will use this option to determine whether to

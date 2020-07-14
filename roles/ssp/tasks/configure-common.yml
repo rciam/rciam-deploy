@@ -23,7 +23,7 @@
 
 - name: Configure SHA-256 encrypted hash of SSP admin password
   set_fact:
-    ssp_adminpasswordhash: "{{ ssp_adminpasswordhash_new.stdout if ssp_adminpasswordhash_new | changed else ssp_adminpasswordhash_old.stdout }}"
+    ssp_adminpasswordhash: "{{ ssp_adminpasswordhash_new.stdout if ssp_adminpasswordhash_new is changed else ssp_adminpasswordhash_old.stdout }}"
 
 - name: Generate SSP secret salt
   shell: tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 status=none
@@ -39,7 +39,7 @@
 
 - name: Configure SSP secret salt
   set_fact:
-    ssp_secretsalt: "{{ ssp_secretsalt_new.stdout if ssp_secretsalt_new | changed else ssp_secretsalt_old.stdout }}"
+    ssp_secretsalt: "{{ ssp_secretsalt_new.stdout if ssp_secretsalt_new is changed else ssp_secretsalt_old.stdout }}"
 
 - name: Configure SSP
   template:
@@ -82,11 +82,13 @@
 
 - name: Configure SSP authN sources
   template:
-    src: config/authsources.php.j2
+    src: "config/authsources-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_configdir }}/authsources.php"
     backup: yes
     force: yes
   become: yes
+  tags:
+    - authsources
 
 - name: Generate self-signed IdP certificates
   command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out idp-{{ item.entity_id }}.crt -keyout idp-{{ item.entity_id }}.key
@@ -127,6 +129,8 @@
     force: yes
   when: ssp_idp_saml20_enabled
   become: yes
+  tags:
+    - saml20-idp-hosted
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
   template:
@@ -191,7 +195,7 @@
 
 - name: Configure SSP cron module secret
   set_fact:
-    ssp_mod_cron_secret: "{{ ssp_mod_cron_secret_new.stdout if ssp_mod_cron_secret_new | changed else ssp_mod_cron_secret_old.stdout }}"
+    ssp_mod_cron_secret: "{{ ssp_mod_cron_secret_new.stdout if ssp_mod_cron_secret_new is changed else ssp_mod_cron_secret_old.stdout }}"
   when: "'cron' in ssp_mods_enabled"
   tags:
     - metarefresh

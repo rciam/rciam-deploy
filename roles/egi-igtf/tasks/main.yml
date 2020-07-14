@@ -1,0 +1,12 @@
+---
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Run OS-specific installation tasks
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+# Apply OS-specific configuration
+- include: configure-Debian.yml
+  when: ansible_os_family == 'Debian'

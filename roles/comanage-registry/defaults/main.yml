@@ -1,0 +1,94 @@
+---
+
+# See https://spaces.internet2.edu/display/COmanage/Organizational+Identity+Pooling
+comanage_org_identity_pooling: "No"
+#comanage_admin:
+#  given_name: "Pat"
+#  family_name: "Jones Smith"
+#  username: "pat.jones.smith@university.edu"
+
+comanage_version: "rciam-3.1.x"
+comanage_repo: "https://github.com/rciam/comanage-registry.git"
+comanage_root_dir: "/srv/comanage"
+comanage_path: "{{ comanage_root_dir }}/comanage-registry-current"
+comanage_webroot: "/var/www/html/registry"
+comanage_temp_dir: "/var/cache/registry"
+
+comanage_databases:
+  - instance: "default"
+    # Either "Database/Postgres" or "Database/Mysql"
+    vendor: "Database/Mysql"
+    persistent: no
+    host: "localhost"
+    user: "user"
+    password: "password"
+    name: "database_name"
+    prefix: "cm_"
+    #encoding: "utf8"
+  - instance: "test"
+    vendor: "Database/Mysql"
+    persistent: no
+    host: "localhost"
+    user: "user"
+    password: "password"
+    name: "test_database_name"
+    prefix: "cm_"
+    #encoding: "utf8"
+
+comanage_mailers:
+  - instance: "default"
+    # Transport configuration name
+    transport: "Mail"
+    # Email or array of sender
+    from: "you@localhost"
+    #charset: "utf-8"
+    #header_charset: "utf-8"
+  - instance: "smtp"
+    transport: "Smtp"
+    from:
+      site@localhost: "My Site"
+    host: "localhost"
+    port: 25
+    timeout: 30
+    username: "user"
+    password: "secret"
+    client: null
+    log: no
+    #charset: "utf-8"
+    #header_charset: "utf-8"
+  - instance: "fast"
+    from: "you@localhost"
+    sender: null
+    to: null
+    cc: null
+    bcc: null
+    reply_to: null
+    # Email address(es) to receive the receipt of read
+    read_receipt: null
+    # Email address(es) to return in case of error
+    return_path: null
+    messageId: true
+    subject: null
+    message: null
+    headers: null
+    view_render: null
+    template: no
+    layout: no
+    view_vars: null
+    attachments: null
+    email_format: null
+    transport: "Smtp"
+    host: "localhost"
+    port: 25
+    timeout: 30
+    username: "user"
+    password: "secret"
+    client: null
+    log: yes
+    #charset: "utf-8"
+    #header_charset: "utf-8"
+
+# Directory containing public static pages to copy
+#comanage_public_pages_dir: "{{ inventory_dir }}/public"
+
+comanage_session_name: "CAKEPHP"

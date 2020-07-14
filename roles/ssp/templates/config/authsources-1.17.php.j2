@@ -4,18 +4,18 @@
  * {{ ansible_managed }}
  */
 
-$config = array(
+$config = [
 
     // This is a authentication source which handles admin authentication.
-    'admin' => array(
+    'admin' => [
         // The default is to use core:AdminPassword, but it can be replaced with
         // any authentication source.
 
         'core:AdminPassword',
-    ),
+    ],
 
 {% for authsource in ssp_authsources_saml %}
-    '{{ authsource.name }}' => array(
+    '{{ authsource.name }}' => [
         'saml:SP',
 {% if authsource.entity_id is defined %}
         // The entity ID of this SP.
@@ -42,12 +42,12 @@ $config = array(
 {% endif %}
 {% if authsource.redirect_sign is defined %}
         // Whether authentication requests, logout requests and logout responses
-        // sent from this SP should be signed. 
+        // sent from this SP should be signed.
         'redirect.sign' => {{ authsource.redirect_sign }},
 {% endif %}
 {% if authsource.redirect_validate is defined %}
         // Whether logout requests and logout responses received received by
-        // this SP should be validated. 
+        // this SP should be validated.
         'redirect.validate' => {{ authsource.redirect_validate }},
 {% endif %}
 {% if authsource.sign_authnrequest is defined %}
@@ -60,68 +60,68 @@ $config = array(
 {% endif %}
 {% endif %}
 {% if authsource.display_name is defined %}
-        'name' => array(
-    {% for key, value in authsource.display_name.iteritems() %}
+        'name' => [
+    {% for key, value in authsource.display_name.items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
-    ),
+    ],
 {% endif %}
 {% if authsource.description is defined %}
-        'description' => array(
-    {% for key, value in authsource.description.iteritems() %}
+        'description' => [
+    {% for key, value in authsource.description.items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
-    ),
+    ],
 {% endif %}
 {% if authsource.privacy_statement_url is defined %}
-        'privacypolicy' => array(
-    {% for key, value in authsource.privacy_statement_url.iteritems() %}
+        'privacypolicy' => [
+    {% for key, value in authsource.privacy_statement_url.items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
-    ),
+    ],
 {% endif %}
 {% if authsource.entity_attributes is defined %}
-        'EntityAttributes' => array(
+        'EntityAttributes' => [
 {% for entity_attribute in authsource.entity_attributes %}
-            '{{ entity_attribute.attribute_name }}' => array(
+            '{{ entity_attribute.attribute_name }}' => [
 {% for entity_attribute_value in entity_attribute.attribute_values %}
                 '{{ entity_attribute_value }}',
 {% endfor %}
-            ),
+            ],
 {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.organization_name is defined %}
         // Localised names of the organisation responsible for this SP.
-        'OrganizationName' => array(
-{% for key, value in authsource.organization_name.iteritems() %}
+        'OrganizationName' => [
+{% for key, value in authsource.organization_name.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.organization_display_name is defined %}
         // Localised user-friendly names of the organisation responsible for
         // this SP.
-        'OrganizationDisplayName' => array(
-{% for key, value in authsource.organization_display_name.iteritems() %}
+        'OrganizationDisplayName' => [
+{% for key, value in authsource.organization_display_name.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.organization_url is defined %}
         // Localised URLs of the organisation responsible for this SP.
-        'OrganizationURL' => array(
-{% for key, value in authsource.organization_url.iteritems() %}
+        'OrganizationURL' => [
+{% for key, value in authsource.organization_url.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.contacts is defined %}
         // List of contacts in addition to the technical contact configured
         // through config/config.php
-        'contacts' => array(
+        'contacts' => [
 {% for contact in authsource.contacts %}
-            array(
+            [
                 'contactType'       => '{{ contact.contact_type }}',
 {% if contact.company is defined %}
                 'company'           => '{{ contact.company }}',
@@ -139,91 +139,91 @@ $config = array(
                 'telephoneNumber'   => '{{ contact.telephone_number }}',
 {% endif %}
 {% if contact.attributes is defined %}
-                'attributes'        => array(
+                'attributes'        => [
 {% for key, value in contact.attributes.items() %}
                     '{{ key }}' => '{{ value }}',
 {% endfor %}
-                ),
+                ],
 {% endif %}
-            ),
+            ],
 {% endfor %}
-        ),
+        ],
 {% endif %}
-        'UIInfo' => array(
+        'UIInfo' => [
 {% if authsource.display_name is defined %}
-            'DisplayName' => array(
-    {% for key, value in authsource.display_name.iteritems() %}
+            'DisplayName' => [
+    {% for key, value in authsource.display_name.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.description is defined %}
-            'Description' => array(
-    {% for key, value in authsource.description.iteritems() %}
+            'Description' => [
+    {% for key, value in authsource.description.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.logos is defined %}
-            'Logo' => array(
+            'Logo' => [
 {% for logo in authsource.logos %}
-                array(
+                [
                     'url' => '{{ logo.url }}',
                     'height' => {{ logo.height }},
                     'width' => {{ logo.width }},
 {% if logo.lang is defined %}
                     'lang' => '{{ logo.lang }}',
 {% endif %}
-                ),
+                ],
 {% endfor %}
-            ),
+            ],
 {% endif %}
 {% if authsource.information_url is defined %}
-            'InformationURL' => array(
-    {% for key, value in authsource.information_url.iteritems() %}
+            'InformationURL' => [
+    {% for key, value in authsource.information_url.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.privacy_statement_url is defined %}
-            'PrivacyStatementURL' => array(
-    {% for key, value in authsource.privacy_statement_url.iteritems() %}
+            'PrivacyStatementURL' => [
+    {% for key, value in authsource.privacy_statement_url.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
-        ),
+        ],
 {% endif %}
-        ),
+        ],
 {% if authsource.attributes is defined %}
         /*
-         * The attributes parameter contains an array of all attributes 
+         * The attributes parameter contains an array of all attributes
          * requested by the SP (both optional and mandatory).
-         * The attributes can be expressed as an array of names or as an 
+         * The attributes can be expressed as an array of names or as an
          * associative array in the form of 'friendlyName' => 'name'.
          */
-        'attributes' => array (
+        'attributes' => [
 {% if authsource.attributes['required'] is defined %}
-    {% for key, value in authsource.attributes['required'].iteritems() %}
+    {% for key, value in authsource.attributes['required'].items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
 {% endif %}
 {% if authsource.attributes['optional'] is defined %}
-    {% for key, value in authsource.attributes['optional'].iteritems() %}
+    {% for key, value in authsource.attributes['optional'].items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
 {% endif %}
-    ),
+    ],
 {% if authsource.attributes['required'] is defined %}
         /*
          * The attributes.required parameter contains the attributes
          * required by the SP (mandatory).
-         * The attributes can be expressed as an array of names or as an 
+         * The attributes can be expressed as an array of names or as an
          * associative array in the form of 'friendlyName' => 'name'.
          */
-        'attributes.required' => array (
-    {% for key, value in authsource.attributes['required'].iteritems() %}
+        'attributes.required' => [
+    {% for key, value in authsource.attributes['required'].items() %}
         '{{ key }}' => '{{ value }}',
     {% endfor %}
-    ),
+    ],
 {% endif %}
 {% if authsource.attributes['name_format'] is defined %}
         'attributes.NameFormat' => '{{ authsource.attributes['name_format'] }}',
@@ -231,51 +231,61 @@ $config = array(
 {% endif %}
 {% if authsource.name_id_policy is defined %}
         // The format of the NameID we request from the IdP.
-{% if authsource.name_id_policy != None %}
+{% if authsource.name_id_policy == false %}
+        // Set to false to omit sending any specific NameIDPolicy in the AuthnRequest.
+        'NameIDPolicy' => false,
+{% elif authsource.name_id_policy == None %}
+        // null is equivalent to transient - DEPRECATED
+        'NameIDPolicy' => null,
+{% elif authsource.name_id_policy is string %}
+        // Using string to specify format - DEPRECATED
         'NameIDPolicy' => '{{ authsource.name_id_policy }}',
 {% else %}
-        'NameIDPolicy' => null,
+        'NameIDPolicy' => [
+            'Format' => '{{ authsource.name_id_policy.format }}',
+            'AllowCreate' => {{ authsource.name_id_policy.allow_create }},
+        ],
 {% endif %}
 {% endif %}
 {% if authsource.acs_bindings is defined %}
         // List of supported ACS bindings
-        'acs.Bindings' => array(
+        'acs.Bindings' => [
 {% for binding in authsource.acs_bindings %}
             '{{ binding }}',
 {% endfor %}
-        ),
+        ],
 {% endif %}
 {% if authsource.authproc is defined %}
-        'authproc' => array(
+        'authproc' => [
 {% for entry in authsource.authproc %}
-{% for priority, filter_params in entry.iteritems() %}
-            {{ priority }} => array(
-{% for key, value in filter_params.iteritems() %}
+{% for priority, filter_params in entry.items() %}
+            {{ priority }} => [
+{% for key, value in filter_params.items() %}
 {% if value == None %}
                 '{{ key }}',
 {% elif value is iterable and value is not string %}
-                '{{ key }}' => array(
+                '{{ key }}' => [
 {% for item in value %}
                     '{{ item }}',
 {% endfor %}
-                ),
+                ],
 {% elif value == true or value == false or value is number %}
                 '{{ key }}' => {{ value }},
 {% else %}
                 '{{ key }}' => '{{ value }}',
 {% endif %}
 {% endfor %}
-            ),
+            ],
 {% endfor %}
 {% endfor %}
-        ),
+        ],
 {% endif %}
-    ),
+    ],
 
 {% endfor %}
 {% if ssp_authsources_facebook is defined %}
 {% for authsource in ssp_authsources_facebook %}
-    '{{ authsource.name }}' => array(
+    '{{ authsource.name }}' => [
         'authfacebook:Facebook',
         'api_key' => '{{ authsource.api_key }}',
         'secret' => '{{ authsource.secret }}',
@@ -287,30 +297,30 @@ $config = array(
         // List of additional user profile fields to request
         'user_fields' => '{{ authsource.user_fields }}',
 {% endif %}
-    ),
+    ],
 
 {% endfor %}
 {% endif %}
 {% if ssp_authsources_linkedin is defined %}
 {% for authsource in ssp_authsources_linkedin %}
-    '{{ authsource.name }}' => array(
+    '{{ authsource.name }}' => [
         'authlinkedin:LinkedIn',
         'key' => '{{ authsource.key }}',
         'secret' => '{{ authsource.secret }}',
 {% if authsource.user_fields is defined %}
         'user_fields' => '{{ authsource.user_fields }}',
 {% endif %}
-    ),
+    ],
 
 {% endfor %}
 {% endif %}
 {% if ssp_authsources_orcid is defined %}
 {% for authsource in ssp_authsources_orcid %}
-    '{{ authsource.name }}' => array(
+    '{{ authsource.name }}' => [
         'authorcid:ORCID',
         'clientId' => '{{ authsource.client_id }}',
         'clientSecret' => '{{ authsource.client_secret }}',
-    ),
+    ],
 
 {% endfor %}
 {% endif %}
@@ -318,4 +328,4 @@ $config = array(
   {{ ssp_authsources_extra_config | indent(width=4, indentfirst=False) }}
 
 {% endif %}
-);
+];
