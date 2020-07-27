@@ -21,6 +21,7 @@ On the control machine, you need a recent version of Ansible. We recommend insta
 
     pip install ansible==2.9.11
     pip install dnspython
+    ansible-galaxy install ipr-cnrs.nftables
     🍺
 
 ## Configuration
