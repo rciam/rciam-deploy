@@ -17,5 +17,5 @@
 
 - name: Update /etc/ssl/certs and certificates.crt with EGI Trust Anchors (Debian)
   command: "/usr/sbin/update-ca-certificates -f"
-  when: "{{ egi_igtf_cert_symlinks | changed }}"
+  when: egi_igtf_cert_symlinks is changed
   become: yes

@@ -11,12 +11,9 @@
     state: present 
   become: yes
 
-- name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
-  become: yes
-
 - name: Ensure latest versions of EGI Trust Anchors are installed (Debian)
-  apt: pkg={{ item }} state=latest
-  with_items:
-    - ca-policy-egi-core
+  apt:
+    name: ca-policy-egi-core
+    state: latest
+    update_cache: yes
   become: yes
