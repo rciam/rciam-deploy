@@ -1,0 +1,7 @@
+---
+
+- name: restart webserver
+  service:
+    name: "{{ php_webserver }}"
+    state: restarted
+  become: yes
