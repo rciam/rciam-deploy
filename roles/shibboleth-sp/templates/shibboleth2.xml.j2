@@ -118,9 +118,14 @@
         </MetadataProvider>
 {% endfor %}
 
-        <!-- Map to extract attributes from SAML assertions. -->
-        <AttributeExtractor type="XML" validate="true" reloadChanges="false" path="attribute-map.xml"/>
-        
+{% for extractor in shibboleth_sp_attribute_extractors | default([]) %}
+        <AttributeExtractor type="{{ extractor.type }}"
+{% for key, value in extractor.params.iteritems() %}
+            {{ key }}="{{ value }}"
+{% endfor %}
+        />
+{% endfor %}
+
 {% for resolver in shibboleth_sp_attribute_resolvers %}
         <AttributeResolver type="{{ resolver.type }}" 
 {% if resolver.subject_match is defined %}

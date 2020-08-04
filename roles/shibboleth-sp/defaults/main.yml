@@ -50,6 +50,13 @@ shibboleth_sp_metadata_providers: []
 #  - type: "XML" 
 #    file: "partner-metadata.xml"
 
+shibboleth_sp_attribute_extractors:
+  - type: "XML"
+    params:
+      validate: "true"
+      reloadChanges: "false"
+      path: "attribute-map.xml"
+
 shibboleth_sp_attribute_resolvers:
   - type: "Query"
     subject_match: "true"
