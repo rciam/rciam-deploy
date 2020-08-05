@@ -120,7 +120,7 @@
 
 {% for extractor in shibboleth_sp_attribute_extractors | default([]) %}
         <AttributeExtractor type="{{ extractor.type }}"
-{% for key, value in extractor.params.iteritems() %}
+{% for key, value in extractor.params.items() %}
             {{ key }}="{{ value }}"
 {% endfor %}
         />
