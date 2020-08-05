@@ -18,11 +18,67 @@
         </Extensions>
     </OutOfProcess>
 {% endif %}
+{% if shibboleth_sp_storage_service is defined %}
+    <!--
+    By default, in-memory StorageService, ReplayCache, ArtifactMap, and SessionCache
+    are used. See example-shibboleth2.xml for samples of explicitly configuring them.
+    -->
+{% if shibboleth_sp_storage_service.storages is defined %}
+{% for storage in shibboleth_sp_storage_service.storages %}
+    <StorageService type="{{ storage.type }}" id="{{ storage.id }}" prefix="{{ storage.prefix }}">
+        <Hosts>
+{% for host in storage.hosts %}
+            {{ lookup('dig',host.name) }}:11211
+{% endfor %}
+        </Hosts>
+    </StorageService>
+{% endfor %}
+{% endif %}
+{% if shibboleth_sp_storage_service.session_cache is defined %}
+    <SessionCache type="{{ shibboleth_sp_storage_service.session_cache.type }}" cacheAllowance="{{ shibboleth_sp_storage_service.session_cache.cache_allowance }}" StorageService="{{ shibboleth_sp_storage_service.session_cache.storage_service }}" StorageServiceLite="{{ shibboleth_sp_storage_service.session_cache.storage_service_lite }}"/>
+{% endif %}
+{% if shibboleth_sp_storage_service.replay_cache is defined %}
+    <ReplayCache StorageService="{{ shibboleth_sp_storage_service.replay_cache.storage_service }}"/>
+{% endif %}
+{% if shibboleth_sp_storage_service.artifact_map is defined %}
+    <ArtifactMap StorageService="{{ shibboleth_sp_storage_service.artifact_map.storage_service }}" artifactTTL="{{ shibboleth_sp_storage_service.artifact_map.artifact_ttl }}"/>
+{% endif %}
+{% endif %}
 {% if shibboleth_sp_extra_conf is defined %}
-
     {{ shibboleth_sp_extra_conf | indent(width=4, indentfirst=False) }}
 {% endif %}
 
+{% if shibboleth_sp_request_mapper|length > 0 %}
+    <RequestMapper type="Native">
+        <RequestMap applicationId="default">
+{% for host in shibboleth_sp_request_mapper %}
+        <Host name="{{ host.name }}" 
+{% if host.applicationId is defined %}
+            applicationId="{{ host.applicationId }}"
+{% endif %}
+    >
+{% if host.paths is defined %}
+{% for path in host.paths %}
+            <Path name="{{ path.name }}"
+{% if path.applicationId is defined %}
+                applicationId="{{ path.applicationId }}"
+{% endif %}
+                authType="{{ path.authType }}" requireSession="{{ path.requireSession }}"/>
+{% endfor %}
+{% endif %}
+        </Host>
+{% endfor %}
+        </RequestMap>
+    </RequestMapper>
+{% endif %}
+    <!--
+    To customize behavior for specific resources on Apache, and to link vhosts or
+    resources to ApplicationOverride settings below, use web server options/commands.
+    See https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPConfigurationElements for help.
+    
+    For examples with the RequestMap XML syntax instead, see the example-shibboleth2.xml
+    file, and the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapHowTo topic.
+    -->
     <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
     <ApplicationDefaults entityID="{{ shibboleth_sp_entity_id }}"
 {% if shibboleth_sp_remote_user is defined %}
@@ -92,7 +148,7 @@
             <Handler type="Status" Location="/Status" acl="127.0.0.1 ::1"/>
 
             <!-- Session diagnostic service. -->
-            <Handler type="Session" Location="/Session" showAttributeValues="false"/>
+            <Handler type="Session" Location="/Session" showAttributeValues="{{ shibboleth_sp_session_show_attributes }}"/>
 
             <!-- JSON feed of discovery information. -->
             <Handler type="DiscoveryFeed" Location="/DiscoFeed"/>
@@ -181,7 +237,33 @@
 {% if override.session.handler_url is defined %}
                       handlerURL="{{ override.session.handler_url }}"
 {% endif %}
+            >
+{% if override.session.sso is defined %}
+            <SSO entityID="{{ override.session.sso.entity_id }}"
+{% if override.session.sso.force_authn is defined %}
+                forchAuthn="{{ override.session.sso.force_authn }}"
+{% endif %}
+            >{{ override.session.sso.name }}</SSO>
+{% endif %}
+{% if override.session.logout is defined %}
+            <Logout>{{ override.session.logout.name }}</Logout>
+{% endif %}
+{% if override.session.handlers is defined %}
+{% for handler in override.session.handlers %}
+            <Handler type="{{ handler.type }}" Location="{{ handler.location }}" 
+{% if handler.signing is defined %}
+                signing="{{ handler.signing }}"
+{% endif %}
+{% if handler.acl is defined %}
+                acl="{{ handler.acl }}"
+{% endif %}
+{% if handler.show_attributes is defined %}
+                showAttributeValues="{{ handler.show_attributes }}"
+{% endif %}
             />
+{% endfor %}
+{% endif %}
+            </Sessions>
 {% endif %}
 {% if override.extra_conf is defined %}
 

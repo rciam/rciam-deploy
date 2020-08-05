@@ -130,21 +130,42 @@ shibboleth_sp_attribute_resolvers:
 # application.
 # remote_user, home_url and session are optional
 shibboleth_sp_overrides: []
-# - id: "admin"
-#   entity_id: "https://admin.example.org/shibboleth"
-#   remote_user: "eppn persistent-id targeted-id"
-#   home_url: "/"
-#   session:
-#     handler_url: "/Shibboleth.sso"
-#     handler_ssl: "false"
-#     lifetime: 28000
-#     timeout: 3600
-#     max_time_since_authn:
-#     check_address: "false"
-#     consistent_address: "true"
-#     cookie_props: "http"
-#     cookie_lifetime:
-#     relay_state: "ss:mem"
+#  - id: "admin"
+#    entity_id: "https://admin.example.org/shibboleth"
+#    remote_user: "eppn persistent-id targeted-id"
+#    home_url: "/"
+#    session:
+#      handler_url: "/Shibboleth.sso"
+#      handler_ssl: "false"
+#      lifetime: 28000
+#      timeout: 3600
+#      max_time_since_authn:
+#      check_address: "false"
+#      consistent_address: "true"
+#      cookie_props: "http"
+#      cookie_lifetime:
+#      relay_state: "ss:mem"
+#      sso:
+#        entity_id: "https://aai-dev.egi.eu/proxy/saml2/idp/metadata.php"
+#        name: "SAML2"
+#      logout:
+#        name: "Local"
+#      handlers:
+#        - handler:
+#          type: "MetadataGenerator" 
+#          location: "/Metadata"
+#          signing: "false"
+#        - handler:
+#          type: "Status"
+#          location: "/Status"
+#          acl: "127.0.0.1 ::1"
+#        - handler: 
+#          type: "Session"
+#          location: "/Session"
+#          show_attributes: "true"
+#        - handler:
+#          type: "DiscoveryFeed"
+#          location: "/DiscoFeed"
 
 shibboleth_sp_ext_libraries: []
 # Path to the library to load
