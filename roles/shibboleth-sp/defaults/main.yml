@@ -146,7 +146,7 @@ shibboleth_sp_overrides: []
 #      cookie_lifetime:
 #      relay_state: "ss:mem"
 #      sso:
-#        entity_id: "https://aai-dev.egi.eu/proxy/saml2/idp/metadata.php"
+#        entity_id: "https://idp.example.org"
 #        name: "SAML2"
 #      logout:
 #        name: "Local"
