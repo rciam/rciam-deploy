@@ -46,10 +46,16 @@
                   timeout="{{ shibboleth_sp_session.timeout }}" 
                   relayState="{{ shibboleth_sp_session.relay_state }}"
                   checkAddress="{{ shibboleth_sp_session.check_address }}" 
-                  handlerSSL="{{ shibboleth_sp_session.handler_ssl }}" 
-                  cookieProps="{{ shibboleth_sp_session.cookie_props }}"
 {% if shibboleth_sp_session.consistent_address is defined %}
                   consistentAddress="{{ shibboleth_sp_session.consistent_address }}"
+{% endif %}
+                  handlerSSL="{{ shibboleth_sp_session.handler_ssl }}"
+                  cookieProps="{{ shibboleth_sp_session.cookie_props }}"
+{% if shibboleth_sp_session.cookie_lifetime is defined %}
+                  cookieLifetime="{{ shibboleth_sp_session.cookie_lifetime }}"
+{% endif %}
+{% if shibboleth_sp_session.max_time_since_authn is defined %}
+                  maxTimeSinceAuthn="{{ shibboleth_sp_session.max_time_since_authn }}"
 {% endif %}
 {% if shibboleth_sp_session.handler_url is defined %}
                   handlerURL="{{ shibboleth_sp_session.handler_url }}"
@@ -161,10 +167,16 @@
                       timeout="{{ override.session.timeout }}"
                       relayState="{{ override.session.relay_state }}"
                       checkAddress="{{ override.session.check_address }}"
-                      handlerSSL="{{ override.session.handler_ssl }}"
-                      cookieProps="{{ override.session.cookie_props }}"
 {% if override.session.consistent_address is defined %}
                       consistentAddress="{{ override.session.consistent_address }}"
+{% endif %}
+                      handlerSSL="{{ override.session.handler_ssl }}"
+                      cookieProps="{{ override.session.cookie_props }}"
+{% if override.session.cookie_lifetime is defined %}
+                      cookieLifetime="{{ override.session.cookie_lifetime }}"
+{% endif %}
+{% if override.session.max_time_since_authn is defined %}
+                      maxTimeSinceAuthn="{{ override.session.max_time_since_authn }}"
 {% endif %}
 {% if override.session.handler_url is defined %}
                       handlerURL="{{ override.session.handler_url }}"
