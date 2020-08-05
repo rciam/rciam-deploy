@@ -1,7 +1,7 @@
 ---
 
-- include: cacheservers.yml
+- import_playbook: cacheservers.yml
 
-- include: authservers.yml
+- import_playbook: authservers.yml
 
-- include: webproxyservers.yml
+- import_playbook: webproxyservers.yml

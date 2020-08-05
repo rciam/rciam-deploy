@@ -1,7 +1,5 @@
 ---
 
 - name: Ensure Apache HTTP server is installed (CentOS)
-  yum: name={{ item }} state=present update_cache=yes
-  with_items:
-    - httpd
+  yum: name=httpd state=present update_cache=yes
   become: yes

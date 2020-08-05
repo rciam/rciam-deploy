@@ -1,14 +1,9 @@
 ---
 
-- name: Update package cache (Debian)
-  apt: 
-    update_cache: yes 
-    cache_valid_time: 86400
-  become: yes
-
 - name: Ensure Shibboleth SP Apache module is installed (Debian)
-  apt: 
+  apt:
     name: libapache2-mod-shib2
-    state: present 
+    state: present
+    update_cache: yes
     install_recommends: no
   become: yes

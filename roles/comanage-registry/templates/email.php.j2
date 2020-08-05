@@ -49,7 +49,7 @@ class EmailConfig {
         'from' => null,
 {% elif mailer.from is mapping %}
         'from' => array(
-{% for key, value in mailer.from.iteritems() %}
+{% for key, value in mailer.from.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),
@@ -62,7 +62,7 @@ class EmailConfig {
         'sender' => null,
 {% elif mailer.from is mapping %}
         'sender' => array(
-{% for key, value in mailer.sender.iteritems() %}
+{% for key, value in mailer.sender.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),
@@ -75,7 +75,7 @@ class EmailConfig {
         'to' => null,
 {% elif mailer.to is mapping %}
         'to' => array(
-{% for key, value in mailer.to.iteritems() %}
+{% for key, value in mailer.to.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),
@@ -88,7 +88,7 @@ class EmailConfig {
         'cc' => null,
 {% elif mailer.cc is mapping %}
         'cc' => array(
-{% for key, value in mailer.cc.iteritems() %}
+{% for key, value in mailer.cc.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),
@@ -101,7 +101,7 @@ class EmailConfig {
         'bcc' => null,
 {% elif mailer.cc is mapping %}
         'bcc' => array(
-{% for key, value in mailer.bcc.iteritems() %}
+{% for key, value in mailer.bcc.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),
@@ -114,7 +114,7 @@ class EmailConfig {
         'replyTo' => null,
 {% elif mailer.reply_to is mapping %}
         'replyTo' => array(
-{% for key, value in mailer.reply_to.iteritems() %}
+{% for key, value in mailer.reply_to.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),
@@ -127,7 +127,7 @@ class EmailConfig {
         'readReceipt' => null,
 {% elif mailer.read_receipt is mapping %}
         'readReceipt' => array(
-{% for key, value in mailer.read_receipt.iteritems() %}
+{% for key, value in mailer.read_receipt.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),
@@ -140,7 +140,7 @@ class EmailConfig {
         'returnPath' => null,
 {% elif mailer.read_receipt is mapping %}
         'returnPath' => array(
-{% for key, value in mailer.return_path.iteritems() %}
+{% for key, value in mailer.return_path.items() %}
             '{{ key }}' => '{{ value }}',
 {% endfor %}
         ),

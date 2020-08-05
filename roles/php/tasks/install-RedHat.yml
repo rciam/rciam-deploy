@@ -1,0 +1,19 @@
+---
+
+- name: Ensure PHP packages are installed (RedHat)
+  yum:
+    name: "{{ php_packages }}"
+    state: present
+    update_cache: yes
+  become: true
+  notify:
+    - restart webserver
+
+- name: Ensure PHP extensions are installed (RedHat)
+  yum:
+    name: "{{ php_extensions }}"
+    state: present
+    update_cache: yes
+  become: true
+  notify:
+    - restart webserver

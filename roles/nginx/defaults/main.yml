@@ -4,6 +4,8 @@ nginx_create_vhosts: false
 nginx_vhosts_filename: "vhosts.conf"
 nginx_remove_default_vhost: false
 
+nginx_ssl_protocols: "TLSv1.2"
+
 # Uncomment to generate file with custom DH parameters for DHE ciphers
 #nginx_dhparam_file: "dhparam.pem"
 # Number of bits used for generating DH parameter set
