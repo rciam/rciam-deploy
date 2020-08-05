@@ -48,7 +48,7 @@
     {{ shibboleth_sp_extra_conf | indent(width=4, indentfirst=False) }}
 {% endif %}
 
-{% if shibboleth_sp_request_mapper|length > 0 %}
+{% if shibboleth_sp_request_mapper is defined %}
     <RequestMapper type="Native">
         <RequestMap applicationId="default">
 {% for host in shibboleth_sp_request_mapper %}
