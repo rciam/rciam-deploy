@@ -28,7 +28,7 @@
     <StorageService type="{{ storage.type }}" id="{{ storage.id }}" prefix="{{ storage.prefix }}">
         <Hosts>
 {% for host in storage.hosts %}
-            {{ lookup('dig',host.name) }}:11211
+            {{ host.name }}:{{ host.port }}
 {% endfor %}
         </Hosts>
     </StorageService>
