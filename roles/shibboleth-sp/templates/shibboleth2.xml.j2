@@ -1,11 +1,11 @@
 <!--
     {{ ansible_managed }}
 -->
-<SPConfig xmlns="urn:mace:shibboleth:2.0:native:sp:config"
-    xmlns:conf="urn:mace:shibboleth:2.0:native:sp:config"
-    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"    
-    xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+<SPConfig xmlns="urn:mace:shibboleth:3.0:native:sp:config"
+    xmlns:conf="urn:mace:shibboleth:3.0:native:sp:config"
+    xmlns:saml="urn:oasis:names:tc:SAML:3.0:assertion"
+    xmlns:samlp="urn:oasis:names:tc:SAML:3.0:protocol"    
+    xmlns:md="urn:oasis:names:tc:SAML:3.0:metadata"
     clockSkew="180">
 {% if shibboleth_sp_ext_libraries|length > 0 %}
 
@@ -169,7 +169,7 @@
 {% for metadata in shibboleth_sp_metadata_providers %}
         <MetadataProvider type="XML" 
 {% if metadata.uri is defined %}
-            uri="{{ metadata.uri }}"
+            url="{{ metadata.url }}"
 {% endif %}
 {% if metadata.backing_file_path is defined %}
             backingFilePath="{{ metadata.backing_file_path }}" 
