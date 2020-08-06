@@ -1,0 +1,9 @@
+---
+
+- hosts: attrauth
+  roles:
+    - apache
+    - php
+    - shibboleth-sp
+    - comanage-registry
+    #- cm-role-ui

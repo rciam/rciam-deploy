@@ -4,16 +4,16 @@
  * {{ ansible_managed }}
  */
 
-$config = array(
+$config = [
 {% if ssp_mod_metarefresh_blacklist is defined %}
     /*
      * Global blacklist: entityIDs that should be excluded from ALL sets.
      */
-    'blacklist' => array(
+    'blacklist' => [
 {% for entity_id in ssp_mod_metarefresh_blacklist %}
         '{{ entity_id }}',
 {% endfor %}
-    ),
+    ],
 {% endif %}
     /*
      * Conditional GET requests
@@ -23,79 +23,75 @@ $config = array(
      */
     //'conditionalGET'	=> TRUE,
 
-    'sets' => array(
+    'sets' => [
 {% for set in ssp_mod_metarefresh_sets %}
-        '{{ set.name }}' => array(
-            'cron'           => array('{{ set.cron }}'),
-            'sources'=> array(
+        '{{ set.name }}' => [
+            'cron'           => ['{{ set.cron }}'],
+            'sources'=> [
 {% for src in set.sources %}
-                array(
+                [
 {% if src.blacklist is defined %}
                     /*
                      * entityIDs that should be excluded from this src.
                      */
-                    'blacklist' => array(
+                    'blacklist' => [
 {% for entity_id in src.blacklist %}
                         '{{ entity_id }}',
 {% endfor %}
-                    ),
+                    ],
 {% endif %}
 {% if src.whitelist is defined %}
                     /*
                      * Whitelist: only keep these EntityIDs.
                      */
-                    'whitelist' => array(
+                    'whitelist' => [
 {% for entity_id in src.whitelist %}
                         '{{ entity_id }}',
 {% endfor %}
-                    ),
+                    ],
 {% endif %}
                     //'conditionalGET' => TRUE,
                     'src' => '{{ src.url }}',
-                    //'certificates' => array(
-                    //    'current.crt',
-                    //    'rollover.crt',
-                    //),
 {% if src.validate_fingerprint is defined %}
                     'validateFingerprint' => '{{ src.validate_fingerprint }}',
 {% endif %}
-                    'template' => array(
+                    'template' => [
 {% if src.tags is defined %}
-                        'tags' => array(
+                        'tags' => [
 {% for tag in src.tags %}
                             '{{ tag }}',
 {% endfor %}
-                        ),
+                        ],
 {% endif %}
 {% if src.authproc is defined %}
-                        'authproc' => array(
+                        'authproc' => [
 {% for entry in src.authproc %}
 {% for priority, filter_params in entry.items() %}
-                            {{ priority }} => array(
+                            {{ priority }} => [
 {% for key, value in filter_params.items() %}
 {% if value == None %}
                                 '{{ key }}',
 {% elif value is iterable and value is not string %}
-                                '{{ key }}' => array(
+                                '{{ key }}' => [
 {% for item in value %}
                                     '{{ item }}',
 {% endfor %}
-                                ),
+                                ],
 {% elif value == true or value == false or value is number %}
                                 '{{ key }}' => {{ value }},
 {% else %}
                                 '{{ key }}' => '{{ value }}',
 {% endif %}
 {% endfor %}
-                            ),
+                            ],
 {% endfor %}
 {% endfor %}
-                        ),
+                        ],
 {% endif %}
 {% if src.extra_parameters is defined %}
 {{ src.extra_parameters | indent(width=24, indentfirst=True) }}
 {% endif %}
-                    ),
+                    ],
 {% if src.types is defined %}
                     /*
                      * The sets of entities to load, any combination of:
@@ -109,15 +105,15 @@ $config = array(
                      *
                      * This option takes precedence over the same option per metadata set.
                      */
-                     'types' => array(
+                     'types' => [
 {% for type in src.types %}
                          '{{ type }}',
 {% endfor %}
-                     ),
+                     ],
 {% endif %}
-                ),
+                ],
 {% endfor %}
-            ),
+            ],
             // Maximum cache time in seconds
             'expireAfter' => 60*60*24*{{ set.expire_after }},
             'outputDir'   => 'metadata/{{ set.output_dir }}/',
@@ -137,14 +133,14 @@ $config = array(
              *
              * All of them will be used by default.
              */
-            'types' => array(
+            'types' => [
 {% for type in set.types %}
                 '{{ type }}',
 {% endfor %}
-            ),
+            ],
 {% endif %}
-        ),
+        ],
 {% endfor %}
-    ),
-);
+    ],
+];
 
