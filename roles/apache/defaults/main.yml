@@ -54,6 +54,9 @@ apache_ignore_missing_ssl_certificate: true
 # Initial apache state, i.e. `started`, `stopped`, `restarted`, or `reloaded`
 apache_state: "started"
 
+#install additional modules
+apache_mods_installed: []
+
 # Only used on Debian/Ubuntu.
 apache_mods_enabled:
   - ssl
