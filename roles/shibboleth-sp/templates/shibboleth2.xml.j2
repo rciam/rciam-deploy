@@ -123,16 +123,17 @@
             entityID property and adjust discoveryURL to point to discovery service.
             (Set discoveryProtocol to "WAYF" for legacy Shibboleth WAYF support.)
             You can also override entityID on /Login query string, or in RequestMap/htaccess.
+            See https://wiki.shibboleth.net/confluence/display/SP3/SSO
             -->
             <SSO 
 {% if shibboleth_sp_sso.entity_id is defined %}
-                 entityID="{{ shibboleth_sp_sso.entity_id }}"
+                entityID="{{ shibboleth_sp_sso.entity_id }}"
 {% endif %}
 {% if shibboleth_sp_sso.discovery_protocol is defined %}
-                 discoveryProtocol="{{ shibboleth_sp_sso.discovery_protocol }}" 
+                discoveryProtocol="{{ shibboleth_sp_sso.discovery_protocol }}"
 {% endif %}
 {% if shibboleth_sp_sso.discovery_url is defined %}
-                 discoveryURL="{{ shibboleth_sp_sso.discovery_url }}"
+                discoveryURL="{{ shibboleth_sp_sso.discovery_url }}"
 {% endif %}
             >
               {{ shibboleth_sp_sso.protocols }}
@@ -141,17 +142,20 @@
             <!-- SAML and local-only logout. -->
             <Logout>{{ shibboleth_sp_logout.protocols }}</Logout>
             
-            <!-- Extension service that generates "approximate" metadata based on SP configuration. -->
-            <Handler type="MetadataGenerator" Location="/Metadata" signing="false"/>
+{% for handler in shibboleth_sp_handlers | default([]) %}
+            <Handler type="{{ handler.type }}" Location="{{ handler.location }}"
+{% if handler.signing is defined %}
+                signing="{{ handler.signing }}"
+{% endif %}
+{% if handler.acl is defined %}
+                acl="{{ handler.acl }}"
+{% endif %}
+{% if handler.show_attributes is defined %}
+                showAttributeValues="{{ handler.show_attributes }}"
+{% endif %}
+            />
 
-            <!-- Status reporting service. -->
-            <Handler type="Status" Location="/Status" acl="127.0.0.1 ::1"/>
-
-            <!-- Session diagnostic service. -->
-            <Handler type="Session" Location="/Session" showAttributeValues="{{ shibboleth_sp_session_show_attributes }}"/>
-
-            <!-- JSON feed of discovery information. -->
-            <Handler type="DiscoveryFeed" Location="/DiscoFeed"/>
+{% endfor %}
         </Sessions>
 
         <!--
@@ -238,31 +242,35 @@
                       handlerURL="{{ override.session.handler_url }}"
 {% endif %}
             >
-{% if override.session.sso is defined %}
-            <SSO entityID="{{ override.session.sso.entity_id }}"
-{% if override.session.sso.force_authn is defined %}
-                forchAuthn="{{ override.session.sso.force_authn }}"
+{% if override.sso is defined %}
+                <SSO
+{% if override.sso.entity_id is defined %}
+                    entityID="{{ override.sso.entity_id }}"
 {% endif %}
-            >{{ override.session.sso.name }}</SSO>
+{% if override.sso.force_authn is defined %}
+                    forchAuthn="{{ override.sso.force_authn }}"
 {% endif %}
-{% if override.session.logout is defined %}
-            <Logout>{{ override.session.logout.name }}</Logout>
+                >
+                  {{ override.sso.protocols }}
+                </SSO>
 {% endif %}
-{% if override.session.handlers is defined %}
-{% for handler in override.session.handlers %}
-            <Handler type="{{ handler.type }}" Location="{{ handler.location }}" 
+{% if override.logout is defined %}
+                <Logout>{{ override.logout.protocols }}</Logout>
+{% endif %}
+{% for handler in override.handlers | default([]) %}
+                <Handler type="{{ handler.type }}" Location="{{ handler.location }}"
 {% if handler.signing is defined %}
-                signing="{{ handler.signing }}"
+                    signing="{{ handler.signing }}"
 {% endif %}
 {% if handler.acl is defined %}
-                acl="{{ handler.acl }}"
+                    acl="{{ handler.acl }}"
 {% endif %}
 {% if handler.show_attributes is defined %}
-                showAttributeValues="{{ handler.show_attributes }}"
+                    showAttributeValues="{{ handler.show_attributes }}"
 {% endif %}
-            />
+                />
+
 {% endfor %}
-{% endif %}
             </Sessions>
 {% endif %}
 {% if override.extra_conf is defined %}

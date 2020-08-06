@@ -99,6 +99,20 @@ shibboleth_sp_sso:
 shibboleth_sp_logout:
   protocols: "SAML2 Local"
 
+# See https://wiki.shibboleth.net/confluence/display/SP3/Handler
+shibboleth_sp_handlers:
+  - type: "MetadataGenerator"
+    location: "/Metadata"
+    signing: "false"
+  - type: "Status"
+    location: "/Status"
+    acl: "127.0.0.1 ::1"
+  - type: "Session"
+    location: "/Session"
+    show_attributes: "false"
+  - type: "DiscoveryFeed"
+    location: "/DiscoFeed"
+
 shibboleth_sp_supportcontact_email: "root@localhost"
 
 # TODO Add support for metadata filters
