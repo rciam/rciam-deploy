@@ -1,14 +1,36 @@
 ---
 
-- name: Generate Shibboleth SP self-signed certificates
+- name: Ensure Shibboleth SP SSL certificate is copied
+  copy:
+    content: '{{ item.content }}'
+    dest: "{{ item.dest }}"
+    owner: "{{ shibboleth_sp_user }}"
+    group: "{{ shibboleth_sp_group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - content: "{{ shibboleth_sp_ssl_cert }}"
+      dest: "{{ shibboleth_sp_conf_path }}/cert/sp-crt.pem"
+      mode: "0644"
+    - content: "{{ shibboleth_sp_ssl_cert_key }}"
+      dest: "{{ shibboleth_sp_conf_path }}/cert/sp-key.pem"
+      mode: "0600"
+  when: shibboleth_sp_ssl_cert_generate|bool == False
+  become: yes
+  no_log: yes
+  notify:
+    - Restart Shibboleth SP
+
+- name: Ensure Shibboleth SP self-signed certificate is generated
   command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "{{ shibboleth_sp_ssl_cert_subj }}" -nodes -out sp-crt.pem -keyout sp-key.pem
   args:
     chdir: "{{ shibboleth_sp_conf_path }}/cert"
     creates: "{{ shibboleth_sp_conf_path }}/cert/sp-key.pem"
-  when: shibboleth_sp_ssl_cert_generate
+  when: shibboleth_sp_ssl_cert_generate|bool == True
   become: yes
+  notify:
+    - Restart Shibboleth SP
 
-- name: Ensure Shibboleth SP certificates are installed
+- name: Ensure Shibboleth SP certificate is installed
   file:
     state: file
     path: "{{ item.path }}"

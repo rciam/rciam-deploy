@@ -3,9 +3,23 @@
 # response received from/sent to the IdP, as well as for receiving encrypted
 # responses.
 shibboleth_sp_ssl_cert_generate: no
+
 # SSL certificate subject (ignored when shibboleth_sp_ssl_cert_generate is set
-# to no/false.
+# to no)
 #shibboleth_sp_ssl_cert_subj: "/C=/ST=/L=/O=/CN=sp.example.org"
+
+# SSL certificate (ignored when shibboleth_sp_ssl_cert_generate is set to yes)
+#shibboleth_sp_ssl_cert: |
+#  -----BEGIN CERTIFICATE-----
+#  ...
+#  -----END CERTIFICATE-----
+
+# SSL certificate key (ignored when shibboleth_sp_ssl_cert_generate is set to
+# yes)
+#shibboleth_sp_ssl_cert_key: |
+#  -----BEGIN PRIVATE KEY-----
+#  ...
+#  -----END PRIVATE KEY-----
 
 # ApplicationDefaults
 # The SAML entityID of this SP
