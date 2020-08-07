@@ -13,5 +13,5 @@
 # using this module.
 - name: Ensure PostgreSQL python module is installed (Debian)
   apt: name=python-psycopg2 state=present install_recommends=no
-  when: "{{ postgresql_users | length }} > 0"
+  when: postgresql_users | length  > 0
   become: yes
