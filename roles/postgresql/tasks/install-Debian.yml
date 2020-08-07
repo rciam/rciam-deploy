@@ -1,11 +1,14 @@
+# file: postgresql/tasks/install-Debian.yml
+#
 ---
 
-- name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
-  become: yes
-
 - name: Ensure PostgreSQL is installed (Debian)
-  apt: name=postgresql-{{ postgresql_version }} state=present install_recommends=no
+  apt:
+    name: "postgresql-{{ postgresql_version }}"
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
   become: yes
 
 # The postgresql_user module requires psycopg2, a Python PostgreSQL database 
