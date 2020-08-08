@@ -1,13 +1,11 @@
 ---
 
-- name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
-  become: yes
-
 - name: Ensure nginx server is installed (Debian)
   apt:
     name:
       - nginx
     state: present
     install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
   become: yes
