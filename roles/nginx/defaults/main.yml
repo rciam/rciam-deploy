@@ -1,10 +1,30 @@
+# file: nginx/defaults/main.yml
+#
 ---
 
+# Whether to create the Virtual Host configuration
 nginx_create_vhosts: false
+# Name of the file that should contain the Virtual Host configuration
 nginx_vhosts_filename: "vhosts.conf"
+# Whether to disable the default Virtual Host configuration
 nginx_remove_default_vhost: false
 
+# SSL protocols that should be enabled
 nginx_ssl_protocols: "TLSv1.2"
+
+# Name of the user that should own the file containing the SSL certificate
+nginx_ssl_certificate_file_owner: "root"
+# Name of the group that should own the file containing the SSL certificate
+nginx_ssl_certificate_file_group: "root"
+# Permissions of the file containing the SSL certificate
+nginx_ssl_certificate_file_mode: "0644"
+
+# Name of the user that should own the file containing the SSL certificate key
+nginx_ssl_certificate_key_file_owner: "root"
+# Name of the group that should own the file containing the SSL certificate key
+nginx_ssl_certificate_key_file_group: "root"
+# Permissions of the file containing the SSL certificate key
+nginx_ssl_certificate_key_file_mode: "0600"
 
 # Uncomment to generate file with custom DH parameters for DHE ciphers
 #nginx_dhparam_file: "dhparam.pem"
@@ -24,8 +44,18 @@ nginx_dhparam_size: 2048
 #    listen:
 #      - "443 ssl default_server"
 #      - "[::]:443 ssl default_server"
-#    certificate_file: "/etc/ssl/private/www_example_org.chained.crt"
-#    certificate_key_file: "/etc/ssl/private/www_example_org.key"
+#    certificate_file: "/etc/ssl/www.example.org/fullchain.pem"
+#    # Uncomment to set the content of the SSL certficate file
+#    certificate: |
+#      -----BEGIN CERTIFICATE-----
+#      ...
+#      -----END CERTIFICATE-----
+#    certificate_key_file: "/etc/ssl/www.example.org/privkey.pem"
+#    # Uncomment to set the content of the SSL certificate key
+#    certificate_key: |
+#      -----BEGIN PRIVATE KEY-----
+#      ...
+#      -----END PRIVATE KEY-----
 #    root: "/var/www/html"
 #    extra_parameters: |
 #      location / {

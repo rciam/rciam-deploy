@@ -1,3 +1,5 @@
+# file: nginx/tasks/configure-common.yml
+#
 ---
 
 - name: Ensure file with custom DH parameters for DHE ciphers exists
@@ -20,7 +22,7 @@
   become: yes
   notify: Restart nginx
 
-- name: Remove default nginx vhost from sites-enabled
+- name: Disable default nginx Virtual Host configuration
   file:
     path: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_default_vhost_filename }}"
     state: absent
@@ -28,7 +30,11 @@
   notify: Restart nginx
   when: nginx_remove_default_vhost
 
-- name: Add nginx vhosts configuration
+# Configure nginx Virtual Host SSL certificates
+- include: configure-ssl-cert.yml
+  when: nginx_vhosts is defined
+
+- name: Add nginx Virtual Host configuration
   template:
     src: "vhosts.conf.j2"
     dest: "{{ nginx_conf_path }}/sites-available/{{ nginx_vhosts_filename }}"
@@ -39,7 +45,7 @@
   notify: Restart nginx
   when: nginx_create_vhosts
 
-- name: Enable nginx vhosts configuration
+- name: Enable nginx Virtual Host configuration
   file:
     src: "{{ nginx_conf_path }}/sites-available/{{ nginx_vhosts_filename }}"
     dest: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_vhosts_filename }}"
