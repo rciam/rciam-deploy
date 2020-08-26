@@ -1,7 +1,23 @@
+# file: tomcat/defaults/main.yml
+#
 ---
-# Either 7 or 8
-tomcat_version: "8"
-#tomcat_java_home: "/usr/lib/jvm/java-7-openjdk"
+
+# Override default tomcat version
+# See tomcat_default_version defined in tomcat/vars/
+#tomcat_version: "9"
+
+# Override default tomcat service name
+# See tomcat_default_service defined in tomcat/vars/
+#tomcat_service: "tomcat{{ tomcat_version }}"
+
+# Override default tomcat configuration path
+# See tomcat_default_conf_path defined in tomcat/vars/
+#tomcat_conf_path: "/etc/tomcat{{ tomcat_version }}"
+
+# Override default tomcat JAVA_HOME
+# See tomcat_default_java_home defined in tomcat/vars/
+#tomcat_java_home: "/usr/lib/jvm/java-11-openjdk"
+
 tomcat_java_opts: "-Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC"
 
 tomcat_connectors:

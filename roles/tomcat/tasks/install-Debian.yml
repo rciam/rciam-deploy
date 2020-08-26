@@ -1,9 +1,12 @@
+# file: tomcat/tasks/install-Debian.yml
+#
 ---
 
-- name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
-  become: yes
-
 - name: Ensure Tomcat is installed (Debian)
-  apt: name=tomcat{{ tomcat_version }} state=present install_recommends=no
+  apt:
+    name: "tomcat{{ tomcat_version }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 86400
+    install_recommends: no
   become: yes
