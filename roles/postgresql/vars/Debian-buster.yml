@@ -1,0 +1,12 @@
+# file: postgresql/vars/Debian-buster.yml
+#
+---
+
+postgresql_default_version: "11"
+postgresql_default_conf_path: "/etc/postgresql/{{ postgresql_version }}"
+postgresql_default_data_path: "/var/lib/postgresql/{{ postgresql_version }}"
+
+postgresql_default_service: "postgresql"
+
+postgresql_default_user: "postgres"
+postgresql_default_group: "postgres"

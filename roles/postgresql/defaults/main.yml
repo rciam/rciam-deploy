@@ -1,6 +1,30 @@
+# file: postgresql/defaults/main.yml
+#
 ---
-# E.g. 9.4 for Debian 8 "Jessie"
-postgresql_version: "9.6"
+
+# Override default PostgreSQL version
+# See postgresql_default_version defined in postgresql/vars/
+#postgresql_version: "11"
+
+# Override default PostgreSQL configuration path
+# See postgresql_default_conf_path in postgresql/vars/
+#postgresql_conf_path: "/etc/postgresql/{{ postgresql_version }}"
+
+# Override default PostgreSQL data path
+# See postgresql_default_data_path in postgresql/vars/
+#postgresql_data_path: "/var/lib/postgresql/{{ postgresql_version }}"
+
+# Override default PostgreSQL service name
+# See postgresql_default_service in postgresql/vars/
+#postgresql_service: "postgresql"
+
+# Override default PostgreSQL user
+# See postgresql_default_user in postgresql/vars/
+#postgresql_user: "postgresql"
+
+# Override default PostgreSQL group
+# See postgresql_default_group in postgresql/vars/
+#postgresql_group: "postgresql"
 
 postgresql_clients:
     # Connection type:
@@ -157,8 +181,11 @@ postgresql_huge_pages_mode: "try"
 # Min 64kB
 postgresql_work_mem: "4MB"
 
-# minimal, archive, hot_standby, or logical
-postgresql_wal_level: "minimal"
+# Determines how much information is written to the WAL: minimal, replica,
+# or logical. In releases prior to 9.6, the values archive and hot_standby
+# were also allowed. As of v9.6, these values are still accepted but mapped
+# to replica.
+postgresql_wal_level: "replica"
 
 # Allows archiving to be done.
 postgresql_archive_mode: "off"
@@ -178,10 +205,10 @@ postgresql_wal_keep_segments: 0
 # Standby server settings (ignored on a master server)
 
 # Master/primary server host 
-postgresql_master_host: "{{ groups['dbmasterserver'][0] }}"
+postgresql_master_host: "{{ groups['dbmaster'][0] }}"
 
 # Master/primary server port 
-postgresql_master_port: "{{ hostvars[groups['dbmasterserver'][0]]['postgresql_port'] | default(postgresql_port) }}"
+postgresql_master_port: "{{ hostvars[groups['dbmaster'][0]]['postgresql_port'] | default(postgresql_port) }}"
  
 # "on" allows queries during recovery
 postgresql_hot_standby_mode: "off"

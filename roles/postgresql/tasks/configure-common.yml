@@ -1,3 +1,5 @@
+# file: postgresql/tasks/configure-common.yml
+#
 ---
 
 - name: Configure PostgreSQL client authentication
@@ -99,7 +101,7 @@
     mode: 0644
     backup: yes
   with_items:
-    - { src: "postgresql.conf.j2", dest: "{{ postgresql_conf_path }}/main/postgresql.conf" }
+    - { src: "postgresql-{{ postgresql_version }}.conf.j2", dest: "{{ postgresql_conf_path }}/main/postgresql.conf" }
   become: yes
   notify:
     - Restart PostgreSQL

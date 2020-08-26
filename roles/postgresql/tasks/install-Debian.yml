@@ -15,6 +15,11 @@
 # adapter. We must ensure that psycopg2 is installed on the remote host before
 # using this module.
 - name: Ensure PostgreSQL python module is installed (Debian)
-  apt: name=python-psycopg2 state=present install_recommends=no
+  apt:
+    name: python-psycopg2
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
   when: postgresql_users | length  > 0
   become: yes
