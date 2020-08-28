@@ -7,15 +7,15 @@
     - { role: apache, tags: apache }
     - { role: php, tags: php }
   tasks:
-    - name: Ensure static web pages are copied
+    - name: Ensure static files for each Virtual Host are copied
       copy:
-        src: "{{ inventory_dir }}/files/web/vhost_documentroots/{{ index }}/"
+        src: "{{ inventory_dir }}/files/web/vhosts/{{ item.servername | urlsplit('hostname') }}/"
         dest: "{{ item.documentroot }}/"
         owner: root
         group: root
-        mode: u=rw,g=r,o=r
-      loop: "{{ apache_vhosts | flatten(levels=1) }}"
+        mode: 0644
+      loop: "{{ apache_vhosts | default([]) }}"
       loop_control:
-        index_var: index
-      when: apache_vhosts is defined
+        label: "Copying static files for Virtual Host {{ item.servername | urlsplit('hostname') }}"
+      ignore_errors: yes
       become: yes
