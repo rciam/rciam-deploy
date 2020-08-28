@@ -1,0 +1,21 @@
+# file: webservers.yml
+#
+---
+
+- hosts: web
+  roles:
+    - { role: apache, tags: apache }
+    - { role: php, tags: php }
+  tasks:
+    - name: Ensure static web pages are copied
+      copy:
+        src: "{{ inventory_dir }}/files/web/vhost_documentroots/{{ index }}/"
+        dest: "{{ item.documentroot }}/"
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+      loop: "{{ apache_vhosts | flatten(levels=1) }}"
+      loop_control:
+        index_var: index
+      when: apache_vhosts is defined
+      become: yes
