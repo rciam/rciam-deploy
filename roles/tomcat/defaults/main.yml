@@ -29,3 +29,22 @@ tomcat_connectors:
     redirect_port: "8443"
     #scheme: "https"
     uri_encoding: "UTF-8"
+
+cluster_mode: False
+
+tomcat_cluster:
+  - channel_send_options: "8"
+    channel_start_options: "3"
+    expire_sessions_on_shutdown: "false"
+    notify_listeners_on_replication: "true"
+    receiver:
+      - address: ""
+        auto_bind: "100"
+        max_threads: "6"
+        port: "4100"
+        selector_timeout: "5000"
+    interceptor_static_only: "true"
+    members:
+      - host: ""
+        port: "4100"
+        unique_id: ""

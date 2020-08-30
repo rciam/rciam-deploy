@@ -115,9 +115,80 @@
       <!--For clustering, please take a look at documentation at:
           /docs/cluster-howto.html  (simple how to)
           /docs/config/cluster.html (reference documentation) -->
+{% if cluster_mode %}
+{% for cluster in tomcat_cluster %}
+      <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
+{% if cluster.channel_send_options is defined %}
+               channelSendOptions="{{ cluster.channel_send_options }}"
+{% endif %}
+{% if cluster.channel_start_options is defined %}
+               channelStartOptions="{{ cluster.channel_start_options }}"
+{% endif %}
+      >
+          <Manager className="org.apache.catalina.ha.session.DeltaManager"
+{% if cluster.expire_sessions_on_shutdown is defined %}
+                   expireSessionsOnShutdown="{{ cluster.expire_sessions_on_shutdown }}"
+{% endif %}
+{% if cluster.notify_listeners_on_replication is defined %}
+                   notifyListenersOnReplication="{{ cluster.notify_listeners_on_replication }}"
+{% endif %}
+          />
+          <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+            <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
+              <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender" />
+            </Sender>
+{% for receiver in cluster.receiver %}
+            <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
+{% if receiver.address is defined %}
+                      address="{{ receiver.address }}"
+{% endif %}
+{% if receiver.auto_bind is defined %}
+                      autoBind="{{ receiver.auto_bind }}"
+{% endif %}
+{% if receiver.max_threads is defined %}
+                      maxThreads="{{ receiver.max_threads }}"
+{% endif %}
+{% if receiver.port is defined %}
+                      port="{{ receiver.port }}"
+{% endif %}
+{% if receiver.selector_timeout is defined %}
+                      selectorTimeout="{{ receiver.selector_timeout }}"
+{% endif %}
+{% endfor %}
+            />
+            <!-- <Interceptor className="com.dm.tomcat.interceptor.DisableMulticastInterceptor" /> -->
+            <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor"
+{% if cluster.interceptor_static_only is defined %}
+                         staticOnly="{{ cluster.interceptor_static_only }}"
+{% endif %}
+            />
+            <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpFailureDetector" />
+            <Interceptor className="org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor">
+{% for member in cluster.members %}
+              <Member className="org.apache.catalina.tribes.membership.StaticMember"
+{% if member.host is defined %}
+                      host="{{ member.host }}"
+{% endif %}
+{% if member.port is defined %}
+                      port="{{ member.port }}"
+{% endif %}
+{% if member.unique_id is defined %}
+                      uniqueId="{{ member.unique_id }}"
+{% endif %}
+{% endfor %}
+              />
+            </Interceptor>
+            <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatch15Interceptor" />
+          </Channel>
+          <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=".*\.gif;.*\.js;.*\.jpg;.*\.png;.*\.htm;.*\.html;.*\.css;.*\.txt;" />
+          <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener" />
+      </Cluster>
+{% endfor %}
+{% else %}
       <!--
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"/>
       -->
+{% endif %}
 
       <!-- Use the LockOutRealm to prevent attempts to guess user passwords
            via a brute-force attack -->
