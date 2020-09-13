@@ -20,8 +20,8 @@
           job: "/srv/rciam-sync-opsportal/.venv/bin/python /srv/rciam-sync-opsportal/main.py"
           minute: 55
           hour: "*/2"
-          #day: 
-          #month: 
+          #day:
+          #month:
       - name: rciam-sync-client-names
         path: /srv/rciam-sync-client-names
         repo: https://github.com/rciam/rciam-sync-client-names.git
@@ -34,9 +34,24 @@
         cron:
           job: "/srv/rciam-sync-client-names/.venv/bin/python /srv/rciam-sync-client-names/main.py"
           minute: 5
-          #hour: 
-          #day: 
-          #month: 
+          #hour:
+          #day:
+          #month:
+      - name: rciam-sync-voms
+        path: /srv/rciam-sync-voms
+        repo: https://github.com/rciam/rciam-sync-voms.git
+        version: devel
+        user:
+          name: rciam-voms-client
+          group: rciam-voms-client
+          gecos: "RCIAM VOMS Admin Client,,,"
+          shell: /bin/bash
+        cron:
+          job: "/srv/rciam-sync-voms/.venv/bin/python /srv/rciam-sync-voms/main.py"
+          minute: "20,50"
+          #hour:
+          #day:
+          #month:
         
   tasks:
     - name: Ensure util dependencies are installed
