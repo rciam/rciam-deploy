@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+registry = {
+    "db": {
+        "name": "{{ rciam_dbs.registry.name }}",
+        "host": "{{ lookup('dig', groups['dbmaster'][0]) }}",
+        "user": "{{ rciam_dbs.registry.owner_username }}",
+        "password": "{{ rciam_dbs.registry.owner_password }}"
+    }
+}

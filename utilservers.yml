@@ -52,6 +52,21 @@
           #hour:
           #day:
           #month:
+      - name: rciam-expire-vomembers
+        path: /srv/rciam-expire-vomembers
+        repo: https://github.com/NicolasLiampotis/rciam-expire-vomembers.git
+        version: devel
+        user:
+          name: rciam-registry-client
+          group: rciam-registry-client
+          gecos: "RCIAM COmanage Registry DB Client,,,"
+          shell: /bin/bash
+        cron:
+          job: "/srv/rciam-expire-vomembers/.venv/bin/python /srv/rciam-expire-vomembers/main.py"
+          minute: "29,59"
+          #hour:
+          #day:
+          #month:
         
   tasks:
     - name: Ensure util dependencies are installed
