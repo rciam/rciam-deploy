@@ -33,6 +33,7 @@
     owner: root
     group: root
     mode: 0644
+    backup: yes
   become: yes
   notify: restart apache
 
@@ -43,6 +44,7 @@
     owner: root
     group: root
     mode: 0644
+    backup: yes
   become: yes
   notify: restart apache
 
@@ -61,6 +63,7 @@
     owner: root
     group: root
     mode: 0644
+    backup: yes
   become: yes
   notify: restart apache
   when: apache_create_vhosts
