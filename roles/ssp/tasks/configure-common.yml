@@ -262,5 +262,5 @@
     dest: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
     backup: yes
     force: yes
-  when: "'discopower' in ssp_mods_enabled"
+  when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined"
   become: yes
