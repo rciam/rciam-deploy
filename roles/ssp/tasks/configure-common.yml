@@ -7,7 +7,7 @@
 #    force: yes
 #  become: true
 #  notify:
-#    - restart apache
+#    - restart webserver
 
 - name: Generate SHA-256 encrypted hash of SSP admin password
   script: "ssha256pwgen-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_adminpassword }}"
@@ -49,7 +49,7 @@
     force: yes
   become: yes
   notify:
-    - restart apache
+    - restart webserver
 
 - name: Generate self-signed SP certificates
   command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
