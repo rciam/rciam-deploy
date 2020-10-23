@@ -660,7 +660,15 @@ $config = [
      *     ],
      * ],
      *
+     *
+     * One or more memcached server groups for storing session information when
+     * ssp_store_type is set to `memcache`. Every session data item will be mirrored
+     * in every server group. Each server group is a list of servers. The data items
+     * will be load-balanced between all servers in each server group.
+     *
      */
+
+{# Static behaviour #}
 {% if ssp_memcache_store_servers is defined %}
     'memcache_store.servers' => [
 {% for group in ssp_memcache_store_servers %}
@@ -671,6 +679,20 @@ $config = [
                 'timeout' => 1,
             ],
 {% endfor %}
+        ],
+{% endfor %}
+    ],
+{% endif %}
+
+{# Dynamic way #}
+{% if ssp_memcache_store_servers_group is defined and ssp_memcache_store_servers_group in group_names %}
+    'memcache_store.servers' => [
+{% for host in groups[ssp_memcache_store_servers_group] %}
+        [
+            [
+                'hostname' => '{{ lookup('dig', host) }}',
+                'timeout' => 1,
+            ],
         ],
 {% endfor %}
     ],
