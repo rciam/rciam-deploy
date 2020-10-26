@@ -510,6 +510,8 @@ ssp_mods_disabled: []
 #
 # Cron module URL
 ssp_mod_cron_url: "https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php"
+# Secret key used to restrict access to your cron.
+#ssp_mod_cron_secret: "secret"
 ssp_mod_cron_entries:
   - name: "SSP metarefresh [daily]"
     tag: "daily"
