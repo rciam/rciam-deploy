@@ -1,0 +1,9 @@
+---
+
+# Example
+#
+#ssp_themes:
+#  - path: "{{ ssp_path }}/modules/themeeosc"
+#    release_url: "https://github.com/EGI-Foundation/simplesamlphp-module-themeeosc/releases/download/v-eosc-2.0.0/themeeosc.zip"
+#    config: "{{ ssp_path }}/modules/themeeosc/simplesamlphp-module-themeeosc/config-example/module_themeeosc.php"
+

@@ -7,4 +7,5 @@
     - { role: apache, tags: apache }
     - { role: php, tags: php }
     - { role: ssp, tags: ssp }
+    - { role: ssp-themes, tags: themes }
     #- { role: ssp-module-proxystatistics, tags: statistics }

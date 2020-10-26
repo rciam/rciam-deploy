@@ -1,0 +1,30 @@
+---
+
+
+- name: Install unzip
+  package:
+    name: unzip
+    state: latest
+  become: yes
+
+
+- name: Create themes directory
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: yes
+  with_items: "{{ ssp_themes }}"
+
+
+- name: Download & Install SSP Themes
+  unarchive:
+    src: "{{ item.release_url }}"
+    dest: "{{ item.path }}"
+    remote_src: yes
+  become: yes
+  with_items: "{{ ssp_themes }}"
+
+

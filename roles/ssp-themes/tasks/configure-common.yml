@@ -1,0 +1,22 @@
+---
+
+
+- name: Fix SSP themes directory path
+  command: "mv {{ item.path }}/{{ item.fullname }} {{ item.path }}/{{ item.name }}"
+  become: yes
+  with_items: "{{ ssp_themes }}"
+
+
+- name: Configure SSP Themes
+  copy:
+    src: "{{ item.config }}"
+    dest: "{{ ssp_path }}/config/"
+    remote_src: yes
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  become: yes
+  with_items: "{{ ssp_themes }}"
+  notify:
+    - restart webserver
+
