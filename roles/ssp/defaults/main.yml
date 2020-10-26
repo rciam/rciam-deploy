@@ -1,4 +1,7 @@
+# file: ssp/defaults/main.yml
+#
 ---
+
 ssp_version: "1.17"
 
 ssp_repo_url: "git://github.com/simplesamlphp/simplesamlphp.git"
@@ -15,6 +18,27 @@ ssp_certdir: "{{ ssp_path }}/cert/"
 ssp_loggingdir: "{{ ssp_path }}/log/"
 ssp_datadir: "{{ ssp_path }}/data/"
 ssp_metadatadir: "{{ ssp_path }}/metadata/"
+
+# Security configuration options
+
+# Secret salt used by SimpleSAMLphp when it needs to generate a secure hash of
+# a value. It must be changed from its default value to a secret value.
+# The value can be any valid string of any length.
+# A possible way to generate a random salt is by running the following command:
+# LC_CTYPE=C tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
+#ssp_secretsalt: "defaultsecretsalt"
+
+# Password giving access to the installation page of SimpleSAMLphp with
+# metadata listing and diagnostics pages.
+# This password must be kept secret, and modified from the default value 123.
+#ssp_adminpassword: "123"
+
+# Whether to require administrator password to access the web interface
+ssp_admin_protectindexpage: no
+
+# Whether to require administrator password to access the metadata pages
+ssp_admin_protectmetadata: no
+
 
 ssp_theme: "default"
 
@@ -64,9 +88,6 @@ ssp_database_slaves: []
 ssp_debug: false
 ssp_showerrors: false
 ssp_errorreporting: true
-
-ssp_admin_protectindexpage: false
-ssp_admin_protectmetadata: false
 
 # Let SSP figure out timezone based on the host machine
 ssp_timezone: 'null'
