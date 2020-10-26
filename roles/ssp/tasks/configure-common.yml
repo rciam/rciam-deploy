@@ -1,13 +1,6 @@
+# file: ssp/tasks/configure-common.php
+#
 ---
-#- name: Configure maximum amount of memory SSP PHP scripts may consume
-#  template:
-#    src: "etc/php5/apache2/conf.d/99-memory-limit.ini.j2"
-#    dest: "{{ ssp_php_apache_conf_path }}/99-memory-limit.ini"
-#    backup: no
-#    force: yes
-#  become: true
-#  notify:
-#    - restart webserver
 
 - name: Generate SHA-256 encrypted hash of SSP admin password
   script: "ssha256pwgen-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_adminpassword }}"
@@ -24,22 +17,6 @@
 - name: Configure SHA-256 encrypted hash of SSP admin password
   set_fact:
     ssp_adminpasswordhash: "{{ ssp_adminpasswordhash_new.stdout if ssp_adminpasswordhash_new is changed else ssp_adminpasswordhash_old.stdout }}"
-
-- name: Generate SSP secret salt
-  shell: tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 status=none
-  args:
-    creates: "{{ ssp_configdir }}/config.php"
-  register: ssp_secretsalt_new
-
-- name: Check existing SSP secret salt
-  script: "SimpleSAML_Configuration-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_secretsalt_key }}"
-  args:
-    removes: "{{ ssp_configdir }}/config.php"
-  register: ssp_secretsalt_old
-
-- name: Configure SSP secret salt
-  set_fact:
-    ssp_secretsalt: "{{ ssp_secretsalt_new.stdout if ssp_secretsalt_new is changed else ssp_secretsalt_old.stdout }}"
 
 - name: Configure SSP
   template:
@@ -172,31 +149,6 @@
   when: "'metarefresh' in ssp_mods_enabled"
   register: ssp_mod_metarefresh_config
   become: yes
-  tags:
-    - metarefresh
-
-- name: Generate SSP cron module secret
-  shell: tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 status=none
-  args:
-    creates: "{{ ssp_configdir }}/module_cron.php"
-  when: "'cron' in ssp_mods_enabled"
-  register: ssp_mod_cron_secret_new
-  tags:
-    - metarefresh
-
-- name: Check existing SSP cron module secret
-  command: awk -F"'" '/key/ { print $4 }' "{{ ssp_configdir }}/module_cron.php"
-  args:
-    removes: "{{ ssp_configdir }}/module_cron.php"
-  when: "'cron' in ssp_mods_enabled"
-  register: ssp_mod_cron_secret_old
-  tags:
-    - metarefresh
-
-- name: Configure SSP cron module secret
-  set_fact:
-    ssp_mod_cron_secret: "{{ ssp_mod_cron_secret_new.stdout if ssp_mod_cron_secret_new is changed else ssp_mod_cron_secret_old.stdout }}"
-  when: "'cron' in ssp_mods_enabled"
   tags:
     - metarefresh
 
