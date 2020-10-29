@@ -8,3 +8,4 @@
     - { role: php, tags: php }
     - { role: ssp, tags: ssp }
     #- { role: ssp-module-proxystatistics, tags: statistics }
+    #- { role: ssp-modules, tags: ssp-modules }
