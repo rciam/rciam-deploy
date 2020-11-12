@@ -1,0 +1,6 @@
+---
+# Run OS-independent installation tasks
+- include: install-common.yml
+
+# Apply OS-independent configuration
+- include: configure-common.yml

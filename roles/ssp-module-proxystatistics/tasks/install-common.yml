@@ -1,0 +1,17 @@
+---
+
+- name: Checkout SSP proxystatistics module source
+  git:
+    repo: "{{ ssp_module_proxystatistics_repo_url }}"
+    dest: "{{ ssp_module_proxystatistics_path }}"
+    version: "{{ ssp_module_proxystatistics_repo_version }}"
+    accept_hostkey: yes
+    force: no
+    update: yes
+  become: yes
+
+#- name: Create SSP proxystatistics statistics table
+#  postgresql_table:
+#    db: "ssp_module_proxystatistics_db.name"
+#    name: "{{ ssp_module_proxystatistics_table_name.statistics }}"
+#    owner: "{{ ssp_module_proxystatistics_db.username }}"

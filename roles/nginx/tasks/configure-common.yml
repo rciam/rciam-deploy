@@ -41,6 +41,7 @@
     owner: root
     group: root
     mode: 0644
+    backup: yes
   become: yes
   notify: Restart nginx
   when: nginx_create_vhosts

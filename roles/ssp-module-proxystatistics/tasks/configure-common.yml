@@ -1,0 +1,19 @@
+---
+
+- name: Configure SSP proxystatistics module
+  template:
+    src: "config/module_statisticsproxy-{{ ssp_module_proxystatistics_version }}.php.j2"
+    dest: "{{ ssp_path }}/config/module_statisticsproxy.php"
+    backup: yes
+    force: yes
+  become: yes
+
+- name: Enable SSP proxystatistics module 
+  copy:
+    content: ""
+    dest: "{{ ssp_module_proxystatistics_path }}/enable"
+    force: no
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  become: yes

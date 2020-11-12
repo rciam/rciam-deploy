@@ -1,0 +1,10 @@
+# file: saml2samlservers.yml
+# 
+---
+
+- hosts: saml2saml
+  roles:
+    - { role: apache, tags: apache }
+    - { role: php, tags: php }
+    - { role: ssp, tags: ssp }
+    #- { role: ssp-module-proxystatistics, tags: statistics }
