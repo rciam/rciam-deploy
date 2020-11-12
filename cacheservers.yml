@@ -1,6 +1,5 @@
 ---
 
-- hosts: cacheservers
+- hosts: cache
   roles:
-    - common
     - memcached
