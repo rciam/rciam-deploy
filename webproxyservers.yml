@@ -1,6 +1,5 @@
 ---
 
-- hosts: webproxyservers
+- hosts: webproxy
   roles:
-    - common
     - nginx
