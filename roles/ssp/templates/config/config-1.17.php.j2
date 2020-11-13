@@ -660,15 +660,18 @@ $config = [
      *     ],
      * ],
      *
-     *
-     * One or more memcached server groups for storing session information when
-     * ssp_store_type is set to `memcache`. Every session data item will be mirrored
-     * in every server group. Each server group is a list of servers. The data items
-     * will be load-balanced between all servers in each server group.
-     *
      */
-{% if ssp_memcache_store_servers is defined %}
     'memcache_store.servers' => [
+{% if ssp_memcache_store_servers_group is defined and ssp_memcache_store_servers_group in group_names %}
+{% for host in groups[ssp_memcache_store_servers_group] %}
+        [
+            [
+                'hostname' => '{{ lookup('dig', host) }}',
+                'timeout' => 1,
+            ],
+        ],
+{% endfor %}
+{% else %}
 {% for group in ssp_memcache_store_servers %}
         [
 {% for host in group %}
@@ -679,19 +682,8 @@ $config = [
 {% endfor %}
         ],
 {% endfor %}
-    ],
-{% elif ssp_memcache_store_servers_group is defined and ssp_memcache_store_servers_group in group_names %}
-    'memcache_store.servers' => [
-{% for host in groups[ssp_memcache_store_servers_group] %}
-        [
-            [
-                'hostname' => '{{ lookup('dig', host) }}',
-                'timeout' => 1,
-            ],
-        ],
-{% endfor %}
-    ],
 {% endif %}
+    ],
 
     /*
      * This value allows you to set a prefix for memcache-keys. The default
@@ -701,11 +693,7 @@ $config = [
      * than one instance is using memcache, you probably want to assign
      * a unique value per instance to this setting to avoid data collision.
      */
-{% if ssp_memcache_store_prefix is defined %}
     'memcache_store.prefix' => '{{ ssp_memcache_store_prefix}}',
-{% else %}
-    'memcache_store.prefix' => null,
-{% endif %}
 
     /*
      * This value is the duration data should be stored in memcache. Data

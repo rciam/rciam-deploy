@@ -67,8 +67,15 @@ ssp_tempdir: "/tmp/simplesaml"
 #  - # Group B
 #    - "memcached3.acme.com"
 #    - "memcached4.acme.com"
+ssp_memcache_store_servers:
+  -
+    - "localhost"
+# Alternatively, define ssp_memcache_store_servers_group to dynamically build
+# the memcache server group configuration from the host group
+# See templates/config/config-x.y.php.j2
+#ssp_memcache_store_servers_group: "cache"
 
-#ssp_memcache_store_prefix: "simpleSAMLphp"
+ssp_memcache_store_prefix: ""
 
 # Database configuration is optional. If you are not using core functionality
 # or modules that require a database, you can skip this configuration
