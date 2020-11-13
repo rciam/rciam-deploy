@@ -682,10 +682,8 @@ $config = [
         ],
 {% endfor %}
     ],
-{% endif %}
-
 {# Dynamic way #}
-{% if ssp_memcache_store_servers_group is defined and ssp_memcache_store_servers_group in group_names %}
+{% elif ssp_memcache_store_servers_group is defined and ssp_memcache_store_servers_group in group_names %}
     'memcache_store.servers' => [
 {% for host in groups[ssp_memcache_store_servers_group] %}
         [
