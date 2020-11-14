@@ -7,16 +7,22 @@
   args:
     creates: "{{ ssp_configdir }}/config.php"
   register: ssp_adminpasswordhash_new
+  tags:
+    - ssp:config:config
 
 - name: Check existing SHA-256 encrypted hash of SSP admin password
   script: "SimpleSAML_Configuration-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_adminpassword_key }}"
   args:
     removes: "{{ ssp_configdir }}/config.php"
   register: ssp_adminpasswordhash_old
+  tags:
+    - ssp:config:config
 
 - name: Configure SHA-256 encrypted hash of SSP admin password
   set_fact:
     ssp_adminpasswordhash: "{{ ssp_adminpasswordhash_new.stdout if ssp_adminpasswordhash_new is changed else ssp_adminpasswordhash_old.stdout }}"
+  tags:
+    - ssp:config:config
 
 - name: Configure SSP
   template:
@@ -27,6 +33,8 @@
   become: yes
   notify:
     - restart webserver
+  tags:
+    - ssp:config:config
 
 - name: Generate self-signed SP certificates
   command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
@@ -36,6 +44,8 @@
   with_items: "{{ ssp_authsources_saml }}"
   when: item.generate_ssl_certificate
   become: yes
+  tags:
+    - ssp:config:authsources
 
 - name: Ensure SP certificate keys are installed
   file:
@@ -46,6 +56,8 @@
     mode: "0600"
   with_items: "{{ ssp_authsources_saml }}"
   become: yes
+  tags:
+    - ssp:config:authsources
 
 - name: Ensure SP certificates are installed
   file:
@@ -56,6 +68,8 @@
     mode: "0644"
   with_items: "{{ ssp_authsources_saml }}"
   become: yes
+  tags:
+    - ssp:config:authsources
 
 - name: Configure SSP authN sources
   template:
@@ -65,7 +79,7 @@
     force: yes
   become: yes
   tags:
-    - authsources
+    - ssp:config:authsources
 
 - name: Generate self-signed IdP certificates
   command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out idp-{{ item.entity_id }}.crt -keyout idp-{{ item.entity_id }}.key
@@ -75,6 +89,8 @@
   with_items: "{{ ssp_idp_hosts }}"
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
   become: yes
+  tags:
+    - ssp:config:saml20-idp-hosted
 
 - name: Ensure IdP certificate keys are installed
   file:
@@ -86,6 +102,8 @@
   with_items: "{{ ssp_idp_hosts }}"
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
   become: yes
+  tags:
+    - ssp:config:saml20-idp-hosted
 
 - name: Ensure IdP certificates are installed
   file:
@@ -97,6 +115,8 @@
   with_items: "{{ ssp_idp_hosts }}"
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
   become: yes
+  tags:
+    - ssp:config:saml20-idp-hosted
 
 - name: Configure SSP hosted SAML 2.0 IdP metadata
   template:
@@ -107,7 +127,7 @@
   when: ssp_idp_saml20_enabled
   become: yes
   tags:
-    - saml20-idp-hosted
+    - ssp:config:saml20-idp-hosted
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
   template:
@@ -117,6 +137,8 @@
     force: yes
   when: ssp_idp_shib13_enabled
   become: yes
+  tags:
+    - ssp:config:shib13-idp-hosted
 
 - name: Enable required SSP modules
   command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
@@ -124,6 +146,8 @@
     creates: "{{ ssp_path }}/modules/{{ item }}/enable"
   with_items: "{{ ssp_mods_enabled }}"
   become: yes
+  tags:
+    - ssp:config:mods
 
 - name: Disable unnecessary SSP modules
   command: touch "{{ ssp_path }}/modules/{{ item }}/disable"
@@ -131,6 +155,8 @@
     creates: "{{ ssp_path }}/modules/{{ item }}/disable"
   with_items: "{{ ssp_mods_disabled }}"
   become: yes
+  tags:
+    - ssp:config:mods
 
 - name: Ensure required SSP metarefresh module dirs exist
   file: path={{ ssp_metadatadir }}/{{ item.output_dir }} state=directory owner={{ssp_webuser }} group={{ ssp_webgroup }}
@@ -138,7 +164,8 @@
   when: "'metarefresh' in ssp_mods_enabled"
   become: yes
   tags:
-    - metarefresh
+    - ssp:config:mods
+    - ssp:config:mods:metarefresh
 
 - name: Configure SSP metarefresh module
   template:
@@ -150,7 +177,8 @@
   register: ssp_mod_metarefresh_config
   become: yes
   tags:
-    - metarefresh
+    - ssp:config:mods
+    - ssp:config:mods:metarefresh
 
 - name: Configure SSP cron module
   template:
@@ -161,7 +189,9 @@
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
-    - metarefresh
+    - ssp:config:mods
+    - ssp:config:mods:cron
+    - ssp:config:mods:metarefresh
 
 - name: Configure SSP cron jobs
   cron:
@@ -178,7 +208,9 @@
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
-    - metarefresh
+    - ssp:config:mods
+    - ssp:config:mods:cron
+    - ssp:config:mods:metarefresh
 
 - name: Configure SSP cron job variables
   cronvar:
@@ -189,7 +221,9 @@
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
-    - metarefresh
+    - ssp:config:mods
+    - ssp:config:mods:cron
+    - ssp:config:mods:metarefresh
 
 #TODO- name: Refresh SSP remote SAML metadata
 #  shell: "curl -k --silent \"https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag={{ item }}\" > /dev/null 2>&1"
@@ -207,6 +241,9 @@
     force: yes
   when: "'discopower' in ssp_mods_enabled"
   become: yes
+  tags:
+    - ssp:config:mods
+    - ssp:config:mods:discopower
 
 - name: Update SSP discopower module dictionary definitions
   template:
@@ -216,3 +253,6 @@
     force: yes
   when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined"
   become: yes
+  tags:
+    - ssp:config:mods
+    - ssp:config:mods:discopower

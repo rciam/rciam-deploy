@@ -45,6 +45,12 @@
 
 # Run OS-independent installation tasks
 - include: install-common.yml
+  tags:
+    - install
+    - ssp:install
 
 # Apply OS-independent configuration
 - include: configure-common.yml
+  tags:
+    - config
+    - ssp:config
