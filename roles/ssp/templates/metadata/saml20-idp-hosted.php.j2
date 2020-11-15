@@ -230,6 +230,10 @@ $metadata['{{ idp.entity_id }}'] = array(
 {% endfor %}
 {% endfor %}
         ),
+{% elif idp.authproc_raw is defined %}
+        'authproc' => array(
+            {{ idp.authproc_raw | indent(width=12, indentfirst=False) }}
+        ),
 {% endif %}
 {% if idp.extra_parameters is defined %}
 {{ idp.extra_parameters | indent(width=8, indentfirst=True) }}

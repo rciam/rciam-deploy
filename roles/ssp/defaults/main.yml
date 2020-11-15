@@ -164,7 +164,10 @@ ssp_language_rtl:
 
 ssp_language_default: "en"
 
-# Authentication processing filters that will be executed for all IdPs
+# Authentication processing filters that will be executed for all IdPs.
+# See https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
+# The filters can be specified with PHP syntax using `ssp_authproc_idp_raw` or
+# alternatively, with YAML syntax using `ssp_authproc_idp`.
 ssp_authproc_idp:
   - "30":
       # Adopts language from attribute to use in UI
@@ -182,7 +185,10 @@ ssp_authproc_idp:
        # If language is set in Consent module it will be added as an attribute.
        class: "core:LanguageAdaptor"
 
-# Authentication processing filters that will be executed for all SPs
+# Authentication processing filters that will be executed for all SPs.
+# See https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
+# The filters can be specified with PHP syntax using `ssp_authproc_sp_raw` or
+# alternatively, with YAML syntax using `ssp_authproc_sp`.
 ssp_authproc_sp: 
   - "90":
       # Adopts language from attribute to use in UI
@@ -311,6 +317,22 @@ ssp_authsources_saml:
     # - urn:oasis:names:tc:SAML:1.0:profiles:artifact-01
     # - urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser 
     #acs_bindings:
+    # Optional list of processing filters to run after SP authentication. See
+    # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
+    # The filters can be specified with PHP syntax using `authproc_raw` or
+    # alternatively, with YAML syntax using `authproc`. See examples below:
+    #authproc_raw: |-
+    #  // Add the persistent NameID to the eduPersonTargetedID attribute
+    #  60 => [
+    #      'class' => 'saml:PersistentNameID2TargetedID',
+    #      'attribute' => 'eduPersonTargetedID', // The default
+    #      'nameId' => true, // The default
+    #  ],
+    #authproc:
+    #  - "60":
+    #      class: "saml:PersistentNameID2TargetedID"
+    #      attribute: "eduPersonTargetedID"
+    #      nameId: no
 
 # Requires `authfacebook` module in `ssp_mods_enabled`.
 #ssp_authsources_facebook:
@@ -470,12 +492,33 @@ ssp_idp_hosts: []
     # The format of the NameID supported by this IdP. Defaults to the transient
     # format if unspecified.
     #name_id_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+    # Optional list of processing filters to run for this IdP. See
+    # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
+    # The filters can be specified with PHP syntax using `authproc_raw` or
+    # alternatively, with YAML syntax using `authproc`. See examples below:
+    #authproc_raw: |-
+    #  80 => array(
+    #      // Maps attribute OIDs to names.
+    #      // Usually combined with SAML:2.0:attrname-format:uri
+    #      'class' => 'core:AttributeMap',
+    #      'oid2name',
+    #  ),
+    #  90 => array(
+    #      // Requires `consent` in `ssp_mods_enabled`.
+    #      'class' => 'consent:Consent',
+    #      'store' => 'consent:Cookie',
+    #      'includeValues' => false,
+    #      'checked' => false,
+    #      'focus' => 'yes', // or 'no'
+    #      'hiddenAttributes' => array(
+    #      ),
+    #  ),
     #authproc:
-    #  - "10":
-          # Maps attribute names to OIDs.
+    #  - "80":
+          # Maps attribute OIDs to names.
           # Usually combined with SAML:2.0:attrname-format:uri
           #class: "core:AttributeMap"
-          #name2oid:
+          #oid2name:
     #  - "90":
           # Requires `consent` in `ssp_mods_enabled`.
           #class: "consent:Consent"
@@ -558,10 +601,18 @@ ssp_mod_cron_vars:
         #tags:
         #  - tag1
         #  - tag2
+        # Optional list of processing filters to run for this entity. See
+        # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
+        # The filters can be specified with PHP syntax using `authproc_raw` or
+        # alternatively, with YAML syntax using `authproc`. See examples below:
+        #authproc_raw: |-
+        #  50 => [
+        #      'class' => 'core:ExampleFilter',
+        #  ],
         #authproc:
         #  - "50":
         #      class: "core:ExampleFilter"
-        #extra_parameters: |
+        #extra_parameters: |-
         #  'foo' => 'bar',
         # Optional list of entityIDs that should be excluded from this src.
         #blacklist:

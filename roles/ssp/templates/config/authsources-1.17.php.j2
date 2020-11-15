@@ -279,6 +279,10 @@ $config = [
 {% endfor %}
 {% endfor %}
         ],
+{% elif authsource.authproc_raw is defined %}
+        'authproc' => [
+            {{ authsource.authproc_raw | indent(width=12, indentfirst=False) }}
+        ],
 {% endif %}
     ],
 

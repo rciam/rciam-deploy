@@ -517,6 +517,7 @@ $config = array(
      * Both Shibboleth and SAML 2.0
      */
     'authproc.idp' => array(
+{% if ssp_authproc_idp is defined %}
 {% for entry in ssp_authproc_idp %}
 {% for priority, filter_params in entry.items() %}
         {{ priority }} => array(
@@ -538,6 +539,9 @@ $config = array(
         ),
 {% endfor %}
 {% endfor %}
+{% elif ssp_authproc_idp_raw is defined %}
+        {{ ssp_authproc_idp_raw | indent(width=8, indentfirst=False) }}
+{% endif %}
     ),
 
 
@@ -546,6 +550,7 @@ $config = array(
      * Both Shibboleth and SAML 2.0
      */
     'authproc.sp' => array(
+{% if ssp_authproc_sp is defined %}
 {% for entry in ssp_authproc_sp %}
 {% for priority, filter_params in entry.items() %}
         {{ priority }} => array(
@@ -567,6 +572,9 @@ $config = array(
         ),
 {% endfor %}
 {% endfor %}
+{% elif ssp_authproc_sp_raw is defined %}
+        {{ ssp_authproc_sp_raw | indent(width=8, indentfirst=False) }}
+{% endif %}
     ),
 
 

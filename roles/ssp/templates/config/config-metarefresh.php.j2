@@ -91,6 +91,10 @@ $config = array(
 {% endfor %}
 {% endfor %}
                         ),
+{% elif src.authproc_raw is defined %}
+                        'authproc' => array(
+                            {{ src.authproc_raw | indent(width=28, indentfirst=False) }}
+                        ),
 {% endif %}
 {% if src.extra_parameters is defined %}
 {{ src.extra_parameters | indent(width=24, indentfirst=True) }}

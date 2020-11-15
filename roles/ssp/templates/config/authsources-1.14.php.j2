@@ -269,6 +269,10 @@ $config = array(
 {% endfor %}
 {% endfor %}
         ),
+{% elif authsource.authproc_raw is defined %}
+        'authproc' => array(
+            {{ authsource.authproc_raw | indent(width=12, indentfirst=False) }}
+        ),
 {% endif %}
     ),
 
