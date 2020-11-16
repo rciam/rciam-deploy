@@ -91,6 +91,7 @@
   become: yes
   tags:
     - ssp:config:saml20-idp-hosted
+    - ssp:config:shib13-idp-hosted
 
 - name: Ensure IdP certificate keys are installed
   file:
@@ -104,6 +105,7 @@
   become: yes
   tags:
     - ssp:config:saml20-idp-hosted
+    - ssp:config:shib13-idp-hosted
 
 - name: Ensure IdP certificates are installed
   file:
@@ -117,10 +119,11 @@
   become: yes
   tags:
     - ssp:config:saml20-idp-hosted
+    - ssp:config:shib13-idp-hosted
 
 - name: Configure SSP hosted SAML 2.0 IdP metadata
   template:
-    src: metadata/saml20-idp-hosted.php.j2
+    src: "metadata/saml20-idp-hosted-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_metadatadir }}/saml20-idp-hosted.php"
     backup: yes
     force: yes
@@ -131,7 +134,7 @@
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
   template:
-    src: metadata/shib13-idp-hosted.php.j2
+    src: "metadata/shib13-idp-hosted-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_metadatadir }}/shib13-idp-hosted.php"
     backup: yes
     force: yes
