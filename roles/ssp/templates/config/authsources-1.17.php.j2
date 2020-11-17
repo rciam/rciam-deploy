@@ -61,24 +61,24 @@ $config = [
 {% endif %}
 {% if authsource.display_name is defined %}
         'name' => [
-    {% for key, value in authsource.display_name.items() %}
-        '{{ key }}' => '{{ value }}',
-    {% endfor %}
-    ],
+{% for key, value in authsource.display_name.items() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ],
 {% endif %}
 {% if authsource.description is defined %}
         'description' => [
-    {% for key, value in authsource.description.items() %}
-        '{{ key }}' => '{{ value }}',
-    {% endfor %}
-    ],
+{% for key, value in authsource.description.items() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ],
 {% endif %}
 {% if authsource.privacy_statement_url is defined %}
         'privacypolicy' => [
-    {% for key, value in authsource.privacy_statement_url.items() %}
-        '{{ key }}' => '{{ value }}',
-    {% endfor %}
-    ],
+{% for key, value in authsource.privacy_statement_url.items() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ],
 {% endif %}
 {% if authsource.entity_attributes is defined %}
         'EntityAttributes' => [
@@ -155,14 +155,14 @@ $config = [
     {% for key, value in authsource.display_name.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
-        ],
+            ],
 {% endif %}
 {% if authsource.description is defined %}
             'Description' => [
     {% for key, value in authsource.description.items() %}
             '{{ key }}' => '{{ value }}',
     {% endfor %}
-        ],
+            ],
 {% endif %}
 {% if authsource.logos is defined %}
             'Logo' => [
@@ -180,17 +180,17 @@ $config = [
 {% endif %}
 {% if authsource.information_url is defined %}
             'InformationURL' => [
-    {% for key, value in authsource.information_url.items() %}
-            '{{ key }}' => '{{ value }}',
-    {% endfor %}
-        ],
+{% for key, value in authsource.information_url.items() %}
+                '{{ key }}' => '{{ value }}',
+{% endfor %}
+            ],
 {% endif %}
 {% if authsource.privacy_statement_url is defined %}
             'PrivacyStatementURL' => [
-    {% for key, value in authsource.privacy_statement_url.items() %}
-            '{{ key }}' => '{{ value }}',
-    {% endfor %}
-        ],
+{% for key, value in authsource.privacy_statement_url.items() %}
+                '{{ key }}' => '{{ value }}',
+{% endfor %}
+            ],
 {% endif %}
         ],
 {% if authsource.attributes is defined %}
@@ -202,16 +202,16 @@ $config = [
          */
         'attributes' => [
 {% if authsource.attributes['required'] is defined %}
-    {% for key, value in authsource.attributes['required'].items() %}
-        '{{ key }}' => '{{ value }}',
-    {% endfor %}
+{% for key, value in authsource.attributes['required'].items() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
 {% endif %}
 {% if authsource.attributes['optional'] is defined %}
-    {% for key, value in authsource.attributes['optional'].items() %}
-        '{{ key }}' => '{{ value }}',
-    {% endfor %}
+{% for key, value in authsource.attributes['optional'].items() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
 {% endif %}
-    ],
+        ],
 {% if authsource.attributes['required'] is defined %}
         /*
          * The attributes.required parameter contains the attributes
@@ -220,10 +220,10 @@ $config = [
          * associative array in the form of 'friendlyName' => 'name'.
          */
         'attributes.required' => [
-    {% for key, value in authsource.attributes['required'].items() %}
-        '{{ key }}' => '{{ value }}',
-    {% endfor %}
-    ],
+{% for key, value in authsource.attributes['required'].items() %}
+            '{{ key }}' => '{{ value }}',
+{% endfor %}
+        ],
 {% endif %}
 {% if authsource.attributes['name_format'] is defined %}
         'attributes.NameFormat' => '{{ authsource.attributes['name_format'] }}',
