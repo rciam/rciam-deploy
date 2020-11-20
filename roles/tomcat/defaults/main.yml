@@ -30,7 +30,7 @@ tomcat_connectors:
     #scheme: "https"
     uri_encoding: "UTF-8"
 
-cluster_mode: False
+tomcat_cluster_mode: no
 
 tomcat_cluster:
   - channel_send_options: "8"

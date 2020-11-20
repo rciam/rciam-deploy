@@ -115,7 +115,7 @@
       <!--For clustering, please take a look at documentation at:
           /docs/cluster-howto.html  (simple how to)
           /docs/config/cluster.html (reference documentation) -->
-{% if cluster_mode %}
+{% if tomcat_cluster_mode %}
 {% for cluster in tomcat_cluster %}
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
 {% if cluster.channel_send_options is defined %}
