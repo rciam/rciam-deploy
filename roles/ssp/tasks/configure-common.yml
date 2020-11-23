@@ -2,27 +2,6 @@
 #
 ---
 
-- name: Generate SHA-256 encrypted hash of SSP admin password
-  script: "ssha256pwgen-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_adminpassword }}"
-  args:
-    creates: "{{ ssp_configdir }}/config.php"
-  register: ssp_adminpasswordhash_new
-  tags:
-    - ssp:config:config
-
-- name: Check existing SHA-256 encrypted hash of SSP admin password
-  script: "SimpleSAML_Configuration-{{ ssp_version }}.php {{ ssp_path }} {{ ssp_adminpassword_key }}"
-  args:
-    removes: "{{ ssp_configdir }}/config.php"
-  register: ssp_adminpasswordhash_old
-  tags:
-    - ssp:config:config
-
-- name: Configure SHA-256 encrypted hash of SSP admin password
-  set_fact:
-    ssp_adminpasswordhash: "{{ ssp_adminpasswordhash_new.stdout if ssp_adminpasswordhash_new is changed else ssp_adminpasswordhash_old.stdout }}"
-  tags:
-    - ssp:config:config
 
 - name: Configure SSP
   template:
