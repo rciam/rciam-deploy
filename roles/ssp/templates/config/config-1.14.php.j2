@@ -75,7 +75,7 @@ $config = array(
      * metadata listing and diagnostics pages.
      * You can also put a hash here; run "bin/pwgen.php" to generate one.
      */
-    'auth.adminpassword' => '{{ ssp_adminpasswordhash }}',
+    'auth.adminpassword' => '{{ ssp_adminpassword | password_hash('ldap_salted_sha256', ssp_adminpassword_salt) }}',
     'admin.protectindexpage' => {{ ssp_admin_protectindexpage }},
     'admin.protectmetadata' => {{ ssp_admin_protectmetadata }},
 

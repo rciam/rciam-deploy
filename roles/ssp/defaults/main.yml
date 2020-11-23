@@ -33,6 +33,7 @@ ssp_metadatadir: "{{ ssp_path }}/metadata/"
 # This password must be kept secret, and modified from the default value 123.
 #ssp_adminpassword: "123"
 
+# Secret salt used to generate a secure hash of the ssp_adminpassword.
 # A possible way to generate a random salt is by running the following command:
 # LC_CTYPE=C tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=15 count=1 2>/dev/null;echo
 # Attention: The secret key should not be more than 16 characters.
