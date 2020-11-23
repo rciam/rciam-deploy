@@ -1,5 +1,6 @@
 ---
 
+
 - name: Checkout SSP source
   git:
     repo: "{{ ssp_repo_url }}"
@@ -9,6 +10,8 @@
     force: no
     update: no
   become: yes
+  notify:
+    - Update symbolic link to SSP
 
 - name: Download Composer
   get_url: url=https://getcomposer.org/installer dest={{ ssp_path }}/composer-installer validate_certs=no
@@ -50,3 +53,6 @@
 - name: Ensure SSP cert dir exists
   file: path={{ ssp_certdir }} state=directory
   become: yes
+
+
+

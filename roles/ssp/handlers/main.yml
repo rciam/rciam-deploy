@@ -5,3 +5,12 @@
     name: "{{ ssp_webserver }}"
     state: restarted
   become: yes
+
+
+- name: Update symbolic link to SSP
+  file:
+    src: "{{ ssp_path }}/www/"
+    dest: "{{ ssp_www_path }}"
+    state: link
+  become: yes
+
