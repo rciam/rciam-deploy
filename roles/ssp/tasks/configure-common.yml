@@ -15,16 +15,81 @@
   tags:
     - ssp:config:config
 
-- name: Generate self-signed SP certificates
-  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
-  args:
-    chdir: "{{ ssp_certdir }}"
-    creates: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
-  with_items: "{{ ssp_authsources_saml }}"
-  when: item.generate_ssl_certificate
+
+
+
+- name: Ensure SP SSL certificate is copied
+  copy:
+    content: '{{ item.content }}'
+    dest: "{{ item.dest }}"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - content: "{{ ssp_ssl_cert }}"
+      dest: "{{ ssp_certdir }}/sp-sso.crt"
+      mode: "0644"
+    - content: "{{ ssp_ssl_cert_key }}"
+      dest: "{{ ssp_certdir }}/sp-sso.key"
+      mode: "0600"
+  when: ssp_self_signed_cert_generate|bool == False
   become: yes
+  no_log: yes
   tags:
     - ssp:config:authsources
+
+
+
+
+- name: Create a temporary directory for certificate (local)
+  local_action:
+    module: tempfile
+    state: directory
+    suffix: certificate
+  register: tmp_cert_dir
+  tags:
+    - ssp:config:authsources
+  run_once: True
+  when: ssp_self_signed_cert_generate|bool == True
+
+
+- name: Generate self-signed SP certificates (local)
+  local_action:
+    module: command openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
+    args:
+      chdir: "{{ tmp_cert_dir.path }}"
+      creates: "{{ tmp_cert_dir.path }}/sp-{{ item.name }}.key"
+  with_items: "{{ ssp_authsources_saml }}"
+  when: item.generate_ssl_certificate and ssp_self_signed_cert_generate|bool == True
+  run_once: True
+  tags:
+    - ssp:config:authsources
+
+
+- name: Upload self-signed SP certificates
+  copy:
+    src: "{{ item }}"
+    dest: "{{ ssp_certdir }}"
+    force: no
+  with_fileglob: "{{ tmp_cert_dir.path }}/*"
+  become: yes
+  when: ssp_self_signed_cert_generate|bool == True
+  tags:
+    - ssp:config:authsources
+
+
+- name: Delete local directory with certificates (local)
+  local_action:
+    module: file
+    path: "{{ tmp_cert_dir.path }}"
+    state: absent
+  run_once: True
+  when: ssp_self_signed_cert_generate|bool == True
+  tags:
+    - ssp:config:authsources
+
+
+
 
 - name: Ensure SP certificate keys are installed
   file:

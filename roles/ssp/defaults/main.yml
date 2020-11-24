@@ -200,6 +200,15 @@ ssp_authproc_sp:
       # Adopts language from attribute to use in UI
       class: "core:LanguageAdaptor"
 
+
+#ssp_ssl_cert: |
+#ssp_ssl_cert_key: "{{ vault_ssp_ssl_cert_key }}"
+
+# SSL certificate options (ignored when `generate_ssl_certificate` is set to
+# false). If you want to create a new certificate set to `true`:
+ssp_self_signed_cert_generate: false
+
+
 ssp_authsources_saml:
   # Additional properties: `entity_id`, `idp`.
   - name: default-sp
