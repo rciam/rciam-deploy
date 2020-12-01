@@ -38,13 +38,13 @@ tomcat_cluster:
     expire_sessions_on_shutdown: "false"
     notify_listeners_on_replication: "true"
     receiver:
-      - address: ""
+      - address: "{{ tomcat_receiver[0].address }}"
         auto_bind: "100"
         max_threads: "6"
-        port: "4100"
+        port: "{{ tomcat_receiver[0].port }}"
         selector_timeout: "5000"
     interceptor_static_only: "true"
     members:
-      - host: ""
-        port: "4100"
-        unique_id: ""
+      - host: "{{ tomcat_members[0].host }}"
+        port: "{{ tomcat_members[0].port }}"
+        unique_id: "{{ tomcat_members[0].unique_id }}"

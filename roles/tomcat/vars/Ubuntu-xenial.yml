@@ -1,4 +1,4 @@
-# file: tomcat/vars/Debian-jessie.yml
+# file: tomcat/vars/Debian-stretch.yml
 #
 ---
 
