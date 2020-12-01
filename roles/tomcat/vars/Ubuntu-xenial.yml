@@ -1,4 +1,4 @@
-# file: tomcat/vars/Debian-stretch.yml
+# file: tomcat/vars/Ubuntu-xenial.yml
 #
 ---
 
