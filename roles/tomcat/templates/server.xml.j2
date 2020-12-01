@@ -175,10 +175,14 @@
 {% if member.unique_id is defined %}
                       uniqueId="{{ member.unique_id }}"
 {% endif %}
-{% endfor %}
               />
+{% endfor %}
             </Interceptor>
+{% if tomcat_default_minor_version == '8.0' %}
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatch15Interceptor" />
+{% else %}
+            <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor" />
+{% endif %}
           </Channel>
           <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=".*\.gif;.*\.js;.*\.jpg;.*\.png;.*\.htm;.*\.html;.*\.css;.*\.txt;" />
           <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener" />
