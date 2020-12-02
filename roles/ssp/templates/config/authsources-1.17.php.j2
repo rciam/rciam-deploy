@@ -32,7 +32,7 @@ $config = [
         // Can be NULL/unset, in which case a builtin discovery service will be used.
         'discoURL' => '{{ authsource.disco_url }}',
 {% endif %}
-{% if authsource.generate_ssl_certificate %}
+{% if authsource.ssl_certificate_generate|default(True) or authsource.ssl_certificate is defined %}
         // X.509 key and certificate. Relative to the cert directory.
         'privatekey' => 'sp-{{ authsource.name }}.key',
         'certificate' => 'sp-{{ authsource.name }}.crt',

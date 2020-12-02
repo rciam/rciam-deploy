@@ -21,7 +21,7 @@
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.generate_ssl_certificate
+  when: item.ssl_certificate_generate | default(True) | bool == True
   become: yes
   tags:
     - ssp:config:authsources
@@ -34,7 +34,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.generate_ssl_certificate|bool == False
+  when: item.ssl_certificate_generate | default(True) | bool == False
   become: yes
   tags:
     - ssp:config:authsources
@@ -47,7 +47,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.generate_ssl_certificate|bool == False
+  when: item.ssl_certificate_generate | default(True) | bool == False
   become: yes
   no_log: yes
   tags:
@@ -61,6 +61,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_authsources_saml }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate_key is defined
   become: yes
   tags:
     - ssp:config:authsources
@@ -73,6 +74,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_authsources_saml }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate is defined
   become: yes
   tags:
     - ssp:config:authsources
@@ -93,7 +95,7 @@
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
   with_items: "{{ ssp_idp_hosts }}"
-  when: (ssp_idp_saml20_enabled or ssp_idp_shib13_enabled) and item.generate_certificate
+  when: (ssp_idp_saml20_enabled or ssp_idp_shib13_enabled) and item.ssl_certificate_generate | default(True)
   become: yes
   tags:
     - ssp:config:saml20-idp-hosted
@@ -107,7 +109,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_idp_hosts }}"
-  when: item.generate_certificate|bool == False
+  when: item.ssl_certificate_generate | default(True) | bool == False and item.ssl_certificate is defined
   become: yes
   no_log: yes
   tags:
@@ -122,7 +124,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_idp_hosts }}"
-  when: item.generate_certificate|bool == False
+  when: item.ssl_certificate_generate | default(True) | bool == False and item.ssl_certificate_key is defined
   become: yes
   no_log: yes
   tags:
