@@ -1,0 +1,60 @@
+---
+
+- name: Ensure Repos are installed (RedHat)
+  yum_repository:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    file: "{{ item.file }}"
+    baseurl: "{{ item.baseurl }}"
+    gpgcheck: "{{ item.gpgcheck}}"
+    enabled: "{{ item.enabled }}"
+  loop: "{{ repos | default([])}}"
+  become: yes
+
+
+- name: Install dependencies (RedHat)
+  yum:
+    name: "{{ item }}"
+    state: present
+    validate_certs: no
+    update_cache: true
+  loop: "{{ dependencies | default([]) }}"
+  when: dependencies is defined
+
+- name: Ensure nagios group is present (RedHat)
+  group:
+    name: nagios
+    state: present
+  become: true
+
+- name: Ensure nagios user is present and member of nagios and apache groups (RedHat)
+  user:
+    name: nagios
+    state: present
+    home: "{{ nagios_home }}"
+    move_home: true
+    groups: "nagios,{{ apache_user }}"
+  register: nagios_registered
+  become: true
+
+- name: Echo nagios home directory (RedHat)
+  debug:
+    var: nagios_registered
+    verbosity: 1
+
+- name: Install rciam_probes (RedHat)
+  yum:
+    name: rciam_probes
+    state: latest
+    update_cache: true
+  become: true
+
+- name: Ensure log file owned by nagios user
+  file:
+    dest: "{{ rciam_probes_log_dir }}"
+    state: directory
+    mode: "0744"
+    owner: nagios
+    group: nagios
+  become: true
+

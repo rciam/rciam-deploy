@@ -1,0 +1,15 @@
+---
+
+timezone: "UTC"
+nagios_home: "/home/nagios"
+rciam_probes_log_dir: "/var/log/rciam_probes"
+
+#argo_environment: "devel"
+
+repos:
+  - name: "argo-{{ argo_environment }}"
+    description: "ARGO Production Repository - Centos{{ ansible_distribution_major_version }}"
+    file: "argo"
+    baseurl: "http://rpm-repo.argo.grnet.gr/ARGO/{{ argo_environment }}/centos{{ ansible_distribution_major_version }}/"
+    gpgcheck: 0
+    enabled: 1
