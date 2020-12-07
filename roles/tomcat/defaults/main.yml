@@ -45,6 +45,6 @@ tomcat_cluster:
         selector_timeout: "5000"
     interceptor_static_only: "true"
     members:
-      - host: "{{ tomcat_members[0].host }}"
-        port: "{{ tomcat_members[0].port }}"
-        unique_id: "{{ tomcat_members[0].unique_id }}"
+      - host: "{{ tomcat_cluster_members[0].host }}"
+        port: "{{ tomcat_cluster_members[0].port }}"
+        unique_id: "{{ tomcat_cluster_members[0].unique_id }}"
