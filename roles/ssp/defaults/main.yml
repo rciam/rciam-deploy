@@ -298,6 +298,17 @@ ssp_authsources_saml:
         #email_address: "mailto:jane.doe@acme.example.com"
         # Optional telephone number of the contact person.
         #telephone_numbers: "+31(0)12345678"
+      # To support a trust framework that requires extra attributes on the
+      # contact person element in your metadata (e.g. SIRTFI), you can specify
+      # an array of attributes on a contact
+      #- contact_type: "other"
+        # Optional given (first) name of the contact person.
+        #given_name: "Security Response Team"
+        # Optional `mailto:` URI representing e-mail address of contact person.
+        #email_address: "mailto:security@example.com"
+        #attributes:
+        #  "xmlns:remd": "http://refeds.org/metadata"
+        #  "remd:contactType": "http://refeds.org/metadata/contactType/security"
     # Localised names of the organisation responsible for this SP.
     #organization_name: 
     #  en: ACME 
