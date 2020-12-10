@@ -1,0 +1,7 @@
+# file: firewallservers.yml
+#
+---
+
+- hosts: all
+  roles:
+    - { role: ipr-cnrs.nftables, become: yes }
