@@ -1,0 +1,38 @@
+---
+# defaults file for federation-demo
+federation_registry_key_title: "evironment-vm"
+federation_registry_git:
+  github_access_token: "{{vault_GITHUB_ACCESS_TOKEN}}"
+  key_path: "~/.ssh/id_rsa.git"
+  git_repo: "git@github.com:linathedog/rciam-federation-registry.git"
+  git_branch: "devel"
+  clone_dest: "/var/www/rciam-federation-registry"
+federation_registry_known_hosts_path: "~/.ssh/known_hosts"
+federation_registry_ams:
+  agent_key : "authrization_key"
+  token : "ams_token"
+  host: "https://msg-devel.argo.grnet.gr/v1"
+  project: "rciam-service-registry"
+  sub: "express_push"
+  topic: "deployment_response"
+federation_registry_react_folder: "service-react-client"
+federation_registry_project_path: "/var/www/rciam-federation-registry"
+federation_registry_react_path: "{{federation_registry_project_path}}/{{federation_registry_react_folder}}"
+federation_registry_express_folder: "registry-backend-express"
+federation_registry_express_path: "{{federation_registry_project_path}}/{{federation_registry_express_folder}}"
+federation_registry_ams_agent_folder: "ams-agent"
+federation_registry_ams_agent_path: "{{federation_registry_project_path}}/{{federation_registry_ams_agent_folder}}"
+federation_registry_admin_key: "{{vault_ADMIN_KEY}}"
+federation_registry_react_base_url: "/"
+federation_registry_react_testing_instance: false
+rciam_dbs:
+  federation:
+    name: "service_registry_db"
+    owner_username: "postgres"
+    owner_password: "postgres"
+    host: "localhost"
+    port: 5432
+    script_path: /home/debian/setup_db.sql
+rciam_db_replication:
+  username: "repuser"
+  password: "{{ vault_rciam_db_replication.password }}"

@@ -1,0 +1,40 @@
+---
+- name: Make sure psycopg2 is installed
+  command: pip install psycopg2==2.7.5 --ignore-installed
+
+- name: Send Create Tables SQL File
+  copy:
+    src: private_files/setup_db.sql
+    dest: "{{rciam_dbs.federation.script_path}}"
+
+- name: Create PostgreSQL tables for Federation Registry via SQL scripts
+  postgresql_query:
+    db: "{{ federation_registry_name }}"
+    login_user: "{{ federation_registry_username }}"
+    login_password: "{{ federation_registry_password }}"
+    path_to_script: "{{ rciam_dbs.federation.script_path }}"
+    login_host: "{{ federation_registry_host }}"
+  register: postgresql_result
+  failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
+  when: "federation_registry_name is defined"
+
+- name: Send Tenant Initialization Data
+  copy:
+    src: private_files/{{federation_registry_init_script}}
+    dest: "{{rciam_dbs.federation.script_path}}"
+
+- name: Initialise Tenant Data via SQL scripts
+  postgresql_query:
+    db: "{{ federation_registry_name }}"
+    login_user: "{{ federation_registry_username }}"
+    login_password: "{{ federation_registry_password }}"
+    path_to_script: "{{rciam_dbs.federation.script_path}}"
+    login_host: "{{ federation_registry_host }}"
+  register: postgresql_result
+  failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
+  when: "federation_registry_name is defined"
+
+- name: Delete database configuration file
+  file:
+    path: "{{rciam_dbs.federation.script_path}}"
+    state: absent
