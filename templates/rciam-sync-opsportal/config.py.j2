@@ -1,6 +1,9 @@
+# {{ ansible_managed }}
+
 opsportal = {
     "api": {
-        "base_url": "{{ rciam_opsportal_api_base_url }}"
+        "base_url": "{{ rciam_util.opsportal_api.base_url }}",
+        "key": "{{ rciam_util.opsportal_api.key }}"
     }
 }
 
