@@ -40,7 +40,7 @@
       - name: rciam-sync-voms
         path: /srv/rciam-sync-voms
         repo: https://github.com/rciam/rciam-sync-voms.git
-        version: devel
+        version: v1.0.0
         user:
           name: rciam-voms-client
           group: rciam-voms-client
