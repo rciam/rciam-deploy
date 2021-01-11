@@ -178,7 +178,7 @@
               />
 {% endfor %}
             </Interceptor>
-{% if tomcat_default_minor_version == '8.0' %}
+{% if tomcat_version == '8.0' %}
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatch15Interceptor" />
 {% else %}
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor" />
