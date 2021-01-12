@@ -19,6 +19,13 @@
   tags:
     - always
 
+- name: Define tomcat package name
+  set_fact:
+    tomcat_package: "{{ tomcat_default_package }}"
+  when: tomcat_package is not defined
+  tags:
+    - always
+
 - name: Define tomcat service name
   set_fact:
     tomcat_service: "{{ tomcat_default_service }}"
