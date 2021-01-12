@@ -116,55 +116,54 @@
           /docs/cluster-howto.html  (simple how to)
           /docs/config/cluster.html (reference documentation) -->
 {% if tomcat_cluster_mode and tomcat_cluster is defined and tomcat_cluster | length > 0 %}
-{% for cluster in tomcat_cluster %}
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
-{% if cluster.channel_send_options is defined %}
-               channelSendOptions="{{ cluster.channel_send_options }}"
+{% if tomcat_cluster.channel_send_options is defined %}
+               channelSendOptions="{{ tomcat_cluster.channel_send_options }}"
 {% endif %}
-{% if cluster.channel_start_options is defined %}
-               channelStartOptions="{{ cluster.channel_start_options }}"
+{% if tomcat_cluster.channel_start_options is defined %}
+               channelStartOptions="{{ tomcat_cluster.channel_start_options }}"
 {% endif %}
       >
           <Manager className="org.apache.catalina.ha.session.DeltaManager"
-{% if cluster.expire_sessions_on_shutdown is defined %}
-                   expireSessionsOnShutdown="{{ cluster.expire_sessions_on_shutdown }}"
+{% if tomcat_cluster.expire_sessions_on_shutdown is defined %}
+                   expireSessionsOnShutdown="{{ tomcat_cluster.expire_sessions_on_shutdown }}"
 {% endif %}
-{% if cluster.notify_listeners_on_replication is defined %}
-                   notifyListenersOnReplication="{{ cluster.notify_listeners_on_replication }}"
+{% if tomcat_cluster.notify_listeners_on_replication is defined %}
+                   notifyListenersOnReplication="{{ tomcat_cluster.notify_listeners_on_replication }}"
 {% endif %}
           />
           <Channel className="org.apache.catalina.tribes.group.GroupChannel">
             <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
               <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender" />
             </Sender>
-{% if cluster.receiver is defined %}
+{% if tomcat_cluster.receiver is defined %}
             <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
-{% if cluster.receiver.address is defined %}
-                      address="{{ cluster.receiver.address }}"
+{% if tomcat_cluster.receiver.address is defined %}
+                      address="{{ tomcat_cluster.receiver.address }}"
 {% endif %}
-{% if cluster.receiver.auto_bind is defined %}
-                      autoBind="{{ cluster.receiver.auto_bind }}"
+{% if tomcat_cluster.receiver.auto_bind is defined %}
+                      autoBind="{{ tomcat_cluster.receiver.auto_bind }}"
 {% endif %}
-{% if cluster.receiver.max_threads is defined %}
-                      maxThreads="{{ cluster.receiver.max_threads }}"
+{% if tomcat_cluster.receiver.max_threads is defined %}
+                      maxThreads="{{ tomcat_cluster.receiver.max_threads }}"
 {% endif %}
-{% if cluster.receiver.port is defined %}
-                      port="{{ cluster.receiver.port }}"
+{% if tomcat_cluster.receiver.port is defined %}
+                      port="{{ tomcat_cluster.receiver.port }}"
 {% endif %}
-{% if cluster.receiver.selector_timeout is defined %}
-                      selectorTimeout="{{ cluster.receiver.selector_timeout }}"
+{% if tomcat_cluster.receiver.selector_timeout is defined %}
+                      selectorTimeout="{{ tomcat_cluster.receiver.selector_timeout }}"
 {% endif %}
 {% endif %}
             />
             <!-- <Interceptor className="com.dm.tomcat.interceptor.DisableMulticastInterceptor" /> -->
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor"
-{% if cluster.interceptor_static_only is defined %}
-                         staticOnly="{{ cluster.interceptor_static_only }}"
+{% if tomcat_cluster.interceptor_static_only is defined %}
+                         staticOnly="{{ tomcat_cluster.interceptor_static_only }}"
 {% endif %}
             />
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpFailureDetector" />
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor">
-{% for member in cluster.members %}
+{% for member in tomcat_cluster.members %}
               <Member className="org.apache.catalina.tribes.membership.StaticMember"
 {% if member.host is defined %}
                       host="{{ member.host }}"
@@ -178,7 +177,7 @@
               />
 {% endfor %}
             </Interceptor>
-{% if tomcat_version == '8.0' %}
+{% if tomcat_version == '8' %}
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatch15Interceptor" />
 {% else %}
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor" />
@@ -187,7 +186,6 @@
           <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=".*\.gif;.*\.js;.*\.jpg;.*\.png;.*\.htm;.*\.html;.*\.css;.*\.txt;" />
           <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener" />
       </Cluster>
-{% endfor %}
 {% else %}
       <!--
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"/>
