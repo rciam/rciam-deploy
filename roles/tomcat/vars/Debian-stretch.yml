@@ -3,8 +3,8 @@
 ---
 
 tomcat_default_version: "8.5"
-tomcat_default_service: "tomcat{{ tomcat_version }}"
-tomcat_default_conf_path: "/etc/tomcat{{ tomcat_version }}"
+tomcat_default_service: "tomcat8"
+tomcat_default_conf_path: "/etc/tomcat8"
 tomcat_default_java_home: "/usr/lib/jvm/java-8-openjdk-amd64"
 
 tomcat_default_path: "/etc/default"
