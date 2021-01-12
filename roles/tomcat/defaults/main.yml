@@ -32,19 +32,20 @@ tomcat_connectors:
 
 tomcat_cluster_mode: no
 
-tomcat_cluster:
-  - channel_send_options: "8"
-    channel_start_options: "3"
-    expire_sessions_on_shutdown: "false"
-    notify_listeners_on_replication: "true"
-    receiver:
-      - address: "{{ tomcat_cluster_receiver_address }}"
-        auto_bind: "100"
-        max_threads: "6"
-        port: "{{ tomcat_cluster_receiver_port }}"
-        selector_timeout: "5000"
-    interceptor_static_only: "true"
-    members:
-      - host: "{{ tomcat_cluster_members[0].host }}"
-        port: "{{ tomcat_cluster_members[0].port }}"
-        unique_id: "{{ tomcat_cluster_members[0].unique_id }}"
+# Uncomment to configure tomcat cluster parameters when tomcat_cluster_mode is set to true
+#tomcat_cluster:
+#  - channel_send_options: "8"
+#    channel_start_options: "3"
+#    expire_sessions_on_shutdown: "false"
+#    notify_listeners_on_replication: "true"
+#    receiver:
+#      address: "192.168.10.1"
+#      auto_bind: "100"
+#      max_threads: "6"
+#      port: "4000"
+#      selector_timeout: "5000"
+#    interceptor_static_only: "true"
+#    members:
+#      - host: "192.168.10.2"
+#        port: "4000"
+#        unique_id: "{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1}"

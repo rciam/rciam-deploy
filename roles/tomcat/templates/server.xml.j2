@@ -115,7 +115,7 @@
       <!--For clustering, please take a look at documentation at:
           /docs/cluster-howto.html  (simple how to)
           /docs/config/cluster.html (reference documentation) -->
-{% if tomcat_cluster_mode %}
+{% if tomcat_cluster_mode and tomcat_cluster is defined and tomcat_cluster | length > 0 %}
 {% for cluster in tomcat_cluster %}
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"
 {% if cluster.channel_send_options is defined %}
@@ -137,24 +137,24 @@
             <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
               <Transport className="org.apache.catalina.tribes.transport.nio.PooledParallelSender" />
             </Sender>
-{% for receiver in cluster.receiver %}
+{% if cluster.receiver is defined %}
             <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
-{% if receiver.address is defined %}
-                      address="{{ receiver.address }}"
+{% if cluster.receiver.address is defined %}
+                      address="{{ cluster.receiver.address }}"
 {% endif %}
-{% if receiver.auto_bind is defined %}
-                      autoBind="{{ receiver.auto_bind }}"
+{% if cluster.receiver.auto_bind is defined %}
+                      autoBind="{{ cluster.receiver.auto_bind }}"
 {% endif %}
-{% if receiver.max_threads is defined %}
-                      maxThreads="{{ receiver.max_threads }}"
+{% if cluster.receiver.max_threads is defined %}
+                      maxThreads="{{ cluster.receiver.max_threads }}"
 {% endif %}
-{% if receiver.port is defined %}
-                      port="{{ receiver.port }}"
+{% if cluster.receiver.port is defined %}
+                      port="{{ cluster.receiver.port }}"
 {% endif %}
-{% if receiver.selector_timeout is defined %}
-                      selectorTimeout="{{ receiver.selector_timeout }}"
+{% if cluster.receiver.selector_timeout is defined %}
+                      selectorTimeout="{{ cluster.receiver.selector_timeout }}"
 {% endif %}
-{% endfor %}
+{% endif %}
             />
             <!-- <Interceptor className="com.dm.tomcat.interceptor.DisableMulticastInterceptor" /> -->
             <Interceptor className="org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor"
