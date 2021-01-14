@@ -4,4 +4,6 @@
 
 - hosts: saml2oidc
   roles:
+    #- ansiblebit.oracle-java
     - { role: tomcat, tags: tomcat }
+    #- openconext-mitreid-connect
