@@ -1,0 +1,7 @@
+# file: saml2oidcservers.yml
+# 
+---
+
+- hosts: saml2oidc
+  roles:
+    - { role: tomcat, tags: tomcat }
