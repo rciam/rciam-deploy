@@ -1,9 +1,9 @@
-# file: saml2oidcsevers.yml
-#
+# file: saml2oidcservers.yml
+# 
 ---
 
 - hosts: saml2oidc
   roles:
     #- ansiblebit.oracle-java
-    - tomcat
+    - { role: tomcat, tags: tomcat }
     #- openconext-mitreid-connect
