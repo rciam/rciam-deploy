@@ -25,6 +25,9 @@ apache_trace_enable: "Off"
 
 apache_create_vhosts: true
 apache_vhosts_filename: "vhosts.conf"
+# On RedHat/Centos, a default Welcome Screen is included in Apache's configuration.
+# Set this to `true` to remove that default; otherwise `false`.
+apache_remove_default_page: false
 
 # On Debian/Ubuntu, a default virtualhost is included in Apache's configuration.
 # Set this to `true` to remove that default; otherwise `false`.
@@ -45,6 +48,20 @@ apache_vhosts_ssl: []
   #   certificate_key_file: "/path/to/certificate.key"
   #   # Optional.
   #   certificate_chain_file: "/path/to/certificate_chain.crt"
+
+# Name of the user that should own the file containing the SSL certificate
+apache_ssl_certificate_file_owner: "root"
+# Name of the group that should own the file containing the SSL certificate
+apache_ssl_certificate_file_group: "root"
+# Permissions of the file containing the SSL certificate
+apache_ssl_certificate_file_mode: "0644"
+
+# Name of the user that should own the file containing the SSL certificate key
+apache_ssl_certificate_key_file_owner: "root"
+# Name of the group that should own the file containing the SSL certificate key
+apache_ssl_certificate_key_file_group: "root"
+# Permissions of the file containing the SSL certificate key
+apache_ssl_certificate_key_file_mode: "0600"
 
 apache_ignore_missing_ssl_certificate: true
 

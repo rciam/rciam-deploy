@@ -1,0 +1,88 @@
+---
+
+- name: Ensure sites-available and sites-enabled directories exist (RedHat)
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ apache_conf_path }}/sites-available"
+    - "{{ apache_conf_path }}/sites-enabled/"
+  become: yes
+
+- name: Append extra parameters into Apache httpd.conf (RedHat)
+  blockinfile:
+    path: "{{ apache_conf_path }}/conf/httpd.conf"
+    block: |
+      IncludeOptional sites-enabled/*.conf
+      IncludeOptional conf.d/security.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  become: yes
+  notify: restart apache
+
+- name: Configure Apache security settings (RedHat)
+  template:
+    src: "security.conf.j2"
+    dest: "{{ apache_conf_path }}/conf.d/security.conf"
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  become: yes
+  notify: restart apache
+
+# Configure Virtual Host SSL certificates
+- name: Include vhost SSL certificates configuration
+  include: configure-ssl-cert.yml
+  when: apache_create_vhosts and apache_vhosts_ssl is defined and apache_vhosts_ssl|length > 0
+
+- name: Add Apache vhosts configuration (RedHat)
+  template:
+    src: "vhosts.conf.j2"
+    dest: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  become: yes
+  notify: restart apache
+  when: apache_create_vhosts
+
+- name: Enable Apache vhosts configuration (RedHat)
+  file:
+    src: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
+    dest: "{{ apache_conf_path }}/sites-enabled/{{ apache_vhosts_filename }}"
+    state: link
+  become: yes
+  notify: restart apache
+  when: apache_create_vhosts
+
+- name: Disable default welcome page (RedHat)
+  file:
+    path: "{{ apache_conf_path }}/conf.d/welcome.conf"
+    state: absent
+  become: yes
+  when: apache_remove_default_page
+  notify: restart apache
+
+- name: Enable required Apache modules (RedHat)
+  apache2_module:
+    state: present
+    name: "{{ item }}"
+  with_items: "{{ apache_mods_enabled }}"
+  become: yes
+  notify:
+    - restart apache
+
+- name: Disable unnecessary Apache modules (RedHat)
+  apache2_module:
+    state: absent
+    name: "{{ item }}"
+  with_items: "{{ apache_mods_disabled }}"
+  become: yes
+  notify:
+    - restart apache
