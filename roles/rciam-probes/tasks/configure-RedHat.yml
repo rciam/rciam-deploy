@@ -29,6 +29,13 @@
   become: true
   changed_when: false
 
+- name: Ensure nagios home directory has search permissions on (RedHat)
+  file:
+    path: "{{ nagios_registered.home }}"
+    state: directory
+    mode: "0701"
+  become: true
+
 - name: Ensure html directory exists under nagios home directory (RedHat)
   file:
     path: "{{ nagios_registered.home }}/{{ item }}"
