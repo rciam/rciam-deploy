@@ -19,6 +19,10 @@ ssp_loggingdir: "{{ ssp_path }}/log/"
 ssp_datadir: "{{ ssp_path }}/data/"
 ssp_metadatadir: "{{ ssp_path }}/metadata/"
 
+# If you want specific path ( individual for different-multiple versions )
+# ssp_version_suffix: "{{ ssp_repo_version }}"
+ssp_www_path: "{{ ssp_path }}/../simplesaml-current"
+
 # Security configuration options
 
 # Secret salt used by SimpleSAMLphp when it needs to generate a secure hash of

@@ -12,6 +12,7 @@
   become: yes
   notify:
     - restart webserver
+    - Update symbolic link to SSP
   tags:
     - ssp:config:config
 
@@ -297,3 +298,5 @@
   tags:
     - ssp:config:mods
     - ssp:config:mods:discopower
+
+
