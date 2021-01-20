@@ -10,8 +10,15 @@
     force: no
     update: no
   become: yes
-  notify:
-    - Update symbolic link to SSP
+
+
+- name: Update symbolic link to SSP
+  file:
+    src: "{{ ssp_path }}/www/"
+    dest: "{{ ssp_www_path }}"
+    state: link
+  become: yes
+
 
 - name: Download Composer
   get_url: url=https://getcomposer.org/installer dest={{ ssp_path }}/composer-installer validate_certs=no
