@@ -1,0 +1,54 @@
+---
+
+
+ssp_mods_extra_enabled: []
+ssp_modules_db: []
+
+
+# Examples of use cases:
+
+## Modules
+#ssp_mods_extra_enabled:
+#  - name: "module1"
+#    path: "{{ ssp_path }}/modules/module1_directory"
+#    repo_url: "https://github.com/example/module1.git"
+#    version: "release-3.0"
+#    # Specify ( if you have a template for this module ) the path for the template file.
+#    src_config_path: "{{ role_path }}/templates/config/module1_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module1_config.php"
+#  - name: "module2"
+#    path: "{{ ssp_path }}/modules/module2_directory"
+#    repo_url: "https://github.com/example/module2.git"
+#    version: "devel"
+#    # config_path: It does not have - so I just do not set this value.
+#  - name: "module3"
+#    path: "{{ ssp_path }}/modules/module3_directory"
+#    repo_url: "https://github.com/example/module3.git"
+#    version: "master"
+#  # Themes (from repository)
+#  - name: "theme1"
+#    path: "{{ ssp_path }}/modules/theme1"
+#    repo_url: "https://github.com/example/theme1.git"
+#    version: "release-2.0.0"
+#    src_config_path: "{{ role_path }}/templates/config/module_theme1_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module_theme1_config.php"
+#  # Themes (from release zip)
+#  - name: "theme2"
+#    fullname: "simplesamlphp-module-theme2 - 1st level of unziped directory"
+#    path: "{{ ssp_path }}/modules/themeX"
+#    zip_url: "https://github.com/example/simplesamlphp-module-theme2/releases/download/2.0.0/theme2.zip"
+#    version: "2.0.0"
+#    src_config_path: "{{ role_path }}/templates/config/module_theme2_config.php.j2"
+#    # or for example :
+#    src_config_path: "{{ inventory_dir }}/files/templates/config/module_theme2_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module_theme2_config.php"
+#
+#
+## Database
+#ssp_modules_db:
+#  - db_host: "127.0.0.1" or "{{ lookup('dig', groups['dbmaster'][0]) }}"
+#    db_name: database_name or "{{ rciam_dbs.proxy.name }}"
+#    db_username: database_username or "{{ rciam_dbs.proxy.owner_username }}"
+#    db_password: database_password or "{{ rciam_dbs.proxy.owner_password }}"
+#    db_script_path: "{{ ssp_path }}/modules/amodule/configfiles/pgsql_tables.sql"
+
