@@ -1,0 +1,22 @@
+<?php
+/**
+ * This is example configuration of SimpleSAMLphp themevanila.
+ * Copy this file to default config directory and edit the properties.
+ *
+ * copy command (from SimpleSAML base dir)
+ * cp modules/themeegi/module_themeegi.php config/
+ */
+$config = [
+    'cookiePolicy' => [
+{% for cookie_policy in ssp_module_themevanilla_cookie_policies %}
+        ['type' => '{{ cookie_policy.type }}', 'provider' => '{{ cookie_policy.provider }}', 'name' => '{{ cookie_policy.name }}', 'thirdParty' => {{ cookie_policy.third_party }}, 'category' => '{{ cookie_policy.category }}', 'purpose' => '{{ cookie_policy.purpose }}'],
+{% endfor %}
+    ],
+    'views' => [
+        'aup' => '{{ ssp_module_themevanilla_aup }}', // Terms and Conditions URL. The key MUST BE `aup`
+        'privacy' => '{{ ssp_module_themevanilla_privacy }}', // Privace URL. The key MUST BE `privacy`
+    ],
+    'loader' => '{{ ssp_module_themevanilla_loader }}', // Loading Spinner to use. Two options are available. `loader` or `cmg_loader`
+];
+
+?>

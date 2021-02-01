@@ -62,3 +62,51 @@ ssp_modules_db: []
 #    db_password: database_password or "{{ rciam_dbs.proxy.owner_password }}"
 #    db_script_path: "{{ ssp_path }}/modules/amodule/configfiles/pgsql_tables.sql"
 
+
+######################
+# SSP mod RCIAM info #
+######################
+# ssp_module_rciaminfo_store:
+#   table: "client_details"
+#   pdo:
+#     database_dsn: "pgsql:host=localhost;dbname=example_db;sslmode=require"
+#     database_username: "example_username"
+#     database_password: "example_password"
+#     database_prefix: "db_prefix"
+#     database_persistent: false
+#     driver_options:
+#       - option: "PDO::ATTR_PERSISTENT"
+#         value: true
+#       - option: "PDO::MYSQL_ATTR_SSL_CAPATH"
+#         value: "'/path/to/ca'"
+#     database_slaves: []
+#       # - dsn:
+#       #   username:
+#       #   password:
+#       #   persistent:
+
+# ssp_module_rciaminfo_service_id_exclude_list: []
+
+# ssp_module_rciaminfo_metadata_src_exclude_list: []
+
+# ssp_module_rciaminfo_info_config:
+#   - name: "table"
+#     options:
+#     - key: "length"
+#       value: 10
+
+
+#########################
+# SSP mod theme vanilla #
+#########################
+# ssp_module_themevanilla_cookie_policies:
+#   - type: "Session State"
+#     provider: "example.org"
+#     name: "rciam_proxy"
+#     third_party: false
+#     category: "Session"
+#     purpose: "Preserve user authentication token to prevent session fixation attacks"
+
+# ssp_module_themevanilla_aup: "https://example.org/aup/check-in.html"
+# ssp_module_themevanilla_privacy: "https://example.org/privacy.html"
+# ssp_module_themevanilla_loader: "loader"
