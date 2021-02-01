@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=MitreId deployer service
+
+[Service]
+User=root
+ExecStart={{ fedreg_agent_venv_path }}/bin/deployer_mitreid -c {{ fedreg_agent_conf_dir }}/deployer_mitreid.config
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

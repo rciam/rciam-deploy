@@ -1,0 +1,51 @@
+---
+# defaults file for fedreg-agent
+
+
+# Virtualenv path
+fedreg_agent_venv_python: "python3"
+fedreg_agent_venv_path: "/srv/fedregistryagent"
+fedreg_agent_conf_dir: "/etc/fedregistryagent"
+
+
+# Git
+fedreg_agent_registry_requirements_url: "https://raw.githubusercontent.com/rciam/rciam-federation-registry-agent/devel/requirements.txt"
+
+
+# Service
+fedreg_agent_services_path: /etc/systemd/system
+fedreg_agent_log_conf: "{{ fedreg_agent_conf_dir }}/logger.conf"
+fedreg_agent_enable_ssp: no
+fedreg_agent_enable_mitreid: no
+
+
+# Federation registry agent parameters
+fedreg_agent_ams:
+  host: "example.host.com"
+  project: "ams-project-name"
+  pub_topic: "ams-publish-topic"
+  token: "ams-token"
+  time_interval: 10
+
+
+## SSP
+fedreg_agent_ssp:
+  id: "pull-sub-agent-id"
+  url: "http://localhost/proxy/module.php/cron/cron.php"
+  pull_topic: "ams-topic"
+  pull_sub: "ams-sub"
+  metadata_file: "/path/to/ssp/metadata/file.php"
+  metadata_key: "ssp-metadata-key"
+  request_timeout: 30
+
+
+## MITREid
+fedreg_agent_mitreid:
+  id: "pull-sub-agent-id"
+  url: "https://mitreid.host"
+  pull_topic: "ams-topic"
+  pull_sub: "ams-sub"
+  refresh_token: "token"
+  client_id: "clientId"
+  client_secret: "secret"
+
