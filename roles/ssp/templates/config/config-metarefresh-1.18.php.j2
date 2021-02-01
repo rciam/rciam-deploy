@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Configuration for metarefresh module.
  * {{ ansible_managed }}
@@ -26,7 +27,7 @@ $config = [
     'sets' => [
 {% for set in ssp_mod_metarefresh_sets %}
         '{{ set.name }}' => [
-            'cron'           => ['{{ set.cron }}'],
+            'cron' => ['{{ set.cron }}'],
             'sources'=> [
 {% for src in set.sources %}
                 [
@@ -109,18 +110,18 @@ $config = [
                      *
                      * This option takes precedence over the same option per metadata set.
                      */
-                     'types' => [
+                    'types' => [
 {% for type in src.types %}
-                         '{{ type }}',
+                        '{{ type }}',
 {% endfor %}
-                     ],
+                    ],
 {% endif %}
                 ],
 {% endfor %}
             ],
             // Maximum cache time in seconds
-            'expireAfter' => 60*60*24*{{ set.expire_after }},
-            'outputDir'   => 'metadata/{{ set.output_dir }}/',
+            'expireAfter' => 60 * 60 * 24 * {{ set.expire_after }},
+            'outputDir' => 'metadata/{{ set.output_dir }}/',
             /*
              * Which output format the metadata should be saved as.
              * Can be 'flatfile' or 'serialize'. 'flatfile' is the default.
