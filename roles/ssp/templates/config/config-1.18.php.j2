@@ -1111,7 +1111,7 @@ $config = [
      */
     'metadata.sources' => [
         ['type' => 'flatfile'],
-{% if 'metarefresh' in ssp_mods_enabled %}
+{% if 'metarefresh' in ssp_mods_enabled or ssp_mod_metarefresh_enabled is defined and ssp_mod_metarefresh_enabled is true %}
 {% for set in ssp_mod_metarefresh_sets %}
         ['type' => '{{ set.output_format }}', 'directory' => '{{ ssp_metadatadir }}{{ set.output_dir }}'],
 {% endfor %}

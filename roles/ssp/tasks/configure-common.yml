@@ -3,6 +3,13 @@
 ---
 
 
+- name: Check if SSP mod metarefresh is enabled
+  set_fact:
+    ssp_mod_metarefresh_enabled: true
+  when: ssp_mods_extra_enabled | selectattr('name','equalto','metarefresh') | list | count > 0
+  tags:
+    - ssp:config:config
+
 - name: Configure SSP
   template:
     src: "config/config-{{ ssp_version }}.php.j2"
