@@ -207,7 +207,7 @@
 - name: Ensure required SSP metarefresh module dirs exist
   file: path={{ ssp_metadatadir }}/{{ item.output_dir }} state=directory owner={{ssp_webuser }} group={{ ssp_webgroup }}
   with_items: "{{ ssp_mod_metarefresh_sets }}"
-  when: "'metarefresh' in ssp_mods_enabled"
+  when: "'metarefresh' in ssp_mods_enabled and ssp_version | float < 1.18"
   become: yes
   tags:
     - ssp:config:mods
@@ -219,7 +219,7 @@
     dest: "{{ ssp_configdir }}/config-metarefresh.php"
     backup: yes
     force: yes
-  when: "'metarefresh' in ssp_mods_enabled"
+  when: "'metarefresh' in ssp_mods_enabled and ssp_version | float < 1.18"
   register: ssp_mod_metarefresh_config
   become: yes
   tags:
@@ -232,7 +232,7 @@
     dest: "{{ ssp_configdir }}/module_cron.php"
     backup: yes
     force: yes
-  when: "'cron' in ssp_mods_enabled"
+  when: "'cron' in ssp_mods_enabled and ssp_version | float < 1.18"
   become: yes
   tags:
     - ssp:config:mods
@@ -285,7 +285,7 @@
     dest: "{{ ssp_configdir }}/module_discopower.php"
     backup: yes
     force: yes
-  when: "'discopower' in ssp_mods_enabled"
+  when: "'discopower' in ssp_mods_enabled and ssp_version | float < 1.18"
   become: yes
   tags:
     - ssp:config:mods
@@ -297,7 +297,7 @@
     dest: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
     backup: yes
     force: yes
-  when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined"
+  when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined and ssp_version | float < 1.18"
   become: yes
   tags:
     - ssp:config:mods

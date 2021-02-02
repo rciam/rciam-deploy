@@ -63,6 +63,109 @@ ssp_modules_db: []
 #    db_script_path: "{{ ssp_path }}/modules/amodule/configfiles/pgsql_tables.sql"
 
 
+################
+# SSP mod cron #
+################
+
+## Cron module URL
+#ssp_mod_cron_url: "https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php"
+## Secret key used to restrict access to your cron.
+##ssp_mod_cron_secret: "secret"
+#ssp_mod_cron_entries:
+#  - name: "SSP metarefresh [daily]"
+#    tag: "daily"
+#    file: "simplesamlphp"
+#    user: "{{ ssp_webuser }}"
+#    minute: "30"
+#    hour: "3"
+#  - name: "SSP metarefresh [hourly]"
+#    tag: "hourly"
+#    file: "simplesamlphp"
+#    user: "{{ ssp_webuser }}"
+#    minute: "15"
+## Cron job variables
+#ssp_mod_cron_vars:
+#  - name: "MAILTO"
+#    value: "na@example.org"
+#    file: "simplesamlphp"
+
+
+#######################
+# SSP mod metarefresh #
+#######################
+
+# Global blacklist: Optional list of entityIDs that should be excluded from ALL
+# metadata sets.
+#ssp_mod_metarefresh_blacklist: 
+#  - "https://my.own.domain.com/ssp/saml2/idp/metadata.php"
+#
+#ssp_mod_metarefresh_sets: 
+  #- name: reep
+    # Can be `hourly` or `daily`
+    #cron: hourly
+    # A list of one or more sources that will be included in this metadata set.
+    #sources:
+      # The source URL where the metadata will be fetched from.
+      #- url: "https://reep.refeds.org/entity/69/latest_metadata/"
+        # The fingerprint of the certificate used to sign the metadata. 
+        # You can omit this option if you don't want to validate the signature
+        # on the metadata.
+        #validate_fingerprint: "59:1D:4B:46:70:46:3E:ED:A9:1F:CC:81:6D:C0:AF:2A:09:2A:A8:01"
+        # Optional list of tags/labels for the entities in the metadata.
+        #tags:
+        #  - tag1
+        #  - tag2
+        # Optional list of processing filters to run for this entity. See
+        # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
+        # The filters can be specified with PHP syntax using `authproc_raw` or
+        # alternatively, with YAML syntax using `authproc`. See examples below:
+        #authproc_raw: |-
+        #  50 => [
+        #      'class' => 'core:ExampleFilter',
+        #  ],
+        #authproc:
+        #  - "50":
+        #      class: "core:ExampleFilter"
+        #extra_parameters: |-
+        #  'foo' => 'bar',
+        # Optional list of entityIDs that should be excluded from this src.
+        #blacklist:
+        #  - "https://black.example.com/idp"
+        #  - "https://black.example.com/sp"
+        # Optional list of entityIDs that should be included from this src.
+        #whitelist:
+        #  - "https://white.example.com/idp"
+        #  - "https://white.example.com/sp"
+    # Maximum cache time in days
+    #expire_after: 7
+    # Output directory is relative to {{ ssp_path }}/metadata/
+    #output_dir: metarefresh-aarc
+    # Can be `flatfile` or `serialize`
+    #output_format: serialize
+
+
+######################
+# SSP mod discopower #
+######################
+
+# Configuration options for the discopower module that provides a more
+# user-friendly IdP discovery service compared to the default.
+# Requires `discopower` module in `ssp_mods_enabled`.
+#
+# List of tags (mapped to tabs) that should be listed in a specific order.
+#ssp_mod_discopower_taborder:
+#  - tag1
+#  - tag2
+# Filter list of IdPs by matching the beginning of search keywords
+#ssp_mod_discopower_suggest: false
+# List of tab/tag translations to add
+#ssp_mod_discopower_dictionaries:
+#  - tag1:
+#      en: "Tab One"
+#  - tag2:
+#      en: "Tab Two"
+
+
 ######################
 # SSP mod RCIAM info #
 ######################
