@@ -207,7 +207,7 @@
 - name: Ensure required SSP metarefresh module dirs exist
   file: path={{ ssp_metadatadir }}/{{ item.output_dir }} state=directory owner={{ssp_webuser }} group={{ ssp_webgroup }}
   with_items: "{{ ssp_mod_metarefresh_sets }}"
-  when: "'metarefresh' in ssp_mods_enabled and ssp_version | float < 1.18"
+  when: "'metarefresh' in ssp_mods_enabled or ssp_mods_extra_enabled | selectattr('name','equalto','metarefresh') | list | count > 0"
   become: yes
   tags:
     - ssp:config:mods
