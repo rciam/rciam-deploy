@@ -16,10 +16,14 @@
 - include: install-common.yml
   tags:
     - install
+    - ssp:install
+    - ssp:install:mods
     - ssp_modules:install
 
 # Apply OS-independent configuration
 - include: configure-common.yml
   tags:
     - config
+    - ssp:config
+    - ssp:config:mods
     - ssp_modules:config
