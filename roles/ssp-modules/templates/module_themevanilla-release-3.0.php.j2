@@ -12,11 +12,7 @@ $config = [
         ['type' => '{{ cookie_policy.type }}', 'provider' => '{{ cookie_policy.provider }}', 'name' => '{{ cookie_policy.name }}', 'thirdParty' => {{ cookie_policy.third_party }}, 'category' => '{{ cookie_policy.category }}', 'purpose' => '{{ cookie_policy.purpose }}'],
 {% endfor %}
     ],
-    'views' => [
-        'aup' => '{{ ssp_module_themevanilla_aup }}', // Terms and Conditions URL. The key MUST BE `aup`
-        'privacy' => '{{ ssp_module_themevanilla_privacy }}', // Privace URL. The key MUST BE `privacy`
-    ],
-    'loader' => '{{ ssp_module_themevanilla_loader }}', // Loading Spinner to use. Two options are available. `loader` or `cmg_loader`
+    'enable_cookies_banner' => {{ ssp_module_themevanilla_enable_cookies_banner }}
 ];
 
 ?>
