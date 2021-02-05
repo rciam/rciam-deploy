@@ -232,7 +232,7 @@
     dest: "{{ ssp_configdir }}/module_cron.php"
     backup: yes
     force: yes
-  when: "'cron' in ssp_mods_enabled and ssp_version is version('1.18', '<')"
+  when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
     - ssp:config:mods
