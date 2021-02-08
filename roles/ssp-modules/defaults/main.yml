@@ -211,6 +211,7 @@ ssp_modules_db: []
 #     purpose: "Preserve user authentication token to prevent session fixation attacks"
 
 # ssp_module_themevanilla_enable_cookies_banner: false
+# ssp_module_themevanilla_ribbon_text: "Demo"
 
 ###########################
 # SSP mod proxystatistics #

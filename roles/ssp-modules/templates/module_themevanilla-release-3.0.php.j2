@@ -12,7 +12,8 @@ $config = [
         ['type' => '{{ cookie_policy.type }}', 'provider' => '{{ cookie_policy.provider }}', 'name' => '{{ cookie_policy.name }}', 'thirdParty' => {{ cookie_policy.third_party }}, 'category' => '{{ cookie_policy.category }}', 'purpose' => '{{ cookie_policy.purpose }}'],
 {% endfor %}
     ],
-    'enable_cookies_banner' => {{ ssp_module_themevanilla_enable_cookies_banner }}
+    'enable_cookies_banner' => {{ ssp_module_themevanilla_enable_cookies_banner }},
+    'ribbon_text' => {{ ssp_module_themevanilla_ribbon_text }},
 ];
 
 ?>
