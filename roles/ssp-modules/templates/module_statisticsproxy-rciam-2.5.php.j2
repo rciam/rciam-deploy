@@ -97,6 +97,15 @@ $config = [
     'userIdAttribute' => '{{ ssp_module_proxystatistics_user_id_attribute }}',
 
     /*
+     * Which users should be blacklisted
+     */
+    'userIdBlacklist' => [
+{% for user_id in ssp_module_proxystatistics_user_id_blacklist %}
+        '{{ user_id }}',
+{%endfor%}
+    ],
+
+    /*
      * Fill the table name for statistics
      */
     'statisticsTableName' => '{{ ssp_module_proxystatistics_table_name.statistics }}',
@@ -106,6 +115,12 @@ $config = [
      * @default
      */
     'detailedStatisticsTableName' => '{{ ssp_module_proxystatistics_table_name.detailed_statistics }}',
+
+    /*
+     * Fill the table name for detailed statistics
+     * @default
+     */
+    'ipStatisticsTableName' => '{{ ssp_module_proxystatistics_table_name.ip_statistics }}',
 
     /*
      * Fill the table name for identityProvidersMap

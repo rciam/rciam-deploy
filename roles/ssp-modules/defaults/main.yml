@@ -256,3 +256,8 @@ ssp_modules_db: []
 #   service_providers_map: "serviceProvidersMap"
 
 # ssp_module_proxystatistics_oidc_issuer: "http://example.org/openidconnect/sp"
+
+# ssp_module_proxystatistics_user_id_blacklist: []
+#   # - "xxx@example.org"
+#   # - "yyy@example.org"
+#   # - "zzz@example.org"
