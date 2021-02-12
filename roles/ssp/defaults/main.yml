@@ -51,6 +51,11 @@ ssp_admin_protectmetadata: no
 
 
 ssp_theme: "default"
+# Set this option to true to activate the new UI based on Twig templates.
+# When this option is activated the index file redirects to the login page
+# where the a list of authentication sources (excluded admin) is displayed.
+# If no sources are found, you need to login as admin and check configuration.
+ssp_twig_template: false
 
 ssp_session_cookie_name: "SimpleSAMLSessionID"
 ssp_session_cookie_secure: false
