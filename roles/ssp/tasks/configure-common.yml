@@ -215,11 +215,11 @@
 
 - name: Configure SSP metarefresh module
   template:
-    src: "config/config-metarefresh-{{ ssp_version }}.php.j2"
+    src: "config/config-metarefresh.php.j2"
     dest: "{{ ssp_configdir }}/config-metarefresh.php"
     backup: yes
     force: yes
-  when: "'metarefresh' in ssp_mods_enabled and ssp_version is version('1.18', '<')"
+  when: "'metarefresh' in ssp_mods_enabled"
   register: ssp_mod_metarefresh_config
   become: yes
   tags:
@@ -285,7 +285,7 @@
     dest: "{{ ssp_configdir }}/module_discopower.php"
     backup: yes
     force: yes
-  when: "'discopower' in ssp_mods_enabled and ssp_version is version('1.18', '<')"
+  when: "'discopower' in ssp_mods_enabled"
   become: yes
   tags:
     - ssp:config:mods
@@ -297,7 +297,7 @@
     dest: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
     backup: yes
     force: yes
-  when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined and ssp_version is version('1.18', '<')"
+  when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined"
   become: yes
   tags:
     - ssp:config:mods
