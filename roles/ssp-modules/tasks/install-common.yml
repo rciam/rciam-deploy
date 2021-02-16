@@ -76,5 +76,5 @@
   failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
   with_items: "{{ ssp_modules_db }}"
   when: "ssp_modules_db is defined"
-
-
+  tags:
+    - ssp_modules:install:db
