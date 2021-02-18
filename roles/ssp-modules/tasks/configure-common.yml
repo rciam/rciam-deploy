@@ -22,6 +22,20 @@
     mode: "0644"
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
+  tags:
+    - ssp_modules:config:enable
+
+
+- name: Add extra dictionaries
+  template:
+    src: "{{ item.src_path }}"
+    dest: "{{ item.dest_path }}"
+    backup: yes
+  become: yes
+  with_items: "{{ ssp_mods_extra_dictionaries }}"
+  when: item.src_path is defined and item.dest_path is defined
+  tags:
+    - ssp_modules:config:dict
 
 
 
@@ -31,4 +45,3 @@
     msg:
       - The role also installs Themes, but doesn't produce the CSS files.
       - To produce them, you must install `sass` and follow the installation instructions for each theme.
-
