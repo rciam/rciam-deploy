@@ -215,7 +215,7 @@
 
 - name: Configure SSP metarefresh module
   template:
-    src: "config/config-metarefresh.php.j2"
+    src: "config/config-metarefresh-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_configdir }}/config-metarefresh.php"
     backup: yes
     force: yes
