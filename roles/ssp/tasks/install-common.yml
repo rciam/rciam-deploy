@@ -38,7 +38,6 @@
     executable: /bin/bash
   register: composer_results
   changed_when: composer_results is changed and "Nothing to install, update or remove" not in composer_results.stderr
-  when: ssp_twig_template | default(False) | bool == True
   become: true
   tags:
     - ssp_twig_template
