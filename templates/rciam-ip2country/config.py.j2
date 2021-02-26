@@ -21,6 +21,7 @@ password = {{ rciam_dbs.registry.owner_password }}
 [destination_tables]
 
 country_table = {{ rciam_util.ip2country.destination_tables.country_table}}
+country_hashed_table = {{ rciam_util.ip2country.destination_tables.country_hashed_table }}
 user_country_table = {{ rciam_util.ip2country.destination_tables.user_country_table}}
 
 [logging]
