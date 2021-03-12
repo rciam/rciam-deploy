@@ -4,7 +4,7 @@
 
 - hosts: orcid2saml
   roles:
-    - { role: apache, tags: apache }
-    - { role: php, tags: php }
+    # - { role: apache, tags: apache }
+    # - { role: php, tags: php }
     - { role: ssp, tags: ssp }
     - { role: ssp-modules, tags: ssp-modules }
