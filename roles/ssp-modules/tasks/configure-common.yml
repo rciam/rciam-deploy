@@ -23,7 +23,7 @@
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   tags:
-    - ssp_modules:config:enable
+    - ssp-modules:config:enable
 
 
 - name: Add extra dictionaries
@@ -35,7 +35,7 @@
   with_items: "{{ ssp_mods_extra_dictionaries }}"
   when: item.src_path is defined and item.dest_path is defined
   tags:
-    - ssp_modules:config:dict
+    - ssp-modules:config:dict
 
 
 

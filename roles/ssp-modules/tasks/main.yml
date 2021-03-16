@@ -18,7 +18,7 @@
     - install
     - ssp:install
     - ssp:install:mods
-    - ssp_modules:install
+    - ssp-modules:install
 
 # Apply OS-independent configuration
 - include: configure-common.yml
@@ -26,4 +26,4 @@
     - config
     - ssp:config
     - ssp:config:mods
-    - ssp_modules:config
+    - ssp-modules:config
