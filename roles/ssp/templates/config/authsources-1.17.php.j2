@@ -4,6 +4,10 @@
  * {{ ansible_managed }}
  */
 
+{% if ssp_authsources_preamble is defined %}
+{{ ssp_authsources_preamble }}
+{% endif %}
+
 $config = [
 
     // This is a authentication source which handles admin authentication.
@@ -22,7 +26,11 @@ $config = [
         // Can be NULL/unset, in which case an entity ID is generated based on the metadata URL.
         'entityID' => '{{ authsource.entity_id }}',
 {% endif %}
-{% if authsource.idp is defined %}
+{% if authsource.idp_function is defined %}
+        // The function returning the entity ID of the IdP this SP should contact.
+        // Can be NULL/unset, in which case the user will be shown a list of available IdPs.
+        'idp' => {{ authsource.idp_function }},
+{% elif authsource.idp is defined %}
         // The entity ID of the IdP this should SP should contact.
         // Can be NULL/unset, in which case the user will be shown a list of available IdPs.
         'idp' => '{{ authsource.idp }}',

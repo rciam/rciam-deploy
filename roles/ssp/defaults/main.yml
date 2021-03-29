@@ -209,12 +209,23 @@ ssp_authproc_sp:
       # Adopts language from attribute to use in UI
       class: "core:LanguageAdaptor"
 
+# This will be added before the config[] in SimpleSAMLphp authentication sources
+#ssp_authsources_preamble: |
+#   function foo() {
+#     // Do something
+#   }
+
 ssp_authsources_saml:
   # Additional properties: `entity_id`, `idp`.
   - name: default-sp
-    # Uncomment to use the discopower module that provides a more user-friendly
-    # IdP discovery service compared to the default.
-    # Requires `discopower` module in `ssp_mods_enabled` (see below).
+    # Uncomment to specify the entity ID of the IdP this should SP should
+    # contact. If this is not set, the user will be shown a list of available
+    # IdPs.
+    # idp: "https://idp.example.org
+    # Uncomment to specify the function returning the entity ID of the IdP
+    # this SP should contact. When NULL the user will be shown a list of
+    # available IdPs.
+    # idp_function: "findIdP()"
     #disco_url: "/{{ ssp_alias }}/module.php/discopower/disco.php"
     # Set to true to generate self-signed SSL certificate for signing requests/
     # response received from/sent to the IdP, as well as for receiving encrypted
