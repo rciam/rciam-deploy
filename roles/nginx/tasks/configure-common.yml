@@ -33,6 +33,8 @@
 # Configure nginx Virtual Host SSL certificates
 - include: configure-ssl-cert.yml
   when: nginx_vhosts is defined
+  tags:
+    - nginx:config:cert
 
 - name: Add nginx Virtual Host configuration
   template:
