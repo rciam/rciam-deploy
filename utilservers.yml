@@ -8,67 +8,90 @@
   vars:
     rciam_utils:
       - name: rciam-sync-opsportal
-        path: /srv/rciam-sync-opsportal
+        path: /srv/rciam-opsportal-client/rciam-sync-opsportal
         repo: https://github.com/rciam/rciam-sync-opsportal.git
         version: devel
         user:
           name: rciam-opsportal-client
+          path: /srv/rciam-opsportal-client
           group: rciam-opsportal-client
           gecos: "RCIAM Operations Portal Client,,,"
           shell: /bin/bash
         cron:
-          job: "/srv/rciam-sync-opsportal/.venv/bin/python /srv/rciam-sync-opsportal/main.py"
+          job: "/srv/rciam-opsportal-client/rciam-sync-opsportal/.venv/bin/python /srv/rciam-opsportal-client/rciam-sync-opsportal/main.py"
           minute: 55
           hour: "*/2"
           #day:
           #month:
       - name: rciam-sync-client-names
-        path: /srv/rciam-sync-client-names
+        path: /srv/rciam-client-name-sync/rciam-sync-client-names
         repo: https://github.com/rciam/rciam-sync-client-names.git
         version: v1.0.0
         user:
           name: rciam-client-name-sync
+          path: /srv/rciam-client-name-sync
           group: rciam-client-name-sync
           gecos: "RCIAM Client Name Syncer,,,"
           shell: /bin/bash
         cron:
-          job: "/srv/rciam-sync-client-names/.venv/bin/python /srv/rciam-sync-client-names/main.py"
+          job: "/srv/rciam-client-name-sync/rciam-sync-client-names/.venv/bin/python /srv/rciam-client-name-sync/rciam-sync-client-names/main.py"
           minute: 5
           #hour:
           #day:
           #month:
       - name: rciam-sync-voms
-        path: /srv/rciam-sync-voms
+        path: /srv/rciam-voms-client/rciam-sync-voms
         repo: https://github.com/rciam/rciam-sync-voms.git
         version: v1.0.0
         user:
           name: rciam-voms-client
+          path: /srv/rciam-voms-client
           group: rciam-voms-client
           gecos: "RCIAM VOMS Admin Client,,,"
           shell: /bin/bash
         cron:
-          job: "/srv/rciam-sync-voms/.venv/bin/python /srv/rciam-sync-voms/main.py"
+          job: "/srv/rciam-voms-client/rciam-sync-voms/.venv/bin/python /srv/rciam-voms-client/rciam-sync-voms/main.py"
           minute: "20,50"
           #hour:
           #day:
           #month:
       - name: rciam-expire-vomembers
-        path: /srv/rciam-expire-vomembers
+        path: /srv/rciam-registry-client/rciam-expire-vomembers
         repo: https://github.com/NicolasLiampotis/rciam-expire-vomembers.git
         version: devel
         user:
           name: rciam-registry-client
+          path: /srv/rciam-registry-client
           group: rciam-registry-client
           gecos: "RCIAM COmanage Registry DB Client,,,"
           shell: /bin/bash
         cron:
-          job: "/srv/rciam-expire-vomembers/.venv/bin/python /srv/rciam-expire-vomembers/main.py"
+          job: "/srv/rciam-registry-client/rciam-expire-vomembers/.venv/bin/python /srv/rciam-registry-client/rciam-expire-vomembers/main.py"
           minute: "29,59"
           #hour:
           #day:
-          #month:
+          #month:    
+      - name: rciam-ip2country
+        path: /srv/rciam-ip2country-client/rciam-ip2country
+        repo: https://github.com/rciam/rciam-ip2country.git
+        version: main
+        db_file_extension: mmdb
+        user:
+          name: rciam-ip2country-client
+          path: /srv/rciam-ip2country-client
+          group: rciam-ip2country-client
+          gecos: "RCIAM Map Ip To Country Client Name,,,"
+          shell: /bin/bash
+        cron:
+          job: "/srv/rciam-ip2country-client/rciam-ip2country/.venv/bin/python /srv/rciam-ip2country-client/rciam-ip2country/ipToCountry.py"
+          minute: "0"
+          hour: "1"
+          day: "*"
+          month: "*"
+          weekday: "*"
         
   tasks:
+
     - name: Ensure util dependencies are installed
       apt:
         name:
@@ -80,6 +103,32 @@
         cache_valid_time: 86400
       become: yes
 
+    - name: Ensure PPA is installed for MaxMind (required for rciam-ip2country)
+      apt_repository:
+        repo: 'ppa:maxmind/ppa'
+        state: present
+        update_cache: yes
+        codename: trusty
+      when: 
+        - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
+        - (rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | map(attribute='db_file_extension') | list )[0] == "dat"
+      become: yes
+
+    - name: Ensure dependencies for rciam-ip2country are installed
+      apt:
+        name:
+          - libgeoip1
+          - libgeoip-dev
+          - geoip-bin
+        state: present
+        install_recommends: no
+        update_cache: yes
+        cache_valid_time: 86400
+      when: 
+        - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
+        - (rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | map(attribute='db_file_extension') | list )[0] == "dat"
+      become: yes
+      
     - name: Ensure util groups exist
       group:
         name: "{{ item.user.group }}"
@@ -93,7 +142,7 @@
         groups: "{{ item.user.group }}"
         comment: "{{ item.user.gecos }}" 
         shell: "{{ item.user.shell }}"
-        home: "{{ item.path }}"
+        home: "{{ item.user.path }}"
         system: yes
         create_home: yes
         skeleton: "/empty"
@@ -127,6 +176,25 @@
         mode: 0400
         backup: yes
       loop: "{{ rciam_utils }}"
+      become: yes
+
+    - name: Ensure tables have been created for rciam-ip2country
+      shell: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/.venv/bin/python -m Utils.install"
+      args:
+        chdir: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}"
+      when: rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
+      become: yes
+      become_user: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
+
+    - name: Ensure database files are copied for rciam-ip2country
+      copy:
+        src: "{{ rciam_util.ip2country.database_files_dir }}/{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='db_file_extension') | list)[0] }}/"
+        dest: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/databases/"
+        owner: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
+        group: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.group') | list)[0] }}"
+        mode: 0400
+        backup: yes
+      when: '(rciam_util.ip2country.database_files_dir is defined) and (rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1)'
       become: yes
 
     - name: Ensure util cron jobs are installed
