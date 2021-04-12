@@ -46,3 +46,7 @@ ssp_module_proxystatistics_table_name:
   service_providers_map: "serviceProvidersMap"
 
 ssp_module_proxystatistics_oidc_issuer: "http://example.org/openidconnect/sp"
+
+# Ignore from statistics calculations the list of identifiers below.
+#ssp_module_proxystatistics_user_id_blacklist:
+#  - xxxxxx@example.org

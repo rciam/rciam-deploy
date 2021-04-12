@@ -96,6 +96,17 @@ $config = [
      */
     'userIdAttribute' => '{{ ssp_module_proxystatistics_user_id_attribute }}',
 
+{% if ssp_module_proxystatistics_user_id_blacklist is defined %}
+     /*
+      * Which users should be blacklisted
+      * */
+     'userIdBlacklist' => [
+{% for identifier in ssp_module_proxystatistics_user_id_blacklist %}
+        '{{ identifier }}',
+{% endfor %}
+     ],
+{% endif %}
+
     /*
      * Fill the table name for statistics
      */
