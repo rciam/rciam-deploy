@@ -1,0 +1,17 @@
+---
+
+comanage_registry_plugins: []
+#comanage_registry_plugins:
+#  - name: ExamplePluginFolderName
+#    version: master
+#    repository: "https://github.com/project/examplePluginName"
+#    status: init
+
+
+#cron_jobs:
+#  - name: "Action Name"
+#    minute: "0"
+#    filename: "PluginName"
+#    user: root
+#    job: |
+#      cd {{ path_to_registry }}/app && Console/cake PluginName.action
