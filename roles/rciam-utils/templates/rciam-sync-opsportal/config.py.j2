@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+opsportal = {
+    "api": {
+        "base_url": "{{ rciam_utils_sync_opsportal.opsportal_api.base_url }}",
+        "key": "{{ rciam_utils_sync_opsportal.opsportal_api.key }}"
+    }
+}
+
+registry = {
+    "db": {
+        "name": "{{ rciam_dbs.registry.name }}",
+        "host": "{{ lookup('dig', groups['dbmaster'][0]) }}",
+        "user": "{{ rciam_dbs.registry.owner_username }}",
+        "password": "{{ rciam_dbs.registry.owner_password }}",
+        "voms_tbl": "{{ rciam_dbs.registry.voms_tbl }}"
+    }
+}

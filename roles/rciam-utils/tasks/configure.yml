@@ -1,0 +1,84 @@
+# file: tasks/configure.yml
+---
+
+- name: Ensure util groups exist
+  group:
+    name: "{{ item.user.group }}"
+    system: yes
+  loop: "{{ rciam_utils }}"
+  become: yes
+
+- name: Ensure util users exist
+  user:
+    name: "{{ item.user.name }}"
+    groups: "{{ item.user.group }}"
+    comment: "{{ item.user.gecos }}" 
+    shell: "{{ item.user.shell }}"
+    home: "{{ item.user.path }}"
+    system: yes
+    create_home: yes
+    skeleton: "/empty"
+  loop: "{{ rciam_utils }}"
+  become: yes
+
+- name: Ensure util code checkouts are up-to-date
+  git:
+    repo: "{{ item.repo }}"
+    dest: "{{ item.path }}"
+    version: "{{ item.version }}"
+  loop: "{{ rciam_utils }}"
+  become: yes
+  become_user: "{{ item.user.name }}"
+
+- name: Ensure util python requirements are installed in virtualenvs
+  pip:
+    requirements: "{{ item.path }}/requirements.txt"
+    virtualenv: "{{ item.path }}/.venv"
+    virtualenv_command: python3 -m venv
+  loop: "{{ rciam_utils }}"
+  become: yes
+  become_user: "{{ item.user.name }}"
+
+- name: Ensure utils are configured
+  template:
+    src: "{{ item.name }}/config.py.j2"
+    dest: "{{ item.path }}/config.py"
+    owner: "{{ item.user.name }}"
+    group: "{{ item.user.group }}"
+    mode: 0400
+    backup: yes
+  loop: "{{ rciam_utils }}"
+  become: yes
+
+- name: Ensure tables have been created for rciam-ip2country
+  shell: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/.venv/bin/python -m Utils.install"
+  args:
+    chdir: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}"
+  when: rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
+  become: yes
+  become_user: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
+
+- name: Ensure database files are copied for rciam-ip2country
+  copy:
+    src: "{{ rciam_utils_ip2country.database_files_dir }}/{{ rciam_utils_ip2country.db_file_extension }}/"
+    dest: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/databases/"
+    owner: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
+    group: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.group') | list)[0] }}"
+    mode: 0400
+    backup: yes
+  when: '(rciam_utils_ip2country.database_files_dir is defined) and (rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1)'
+  become: yes
+
+- name: Ensure util cron jobs are installed
+  cron:
+    name: "{{ item.name }}"
+    user: "{{ item.user.name | default('root') }}"
+    cron_file: "{{ item.name }}"
+    job: "{{ item.cron.job }}"
+    minute: "{{ item.cron.minute | default(omit) }}"
+    hour: "{{ item.cron.hour | default(omit) }}"
+    day: "{{ item.cron.day | default(omit) }}"
+    month: "{{ item.cron.month | default(omit) }}"
+  loop: "{{ rciam_utils }}"
+  when: item.cron is defined
+  become: yes

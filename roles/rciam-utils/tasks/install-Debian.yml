@@ -1,0 +1,40 @@
+# file: rciam-utils/tasks/install-Debian.yml
+#
+---
+
+- name: Ensure util dependencies are installed
+  apt:
+    name:
+      - git
+      - python3-venv
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
+  become: yes
+
+- name: Ensure PPA is installed for MaxMind (required for rciam-ip2country)
+  apt_repository:
+    repo: 'ppa:maxmind/ppa'
+    state: present
+    update_cache: yes
+    codename: trusty
+  when: 
+    - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
+    - rciam_utils_ip2country.db_file_extension is defined and rciam_utils_ip2country.db_file_extension == "dat"
+  become: yes
+
+- name: Ensure dependencies for rciam-ip2country are installed
+  apt:
+    name:
+      - libgeoip1
+      - libgeoip-dev
+      - geoip-bin
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
+  when: 
+    - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
+    - rciam_utils_ip2country.db_file_extension is defined and rciam_utils_ip2country.db_file_extension == "dat"
+  become: yes
