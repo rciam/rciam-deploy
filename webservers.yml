@@ -19,3 +19,4 @@
         label: "Copying static files for Virtual Host {{ item.servername | urlsplit('hostname') }}"
       ignore_errors: yes
       become: yes
+      tags: web:static
