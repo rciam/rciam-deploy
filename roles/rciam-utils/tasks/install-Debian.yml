@@ -27,6 +27,8 @@
 - name: Ensure dependencies for rciam-ip2country are installed
   apt:
     name:
+      - python3-dev
+      - build-essential
       - libgeoip1
       - libgeoip-dev
       - geoip-bin
