@@ -1,0 +1,34 @@
+---
+
+- name: Register COmanage files to be copied
+  find:
+    paths: "{{ inventory_dir }}/files/comanage-registry"
+    file_type: file
+    recurse: yes
+  register: comanage_files
+  ignore_errors: yes
+  delegate_to: 127.0.0.1
+
+- name: Display files to be copied
+  debug:
+    msg: "{{ comanage_path }}/{{ item.path | regex_replace('(.*)[/]files[/]comanage-registry[/](.*)', '\\2') }}"
+    verbosity: 1
+  loop: "{{ comanage_files.files }}"
+  loop_control:
+    label: "Copied file {{ item.path }}"
+  when: comanage_files is defined
+
+- name: Copy COmanage files
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ comanage_path }}/{{ item.path | regex_replace('(.*)[/]files[/]comanage-registry[/](.*)', '\\2') }}"
+    force: yes
+    owner: root
+    mode: 0664
+    backup: true
+  loop: "{{ comanage_files.files }}"
+  loop_control:
+    label: "Added file {{ comanage_path }}/{{ item.path | regex_replace('(.*)[/]files[/]comanage-registry[/](.*)', '\\2') }}"
+  become: yes
+  ignore_errors: yes
+  when: comanage_files is defined

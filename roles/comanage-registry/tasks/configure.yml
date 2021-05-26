@@ -9,7 +9,8 @@
     mode: 0600
     backup: yes
   become: yes
-  when: GCOmanageCheck.changed
+  tags:
+  - comanage-registry:config:db
 
 - name: Configure COmanage Registry email settings
   template:
@@ -20,62 +21,24 @@
     mode: 0600
     backup: yes
   become: yes
-  when: GCOmanageCheck.changed
+  tags:
+  - comanage-registry:config:email
 
-# The creation of the database should be executed only when installing for
-# the first time. This command has no effect after the initial setup and
-# it would be better to exclude it
-- name: Configure COmanage Registry database schema
-  shell: Console/cake database
-  args:
-    chdir: "{{ comanage_path }}/app"
-  become: yes
-  become_user: "{{ comanage_webserver_user }}"
-  when: GCOmanageCheck.changed
-
-- name: Configure COmanage Registry platform admin and org identity pooling
-  shell: Console/cake setup --admin-given-name "{{ comanage_admin.given_name }}" --admin-family-name "{{ comanage_admin.family_name }}" --admin-username "{{ comanage_admin.username }}" --enable-pooling={{ comanage_org_identity_pooling }}
-  args:
-    chdir: "{{ comanage_path }}/app"
-    creates: "{{ comanage_path }}/local/Config/security.salt"
-  become: yes
-  register: CManageReg
-  when: GCOmanageCheck.changed
-  ignore_errors: True
-  #failed_when: 'CManageReg.stderr != "" and "relation \"cm_users\" already exists" not in CManageReg.stderr'
-
-- name: Ensure COmanage Registry logo is copied
-  copy:
-    src: "{{ comanage_logo }}"
-    dest: "{{ comanage_path }}/local/webroot/img/logo.png"
-    owner: "root"
-    group: "root"
-    mode: 0644
+# Seed: cat /dev/urandom | tr -dc '0-9' | fold -w 29 | head -n 1 | xargs echo -n
+# Salt: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1 | xargs echo -n
+- name: Configure COmanage Registry security.salt and security.seed
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ comanage_path }}/local/Config/{{ item }}"
+    owner: "{{ comanage_webserver_user }}"
+    group: "{{ comanage_webserver_group }}"
     backup: yes
-  when: 'comanage_logo is defined'
   become: yes
-
-- name: Ensure COmanage Registry favicon is copied
-  copy:
-    src: "{{ comanage_favicon }}"
-    dest: "{{ comanage_path }}/app/webroot/favicon.ico"
-    owner: "root"
-    group: "root"
-    mode: 0644
-    backup: yes
-  when: 'comanage_favicon is defined'
-  become: yes
-
-- name: Ensure COmanage Registry public static pages are copied
-  copy:
-    src: "{{ comanage_public_pages_dir }}/"
-    dest: "{{ comanage_path }}/local/View/Pages/public/"
-    owner: "root"
-    group: "root"
-    mode: 0644
-    backup: yes
-  when: 'comanage_public_pages_dir is defined'
-  become: yes
+  loop:
+    - security.salt
+    - security.seed
+  tags:
+    - comanage-registry:config:security
 
 - name: Configure COmanage Registry app/webroot/.htaccess
   blockinfile:
@@ -83,9 +46,11 @@
     backup: yes
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     insertafter: "EOF"
-    content: "{{ comanage_app_webroot_htaccess  }}"
-  when: 'comanage_app_webroot_htaccess is defined and GCOmanageCheck.changed'
+    block: "{{ comanage_app_webroot_htaccess }}"
+  when: comanage_app_webroot_htaccess is defined
   become: yes
+  tags:
+  - comanage-registry:config:webroot
 
 - name: Configure COmanage Registry auth session name
   lineinfile:
@@ -96,36 +61,8 @@
      - "{{ comanage_path }}/app/webroot/auth/login/index.php"
      - "{{ comanage_path }}/app/webroot/auth/logout/index.php"
   become: yes
-  when: GCOmanageCheck.changed
-
-- name: Clear COmanage Registry session settings
-  lineinfile:
-    dest: "{{ comanage_path }}/app/Config/core.php"
-    backup: yes
-    state: absent
-    regexp: "'defaults' => 'php'$"
-  when: 'comanage_session_conf is defined and GCOmanageCheck.changed'
-  become: yes
-
-- name: Configure COmanage Registry session settings
-  blockinfile:
-    dest: "{{ comanage_path }}/app/Config/core.php"
-    backup: yes
-    marker: "// {mark} ANSIBLE MANAGED BLOCK"
-    insertafter: 'Configure::write\(''Session'', array\('
-    content: "{{ comanage_session_conf  }}"
-  when: 'comanage_session_conf is defined and GCOmanageCheck.changed'
-  become: yes
-
-- name: Configure COmanage Registry full base URL
-  blockinfile:
-    dest: "{{ comanage_path }}/app/Config/core.php"
-    backup: yes
-    marker: "# {mark} ANSIBLE MANAGED BLOCK"
-    insertafter: "EOF"
-    content: "Configure::write('App.fullBaseUrl', '{{ comanage_full_base_url }}');"
-  when: 'comanage_full_base_url is defined'
-  become: yes
+  tags:
+  - comanage-registry:config:webroot
 
 - name: Configure COmanage Registry logout location
   replace:
@@ -133,8 +70,10 @@
     backup: yes
     regexp: '\/registry\/users\/logout'
     replace: "{{ comanage_logout_location }}"
-  when: 'comanage_logout_location is defined'
+  when: comanage_logout_location is defined
   become: yes
+  tags:
+  - comanage-registry:config:webroot
 
 - name: Configure COmanage Registry timezone cookie name
   replace:
@@ -146,38 +85,27 @@
      - "{{ comanage_path }}/app/Controller/AppController.php"
      - "{{ comanage_path }}/app/View/Layouts/default.ctp"
      - "{{ comanage_path }}/app/View/Layouts/lightbox.ctp"
-  when: 'comanage_timezone_cookie_name is defined'
+  when: comanage_timezone_cookie_name is defined
   become: yes
 
-- name: Add Columns Dictionary
-  debug:
-    msg: "table={{item.key}} column={{item.value}}"
-    verbosity: 2
-  with_dict: "{{ comanage_schema_updates | default({}) }}"
-  when: comanage_schema_updates is defined
-
-- debug:
-    var: comanage_databases[0]
-    verbosity: 2
-
-# TODO remove ignore errors as soon as we migrate to PSQL 9.6 or greater
-# then use "if not exists" with add column
-- name: Add new columns to the schema
-  postgresql_query:
-    db: "{{comanage_databases[0]['name']}}"
-    login_host: "{{comanage_databases[0]['host']}}"
-    login_user: "{{comanage_databases[0]['user']}}"
-    login_password: "{{comanage_databases[0]['password']}}"
-    query: "ALTER TABLE {{item.key}} ADD COLUMN {{item.value}}"
-  with_dict: "{{ comanage_schema_updates | default({}) }}"
-  when: comanage_schema_updates is defined
-  ignore_errors: yes
-
-- name: Clear COmanage Registry cache
-  shell: Console/cake cache clear
-  args:
-    chdir: "{{ comanage_path }}/app"
+# According to COmanage this is not a mandatory step for the setup
+- name: Configure COmanage Registry core.php
+  template:
+    src: "core.php.j2"
+    dest: "{{ comanage_path }}/app/Config/core.php"
+    owner: root
+    group: root
+    backup: yes
   become: yes
-  register: CManageCache
-  when: ' "Already up-to-date." not in GCOmanagePull.stdout or GCOmanageCheck.changed or comanage_schema_updates is defined'
-  failed_when: '"Done clearing cache" not in CManageCache.stdout'
+  tags:
+  - comanage-registry:config:core
+
+# Tasks adding/copying/replacing files
+- name: Update/Copy tasks
+  include_tasks:
+    file: static_files.yml
+    apply:
+      tags:
+      - comanage-registry:config:staticfiles
+  tags:
+  - comanage-registry:config:staticfiles
