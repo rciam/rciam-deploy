@@ -27,8 +27,19 @@
 - name: Ensure dependencies for rciam-ip2country are installed
   apt:
     name:
-      - python3-dev
       - build-essential
+      - python3-dev
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
+  when: 
+    - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
+  become: yes
+
+- name: Ensure additional dependencies for rciam-ip2country (legacy version only) are installed
+  apt:
+    name:
       - libgeoip1
       - libgeoip-dev
       - geoip-bin
