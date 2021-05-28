@@ -1,0 +1,26 @@
+---
+
+- name: Ensure COmanage Registry local/Plugins directory exists
+  file: 
+    path: "{{ comanage_path }}/local/Plugin"
+    state: directory
+    owner: root
+    group: root
+  become: yes
+
+- name: Ensure {{ item.name }} is cloned under local/Plugins directory
+  git:
+    repo: "{{ item.repository }}"
+    dest: "{{ comanage_path }}/local/Plugin/{{ item.name }}"
+    version: "{{ item.version }}"
+    accept_hostkey: yes
+  become: yes
+
+- name: Create COmanage Registry Plugins schemata
+  shell: | 
+      ./Console/cake schema create --file schema.php --path "{{ comanage_path }}/local/Plugin/{{ item.name }}/Config/Schema" -y 
+  args:
+    chdir: "{{ comanage_path }}/app"
+    executable: /bin/sh
+  when: item.status is defined and item.status == "init"
+  become: yes

@@ -8,6 +8,7 @@
     - { role: php, tags: php }
     - { role: shibboleth-sp, tags: shibboleth-sp }
     - { role: comanage-registry, tags: comanage-registry }
+    - { role: comanage-registry-plugins, tags: comanage-registry-plugins }
     #- cm-role-ui
 
 

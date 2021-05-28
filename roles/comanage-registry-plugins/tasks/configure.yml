@@ -1,0 +1,16 @@
+---
+
+- name: Ensure COmanage Registry Plugins cron jobs are installed
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute | default(omit) }}"
+    hour: "{{ item.hour | default(omit) }}"
+    day: "{{ item.day | default(omit) }}"
+    month: "{{ item.month | default(omit) }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    cron_file: "{{ item.filename }}"
+    backup: true
+  loop: "{{ cron_jobs | default([]) }}"
+  become: true
+  when: cron_jobs is defined
