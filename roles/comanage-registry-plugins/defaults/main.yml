@@ -8,10 +8,14 @@ comanage_registry_plugins: []
 #    status: init
 
 
-#cron_jobs:
+#comanage_cron_jobs:
 #  - name: "Action Name"
 #    minute: "0"
 #    filename: "PluginName"
 #    user: root
 #    job: |
 #      cd {{ path_to_registry }}/app && Console/cake PluginName.action
+
+#comanage_symlinks:
+#  - target: "/path/to/target"
+#    link: "/path/to/symlink"
