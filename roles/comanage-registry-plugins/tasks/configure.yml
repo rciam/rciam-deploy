@@ -11,6 +11,18 @@
     user: "{{ item.user }}"
     cron_file: "{{ item.filename }}"
     backup: true
-  loop: "{{ cron_jobs | default([]) }}"
+  loop: "{{ comanage_cron_jobs | default([]) }}"
   become: true
-  when: cron_jobs is defined
+  when: comanage_cron_jobs is defined
+
+- name: Create Symbolic links
+  file:
+    src: "{{ item.target }}"
+    dest: "{{ item.link }}"
+    force: yes
+    state: link
+    owner: root
+    group: root
+  loop: "{{ comanage_symlinks | default([]) }}"
+  become: true
+  when: comanage_symlinks is defined
