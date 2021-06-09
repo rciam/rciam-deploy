@@ -1,4 +1,9 @@
 ---
+- name: Clear cache of COmanage
+  command: su {{ comanage_registry_plugins_webuser }} -s /bin/sh -c ./Console/clearcache
+  args:
+    chdir: "{{ comanage_path }}/app"
+  become: yes
 
 - name: Ensure COmanage Registry local/Plugins directory exists
   file: 

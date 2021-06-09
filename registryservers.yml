@@ -4,6 +4,7 @@
 
 - hosts: registry
   roles:
+    - { role: git, tags: git }
     - { role: apache, tags: apache }
     - { role: php, tags: php }
     - { role: shibboleth-sp, tags: shibboleth-sp }
