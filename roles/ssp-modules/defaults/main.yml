@@ -8,6 +8,17 @@ ssp_modules_db: []
 # Examples of use cases:
 
 ## Modules
+#ssp_mods_extra_disabled:
+#  - name: module-a
+#    module_path: "{{ ssp_path }}/modules/module_directory_name"
+#  - name: module-x
+#    module_path: "{{ ssp_path }}/modules/module-x"
+#    dest_config_path: "{{ ssp_path }}/config/module_x.php"
+#  - name: module-x
+#    module_path: "{{ ssp_path }}/modules/module-x-v2.1.1"
+#    dest_config_path: "{{ ssp_path }}/config/module_x.php"
+#
+#
 #ssp_mods_extra_enabled:
 #  - name: "module1"
 #    path: "{{ ssp_path }}/modules/module1_directory"
@@ -42,6 +53,23 @@ ssp_modules_db: []
 #    # or for example :
 #    src_config_path: "{{ inventory_dir }}/files/templates/config/module_theme2_config.php.j2"
 #    dest_config_path: "{{ ssp_path }}/config/module_theme2_config.php"
+#  - name: "theme3"
+#    fullname: "simplesamlphp-module-theme3 - 1st level of unziped directory"
+#    path: "{{ ssp_path }}/modules/theme3"
+#    zip_url: "https://github.com/example/simplesamlphp-module-theme3/releases/download/1.0.0/theme3.zip"
+#    version: "1.0.0"
+#    src_config_path: "{{ role_path }}/templates/config/module_theme3_config.php.j2"
+#    src_config_path: "{{ inventory_dir }}/files/templates/config/module_theme3_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module_theme3_config.php"
+#    Same module/theme but in a different directory ( different version )
+#  - name: "theme3"
+#    fullname: "simplesamlphp-module-theme3 - 1st level of unziped directory"
+#    path: "{{ ssp_path }}/modules/theme3-v2.1.1"  # The different directory!
+#    zip_url: "https://github.com/example/simplesamlphp-module-theme3/releases/download/2.1.1/theme3.zip"
+#    version: "2.1.1"
+#    src_config_path: "{{ role_path }}/templates/config/module_theme3_config.php.j2"
+#    src_config_path: "{{ inventory_dir }}/files/templates/config/module_theme3_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module_theme3_config.php"
 #
 #
 ## Extra dictionaries

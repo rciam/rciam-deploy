@@ -21,6 +21,27 @@
   when: item.repo_url is defined
 
 
+- name: Remove/Disable SSP modules (1/2)
+  file:
+    path: "{{ item.module_path }}"
+    state: absent
+  become: yes
+  with_items: "{{ ssp_mods_extra_disabled }}"
+  tags:
+    - ssp_modules:config:remove
+  when: ssp_mods_extra_disabled is defined
+
+- name: Remove/Disable SSP modules (2/2)
+  file:
+    path: "{{ item.dest_config_path }}"
+    state: absent
+  become: yes
+  with_items: "{{ ssp_mods_extra_disabled }}"
+  when: (ssp_mods_extra_disabled is defined) and (item.dest_config_path is defined)
+  tags:
+    - ssp_modules:config:remove
+
+
 - name: Download & unarchive to /tmp/ ( zip only )
   unarchive:
     src: "{{ item.zip_url }}"
@@ -76,5 +97,5 @@
   failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
   with_items: "{{ ssp_modules_db }}"
   when: "ssp_modules_db is defined"
-  tags:
-    - ssp_modules:install:db
+
+
