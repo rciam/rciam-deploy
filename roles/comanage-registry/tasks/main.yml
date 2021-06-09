@@ -49,6 +49,7 @@
     chdir: "{{ comanage_path }}/app"
   become: yes
   become_user: "{{ comanage_webserver_user }}"
+  ignore_errors: yes
   when:
     - comanage_current_dir.stat.exists
   tags:

@@ -17,16 +17,6 @@
   tags:
    - always
 
-# Include pre-installation tasks
-- name: Include pre-Install tasks
-  include_tasks:
-    file: preinstall.yml
-    apply:
-      tags:
-        - preinstall
-  tags:
-    - preinstall
-
 # Include installation tasks
 - name: Include Installation tasks
   include_tasks:
