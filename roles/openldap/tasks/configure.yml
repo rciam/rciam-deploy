@@ -1,0 +1,113 @@
+---
+- name: Configure openLDAP file
+  template:
+    src: "etc/ldap/ldap.conf.j2"
+    dest: "/etc/ldap/ldap.conf"
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+
+- name: Enable SSL port for openLDAP
+  copy:
+    src: '{{ inventory_dir | dirname }}/all/files/openldap/slapd'
+    dest: '/etc/default/slapd'
+    owner: root
+    group: root
+    backup: yes
+
+- name: Set admin password
+  shell: slappasswd -s {{ openldap_admin_password }}
+  register: admin_password
+
+- name: Restart slapd
+  systemd:
+    name: slapd
+    enabled: yes
+    daemon_reload: yes
+    state: restarted
+  when: >
+    admin_password is defined and
+    admin_password
+
+- name: Copy additional schemas file
+  template:
+    src: "etc/ldap/slapd.d/modify_schemas.ldif.j2"
+    dest: "/etc/ldap/slapd.d/modify_schemas.ldif"
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Copy ACL config file
+  template:
+    src: "etc/ldap/slapd.d/access_control_list.ldif.j2"
+    dest: "/etc/ldap/slapd.d/access_control_list.ldif"
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Copy certificates config file
+  template:
+    src: "etc/ldap/certs/certs.ldif.j2"
+    dest: "/etc/ldap/slapd.d/certs.ldif"
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Add schemas to openLDAP
+  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/modify_schemas.ldif'
+  ignore_errors: yes  #set to get around erroring out that items already exist
+  when: >
+        openldap_schema is defined and
+        openldap_schema
+  become: yes
+
+- name: Add ACL to openLDAP
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/access_control_list.ldif'
+  ignore_errors: yes  #set to get around erroring out that items already exist
+  when: >
+        openldap_acl is defined and
+        openldap_acl
+  become: yes
+
+
+- name: Ensure CA certificate is copied
+  copy:
+    dest: "/etc/ldap/cacerts/{{ openldap_ca_certificate_file }}"
+    content: "{{ openldap_ca_certificate }}"
+    owner: openldap
+    group: openldap
+    mode: '0600'
+    backup: yes
+  when: openldap_ca_certificate_file is defined and openldap_ca_certificate is defined
+  become: yes
+
+- name: Ensure certificate is copied
+  copy:
+    dest: "/etc/ldap/certs/{{ openldap_certificate_file }}"
+    content: "{{ openldap_certificate }}"
+    owner: openldap
+    group: openldap
+    mode: '0600'
+    backup: yes
+  when: openldap_certificate_file is defined and openldap_certificate is defined
+  become: yes
+
+- name: Ensure certificate key is copied
+  copy:
+    dest: "/etc/ldap/certs/{{ openldap_certificate_key_file }}"
+    content: "{{ openldap_certificate_key }}"
+    owner: openldap
+    group: openldap
+    mode: '0600'
+    backup: yes
+  when: openldap_certificate_key_file is defined and openldap_certificate_key is defined
+  become: yes
+  no_log: yes
+
+- name: Add certificate config file to OpenLDAP
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/certs.ldif'
+  ignore_errors: yes  #set to get around erroring out that items already exist
+  become: yes
+  notify: Restart slapd
+

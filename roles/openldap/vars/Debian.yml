@@ -1,0 +1,3 @@
+openldap_debian_packages:
+  - slapd
+  - ldap-utils
