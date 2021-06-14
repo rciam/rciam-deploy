@@ -1,0 +1,60 @@
+{% for item in openldap_organizationalunits %}
+dn: ou={{ item }},{{ openldap_base }}
+objectClass: organizationalUnit
+objectClass: top
+
+{% endfor %}
+
+{% for item in openldap_posixgroups %}
+dn: cn={{ item.name }},ou={{ item.ou }},{{ openldap_base }}
+{% if item.action is not defined or item.action == 'add' %}
+objectClass: posixGroup
+objectClass: top
+gidNumber: {{ item.gidNumber }}
+cn: {{ item.name }}
+{% elif user.action == 'delete' %}
+changetype: delete
+{% endif %}
+
+{% endfor %}
+
+{% for user in openldap_adminusers %}
+{% if user.action == 'add' %}
+dn: cn={{ user.cn }},{{ openldap_base }}
+sn: {{ user.sn }}
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: top
+userPassword: {{ user.password }}
+mail: {{ user.email }}
+displayName: {{ user.displayName }}
+{% elif user.action == 'modify' and user.attributes is defined %}
+{% for attrs in user.attributes %}
+dn: cn={{ user.cn }},{{ openldap_base }}
+changetype: modify
+{{ attrs.action }}: {{ attrs.name }}
+{{ attrs.name }}: {{ attrs.value }}
+
+{% endfor %}
+
+{% elif user.action == 'delete' %}
+dn: cn={{ user.cn }},{{ openldap_base }}
+changetype: delete
+{% endif %}
+
+{% if user.groups is defined %}
+{% for admin_group in user.groups %}
+dn: cn={{ admin_group.name }},ou={{ admin_group.ou }},{{ openldap_base }}
+changetype: modify
+{% if admin_group.action is defined %}
+{{ admin_group.action }}: memberUid
+{% else %}
+{{ user.action }}: memberUid
+{% endif %}
+memberUid: {{ user.cn }}
+
+{% endfor %}
+
+{% endif %}
+
+{% endfor %}

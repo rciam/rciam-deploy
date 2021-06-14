@@ -1,0 +1,36 @@
+---
+# defaults file for ansible-openldap
+#openldap_admin_password: 'secret'
+openldap_admin_user: 'admin'
+openldap_org: 'example'
+openldap_tld: 'org'
+openldap_base: 'dc={{ openldap_org }},dc={{ openldap_tld }}'
+openldap_bind_id: 'cn={{ openldap_admin_user }},{{ openldap_base }}'
+openldap_organizationalunits:  #defines OU's to populate
+  - people
+  - groups
+openldap_populate: false  #defines if openldap DB should be populated with openldap_organizationalunits, openldap_posixgroups
+openldap_schema: false #defines if additional schemas should be added
+openldap_acl: false
+openldap_posixgroups:  #defines groups to create within OU's
+  - name: admin-CO:COU:example.org:members
+    ou: roles
+    gidNum: 500  #start group numbers at 500 and up
+
+openldap_adminusers: #defines admin users
+  - cn: client-example
+    sn: Example
+    displayName: 'Client Example'
+    email: 'client@example.org'
+    password: 'secret'
+    groups:
+      - name: admin-CO:COU:example.org:members
+        ou: roles
+
+openldap_ca_certificate_file: 'ca_cert.cer'
+openldap_ca_certificate: []
+openldap_certificate_file: 'cert.cer'
+openldap_certificate: []
+openldap_certificate_key_file: 'cert_key.key'
+openldap_certificate_key: []
+pri_domain_name: '{{ openldap_org }}.{{ openldap_tld }}'
