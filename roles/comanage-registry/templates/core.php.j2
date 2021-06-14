@@ -381,6 +381,13 @@ Cache::config('_cake_core_', array(
 {% else %}
     'serialize' => ($engine === 'File'),
 {% endif %}
+{% if comanage_memcache_options is defined %}
+    'options' => array(
+{% for opt in comanage_memcache_options %}
+        {{ opt.key }} => {{ opt.value }},
+{% endfor %}
+    ),
+{% endif %}
 ));
 
 /**
@@ -400,5 +407,12 @@ Cache::config('_cake_model_', array(
     ),
 {% else %}
     'serialize' => ($engine === 'File'),
+{% endif %}
+{% if comanage_memcache_options is defined %}
+    'options' => array(
+{% for opt in comanage_memcache_options %}
+        {{ opt.key }} => {{ opt.value }},
+{% endfor %}
+    ),
 {% endif %}
 ));

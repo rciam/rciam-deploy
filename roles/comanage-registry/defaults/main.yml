@@ -110,6 +110,12 @@ comanage_core_session_conf:
 #  - ip: '127.0.0.1'
 #    port: 11212
 
+#comanage_memcache_options:
+#  - key: "Memcached::OPT_NO_BLOCK"
+#    value: true
+#  - key: "Memcached::OPT_DISTRIBUTION"
+#    value: true
+
 # Backup the Comanage directory
 #comanage_backup: yes
 
