@@ -77,4 +77,4 @@
   with_items: "{{ ssp_modules_db }}"
   when: "ssp_modules_db is defined"
   tags:
-    - ssp_modules:install:db
+    - ssp-modules:install:db

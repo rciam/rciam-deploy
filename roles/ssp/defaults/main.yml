@@ -612,14 +612,45 @@ ssp_idp_hosts: []
 
 # List of SSP modules to enable
 ssp_mods_enabled: []
-  #- metarefresh
-  #- cron
-  #- discopower
-  #- consent
-  #- authfacebook
+  # - adfs
+  # - authcrypt
+  # - authfacebook
+  # - authtwitter
+  # - authwindowslive
+  # - authx509
+  # - authyubikey
+  # - cas
+  # - cdc
+  # - consentadmin
+  # - cron
+  # - exampleauth
+  # - memcacheMonitor
+  # - metarefresh
+  # - negotiate
+  # - oauth
+  # - preprodwarning
+  # - radius
+  # - riak
+  # - smartattributes
+  # - statistics
+  # - sqlauth
 
 # List of SSP modules to disable
 ssp_mods_disabled: []
+  # - admin
+  # - authorize
+  # - consent
+  # - core
+  # - discopower
+  # - exampleattributeserver
+  # - expirycheck
+  # - ldap
+  # - memcookie
+  # - multiauth
+  # - portal
+  # - saml
+  # - sanitycheck
+
 
 # Configuration options for automated SAML metadata management.
 # Requires `metarefresh` and `cron` modules in `ssp_mods_enabled`.  
@@ -645,6 +676,7 @@ ssp_mod_cron_vars:
   - name: "MAILTO"
     value: "na@example.org"
     file: "simplesamlphp"
+
 
 # Global blacklist: Optional list of entityIDs that should be excluded from ALL
 # metadata sets.
@@ -694,6 +726,7 @@ ssp_mod_cron_vars:
     #output_dir: metarefresh-aarc
     # Can be `flatfile` or `serialize`
     #output_format: serialize
+
 
 # Configuration options for the discopower module that provides a more
 # user-friendly IdP discovery service compared to the default.

@@ -160,16 +160,16 @@ $config = [
         'UIInfo' => [
 {% if authsource.display_name is defined %}
             'DisplayName' => [
-    {% for key, value in authsource.display_name.items() %}
-            '{{ key }}' => '{{ value }}',
-    {% endfor %}
+{% for key, value in authsource.display_name.items() %}
+                '{{ key }}' => '{{ value }}',
+{% endfor %}
             ],
 {% endif %}
 {% if authsource.description is defined %}
             'Description' => [
-    {% for key, value in authsource.description.items() %}
-            '{{ key }}' => '{{ value }}',
-    {% endfor %}
+{% for key, value in authsource.description.items() %}
+                '{{ key }}' => '{{ value }}',
+{% endfor %}
             ],
 {% endif %}
 {% if authsource.logos is defined %}
@@ -337,7 +337,7 @@ $config = [
 {% endfor %}
 {% endif %}
 {% if ssp_authsources_extra_config is defined %}
-  {{ ssp_authsources_extra_config | indent(width=4, indentfirst=False) }}
+    {{ ssp_authsources_extra_config | indent(width=4, indentfirst=False) }}
 
 {% endif %}
 ];
