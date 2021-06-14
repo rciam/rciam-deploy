@@ -49,14 +49,7 @@
     state: directory
     owner: "{{ comanage_webserver_user }}"
     group: "{{ comanage_webserver_group }}"
-    mode: 0701
-  become: yes
-
-- name: Ensure COmanage Registry temp directory tree is owned by webserver
-  file:
-    path: "{{ comanage_temp_dir }}"
-    owner: "{{ comanage_webserver_user }}"
-    group: "{{ comanage_webserver_group }}"
+    mode: 0700
     recurse: yes
   become: yes
 
@@ -67,4 +60,5 @@
     state: link
     owner: root
     group: root
+    follow: no
   become: yes
