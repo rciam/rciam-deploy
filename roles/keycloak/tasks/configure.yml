@@ -1,0 +1,160 @@
+---
+# this is an important block! Do now remove
+- name: Wait for keycloak to initialize
+  block:
+  #wait for port to open
+  - name: Waiting for service port to be opened...
+    wait_for:
+      host: "{{ansible_facts.default_ipv4.address}}"
+      port: 8080
+      delay: 10
+      timeout: 180
+  #wait for service to respond
+  - name: Waiting for service to be up and running...
+    uri:
+      url: "http://{{ansible_facts.default_ipv4.address}}:8080"
+      status_code: "200"
+      timeout: 600
+
+### wayf plugin configuration
+- name: Configure wayf plugin
+  block:
+  - name: Select wayf plugin for login UI
+    community.general.keycloak_realm:
+      auth_client_id: admin-cli
+      auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
+      auth_realm: master
+      auth_username: "{{keycloak_admin.user}}"
+      auth_password: "{{keycloak_admin.pass}}"
+      id: "{{item}}"
+      realm: "{{item}}"
+      login_theme: "eosc-kc"
+      state: present
+    with_items: "{{keycloak_plugins.wayf.add_to_realms}}"
+    run_once: true
+  when: "{{keycloak_plugins.wayf.enabled | default(false)}} == true"
+  tags: "wayf_plugin"
+
+
+- name: Acquire token
+  uri:
+    url: https://{{ groups['proxy'][0] }}/auth/realms/master/protocol/openid-connect/token
+    method: POST
+    body_format: form-urlencoded
+    body:
+      client_id: "admin-cli"
+      username: "{{keycloak_admin.user}}"
+      password: "{{keycloak_admin.pass}}"
+      grant_type: "password"
+  register: "result"    # token is in "result.json.access_token"
+  tags: "realm_configuration"
+
+
+# configure AUP, realm keys, etc
+- name: Configure the keycloak (AUP, realm keys, etc)
+  block:
+
+    - name: Ensure that realm already exists
+      community.general.keycloak_realm:
+        auth_client_id: admin-cli
+        auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
+        auth_realm: master
+        auth_username: "{{keycloak_admin.user}}"
+        auth_password: "{{keycloak_admin.pass}}"
+        id: "{{item.name}}"
+        realm: "{{item.name}}"
+        state: present
+      with_items: "{{config.realms | default([])}}"
+      run_once: true
+
+    - name: Configure keys (private key and certificate)
+      uri:
+        url: "https://{{ groups['proxy'][0] }}/auth/admin/realms/{{ item.name }}/components"
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ result.json.access_token }}"
+        body:
+          name: user_provided_keys
+          providerId: rsa
+          providerType: org.keycloak.keys.KeyProvider
+          parentId: "{{ item.name }}"
+          config:
+            priority: ["0"]
+            enabled: ["true"]
+            active: ["true"]
+            algorithm: ["{{ item.key.algorithm }}"]
+            privateKey: ["{{ item.key.privateKey }}"]
+            certificate: ["{{ item.key.certificate }}"]
+        status_code: 201
+      with_items: "{{config.realms | default([])}}"
+      when: not item.key is undefined
+      run_once: true
+
+    - name: Configure AUP (Terms and Conditions)
+      uri:
+        url: "https://{{ groups['proxy'][0] }}/auth/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
+        method: PUT
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ result.json.access_token }}"
+        body:
+          alias: "terms_and_conditions"
+          name: "Terms and Conditions"
+          providerId: "terms_and_conditions"
+          enabled: "{{ item.aup.enabled }}"
+          defaultAction: "{{ item.aup.defaultAction }}"
+          priority: 20
+          config:
+            reset_every: "{{ item.aup.reset_every }}"
+            reset_every_multiplier: "{{ item.aup.reset_every_multiplier }}"
+        status_code: 204
+      with_items: "{{ config.realms | default([]) }}"
+      when: not item.aup is undefined
+      run_once: true
+
+    - name: Setup SMTP
+      community.general.keycloak_realm:
+        auth_client_id: admin-cli
+        auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
+        auth_realm: master
+        auth_username: "{{keycloak_admin.user}}"
+        auth_password: "{{keycloak_admin.pass}}"
+        id: "{{item.name}}"
+        realm: "{{item.name}}"
+        smtpServer:
+          port: "{{ item.smtp.port }}"
+          ssl: "{{ item.smtp.enable_ssl }}"
+          starttls: "{{ item.smtp.enable_starttls }}"
+          host: "{{ item.smtp.host }}"
+          fromDisplayName: "{{ item.smtp.from_name }}"
+          from: "{{ item.smtp.from_email }}"
+          replyToDisplayName: "{{ item.smtp.reply_to_name }}"
+          replyTo: "{{ item.smtp.reply_to_email }}"
+          envelopeFrom: "{{ item.smtp.envelope_from }}"
+          auth: "{{ item.smtp.auth_enabled }}"
+          user: "{{ item.smtp.auth_username }}"
+          password: "{{ item.smtp.auth_password }}"
+        state: present
+      with_items: "{{config.realms | default([])}}"
+      when: not item.smtp is undefined
+      run_once: true
+
+    - name: Setup social IdPs
+      uri:
+        url: "https://{{ groups['proxy'][0] }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ result.json.access_token }}"
+        body:
+          "{{item[1]}}"
+        status_code: 201
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "social_idps"
+        - skip_missing: True
+      run_once: true
+
+  tags: "realm_configuration"
+
