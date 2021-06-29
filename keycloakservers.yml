@@ -1,0 +1,21 @@
+---
+
+- hosts: letsencrypt
+  roles:
+    - letsencrypt
+  remote_user: "debian"
+
+- hosts: proxy
+  roles:
+    - nginx
+  remote_user: "debian"
+
+- hosts: db
+  roles:
+    - postgresql
+  remote_user: "debian"
+
+- hosts: keycloak
+  roles:
+    - keycloak
+  remote_user: "debian"

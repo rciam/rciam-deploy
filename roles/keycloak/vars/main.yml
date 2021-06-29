@@ -1,0 +1,7 @@
+---
+
+keycloak_source_folder: keycloak_source
+keycloak_home: "{{ansible_user_dir}}/keycloak"
+
+keycloak_bind_address: "0.0.0.0"
+keycloak_bind_port: "8080"

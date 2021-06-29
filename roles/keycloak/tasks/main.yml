@@ -1,0 +1,146 @@
+---
+
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags:
+    - always
+
+
+# Install Java with OS-specific packages
+- include: "install-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+
+
+- name: Capture logged in user name
+  set_fact:
+    loggedin_user: "{{ansible_user_id}}"
+
+
+- name: Build keycloak from git and extract (conditional)
+  block:
+  
+    - name: "Install build dependencies"
+      apt:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+        - git
+        - maven
+        - libxml2-utils
+      become: yes
+      
+    - name: Git clone the branch
+      ansible.builtin.git:
+        repo: "{{keycloak_git}}"
+        dest: "/tmp/keycloak_source"
+        version: "{{keycloak_branch}}"
+
+    - name: Build keycloak
+      shell: "cd /tmp/keycloak_source && mvn -Pdistribution -pl distribution/server-dist -am -Dmaven.test.skip clean install --log-file /tmp/keycloak-build.log"
+      register: mvn_result
+
+    - name: Find keycloak tar.gz file
+      find:
+        paths: "/tmp/keycloak_source/distribution/server-dist/target"
+        patterns: '*.tar.gz'
+      register: found_tar
+
+    - name: Show an attribute value
+      ansible.builtin.debug:
+        var: found_tar.files[0].path
+
+    - name: unpack keycloak
+      unarchive:
+        src: "{{found_tar.files[0].path}}"
+        dest: "/tmp/"
+        copy: no
+
+    - name: Rename keycloak folder
+      command: "mv /tmp/keycloak-{{keycloak_version}} {{keycloak_home}}"
+  
+  when: keycloak_git is defined and keycloak_branch is defined
+  
+- name: Extract keycloak from archive (conditional)
+  block:
+    
+    - name: Download keycloak archive file
+      get_url:
+        url: "{{keycloak_archive_url}}"
+        dest: "/tmp/keycloak_archive"
+
+    - name: unpack keycloak
+      unarchive:
+        src: "/tmp/keycloak_archive"
+        dest: "/tmp/"
+        copy: no
+
+    - name: Rename keycloak folder
+      command: "mv /tmp/keycloak-{{keycloak_version}} {{keycloak_home}}"
+
+  when: keycloak_archive_url is defined
+
+######## Create postgresql plugin
+
+- name: create postresql plugin dir with parent directories
+  file:
+    path: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main"
+    state: directory
+
+- name: Download postgresql JDBC driver
+  get_url:
+    url: "https://jdbc.postgresql.org/download/{{postgresql_jar_name}}"
+    dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main"
+    
+- name: Installing postgresql plugin 
+  template:
+    src: templates/module.xml.j2
+    dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
+
+######## Install template standalone-ha.xml  
+
+- name: install keycloak configuration
+  template:
+    mode: 0644
+    src: templates/{{keycloak_version}}/standalone-ha.xml.j2
+    dest: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
+
+############### Setup admin user
+
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: "{{keycloak_home}}/standalone/configuration/keycloak-add-user.json"
+    state: absent
+
+- name: create admin user
+  shell: "{{keycloak_home}}/bin/add-user-keycloak.sh -u {{ keycloak_admin_username }} -p {{ keycloak_admin_password }}"
+  args:
+    executable: /bin/bash
+
+############### Setup keycloak as a service
+
+- name: keycloak systemd setup
+  template:
+    owner: root
+    group: root
+    mode: 0644
+    src: templates/keycloak.service.j2
+    dest: /etc/systemd/system/keycloak.service
+  become: yes
+
+- name: enable keycloak
+  systemd:
+    name: keycloak
+    enabled: yes
+  become: yes
+
+- name: start/restart keycloak
+  systemd:
+    name: keycloak
+    state: restarted
+  become: yes
+

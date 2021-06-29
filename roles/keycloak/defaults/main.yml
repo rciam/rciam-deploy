@@ -1,0 +1,19 @@
+---
+## Option 1: Define a git url and branch - comment to disable
+#keycloak_git: "https://github.com/eosc-kc/keycloak.git"
+#keycloak_branch: "stage"
+
+## Option 2: Define a keycloak release (tar.gz) url - comment to disable
+keycloak_archive_url: "https://github.com/keycloak/keycloak/releases/download/13.0.0/keycloak-13.0.0.tar.gz"
+
+
+##in format X.Y.Z
+keycloak_version: "13.0.0"
+
+keycloak_admin_username: "<set an admin user>"
+keycloak_admin_password: "<set his pass>"
+
+
+db_user: "user"
+db_password: "pass"
+db_name: "keycloak"
