@@ -59,23 +59,12 @@
    - config
 
 
-- name: Create Mitre federation registry configuration file
+- name: Create SSP & MitreID federation registry configuration file
   template:
-    src: mitreid.config.json.j2
-    dest: "{{ fedreg_agent_conf_dir }}/deployer_mitreid.config"
+    src: deployers.config.json.j2
+    dest: "{{ fedreg_agent_conf_dir }}/deployers.config"
     backup: yes 
-  when: fedreg_agent_enable_mitreid
-  become: yes
-  tags:
-   - agent
-   - config
-
-- name: Create SSP federation registry configuration file
-  template:
-    src: ssp.config.json.j2
-    dest: "{{ fedreg_agent_conf_dir }}/deployer_ssp.config"
-    backup: yes 
-  when: fedreg_agent_enable_ssp
+  when: fedreg_agent_enable_ssp or fedreg_agent_enable_mitreid
   become: yes
   tags:
    - agent
