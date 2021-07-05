@@ -5,7 +5,7 @@ Description=SSP deployer service
 
 [Service]
 User=root
-ExecStart={{ fedreg_agent_venv_path }}/bin/deployer_ssp -c {{ fedreg_agent_conf_dir }}/deployer_ssp.config
+ExecStart={{ fedreg_agent_venv_path }}/bin/deployer_ssp -c {{ fedreg_agent_conf_dir }}/deployers.config
 Restart=always
 RestartSec=60s
 Type=simple
