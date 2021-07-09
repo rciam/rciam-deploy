@@ -24,6 +24,18 @@
   tags:
   - comanage-registry:config:email
 
+- name: Configure COmanage Registry ldap entitlement settings
+  template:
+    src: "ldap.php.j2"
+    dest: "{{ comanage_path }}/local/Config/ldap.php"
+    owner: "{{ comanage_webserver_user }}"
+    group: "{{ comanage_webserver_group }}"
+    mode: 0600
+    backup: yes
+  become: yes
+  tags:
+  - comanage-registry:config:ldap
+
 # Seed: cat /dev/urandom | tr -dc '0-9' | fold -w 29 | head -n 1 | xargs echo -n
 # Salt: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1 | xargs echo -n
 - name: Configure COmanage Registry security.salt and security.seed
