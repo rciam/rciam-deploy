@@ -50,6 +50,51 @@
   loop: "{{ rciam_utils }}"
   become: yes
 
+- name: Ensure util SSL certificate directories exist
+  file:
+    path: "{{ item.ssl.cert.path | dirname }}"
+    owner: "{{ item.ssl.cert.owner }}"
+    group: "{{ item.ssl.cert.group }}"
+    state: directory
+  loop: "{{ rciam_utils }}"
+  when: item.ssl is defined
+  become: yes
+
+- name: Ensure util SSL certificates are copied
+  copy:
+    dest: "{{ item.ssl.cert.path }}"
+    content: "{{ item.ssl.cert.content }}"
+    owner: "{{ item.ssl.cert.owner }}"
+    group: "{{ item.ssl.cert.group }}"
+    mode: "{{ item.ssl.cert.mode }}"
+    backup: yes
+  loop: "{{ rciam_utils }}"
+  when: item.ssl is defined
+  become: yes
+
+- name: Ensure util SSL certificate key directories exist
+  file:
+    path: "{{ item.ssl.cert_key.path | dirname }}"
+    owner: "{{ item.ssl.cert_key.owner }}"
+    group: "{{ item.ssl.cert_key.group }}"
+    state: directory
+  loop: "{{ rciam_utils }}"
+  when: item.ssl is defined
+  become: yes
+
+- name: Ensure util SSL certificate keys are copied
+  copy:
+    dest: "{{ item.ssl.cert_key.path }}"
+    content: "{{ item.ssl.cert_key.content }}"
+    owner: "{{ item.ssl.cert_key.owner }}"
+    group: "{{ item.ssl.cert_key.group }}"
+    mode: "{{ item.ssl.cert_key.mode }}"
+    backup: yes
+  loop: "{{ rciam_utils }}"
+  when: item.ssl is defined
+  become: yes
+  no_log: yes
+
 - name: Ensure tables have been created for rciam-ip2country
   shell: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/.venv/bin/python -m Utils.install"
   args:

@@ -1,10 +1,10 @@
 # {{ ansible_managed }}
 
 voms = {
-    "vomses_url": "{{ rciam_utils_sync_voms.voms.vomses_url }}",
-    "cert_path": "{{ rciam_utils_sync_voms.voms.cert_path }}",
-    "key_path": "{{ rciam_utils_sync_voms.voms.key_path }}",
-    "trusted_ca_path": "{{ rciam_utils_sync_voms.voms.trusted_ca_path }}"
+    "vomses_url": "{{ rciam_utils_sync_voms.vomses_url }}",
+    "cert_path": "{{ rciam_utils_sync_voms.ssl.cert.path }}",
+    "key_path": "{{ rciam_utils_sync_voms.ssl.cert_key.path }}",
+    "trusted_ca_path": "{{ rciam_utils_sync_voms.ssl.trusted_ca_path }}"
 }
 
 registry = {
