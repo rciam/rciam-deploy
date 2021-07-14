@@ -1,0 +1,12 @@
+<?php
+
+$config = array(
+  'LdapConfig' => array(
+    'enable_vo_whitelist' => {{ comanage_ldap_provisioner_entitlements.enable_vo_whitelist }},
+    'vo_whitelist' => '{{ comanage_ldap_provisioner_entitlements.vo_whitelist }}',
+    'vo_roles' => '{{ comanage_ldap_provisioner_entitlements.vo_roles }}',
+    'urn_namespace' => '{{ comanage_ldap_provisioner_entitlements.urn_namespace }}',
+    'urn_authority' => '{{ comanage_ldap_provisioner_entitlements.urn_authority }}',
+    'vo_group_prefix' => '{{ comanage_ldap_provisioner_entitlements.vo_group_prefix }}'
+  )
+);

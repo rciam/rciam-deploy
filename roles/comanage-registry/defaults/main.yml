@@ -95,6 +95,15 @@ comanage_session_name: "CAKEPHP"
 comanage_core_session_conf:
   defaults: "php"
 
+# Ldap Provisioner Entitlements Configuration
+comanage_ldap_provisioner_entitlements:
+  enable_vo_whitelist: false
+  vo_whitelist: '' # comma seperated list
+  vo_roles: '' # comma seperated roles
+  urn_namespace: ''
+  urn_authority: ''
+  vo_group_prefix: ''
+
 # Dis/Enable COmanage cache
 #comanage_core_cache: true
 # Dis/Enable COmanage debug mode
