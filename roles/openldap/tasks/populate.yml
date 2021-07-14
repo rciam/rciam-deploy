@@ -1,0 +1,16 @@
+- name: Copy database population config file
+  template:
+    src: "etc/ldap/slapd.d/populate_content.ldif.j2"
+    dest: "/etc/ldap/slapd.d/populate_content.ldif"
+    owner: root
+    group: root
+    mode: 0640
+
+# This operation may return "FAILED" if an entry already exists but it will continue to add non existing entries
+- name: Populate openLDAP with groups and users
+  shell: "ldapadd -c -x -H ldapi:/// -D {{ openldap_bind_id }} -w '{{ openldap_admin_password }}' -f /etc/ldap/slapd.d/populate_content.ldif"
+  ignore_errors: yes  #set to get around erroring out that items already exist
+  when: >
+        openldap_populate is defined and
+        openldap_populate
+  become: yes
