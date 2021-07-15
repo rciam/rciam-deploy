@@ -97,6 +97,9 @@
 {% if comanage_full_base_url is defined %}
     Configure::write('App.fullBaseUrl', '{{ comanage_full_base_url }}');
 {% endif %}
+{% if comanage_app_base is defined %}
+    Configure::write('App.base', '{{ comanage_app_base }}');
+{% endif %}
 
 /**
  * Uncomment the define below to use CakePHP prefix routes.
