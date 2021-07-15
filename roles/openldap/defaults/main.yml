@@ -33,4 +33,5 @@ openldap_certificate_file: 'cert.cer'
 openldap_certificate: []
 openldap_certificate_key_file: 'cert_key.key'
 openldap_certificate_key: []
+openldap_slapd_services: "ldap://127.0.0.1:389/ ldaps:/// ldapi:///"
 pri_domain_name: '{{ openldap_org }}.{{ openldap_tld }}'
