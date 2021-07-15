@@ -9,12 +9,13 @@
     backup: yes
 
 - name: Enable SSL port for openLDAP
-  copy:
-    src: '{{ inventory_dir | dirname }}/all/files/openldap/slapd'
+  template:
+    src: 'etc/default/slapd/slapd.j2'
     dest: '/etc/default/slapd'
     owner: root
     group: root
     backup: yes
+  become: yes
 
 - name: Set admin password
   shell: slappasswd -s {{ openldap_admin_password }}
