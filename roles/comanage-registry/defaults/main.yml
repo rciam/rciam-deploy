@@ -15,6 +15,7 @@ comanage_root_dir: "/srv/comanage"
 comanage_path: "{{ comanage_root_dir }}/comanage-registry-current"
 comanage_webroot: "/var/www/html/registry"
 comanage_temp_dir: "/var/cache/registry"
+comanage_app_base: "/registry"
 
 comanage_databases:
   - instance: "default"
