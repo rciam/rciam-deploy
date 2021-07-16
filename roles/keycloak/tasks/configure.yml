@@ -24,8 +24,8 @@
       auth_client_id: admin-cli
       auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
       auth_realm: master
-      auth_username: "{{keycloak_admin_username}}"
-      auth_password: "{{keycloak_admin_password}}"
+      auth_username: "{{keycloak_admin.user}}"
+      auth_password: "{{keycloak_admin.pass}}"
       id: "{{item}}"
       realm: "{{item}}"
       login_theme: "eosc-kc"
@@ -43,8 +43,8 @@
     body_format: form-urlencoded
     body:
       client_id: "admin-cli"
-      username: "{{keycloak_admin_username}}"
-      password: "{{keycloak_admin_password}}"
+      username: "{{keycloak_admin.user}}"
+      password: "{{keycloak_admin.pass}}"
       grant_type: "password"
   register: "result"    # token is in "result.json.access_token"
   tags: "realm_configuration"
@@ -59,8 +59,8 @@
         auth_client_id: admin-cli
         auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
         auth_realm: master
-        auth_username: "{{keycloak_admin_username}}"
-        auth_password: "{{keycloak_admin_password}}"
+        auth_username: "{{keycloak_admin.user}}"
+        auth_password: "{{keycloak_admin.pass}}"
         id: "{{item.name}}"
         realm: "{{item.name}}"
         state: present
@@ -118,8 +118,8 @@
         auth_client_id: admin-cli
         auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
         auth_realm: master
-        auth_username: "{{keycloak_admin_username}}"
-        auth_password: "{{keycloak_admin_password}}"
+        auth_username: "{{keycloak_admin.user}}"
+        auth_password: "{{keycloak_admin.pass}}"
         id: "{{item.name}}"
         realm: "{{item.name}}"
         smtpServer:

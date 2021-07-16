@@ -1,5 +1,19 @@
 ---
 
+## this is to check if it's about upgrading (upgrade process is handled internally by keycloak/liquibase)
+- name:
+  block:
+  - name: Stop running instance
+    systemd:
+      name: keycloak
+      state: restarted
+    become: yes
+  - name: Move previous installation (folder will be named keycloak-previous-{15-random-alphanumeric-chars} at keycloak_home)
+    command: "mv {{keycloak_home}} {{keycloak_home}}/../keycloak-previous-{{ ansible_date_time.iso8601_basic_short }}"
+  when: is_upgrade
+
+## now start the installation of keycloak
+
 - name: Include OS-specific variables
   include_vars: "{{ item }}"
   with_first_found:
@@ -51,7 +65,15 @@
     register: find_result
   - name: Move extracted keycloak to final keycloak folder
     command: "mv {{find_result.files[0].path}} {{keycloak_home}}"
+  - name: Delete downloaded archive
+    ansible.builtin.file:
+      path: "/tmp/keycloak_archive"
+      state: absent
+  - name: Resolve keycloak version
+    set_fact:
+      keycloak_version: "{{find_result.files[0].path | replace('/tmp/keycloak-tmp/keycloak-','') | replace('-SNAPSHOT','') }}"
   tags: "download_extract"
+
 
 ######## Create postgresql plugin
 - name: "Task block: Create postgresql plugin"
@@ -70,7 +92,7 @@
       dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
   tags: "postgresql_plugin"
 
-######## Install template standalone-ha.xml  
+######## Install template standalone-ha.xml
 
 - name: Installing keycloak configuration (standalone-ha.xml)
   template:
@@ -87,7 +109,7 @@
       path: "{{keycloak_home}}/standalone/configuration/keycloak-add-user.json"
       state: absent
   - name: Create admin user
-    shell: "{{keycloak_home}}/bin/add-user-keycloak.sh -u {{ keycloak_admin_username }} -p {{ keycloak_admin_password }}"
+    shell: "{{keycloak_home}}/bin/add-user-keycloak.sh -u {{ keycloak_admin.user }} -p {{ keycloak_admin.pass }}"
     args:
       executable: /bin/bash
   tags: "setup_admin"
@@ -99,7 +121,7 @@
 - name: Install other plugins
   include_tasks: "install_plugin.yml"
   when: not keycloak_plugins is undefined
-  loop: "{{ lookup('dict', keycloak_plugins) }}"
+  loop: "{{ lookup('dict', keycloak_plugins, wantlist=True) }}"
   tags: "install_plugins"
 
 

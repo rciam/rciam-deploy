@@ -26,4 +26,4 @@
   shell: "ln -sf /snap/bin/certbot /usr/bin/certbot"
 
 - name: Run certbot script and create certificates
-  shell: "certbot certonly --standalone --email {{ maintainer_email }} --agree-tos -d {{ inventory_hostname }} --non-interactive"
+  shell: "certbot certonly --standalone --email {{ letsencrypt_email }} --agree-tos -d {{ inventory_hostname }} --non-interactive"
