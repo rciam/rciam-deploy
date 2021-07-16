@@ -1,0 +1,13 @@
+---
+
+## Variables below should not be changed, unless you know what you're doing
+
+keycloak_home: "{{ansible_user_dir}}/keycloak"
+
+keycloak_bind_address: "0.0.0.0"
+keycloak_bind_port: "8080"
+
+## cachetype should get one of the values: { distributed-cache, replicated-cache}. In case of replicated-cache, owners' value is ignored
+session:
+  cachetype: "distributed-cache"
+  owners: "2"

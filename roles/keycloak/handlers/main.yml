@@ -1,0 +1,19 @@
+---
+
+- name: Start keycloak
+  service:
+    name: keycloak
+    state: started
+  become: yes
+
+- name: Stop keycloak
+  service:
+    name: keycloak
+    state: stopped
+  become: yes
+
+- name: Restart keycloak
+  service: 
+    name: keycloak
+    state: restarted
+  become: yes

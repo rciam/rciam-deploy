@@ -1,0 +1,7 @@
+---
+
+- name: "Detected Debian - Running debian installation file"
+  include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+  become: yes
+
