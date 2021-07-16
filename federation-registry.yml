@@ -1,0 +1,9 @@
+---
+- hosts:
+    - dev
+  become: yes
+  roles:
+    - {role: federation-registry, task: configure-environment}
+    - {role: federation-registry, task: postgres}
+    - {role: federation-registry, task: configure-ams}
+    - {role: federation-registry, task: deploy}

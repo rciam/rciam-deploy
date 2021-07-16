@@ -1,0 +1,7 @@
+{
+"authorized_users": [
+    {% for user in federation_registry_ams.authorized_users %}
+        "{{ user.username }}",
+    {% endfor %}
+  ]
+}
