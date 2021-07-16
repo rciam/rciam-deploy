@@ -1,0 +1,4 @@
+ansible==2.9.11
+dnspython==2.0.0
+netaddr==0.8.0
+passlib==1.7.4
