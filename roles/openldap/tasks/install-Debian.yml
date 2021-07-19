@@ -36,6 +36,7 @@
     - question: "shared/organization"
       value: "{{ openldap_org }}"
       vtype: 'string'
+  become: yes
 
 - name: Install required packages
   apt:
@@ -46,11 +47,27 @@
     cache_valid_time: 86400
   become: yes
 
+- name: Find /var/backups ending with .ldapdb or matching with slapd-*+*
+  find:
+    paths: /var/backups
+    patterns: "*.ldapdb,slapd-*+*"
+    file_type: directory
+  become: yes
+  register: backup_files
+
+- name: Ensure /var/backups/openldap dir exists
+  file:
+    path: /var/backups/openldap
+    state: directory
+    owner: openldap
+    group: openldap
+  become: yes
+
 - name: Move Backup Files to another folder
-  command: mv {{ item }} {{ item }}.{{ ansible_date_time.epoch }}
-  loop:
-    - "/var/backups/unknown-2.4.47+dfsg-3+deb10u6.ldapdb"
-    - "/var/backups/slapd-2.4.47+dfsg-3+deb10u6"
+  command: mv {{ item.path }} /var/backups/openldap/{{ item.path | replace("/var/backups/","") }}.{{ ansible_date_time.epoch }}
+  with_items: "{{ backup_files.files }}"
+  ignore_errors: true
+  become: yes
 
 - name: Reconfigure slapd
   command: dpkg-reconfigure -f noninteractive slapd
@@ -62,3 +79,4 @@
     enabled: yes
     daemon_reload: yes
     state: restarted
+  become: yes

@@ -12,7 +12,7 @@ objectClass: posixGroup
 objectClass: top
 gidNumber: {{ item.gidNumber }}
 cn: {{ item.name }}
-{% elif user.action == 'delete' %}
+{% elif item.action == 'delete' %}
 changetype: delete
 {% endif %}
 
