@@ -7,6 +7,7 @@
     group: root
     mode: 0644
     backup: yes
+  become: yes
 
 - name: Enable SSL port for openLDAP
   template:
@@ -20,6 +21,7 @@
 - name: Set admin password
   shell: slappasswd -s {{ openldap_admin_password }}
   register: admin_password
+  become: yes
 
 - name: Restart slapd
   systemd:
@@ -30,6 +32,7 @@
   when: >
     admin_password is defined and
     admin_password
+  become: yes
 
 - name: Copy additional schemas file
   template:
@@ -38,6 +41,7 @@
     owner: root
     group: root
     mode: 0640
+  become: yes
 
 - name: Copy ACL config file
   template:
@@ -46,6 +50,7 @@
     owner: root
     group: root
     mode: 0640
+  become: yes
 
 - name: Copy certificates config file
   template:
@@ -54,6 +59,7 @@
     owner: root
     group: root
     mode: 0640
+  become: yes
 
 - name: Add schemas to openLDAP
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/modify_schemas.ldif'
@@ -71,6 +77,13 @@
         openldap_acl
   become: yes
 
+- name: Ensure /etc/ldap/cacerts dir exists
+  file: 
+    path: /etc/ldap/cacerts
+    state: directory
+    owner: openldap
+    group: openldap
+  become: yes
 
 - name: Ensure CA certificate is copied
   copy:
@@ -81,6 +94,14 @@
     mode: '0600'
     backup: yes
   when: openldap_ca_certificate_file is defined and openldap_ca_certificate is defined
+  become: yes
+
+- name: Ensure /etc/ldap/certs dir exists
+  file: 
+    path: /etc/ldap/certs
+    state: directory
+    owner: openldap
+    group: openldap
   become: yes
 
 - name: Ensure certificate is copied
