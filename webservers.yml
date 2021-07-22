@@ -6,6 +6,7 @@
   roles:
     - { role: apache, tags: apache }
     - { role: php, tags: php }
+    # - { role: egi-igtf, tags: egi-igtf }
   tasks:
     - name: Ensure static files for each Virtual Host are copied
       copy:
