@@ -28,6 +28,7 @@ $config = [
 {% for set in ssp_mod_metarefresh_sets %}
         '{{ set.name }}' => [
             'cron' => ['{{ set.cron }}'],
+{% if set.sources is defined %}
             'sources'=> [
 {% for src in set.sources %}
                 [
@@ -119,6 +120,9 @@ $config = [
                 ],
 {% endfor %}
             ],
+{% elif set.sources_raw is defined %}
+            'sources' => {{ set.sources_raw }},
+{% endif %}
             // Maximum cache time in seconds
             'expireAfter' => 60 * 60 * 24 * {{ set.expire_after }},
             'outputDir' => 'metadata/{{ set.output_dir }}/',
