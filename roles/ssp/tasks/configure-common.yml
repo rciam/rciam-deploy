@@ -221,7 +221,7 @@
 
 - name: Configure SSP cron module
   template:
-    src: config/module_cron.php.j2
+    src: config/module_cron-{{ ssp_version }}.php.j2
     dest: "{{ ssp_configdir }}/module_cron.php"
     backup: yes
     force: yes
@@ -274,7 +274,7 @@
 
 - name: Configure SSP discopower module
   template:
-    src: config/module_discopower.php.j2
+    src: config/module_discopower-{{ ssp_version }}.php.j2
     dest: "{{ ssp_configdir }}/module_discopower.php"
     backup: yes
     force: yes

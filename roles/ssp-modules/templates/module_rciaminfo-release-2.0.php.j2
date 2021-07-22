@@ -120,22 +120,14 @@ $config = [
     'infoConfig' => [
 {% if ssp_module_rciaminfo_info_config is defined and ssp_module_rciaminfo_info_config | length > 0 %}
 {% for info_config in ssp_module_rciaminfo_info_config %}
-
         /**
-        * List of onfigurations for the info table
-        * @default []
-        */
-
+         * List of onfigurations for the info table
+         * @default []
+         */
         '{{ info_config.name }}' => [
 {% if info_config.options is defined and info_config.options | length > 0 %}
 {% for option in info_config.options %}
-
-            /**
-            * Number of rows visible per Table page
-            * @default 10
-            */
-
-            '{{ option.key }}' => {{ option.value }}
+            '{{ option.key }}' => {{ option.value }},
 {% endfor %}
 {% endif %}
         ],
