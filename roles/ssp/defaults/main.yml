@@ -688,6 +688,9 @@ ssp_mod_cron_vars:
     # Can be `hourly` or `daily`
     #cron: hourly
     # A list of one or more sources that will be included in this metadata set.
+    # The filters can be specified with PHP syntax using `sources_raw` or
+    # alternatively, with YAML syntax using `sources`. See examples below:
+    #sources_raw: include 'path-to-file.php'
     #sources:
       # The source URL where the metadata will be fetched from.
       #- url: "https://reep.refeds.org/entity/69/latest_metadata/"
