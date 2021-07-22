@@ -1,5 +1,7 @@
+# file: webproxyservers.yml
+#
 ---
 
 - hosts: webproxy
   roles:
-    - nginx
+    - { role: nginx, tags: nginx }
