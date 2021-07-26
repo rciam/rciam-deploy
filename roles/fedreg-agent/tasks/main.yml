@@ -6,3 +6,7 @@
 
 - name: Deploy tasks
   include: "deploy.yml"
+
+- name: Setup services
+  include: "services.yml"
+

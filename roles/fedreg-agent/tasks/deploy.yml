@@ -4,7 +4,7 @@
 - name: Download only the requirements.txt from rciam-federation-registry-agent repository
   get_url:
     url: "{{ fedreg_agent_registry_requirements_url }}"
-    dest: /tmp/requirements.txt
+    dest: /tmp/requirements_{{ build_branch }}.txt
   become: yes
   tags:
     - agent
@@ -23,6 +23,7 @@
     - requirements
 
 - name: Install rciam-federation-registry-agent (test.pypi.org)
+  when: build_branch == "devel"
   pip:
     name: rciam-federation-registry-agent
     virtualenv: "{{ fedreg_agent_venv_path }}"
@@ -33,6 +34,19 @@
     - agent
     - python
     - requirements
+
+- name: Install rciam-federation-registry-agent
+  when: build_branch == "master"
+  pip:
+    name: rciam-federation-registry-agent
+    virtualenv: "{{ fedreg_agent_venv_path }}"
+    virtualenv_python: "{{ fedreg_agent_venv_python }}"
+  become: yes
+  tags:
+   - agent
+   - python
+   - requirements
+
 
 - name: "Ensure {{ fedreg_agent_conf_dir }} dir exists"
   file:

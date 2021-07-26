@@ -1,0 +1,70 @@
+- name: Create SSP & MitreID federation registry configuration file
+  template:
+    src: deployers.config.json.j2
+    dest: "{{ fedreg_agent_conf_dir }}/{{ deployers_config_name }}"
+    backup: yes 
+  when: fedreg_agent_enable_ssp or fedreg_agent_enable_mitreid
+  become: yes
+  tags:
+   - agent
+   - config
+
+
+- name: Create MitreId federation registry service file
+  template:
+    src: deployer_mitreid.service.j2
+    dest: "{{ fedreg_agent_services_path }}/{{ deployer_mitreid_name }}.service"
+    backup: yes 
+  register: mitreid_service
+  when: fedreg_agent_enable_mitreid
+  become: yes
+  tags:
+   - agent
+   - service
+
+- name: Create SSP federation registry service file
+  template:
+    src: deployer_ssp.service.j2
+    dest: "{{ fedreg_agent_services_path }}/{{ deployer_ssp_name }}.service"
+    backup: yes 
+  register: ssp_service
+  when: fedreg_agent_enable_ssp
+  become: yes
+  tags:
+   - agent
+   - service
+
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+  when: mitreid_service.changed or ssp_service.changed
+  become: yes
+  tags:
+   - agent
+   - service
+   - daemon-reload
+
+
+- name: MitreId federation registry service enable
+  service:
+    name: '{{ deployer_mitreid_name }}'
+    enabled: yes
+    state: started
+  when: fedreg_agent_enable_mitreid
+  become: yes
+  tags:
+   - agent
+   - service
+   - service_enable
+
+- name: SSP federation registry service enable
+  service:
+    name: '{{ deployer_ssp_name }}'
+    enabled: yes
+    state: started
+  when: fedreg_agent_enable_ssp
+  become: yes
+  tags:
+   - agent
+   - service
+   - service_enable
