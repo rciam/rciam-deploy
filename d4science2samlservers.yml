@@ -1,16 +1,16 @@
-# file: google2samlservers.yml
+# file: d4science2samlservers.yml
 # 
 ---
 
-- hosts: google2saml
+- hosts: d4science2saml
   roles:
     # - { role: apache, tags: apache }
     # - { role: php, tags: php }
     - { role: ssp, tags: ssp }
     - { role: ssp-modules, tags: ssp-modules }
   tasks:
-    - name: Install SSP mod authoauth2 v3.1.0
-      shell: php composer.phar require cirrusidentity/simplesamlphp-module-authoauth2:v3.1.0 --ignore-platform-reqs --no-interaction --no-scripts
+    - name: Install Keycloak Provicer library v2.2.2
+      shell: php composer.phar require stevenmaguire/oauth2-keycloak:v2.2.2 --ignore-platform-reqs --no-interaction --no-scripts --no-update
       args:
         chdir: "{{ ssp_path }}/"
         executable: /bin/bash

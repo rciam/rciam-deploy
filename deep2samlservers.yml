@@ -1,8 +1,8 @@
-# file: google2samlservers.yml
+# file: deep2samlservers.yml
 # 
 ---
 
-- hosts: google2saml
+- hosts: deep2saml
   roles:
     # - { role: apache, tags: apache }
     # - { role: php, tags: php }
