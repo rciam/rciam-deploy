@@ -3,8 +3,14 @@
 # This playbook deploy the RCIAM federation registry agent.
 
 
-- name: RCIAM federation registry agent
-  hosts: fedreg_agents
+- name: RCIAM federation registry agent demo
+  hosts: fedreg_agents_demo
+  roles:
+    - { role: fedreg-agent,    tags: agent }
+
+
+- name: RCIAM federation registry agent production
+  hosts: fedreg_agents_prod
   roles:
     - { role: fedreg-agent,    tags: agent }
 
