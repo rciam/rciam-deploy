@@ -27,7 +27,7 @@
 
 
 - name: Add extra dictionaries
-  template:
+  copy:
     src: "{{ item.src_path }}"
     dest: "{{ item.dest_path }}"
     backup: yes
