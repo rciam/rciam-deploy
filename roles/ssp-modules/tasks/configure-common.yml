@@ -1,3 +1,5 @@
+# file: ssp-modules/tasks/configure-common.php
+#
 ---
 
 
@@ -26,18 +28,17 @@
     - ssp-modules:config:enable
 
 
-- name: Add extra dictionaries
+- name: Ensure SSP module extra files are copied
   copy:
     src: "{{ item.src_path }}"
     dest: "{{ item.dest_path }}"
     backup: yes
   become: yes
-  with_items: "{{ ssp_mods_extra_dictionaries }}"
+  with_items: "{{ ssp_mods_extra_files }}"
   when: item.src_path is defined and item.dest_path is defined
+  become: yes
   tags:
-    - ssp-modules:config:dict
-
-
+    - ssp-modules:config:files
 
 
 - name: About Themes

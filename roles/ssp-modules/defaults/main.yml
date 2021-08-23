@@ -42,18 +42,16 @@ ssp_modules_db: []
 #    # or for example :
 #    src_config_path: "{{ inventory_dir }}/files/templates/config/module_theme2_config.php.j2"
 #    dest_config_path: "{{ ssp_path }}/config/module_theme2_config.php"
-#
-#
-## Extra dictionaries
-#ssp_mods_extra_dictionaries:
+
+## Extra SSP module files to copy, e.g. dictionaries
+ssp_mods_extra_files: []
 #  - name: module_dictionary_1
-#    src_path: "{{ inventory_dir }}/files/templates/dictionaries/tabs.definition.json.j2"
+#    src_path: "{{ inventory_dir }}/files/templates/dictionaries/tabs.definition.json"
 #    dest_path: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
 #  - name: module_dictionary_2
 #    src_path: "{{ inventory_dir }}/files/templates/dictionaries/theme/default.definition.json"
 #    dest_path: "{{ ssp_path }}/modules/theme/dictionaries/default.definition.json"
-#
-#
+
 ## Database
 #ssp_modules_db:
 #  - db_host: "127.0.0.1" or "{{ lookup('dig', groups['dbmaster'][0]) }}"
