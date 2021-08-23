@@ -611,7 +611,7 @@ ssp_idp_hosts: []
   #    host: "idp2.example.com"
 
 ## Extra SSP files to copy, e.g. dictionaries, attribute maps, certificates, etc
-ssp_mods_extra_files: []
+ssp_extra_files: []
 #  - name: attribute_definitions
 #    src_path: "{{ inventory_dir }}/files/dictionaries/attributes.definition.json"
 #    dest_path: "{{ ssp_path }}/files/dictionaries/attributes.definition.json"
