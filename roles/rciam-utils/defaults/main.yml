@@ -1,0 +1,49 @@
+# file: rciam-utils/defaults/main.yml
+#
+---
+
+# List of RCIAM utils to deploy
+rciam_utils: []
+#  - name: rciam-example
+#    path: /srv/rciam-example/util
+#    repo: https://github.com/rciam/rciam-example.git
+#    version: v1.0.9
+#    user:
+#      name: rciam-example
+#      path: /srv/rciam-example
+#      group: rciam-example
+#      gecos: "RCIAM Example User,,,"
+#      shell: /bin/bash
+#    cron:
+#      job: "/srv/rciam-example/util/.venv/bin/python /srv/rciam-example/util/main.py"
+#      minute: 5
+#      #hour:
+#      #day:
+#      #month:
+
+# Configuration for https://github.com/rciam/rciam-sync-voms.git
+#rciam_utils_sync_voms:
+#  vomses_file:
+#    url: "https://{{ rciam_hostname }}/static/diracVOs.json"
+#    # Uncomment the following line to use the specified CA_BUNDLE file or
+#    # directory with certificates of trusted CAs for SSL verification of
+#    # the vomses URL
+#    #ca_path: "/etc/grid-security/certificates/"
+#  api:
+#    cert:
+#      path: "/srv/rciam-voms-client/rciam-sync-voms/cert/usercert.pem"
+#      content: |
+#        -----BEGIN CERTIFICATE-----
+#        ...
+#        -----END CERTIFICATE-----
+#    cert_key:
+#      path: "/srv/rciam-voms-client/rciam-sync-voms/cert/userkey.pem"
+#      content: |
+#        -----BEGIN PRIVATE KEY-----
+#        ...
+#        -----END PRIVATE KEY-----
+#    trusted_ca_path: "/etc/grid-security/certificates/"
+#  logging:
+#    # Logging level: "DEBUG", "INFO", "WARNING, "ERROR", or "CRITICAL";
+#    # if not specified, defaults to "INFO"
+#    level: "DEBUG"
