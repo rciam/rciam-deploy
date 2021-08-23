@@ -610,6 +610,18 @@ ssp_idp_hosts: []
   #- entity_id: "__DYNAMIC:2__"
   #    host: "idp2.example.com"
 
+## Extra SSP files to copy, e.g. dictionaries, attribute maps, certificates, etc
+ssp_mods_extra_files: []
+#  - name: attribute_definitions
+#    src_path: "{{ inventory_dir }}/files/dictionaries/attributes.definition.json"
+#    dest_path: "{{ ssp_path }}/files/dictionaries/attributes.definition.json"
+#  - name: certificate_1
+#    src_path: "{{ inventory_dir }}/files/cert/cert.pem"
+#    dest_path: "{{ ssp_path }}/cert/cert.pem"
+#  - name: certificate_key_1
+#    src_path: "{{ inventory_dir }}/files/cert/key.pem"
+#    dest_path: "{{ ssp_path }}/cert/key.pem"
+
 # List of SSP modules to enable
 ssp_mods_enabled: []
   # - adfs
