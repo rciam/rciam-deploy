@@ -142,3 +142,11 @@ comanage_ldap_provisioner_entitlements:
 # a default is used but this is not recommended.
 # Salt: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1 | xargs echo -n
 # comanage_security_salt: "defaultsecretsalt"
+
+#comanage_cron_jobs:
+#  - name: "Action Name"
+#    minute: "0"
+#    filename: "registry"
+#    user: root
+#    job: |
+#      cd {{ path_to_registry }}/app && Console/cake action
