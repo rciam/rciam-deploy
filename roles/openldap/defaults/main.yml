@@ -1,5 +1,6 @@
 ---
 # defaults file for ansible-openldap
+openldap_init: false #when enabled it will initialise the LDAP directory. If already installed, the LDAP directory contents will be backed up
 #openldap_admin_password: 'secret'
 openldap_admin_user: 'admin'
 openldap_org: 'example'
