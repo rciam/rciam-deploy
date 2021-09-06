@@ -112,6 +112,22 @@
   tags:
   - comanage-registry:config:core
 
+- name: Ensure COmanage Registry cron jobs are installed
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute | default(omit) }}"
+    hour: "{{ item.hour | default(omit) }}"
+    weekday: "{{ item.weekday | default(omit) }}"
+    month: "{{ item.month | default(omit) }}"
+    day: "{{ item.day | default(omit) }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    cron_file: "{{ item.filename }}"
+    backup: true
+  loop: "{{ comanage_cron_jobs | default([]) }}"
+  become: true
+  when: comanage_cron_jobs is defined
+
 # Tasks adding/copying/replacing files
 - name: Update/Copy tasks
   include_tasks:

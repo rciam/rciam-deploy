@@ -6,6 +6,7 @@
     minute: "{{ item.minute | default(omit) }}"
     hour: "{{ item.hour | default(omit) }}"
     day: "{{ item.day | default(omit) }}"
+    weekday: "{{ item.weekday | default(omit) }}"
     month: "{{ item.month | default(omit) }}"
     job: "{{ item.job }}"
     user: "{{ item.user }}"
