@@ -126,7 +126,7 @@
     backup: true
   loop: "{{ comanage_cron_jobs | default([]) }}"
   become: true
-  when: comanage_cron_jobs is defined
+  when: comanage_cron_jobs is defined and comanage_cron_jobs_enabled
 
 # Tasks adding/copying/replacing files
 - name: Update/Copy tasks
