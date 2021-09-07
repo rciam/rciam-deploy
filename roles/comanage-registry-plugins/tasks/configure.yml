@@ -12,9 +12,9 @@
     user: "{{ item.user }}"
     cron_file: "{{ item.filename }}"
     backup: true
-  loop: "{{ comanage_cron_jobs | default([]) }}"
+  loop: "{{ comanage_plugins_cron_jobs | default([]) }}"
   become: true
-  when: comanage_cron_jobs is defined
+  when: comanage_plugins_cron_jobs is defined and comanage_plugins_cron_jobs_enabled
 
 - name: Create Symbolic links
   file:
