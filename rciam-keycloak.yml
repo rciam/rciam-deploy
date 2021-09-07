@@ -1,0 +1,9 @@
+# file: rciam-keycloak.yml
+# RCIAM deployment based on Keycloak
+---
+
+#-import_playbook: keycloakservers.yml
+
+- import_playbook: webproxyservers.yml
+
+- import_playbook: webproxyservers.yml
