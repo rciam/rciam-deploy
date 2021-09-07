@@ -150,3 +150,6 @@ comanage_ldap_provisioner_entitlements:
 #    user: root
 #    job: |
 #      cd {{ path_to_registry }}/app && Console/cake action
+
+# Whether to install COmanage cron jobs; Enabled by default
+comanage_cron_jobs_enabled: yes
