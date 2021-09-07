@@ -125,5 +125,5 @@
     day: "{{ item.cron.day | default(omit) }}"
     month: "{{ item.cron.month | default(omit) }}"
   loop: "{{ rciam_utils }}"
-  when: item.cron is defined
+  when: item.cron is defined and rciam_utils_cron_enabled
   become: yes

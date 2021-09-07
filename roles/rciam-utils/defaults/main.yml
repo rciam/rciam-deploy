@@ -47,3 +47,6 @@ rciam_utils: []
 #    # Logging level: "DEBUG", "INFO", "WARNING, "ERROR", or "CRITICAL";
 #    # if not specified, defaults to "INFO"
 #    level: "DEBUG"
+
+# Whether to install RCIAM util cron jobs; Enabled by default
+rciam_utils_cron_enabled: yes
