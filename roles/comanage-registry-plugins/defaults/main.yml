@@ -8,7 +8,7 @@ comanage_registry_plugins: []
 #    status: init
 
 
-#comanage_cron_jobs:
+#comanage_plugins_cron_jobs:
 #  - name: "Action Name"
 #    minute: "0"
 #    filename: "PluginName"
@@ -19,3 +19,6 @@ comanage_registry_plugins: []
 #comanage_symlinks:
 #  - target: "/path/to/target"
 #    link: "/path/to/symlink"
+
+# Whether to install COmanage plugins cron jobs; Enabled by default
+comanage_plugins_cron_jobs_enabled: yes

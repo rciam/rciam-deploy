@@ -151,5 +151,5 @@ comanage_ldap_provisioner_entitlements:
 #    job: |
 #      cd {{ path_to_registry }}/app && Console/cake action
 
-# Whether to install RCIAM util cron jobs; Enabled by default
+# Whether to install COmanage cron jobs; Enabled by default
 comanage_cron_jobs_enabled: yes
