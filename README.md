@@ -21,7 +21,7 @@ On the managed nodes, you need a way to communicate, normally ssh, which by defa
 On the control machine, you need a recent version of Ansible. We recommend installing Ansible via “pip”, which is the Python package manager (though other options are also available):
 
 ```sh
-pip install ansible==2.9.11
+pip install ansible==2.10.7
 pip install dnspython
 ansible-galaxy install ipr-cnrs.nftables
 ansible-galaxy install arillso.logrotate
