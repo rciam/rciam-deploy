@@ -183,7 +183,7 @@
                 <stateless>
                     <bean-instance-pool-ref pool-name="slsb-strict-max-pool"/>
                 </stateless>
-                <stateful default-access-timeout="5000" cache-ref="simple" passivation-disabled-cache-ref="simple"/>
+                <stateful default-access-timeout="5000" cache-ref="distributable" passivation-disabled-cache-ref="simple"/>
                 <singleton default-access-timeout="5000"/>
             </session-bean>
             <pools>
@@ -279,6 +279,7 @@
                     <permission class-name="org.wildfly.extension.batch.jberet.deployment.BatchPermission" module="org.wildfly.extension.batch.jberet" target-name="*"/>
                     <permission class-name="org.wildfly.transaction.client.RemoteTransactionPermission" module="org.wildfly.transaction.client"/>
                     <permission class-name="org.jboss.ejb.client.RemoteEJBPermission" module="org.jboss.ejb-client"/>
+                    <permission class-name="org.jboss.ejb.client.RemoteEJBPermission" module="org.jboss.ejb-client"/>
                 </permission-set>
             </permission-sets>
             <http>
@@ -363,17 +364,31 @@
                     <heap-memory size="1000"/>
                     <expiration max-idle="3600000"/>
                 </local-cache>
-                <replicated-cache name="work"/>
-                <{{keycloak_session.cachetype}} name="sessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %} />
-                <{{keycloak_session.cachetype}} name="authenticationSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %} />
-                <{{keycloak_session.cachetype}} name="offlineSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %} />
-                <{{keycloak_session.cachetype}} name="clientSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %} />
-                <{{keycloak_session.cachetype}} name="offlineClientSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %} />
-                <{{keycloak_session.cachetype}} name="loginFailures" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %} />
-                <distributed-cache name="actionTokens" owners="2">
+                <replicated-cache name="work">
+                    <expiration lifespan="900000000000000000"/>
+                </replicated-cache>
+                <{{keycloak_session.cachetype}} name="sessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %}>
+                    <expiration lifespan="900000000000000000"/>
+                </{{keycloak_session.cachetype}}>
+                <{{keycloak_session.cachetype}} name="authenticationSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %}>
+                    <expiration lifespan="900000000000000000"/>
+                </{{keycloak_session.cachetype}}>
+                <{{keycloak_session.cachetype}} name="offlineSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %}>
+                    <expiration lifespan="900000000000000000"/>
+                </{{keycloak_session.cachetype}}>
+                <{{keycloak_session.cachetype}} name="clientSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %}>
+                    <expiration lifespan="900000000000000000"/>
+                </{{keycloak_session.cachetype}}>
+                <{{keycloak_session.cachetype}} name="offlineClientSessions" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %}>
+                    <expiration lifespan="900000000000000000"/>
+                </{{keycloak_session.cachetype}}>
+                <{{keycloak_session.cachetype}} name="loginFailures" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %}>
+                    <expiration lifespan="900000000000000000"/>
+                </{{keycloak_session.cachetype}}>
+                <{{keycloak_session.cachetype}} name="actionTokens" {% if keycloak_session.cachetype == "distributed-cache" %} owners="{{keycloak_session.owners}}" {% endif %}>
                     <heap-memory size="-1"/>
-                    <expiration interval="300000" max-idle="-1"/>
-                </distributed-cache>
+                    <expiration interval="300000" lifespan="900000000000000000" max-idle="-1"/>
+                </{{keycloak_session.cachetype}}>
             </cache-container>
             <cache-container name="server" default-cache="default" aliases="singleton cluster" modules="org.wildfly.clustering.server">
                 <transport lock-timeout="60000"/>

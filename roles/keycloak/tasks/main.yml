@@ -69,9 +69,9 @@
     ansible.builtin.file:
       path: "/tmp/keycloak_archive"
       state: absent
-  - name: Resolve keycloak version
-    set_fact:
-      keycloak_version: "{{find_result.files[0].path | replace('/tmp/keycloak-tmp/keycloak-','') | replace('-SNAPSHOT','') }}"
+#  - name: Resolve keycloak version
+#    set_fact:
+#      keycloak_version: "{{find_result.files[0].path | replace('/tmp/keycloak-tmp/keycloak-','') | replace('-SNAPSHOT','') }}"
   tags: "download_extract"
 
 
@@ -84,7 +84,7 @@
       state: directory
   - name: Download postgresql JDBC driver
     get_url:
-      url: "https://jdbc.postgresql.org/download/{{postgresql_jar_name}}"
+      url: "https://jdbc.postgresql.org/download/{{keycloak_postgresql_jar_name}}"
       dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main"
   - name: Installing postgresql plugin
     template:
