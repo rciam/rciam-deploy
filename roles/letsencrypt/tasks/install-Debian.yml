@@ -1,7 +1,7 @@
 ---
 
 - name: "Required packages"
-  yum:
+  apt:
     name:
       - snapd
       - python-simplejson

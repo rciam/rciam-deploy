@@ -1,7 +1,7 @@
 ---
 
-- name: Install the latest version of java 11
+- name: Ensure that the vm has java 11
   apt:
     name: openjdk-11-jdk
-    state: latest
+    state: present
   become: yes
