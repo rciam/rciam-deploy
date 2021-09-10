@@ -6,7 +6,6 @@
 
 - import_playbook: dbservers.yml
 
-#-import_playbook: keycloakservers.yml
 - hosts: keycloak
   roles:
     - keycloak

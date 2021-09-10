@@ -6,18 +6,20 @@ keycloak_version: "15.0.2"
 # if the keycloak archive is from the "stage" branch, then you might enable the wayf plugin (keycloak-theme-vanilla)
 keycloak_archive_url: "https://github.com/keycloak/keycloak/releases/download/{{keycloak_version}}/keycloak-{{keycloak_version}}.tar.gz"
 
+## set to true if this run should replace any existing installation (upgrade mode)
+is_upgrade: false
+
 keycloak_admin:
   user: "<SET AN ADMIN USER>"
   pass: "<SET AN ADMIN PASS>"
-
 
 keycloak_db:
   name: "<KEYCLOAK DB NAME>"
   user: "<DB USERNAME>"
   pass: "<DB USER PASSWORD>"
 
-## set to true if this run should replace any existing installation (upgrade mode)
-is_upgrade: false
+keycloak_db_host: "{{ groups['db'][0] }}"
+keycloak_proxy_host: "{{ groups['proxy'][0] }}"
 
 
 keycloak_home: "{{ansible_user_dir}}/keycloak"

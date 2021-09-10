@@ -22,7 +22,7 @@
   - name: Select wayf plugin for login UI
     community.general.keycloak_realm:
       auth_client_id: admin-cli
-      auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
+      auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
       auth_realm: master
       auth_username: "{{keycloak_admin.user}}"
       auth_password: "{{keycloak_admin.pass}}"
@@ -38,7 +38,7 @@
 
 - name: Acquire token
   uri:
-    url: https://{{ groups['proxy'][0] }}/auth/realms/master/protocol/openid-connect/token
+    url: https://{{ keycloak_proxy_host }}/auth/realms/master/protocol/openid-connect/token
     method: POST
     body_format: form-urlencoded
     body:
@@ -57,7 +57,7 @@
     - name: Ensure that realm already exists
       community.general.keycloak_realm:
         auth_client_id: admin-cli
-        auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
+        auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
         auth_realm: master
         auth_username: "{{keycloak_admin.user}}"
         auth_password: "{{keycloak_admin.pass}}"
@@ -69,7 +69,7 @@
 
     - name: Configure keys (private key and certificate)
       uri:
-        url: "https://{{ groups['proxy'][0] }}/auth/admin/realms/{{ item.name }}/components"
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item.name }}/components"
         method: POST
         body_format: json
         headers:
@@ -93,7 +93,7 @@
 
     - name: Configure AUP (Terms and Conditions)
       uri:
-        url: "https://{{ groups['proxy'][0] }}/auth/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
         method: PUT
         body_format: json
         headers:
@@ -116,7 +116,7 @@
     - name: Setup SMTP
       community.general.keycloak_realm:
         auth_client_id: admin-cli
-        auth_keycloak_url: https://{{ groups['proxy'][0] }}/auth
+        auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
         auth_realm: master
         auth_username: "{{keycloak_admin.user}}"
         auth_password: "{{keycloak_admin.pass}}"
@@ -142,7 +142,7 @@
 
     - name: Setup social IdPs
       uri:
-        url: "https://{{ groups['proxy'][0] }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
         method: POST
         body_format: json
         headers:
