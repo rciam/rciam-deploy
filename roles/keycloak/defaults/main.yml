@@ -27,7 +27,7 @@ keycloak_home: "{{ansible_user_dir}}/keycloak"
 keycloak_bind_address: "0.0.0.0"
 keycloak_bind_port: "8080"
 
-keycloak_java_opts: "-Xms1024m -Xmx20480m -XX:MaxPermSize=768m"
+keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 
 
 ### plugins
