@@ -13,10 +13,10 @@ ip_table = {{ rciam_utils_ip2country.source_tables.ip_table}}
 
 [destination_database]
 
-host = {{ lookup('dig', groups['dbmaster'][0]) }}
-database = {{ rciam_dbs.registry.name }}
-user = {{ rciam_dbs.registry.owner_username }}
-password = {{ rciam_dbs.registry.owner_password }}
+host = {{ rciam_utils_ip2country.destination_database.host }}
+database = {{ rciam_utils_ip2country.destination_database.database }}
+user = {{ rciam_utils_ip2country.destination_database.user }}
+password = {{ rciam_utils_ip2country.destination_database.password }}
 
 [destination_tables]
 
