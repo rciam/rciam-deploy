@@ -59,6 +59,9 @@ ssp_twig_template: false
 
 ssp_session_cookie_name: "SimpleSAMLSessionID"
 ssp_session_cookie_secure: false
+# Set the SameSite attribute in the cookie to support RFC6265bis.
+# You can set this to 'None', 'Lax', or 'Strict'.
+# If set to null, no SameSite attribute will be sent.
 ssp_session_cookie_samesite: null
 ssp_authtoken_cookiename: "SimpleSAMLAuthToken"
 
