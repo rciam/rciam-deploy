@@ -8,7 +8,7 @@ keycloak_archive_url: "https://github.com/keycloak/keycloak/releases/download/{{
 
 ## if set to true, any existing installation will moved aside (not deleted) and the new keycloak from the archive will be installed.
 ## if a different database is defined, the installation will be a clear one. If the same (previous) database is used, it will upgrade to the new version.
-is_upgrade: false
+keycloak_is_upgrade: false
 
 keycloak_admin:
   user: "<SET AN ADMIN USER>"
@@ -55,6 +55,7 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 #config:
 #  realms:
 #    - name: master
+#      displayNameHtml: Keycloak
 #      key:
 #        privateKey: "<SET A PRIVATE KEY"
 #        certificate: "<SET A CERTIFICATE>"

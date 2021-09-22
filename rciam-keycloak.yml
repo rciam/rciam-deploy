@@ -6,8 +6,6 @@
 
 - import_playbook: dbservers.yml
 
-- hosts: keycloak
-  roles:
-    - keycloak
+- import_playbook: keycloakservers.yml
 
 - import_playbook: webproxyservers.yml

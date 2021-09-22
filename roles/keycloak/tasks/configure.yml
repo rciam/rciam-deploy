@@ -59,6 +59,7 @@
         auth_client_id: admin-cli
         auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
         auth_realm: master
+        display_name_html: "<div class=\"kc-logo-text\"><span>{{item.displayNameHtml}}</span></div>"
         auth_username: "{{keycloak_admin.user}}"
         auth_password: "{{keycloak_admin.pass}}"
         id: "{{item.name}}"

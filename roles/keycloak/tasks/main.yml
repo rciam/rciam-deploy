@@ -10,7 +10,7 @@
     become: yes
   - name: Move previous installation (folder will be named keycloak-previous-{15-random-alphanumeric-chars} at keycloak_home)
     command: "mv {{keycloak_home}} {{keycloak_home}}/../keycloak-previous-{{ ansible_date_time.iso8601_basic_short }}"
-  when: is_upgrade
+  when: keycloak_is_upgrade
 
 ## now start the installation of keycloak
 
