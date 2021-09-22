@@ -59,6 +59,7 @@ ssp_twig_template: false
 
 ssp_session_cookie_name: "SimpleSAMLSessionID"
 ssp_session_cookie_secure: false
+ssp_session_cookie_samesite: null
 ssp_authtoken_cookiename: "SimpleSAMLAuthToken"
 
 ssp_tempdir: "/tmp/simplesaml"

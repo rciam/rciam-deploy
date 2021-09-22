@@ -556,7 +556,11 @@ $config = [
      * Example:
      *  'session.cookie.samesite' => 'None',
      */
+{% if ssp_session_cookie_samesite == None %}
     'session.cookie.samesite' => null,
+{% else %}
+    'session.cookie.samesite' => '{{ ssp_session_cookie_samesite }}',
+{% endif %}
 
     /*
      * Options to override the default settings for php sessions.
