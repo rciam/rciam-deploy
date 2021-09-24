@@ -1,0 +1,43 @@
+---
+
+- name: Install certbot from snap
+  block:
+    - name: "Required packages"
+      apt:
+        name:
+          - snapd
+          - python-simplejson
+        state: present
+
+    - name: Ensure versions of certbot from apt are not present
+      apt:
+        name:
+          - certbot
+        state: absent
+
+    - name: snap install core
+      snap:
+        name: core
+
+    - name: snap install certbot
+      snap:
+        name: certbot
+        classic: yes
+
+    - name: Prepare certbot folders
+      shell: "ln -sf /snap/bin/certbot /usr/bin/certbot"
+  when: {{ install_from }} == "snap"
+
+- name: Install certbot from debian repo
+  block:
+  - name: "Installing certbot from apt"
+    apt:
+      name:
+        - certbot
+      state: present
+  when: {{ install_from }} == "os_repo"
+
+
+
+- name: Run certbot script and create certificates
+  shell: "certbot certonly --standalone --email {{ letsencrypt_email }} --agree-tos -d {{ inventory_hostname }} --non-interactive"

@@ -6,6 +6,6 @@
 
 - import_playbook: dbservers.yml
 
-#-import_playbook: keycloakservers.yml
+- import_playbook: keycloakservers.yml
 
 - import_playbook: webproxyservers.yml
