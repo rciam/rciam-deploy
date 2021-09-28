@@ -157,5 +157,13 @@
         - skip_missing: True
       run_once: true
 
+    - name: Setup saml IdPs
+      include_tasks: blocks/configure_saml_idps.yml
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "saml_idps"
+        - skip_missing: True
+      run_once: true
+
   tags: "realm_configuration"
 

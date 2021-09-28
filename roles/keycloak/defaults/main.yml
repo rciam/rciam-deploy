@@ -79,6 +79,44 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 #        auth_enabled: false
 #        auth_username: ""
 #        auth_password: ""
+#      saml_idps:
+#        - providerId: "saml" #do not change this
+#          alias: "edugain"  #do not change this
+#          enabled: true
+#          authenticateByDefault: false
+#          firstBrokerLoginFlowAlias: "first broker login"
+#          postBrokerLoginFlowAlias: ""
+#          storeToken: ""
+#          addReadTokenRoleOnCreate: ""
+#          trustEmail: ""
+#          linkOnly: ""
+#          displayName: "Edugain"
+#          config:
+#            useJwksUrl: "true"
+#            syncMode: "IMPORT"
+#            principalType: "SUBJECT"
+#            signatureAlgorithm: "RSA_SHA256"
+#            xmlSigKeyInfoKeyNameTransformer: "KEY_ID"
+#            allowCreate: "false"
+#            entityId: "https://synthesys-demo.rciam.grnet.gr/auth/realms/SynthesysPlus"
+#            authnContextComparisonType: "exact"
+#            hideOnLoginPage: "false"
+#            promotedLoginbutton: ""
+#            backchannelSupported: ""
+#            postBindingResponse: "true"
+#            postBindingAuthnRequest: "true"
+#            postBindingLogout: "true"
+#            wantAuthnRequestsSigned: "true"
+#            wantAssertionsSigned: "true"
+#            wantAssertionsEncrypted: "true"
+#            forceAuthn: ""
+#            signSpMetadata: ""
+#            loginHint: "false"
+#            addExtensionsElementWithKeyInfo: "false"
+#            attributeConsumingServiceName: "Synthesys+"
+#            multiplePrincipals: "[{\"principalType\":\"ATTRIBUTE\",\"principalAttribute\":\"urn:oasis:names:tc:SAML:attribute:subject-id\"}]"
+#            allowedClockSkew: ""
+#            attributeConsumingServiceIndex: ""
 #      social_idps:
 #        - providerId: "google" #do not change this
 #          alias: "google"  #do not change this

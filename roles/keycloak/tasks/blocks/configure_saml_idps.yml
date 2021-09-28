@@ -1,0 +1,34 @@
+---
+
+- name: print item
+  ansible.builtin.debug:
+    var: item
+  tags: "setup_saml_idps"
+
+
+- name: Install edugain IdP
+  block:
+    - name: "Get config from url"
+      uri:
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/import-config"
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ result.json.access_token }}"
+        body:
+          fromUrl: "https://{{ keycloak_proxy_host }}/proxy/saml2/idp/metadata.php"
+          providerId: "saml"
+        status_code: 200
+      register: saml_idp_result
+
+    - name: Setup saml IdP
+      uri:
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ result.json.access_token }}"
+        body:
+          "{{ { 'config': saml_idp_result.json } | combine( item[1], recursive=True ) }}"
+        status_code: 201
+  when: item[1].alias == "edugain"
