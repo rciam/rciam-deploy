@@ -4,3 +4,6 @@
 keycloak_session:
   cachetype: "distributed-cache"
   owners: "2"
+
+#please, do not change this
+keycloak_dir_name: "keycloak"

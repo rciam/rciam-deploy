@@ -22,8 +22,8 @@ keycloak_db:
 keycloak_db_host: "{{ groups['db'][0] }}"
 keycloak_proxy_host: "{{ groups['proxy'][0] }}"
 
-
-keycloak_home: "{{ansible_user_dir}}/keycloak"
+#keycloak_home should always end with the keycloak folder name, i.e '/keycloak'
+keycloak_home: "{{ansible_user_dir}}/{{keycloak_dir_name}}"
 keycloak_bind_address: "0.0.0.0"
 keycloak_bind_port: "8080"
 

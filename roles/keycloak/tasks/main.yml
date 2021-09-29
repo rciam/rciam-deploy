@@ -8,8 +8,12 @@
       name: keycloak
       state: restarted
     become: yes
+  - name: create home/previous folder if not exists
+    file:
+      path: "{{keycloak_home}}/../previous"
+      state: directory
   - name: Move previous installation (folder will be named keycloak-previous-{15-random-alphanumeric-chars} at keycloak_home)
-    command: "mv {{keycloak_home}} {{keycloak_home}}/../keycloak-previous-{{ ansible_date_time.iso8601_basic_short }}"
+    command: "mv {{keycloak_home}} {{keycloak_home}}/../previous/keycloak-previous-{{ ansible_date_time.iso8601_basic_short }}"
   when: keycloak_is_upgrade
 
 ## now start the installation of keycloak
@@ -63,6 +67,8 @@
       file_type: directory
       recurse: no
     register: find_result
+  - name: Remove any previous installation
+    command: "rm -rf {{keycloak_home}}/../{{keycloak_dir_name}}"
   - name: Move extracted keycloak to final keycloak folder
     command: "mv {{find_result.files[0].path}} {{keycloak_home}}"
   - name: Delete downloaded archive
