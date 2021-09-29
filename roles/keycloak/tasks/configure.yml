@@ -64,6 +64,7 @@
         auth_password: "{{keycloak_admin.pass}}"
         id: "{{item.name}}"
         realm: "{{item.name}}"
+        enabled: true
         state: present
       with_items: "{{config.realms | default([])}}"
       run_once: true
