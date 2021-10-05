@@ -1,11 +1,5 @@
 ---
 
-- name: print item
-  ansible.builtin.debug:
-    var: item
-  tags: "setup_saml_idps"
-
-
 - name: Install edugain IdP
   block:
     - name: "Get config from url"
