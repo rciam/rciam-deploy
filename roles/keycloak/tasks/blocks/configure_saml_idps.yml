@@ -1,8 +1,11 @@
 ---
 
-- name: Install edugain IdP
+- name: "Get current IdPs list of realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_realm_idps_list.yml
+
+- name: "Installing saml IdP: {{item[1].data.alias}}"
   block:
-    - name: "Get config from url"
+    - name: "Get config from url: {{ item[1].metadataUrl }}"
       uri:
         url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/import-config"
         method: POST
@@ -10,12 +13,12 @@
         headers:
           Authorization: "Bearer {{ result.json.access_token }}"
         body:
-          fromUrl: "https://{{ keycloak_proxy_host }}/proxy/saml2/idp/metadata.php"
+          fromUrl: "{{ item[1].metadataUrl }}"
           providerId: "saml"
         status_code: 200
       register: saml_idp_result
 
-    - name: Setup saml IdP
+    - name: "Setup saml IdP {{ item[1].data.alias }}"
       uri:
         url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
         method: POST
@@ -23,6 +26,6 @@
         headers:
           Authorization: "Bearer {{ result.json.access_token }}"
         body:
-          "{{ { 'config': saml_idp_result.json } | combine( item[1], recursive=True ) }}"
+          "{{ { 'config': saml_idp_result.json } | combine( item[1].data, recursive=True ) }}"
         status_code: 201
-  when: item[1].alias == "edugain"
+  when: "item[1].data.alias not in idps_list"

@@ -1,0 +1,13 @@
+---
+- name: "Get list of keys of realm: {{ item[0].name }}"
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/keys"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ result.json.access_token }}"
+    status_code: 200
+  register: "keys_result"
+
+- set_fact:
+    keys_list: "{{keys_result.json.keys | json_query('[].alias')}}"
+

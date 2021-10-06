@@ -1,5 +1,8 @@
 ---
 
+- name: "Get current keys list of realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_realm_keys.yml
+
 - name: "Install {{ item[1].providerId }} key with name '{{ item[1].name }}'"
   uri:
     url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/components"
@@ -10,7 +13,7 @@
     body:
       name: "{{ item[1].name }}"
       providerId: "{{ item[1].providerId }}"
-      providerType: org.keycloak.keys.KeyProvider
+      providerType: org.keycloak.keys.KeyProvider #never change this
       parentId: "{{ item[0].name }}"
       config: "{{ item[1].config }}"
     status_code: 201
