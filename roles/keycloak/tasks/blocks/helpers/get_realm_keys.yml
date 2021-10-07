@@ -9,5 +9,4 @@
   register: "keys_result"
 
 - set_fact:
-    keys_list: "{{keys_result.json.keys | json_query('[].alias')}}"
-
+    keys_list: "{{keys_result.json.keys}}"
