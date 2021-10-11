@@ -1,7 +1,7 @@
 ---
 - name: "Get list of keys of realm: {{ item[0].name }}"
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/keys"
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/components?parent=demo&type=org.keycloak.keys.KeyProvider"
     method: GET
     headers:
       Authorization: "Bearer {{ result.json.access_token }}"
@@ -9,4 +9,7 @@
   register: "keys_result"
 
 - set_fact:
-    keys_list: "{{keys_result.json.keys}}"
+    keys_descr_list: "{{ keys_result.json | to_json | from_json | json_query(keys_query)}}"
+  vars:
+    keys_query: "[].join(':',[providerId, name])"
+

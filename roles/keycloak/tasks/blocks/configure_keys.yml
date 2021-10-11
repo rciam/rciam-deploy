@@ -17,3 +17,5 @@
       parentId: "{{ item[0].name }}"
       config: "{{ item[1].config }}"
     status_code: 201
+  when: "item[1].providerId + ':' + item[1].name not in keys_descr_list"
+
