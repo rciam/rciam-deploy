@@ -68,7 +68,9 @@
       recurse: no
     register: find_result
   - name: Remove any previous installation
-    command: "rm -rf {{keycloak_home}}/../{{keycloak_dir_name}}"
+    ansible.builtin.file:
+      path: "{{keycloak_home}}/../{{keycloak_dir_name}}"
+      state: absent
   - name: Move extracted keycloak to final keycloak folder
     command: "mv {{find_result.files[0].path}} {{keycloak_home}}"
   - name: Delete downloaded archive

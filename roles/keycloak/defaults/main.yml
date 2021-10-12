@@ -30,6 +30,8 @@ keycloak_bind_port: "8080"
 keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 
 
+keycloak_dir_name: "keycloak"
+
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)
 #keycloak_plugins:
