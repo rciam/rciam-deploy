@@ -17,7 +17,7 @@
     group: root
     backup: yes
   become: yes
- 
+
 - name: Copy admin_password to /etc/ldap/slapd.d/.slapdadmin
   copy: 
     content: "{{ openldap_admin_password | password_hash('ldap_salted_sha1', openldap_admin_password_salt) }}" 
@@ -42,6 +42,75 @@
   shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/adminpwd.ldif
   when: openldap_admin_password is defined and admin_pass_file is changed
 
+- name: Run replicate tasks
+  when: "'openldap_replica' in groups"
+  block:
+    - name: Copy config_olc_server_id file
+      template:
+        src: "etc/ldap/slapd.d/config_olc_server_id.ldif.j2"
+        dest: "/etc/ldap/slapd.d/config_olc_server_id.ldif"
+        owner: root
+        group: root
+        mode: 0640
+      become: yes
+      register: config_olc_server_id_file
+
+    - name: Copy mod_syncprov file
+      template:
+        src: "etc/ldap/slapd.d/mod_syncprov.ldif.j2"
+        dest: "/etc/ldap/slapd.d/mod_syncprov.ldif"
+        owner: root
+        group: root
+        mode: 0640
+      become: yes
+      register: mod_syncprov_file
+
+    - name: Copy replicate_configuration file
+      template:
+        src: "etc/ldap/slapd.d/replicate_configuration.ldif.j2"
+        dest: "/etc/ldap/slapd.d/replicate_configuration.ldif"
+        owner: root
+        group: root
+        mode: 0640
+      become: yes
+      register: replicate_configuration_file
+
+    - name: Copy replicate_database file
+      template:
+        src: "etc/ldap/slapd.d/replicate_database.ldif.j2"
+        dest: "/etc/ldap/slapd.d/replicate_database.ldif"
+        owner: root
+        group: root
+        mode: 0640
+      become: yes
+      register: replicate_database_file
+      run_once: true
+
+    - name: Add olcServerId to openLDAP
+      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/config_olc_server_id.ldif'
+      ignore_errors: yes  #set to get around erroring out that items already exist
+      become: yes
+      when: config_olc_server_id_file is changed
+
+    - name: Add syncprov module to openLDAP
+      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/mod_syncprov.ldif'
+      ignore_errors: yes  #set to get around erroring out that items already exist
+      become: yes
+      when: mod_syncprov_file is changed
+
+    - name: Add replicate configuration to openLDAP
+      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/replicate_configuration.ldif'
+      ignore_errors: yes  #set to get around erroring out that items already exist
+      become: yes
+      when: replicate_configuration_file is changed
+
+    - name: Add replicate database to openLDAP
+      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/replicate_database.ldif'
+      ignore_errors: yes  #set to get around erroring out that items already exist
+      become: yes
+      when: replicate_database_file is changed
+      run_once: true
+
 - name: Copy additional schemas file
   template:
     src: "etc/ldap/slapd.d/modify_schemas.ldif.j2"
@@ -51,6 +120,7 @@
     mode: 0640
   become: yes
   register: additional_schemas_file
+  run_once: true
 
 - name: Copy ACL config file
   template:
@@ -61,6 +131,7 @@
     mode: 0640
   become: yes
   register: acl_file
+  run_once: true
 
 - name: Copy certificates config file
   template:
@@ -70,6 +141,8 @@
     group: root
     mode: 0640
   become: yes
+  when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
+  run_once: true
 
 - name: Add schemas to openLDAP
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/modify_schemas.ldif'
@@ -79,6 +152,7 @@
         openldap_schema and
         additional_schemas_file is changed
   become: yes
+  run_once: true
 
 - name: Add ACL to openLDAP
   shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/access_control_list.ldif'
@@ -88,6 +162,7 @@
         openldap_acl and
         acl_file is changed
   become: yes
+  run_once: true
 
 - name: Ensure /etc/ldap/cacerts dir exists
   file: 
@@ -96,6 +171,7 @@
     owner: openldap
     group: openldap
   become: yes
+  when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
 
 - name: Ensure CA certificate is copied
   copy:
@@ -106,14 +182,7 @@
     mode: '0600'
     backup: yes
   when: openldap_ca_certificate_file is defined and openldap_ca_certificate is defined
-  become: yes
-
-- name: Ensure /etc/ldap/certs dir exists
-  file: 
-    path: /etc/ldap/certs
-    state: directory
-    owner: openldap
-    group: openldap
+        and openldap_ca_certificate|length > 0
   become: yes
 
 - name: Ensure certificate is copied
@@ -125,6 +194,7 @@
     mode: '0600'
     backup: yes
   when: openldap_certificate_file is defined and openldap_certificate is defined
+        and openldap_certificate|length > 0
   become: yes
 
 - name: Ensure certificate key is copied
@@ -136,12 +206,19 @@
     mode: '0600'
     backup: yes
   when: openldap_certificate_key_file is defined and openldap_certificate_key is defined
+        and openldap_certificate_key|length > 0
   become: yes
   no_log: yes
 
 - name: Add certificate config file to OpenLDAP
   shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/certs.ldif'
   ignore_errors: yes  #set to get around erroring out that items already exist
+  when: openldap_ca_certificate is defined
+        and openldap_ca_certificate|length > 0
+        and openldap_certificate is defined
+        and openldap_certificate|length > 0
+        and openldap_certificate_key is defined
+        and openldap_certificate_key|length > 0
   become: yes
   notify: Restart slapd
-
+  run_once: true

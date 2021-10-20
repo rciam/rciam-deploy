@@ -6,6 +6,7 @@
     group: root
     mode: 0640
   become: yes
+  run_once: true
 
 # This operation may return "FAILED" if an entry already exists but it will continue to add non existing entries
 - name: Populate openLDAP with groups and users
@@ -15,3 +16,4 @@
         openldap_populate is defined and
         openldap_populate
   become: yes
+  run_once: true
