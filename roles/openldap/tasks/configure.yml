@@ -17,22 +17,30 @@
     group: root
     backup: yes
   become: yes
+ 
+- name: Copy admin_password to /etc/ldap/slapd.d/.slapdadmin
+  copy: 
+    content: "{{ openldap_admin_password | password_hash('ldap_salted_sha1', openldap_admin_password_salt) }}" 
+    dest: "/etc/ldap/slapd.d/.slapdadmin"
+    owner: root
+    group: root
+    mode: 400
+  register: admin_pass_file
 
-- name: Set admin password
-  shell: slappasswd -s {{ openldap_admin_password }}
-  register: admin_password
+- name: Copy the ldif template to set the admin password
+  template: 
+    src: "etc/ldap/slapd.d/modify_password.ldif.j2"
+    dest: "/etc/ldap/slapd.d/adminpwd_ldif.tmpl"
+  when: openldap_admin_password is defined and admin_pass_file is changed
+
+- name: Create the ldif file to set the admin password
+  shell: export ADMIN_PASS=$( cat /etc/ldap/slapd.d/.slapdadmin ); sed -e "s|@ADMINPWD@|$ADMIN_PASS|" /etc/ldap/slapd.d/adminpwd_ldif.tmpl > /etc/ldap/slapd.d/adminpwd.ldif ; chmod 400 /etc/ldap/slapd.d/adminpwd.ldif
+  when: openldap_admin_password is defined and admin_pass_file is changed
   become: yes
 
-- name: Restart slapd
-  systemd:
-    name: slapd
-    enabled: yes
-    daemon_reload: yes
-    state: restarted
-  when: >
-    admin_password is defined and
-    admin_password
-  become: yes
+- name: Finally set the admin password
+  shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/adminpwd.ldif
+  when: openldap_admin_password is defined and admin_pass_file is changed
 
 - name: Copy additional schemas file
   template:
@@ -42,6 +50,7 @@
     group: root
     mode: 0640
   become: yes
+  register: additional_schemas_file
 
 - name: Copy ACL config file
   template:
@@ -51,6 +60,7 @@
     group: root
     mode: 0640
   become: yes
+  register: acl_file
 
 - name: Copy certificates config file
   template:
@@ -66,7 +76,8 @@
   ignore_errors: yes  #set to get around erroring out that items already exist
   when: >
         openldap_schema is defined and
-        openldap_schema
+        openldap_schema and
+        additional_schemas_file is changed
   become: yes
 
 - name: Add ACL to openLDAP
@@ -74,7 +85,8 @@
   ignore_errors: yes  #set to get around erroring out that items already exist
   when: >
         openldap_acl is defined and
-        openldap_acl
+        openldap_acl and
+        acl_file is changed
   become: yes
 
 - name: Ensure /etc/ldap/cacerts dir exists

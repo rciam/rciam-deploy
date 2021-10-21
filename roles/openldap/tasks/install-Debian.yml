@@ -14,18 +14,6 @@
         value: "{{ item.value }}"
         vtype: "{{ item.vtype }}"
       with_items:
-        - question: 'slapd/internal/adminpw'
-          value: '{{ openldap_admin_password }}'
-          vtype: 'password'
-        - question: 'slapd/password1'
-          value: '{{ openldap_admin_password }}'
-          vtype: 'password'
-        - question: 'slapd/password2'
-          value: '{{ openldap_admin_password }}'
-          vtype: 'password'
-        - question: 'slapd/internal/generated_adminpw'
-          value: '{{ openldap_admin_password }}'
-          vtype: 'password'
         - question: 'slapd/no_configuration'
           value: 'false'
           vtype: 'boolean'
