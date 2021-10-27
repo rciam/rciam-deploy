@@ -1,0 +1,13 @@
+---
+
+- name: "Get list of federations"
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ result.json.access_token }}"
+    status_code: 200
+  register: "realm_result"
+
+- set_fact:
+    realm_federations: "{{realm_result.json.identityProvidersFederations | json_query('[].alias') | default([]) }}"

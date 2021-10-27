@@ -199,44 +199,78 @@ config:
 #        auth_enabled: false
 #        auth_username: ""
 #        auth_password: ""
+      federations:
+        - providerId: "saml" # DO NOT CHANGE THIS!
+          url: "<THE URL OF THE FEDERATION's XML>"
+          alias: "<SET AN ALIAS>"
+          updateFrequencyInMins: 1440
+          config:
+            nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+            principalType: "SUBJECT"
+            postBindingAuthnRequest: "true"
+            wantAuthnRequestsSigned: "true"
+            wantAssertionsSigned: "true"
+            wantAssertionsEncrypted: "true"
+            multiplePrincipals: "[{\"principalType\":\"SUBJECT\",\"nameIDPolicyFormat\":\"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\"}]"
+          entityIdWhiteList:
+            - "https://aaa.bbb.com/entity1"
+          entityIdBlackList:
+            - "https://aaa.bbb.com/entity2"
+          registrationAuthorityWhiteList:
+            - "registration-authority-1"
+          registrationAuthorityBlackList:
+            - "registration-authority-2"
+          categoryWhiteList:
+            attribute-name-1:
+              - "attribute-value-1"
+            attribute-name-2:
+              - "attribute-value-2"
+          categoryBlackList:
+            attribute-name-1:
+              - "attribute-value-1"
+            attribute-name-2:
+              - "attribute-value-2"
 #      saml_idps:
-#        - providerId: "saml" #do not change this
-#          alias: "edugain"  #do not change this
-#          enabled: true
-#          authenticateByDefault: false
-#          firstBrokerLoginFlowAlias: "first broker login"
-#          postBrokerLoginFlowAlias: ""
-#          storeToken: ""
-#          addReadTokenRoleOnCreate: ""
-#          trustEmail: ""
-#          linkOnly: ""
-#          displayName: "Edugain"
-#          config:
-#            useJwksUrl: "true"
-#            syncMode: "IMPORT"
-#            principalType: "SUBJECT"
-#            signatureAlgorithm: "RSA_SHA256"
-#            xmlSigKeyInfoKeyNameTransformer: "KEY_ID"
-#            allowCreate: "false"
-#            entityId: "https://synthesys-demo.rciam.grnet.gr/auth/realms/SynthesysPlus"
-#            authnContextComparisonType: "exact"
-#            hideOnLoginPage: "false"
-#            promotedLoginbutton: ""
-#            backchannelSupported: ""
-#            postBindingResponse: "true"
-#            postBindingAuthnRequest: "true"
-#            postBindingLogout: "true"
-#            wantAuthnRequestsSigned: "true"
-#            wantAssertionsSigned: "true"
-#            wantAssertionsEncrypted: "true"
-#            forceAuthn: ""
-#            signSpMetadata: ""
-#            loginHint: "false"
-#            addExtensionsElementWithKeyInfo: "false"
-#            attributeConsumingServiceName: "Synthesys+"
-#            multiplePrincipals: "[{\"principalType\":\"ATTRIBUTE\",\"principalAttribute\":\"urn:oasis:names:tc:SAML:attribute:subject-id\"}]"
-#            allowedClockSkew: ""
-#            attributeConsumingServiceIndex: ""
+#        - metadataUrl: "<THE REMOTE IDP METADATA XML URL>"
+#          data:
+#            providerId: "saml" #do not change this
+#            alias: "<A UNIQUE ALIAS NAME>"
+#            enabled: true
+#            authenticateByDefault: false
+#            firstBrokerLoginFlowAlias: "first broker login"
+#            postBrokerLoginFlowAlias: ""
+#            storeToken: ""
+#            addReadTokenRoleOnCreate: ""
+#            trustEmail: ""
+#            linkOnly: ""
+#            displayName: "<THE DESIRED DISPLAY NAME>"
+#            config:
+#              useJwksUrl: "true"
+#              syncMode: "IMPORT"
+#              principalType: "SUBJECT"
+#              signatureAlgorithm: "RSA_SHA256"
+#              xmlSigKeyInfoKeyNameTransformer: "KEY_ID"
+#              allowCreate: "false"
+#              guiOrder: 1
+#              entityId: "<THE ENTITY ID>"
+#              authnContextComparisonType: "exact"
+#              hideOnLoginPage: "false"
+#              promotedLoginbutton: ""
+#              backchannelSupported: ""
+#              postBindingResponse: "true"
+#              postBindingAuthnRequest: "true"
+#              postBindingLogout: "true"
+#              wantAuthnRequestsSigned: "true"
+#              wantAssertionsSigned: "true"
+#              wantAssertionsEncrypted: "true"
+#              forceAuthn: ""
+#              signSpMetadata: ""
+#              loginHint: "false"
+#              addExtensionsElementWithKeyInfo: "false"
+#              attributeConsumingServiceName: "<ADD A NAME HERE>"
+#              multiplePrincipals: "[{\"principalType\":\"ATTRIBUTE\",\"principalAttribute\":\"urn:oasis:names:tc:SAML:attribute:subject-id\"}]"
+#              allowedClockSkew: ""
+#              attributeConsumingServiceIndex: ""
 #      social_idps:
 #        - providerId: "google" #do not change this
 #          alias: "google"  #do not change this

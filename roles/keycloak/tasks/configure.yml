@@ -127,6 +127,14 @@
       when: not item.smtp is undefined
       run_once: true
 
+    - name: Setup federations
+      include_tasks: blocks/configure_federations.yml
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "federations"
+        - skip_missing: True
+      run_once: true
+
     - name: Setup social IdPs
       include_tasks: blocks/configure_social_idps.yml
       with_subelements:
