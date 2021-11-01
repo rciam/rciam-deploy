@@ -43,7 +43,7 @@
   when: openldap_admin_password is defined and admin_pass_file is changed
 
 - name: Run replicate tasks
-  when: "'openldap_replica' in groups"
+  when: " groups['openldap'] | length  > 1"
   block:
     - name: Copy config_olc_server_id file
       template:
