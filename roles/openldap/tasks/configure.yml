@@ -86,7 +86,7 @@
       register: replicate_database_file
       run_once: true
 
-    - name: Copy replicate_database file
+    - name: Copy trigger_replicate file
       template:
         src: "etc/ldap/slapd.d/trigger_replicate.ldif.j2"
         dest: "/etc/ldap/slapd.d/trigger_replicate.ldif"
@@ -121,7 +121,7 @@
       when: replicate_database_file is changed
       run_once: true
 
-    - name: Add trigger replicate to openLDAP
+    - name: Trigger replicate to openLDAP
       shell: 'ldapadd -c -x -H ldapi:/// -D {{ openldap_bind_id }} -w "{{ openldap_admin_password }}" -f /etc/ldap/slapd.d/trigger_replicate.ldif'
       ignore_errors: yes  #set to get around erroring out that items already exist
       become: yes
