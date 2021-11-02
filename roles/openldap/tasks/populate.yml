@@ -6,6 +6,7 @@
     group: root
     mode: 0640
   become: yes
+  register: populate_content_file
   run_once: true
 
 # This operation may return "FAILED" if an entry already exists but it will continue to add non existing entries
@@ -14,6 +15,7 @@
   ignore_errors: yes  #set to get around erroring out that items already exist
   when: >
         openldap_populate is defined and
-        openldap_populate
+        openldap_populate and
+        populate_content_file is changed
   become: yes
   run_once: true
