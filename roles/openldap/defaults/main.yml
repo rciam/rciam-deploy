@@ -4,9 +4,10 @@ openldap_init: false #when enabled it will initialise the LDAP directory. If alr
 #openldap_admin_password: 'secret'
 #openldap_admin_password_salt: 'defaultsecretsalt'
 openldap_admin_user: 'admin'
-openldap_org: 'example'
+openldap_org: 'example.test'
 openldap_tld: 'org'
-openldap_base: 'dc={{ openldap_org }},dc={{ openldap_tld }}'
+openldap_base: 'dc=example,dc=test,dc={{ openldap_tld }}'
+openldap_uri: 'ldap://example.test.org'
 openldap_bind_id: 'cn={{ openldap_admin_user }},{{ openldap_base }}'
 openldap_organizationalunits:  #defines OU's to populate
   - people
