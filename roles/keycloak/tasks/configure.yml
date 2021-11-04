@@ -64,32 +64,18 @@
         auth_password: "{{keycloak_admin.pass}}"
         id: "{{item.name}}"
         realm: "{{item.name}}"
+        verify_email: "{{item.verifyEmail}}"
+        enabled: true
         state: present
       with_items: "{{config.realms | default([])}}"
       run_once: true
 
-    - name: Configure keys (private key and certificate)
-      uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item.name }}/components"
-        method: POST
-        body_format: json
-        headers:
-          Authorization: "Bearer {{ result.json.access_token }}"
-        body:
-          name: user_provided_keys
-          providerId: rsa
-          providerType: org.keycloak.keys.KeyProvider
-          parentId: "{{ item.name }}"
-          config:
-            priority: ["0"]
-            enabled: ["true"]
-            active: ["true"]
-            algorithm: ["{{ item.key.algorithm }}"]
-            privateKey: ["{{ item.key.privateKey }}"]
-            certificate: ["{{ item.key.certificate }}"]
-        status_code: 201
-      with_items: "{{config.realms | default([])}}"
-      when: not item.key is undefined
+    - name: Configure keys
+      include_tasks: blocks/configure_keys.yml
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "keys"
+        - skip_missing: True
       run_once: true
 
     - name: Configure AUP (Terms and Conditions)
@@ -141,19 +127,27 @@
       when: not item.smtp is undefined
       run_once: true
 
+    - name: Setup federations
+      include_tasks: blocks/configure_federations.yml
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "federations"
+        - skip_missing: True
+      run_once: true
+
     - name: Setup social IdPs
-      uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
-        method: POST
-        body_format: json
-        headers:
-          Authorization: "Bearer {{ result.json.access_token }}"
-        body:
-          "{{item[1]}}"
-        status_code: 201
+      include_tasks: blocks/configure_social_idps.yml
       with_subelements:
         - "{{config.realms | default([])}} "
         - "social_idps"
+        - skip_missing: True
+      run_once: true
+
+    - name: Setup saml IdPs
+      include_tasks: blocks/configure_saml_idps.yml
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "saml_idps"
         - skip_missing: True
       run_once: true
 

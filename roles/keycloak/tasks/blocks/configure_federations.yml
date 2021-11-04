@@ -1,0 +1,22 @@
+---
+
+- name: "Get current list of federations of the realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_realm_federations.yml
+
+
+- name: "Configuring federation: {{item[1].alias}}"
+  block:
+
+    - name: "Configuring federation {{ item[1].alias }}"
+      uri:
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances"
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ result.json.access_token }}"
+        body:
+          "{{ item[1] }}"
+        status_code: 201
+
+  when: "item[1].alias not in realm_federations"
+

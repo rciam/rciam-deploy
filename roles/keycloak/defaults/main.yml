@@ -22,13 +22,15 @@ keycloak_db:
 keycloak_db_host: "{{ groups['db'][0] }}"
 keycloak_proxy_host: "{{ groups['proxy'][0] }}"
 
-
-keycloak_home: "{{ansible_user_dir}}/keycloak"
+#keycloak_home should always end with the keycloak folder name, i.e '/keycloak'
+keycloak_home: "{{ansible_user_dir}}/{{keycloak_dir_name}}"
 keycloak_bind_address: "0.0.0.0"
 keycloak_bind_port: "8080"
 
 keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 
+
+keycloak_dir_name: "keycloak"
 
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)
@@ -52,14 +54,132 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.
 ### also, you can just comment out any of the {key, aup, smtp} sub trees and let the remaining get configured
-#config:
-#  realms:
-#    - name: master
-#      displayNameHtml: Keycloak
-#      key:
-#        privateKey: "<SET A PRIVATE KEY"
-#        certificate: "<SET A CERTIFICATE>"
-#        algorithm: "RSA256"
+config:
+  realms:
+    - name: master
+      verifyEmail: true
+      displayNameHtml: Keycloak
+#      keys:
+#        - name: "rsa-sig"
+#          providerId: "rsa" #DO NOT CHANGE THIS
+#          config:
+#            privateKey:
+#              - "MIIEvgIBADANBgkqhkiG9....."
+#            certificate:
+#              - "MIID2TCCAsGgAwIBAgIUX....."
+#            algorithm:
+#              - "RS256"
+#            keyUse:
+#              - "sig"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#        - name: "rsa-enc"
+#          providerId: "rsa" #DO NOT CHANGE THIS
+#          config:
+#            privateKey:
+#              - "MIIEvgIBADANBgkqhkiG9....."
+#            certificate:
+#              - "MIID2TCCAsGgAwIBAgIUX....."
+#            algorithm:
+#              - "RS256"
+#            keyUse:
+#              - "enc"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#        - name: "generate-rsa-enc"
+#          providerId: "rsa-generated" #DO NOT CHANGE THIS
+#          config:
+#            algorithm:
+#              - "RS256"
+#            keySize:
+#              - "2048"
+#            keyUse:
+#              - "enc"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#        - name: "generate-rsa-sig"
+#          providerId: "rsa-generated" #DO NOT CHANGE THIS
+#          config:
+#            algorithm:
+#              - "RS256"
+#            keySize:
+#              - "2048"
+#            keyUse:
+#              - "sig"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#        - name: "java-keystore-sig"
+#          providerId: "java-keystore" #DO NOT CHANGE THIS
+#          config:
+#            keyUse:
+#              - "sig"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#            algorithm:
+#              - "RS256"
+#            keystore:
+#              - "<KEYSTORE_LOCAL_FILEPATH>"
+#            keystorePassword:
+#              - "<KEYSTORE_PASSWORD>"
+#            keyAlias:
+#              - "<KEY_ALIAS>"
+#            keyPassword:
+#              - "<KEY_PASSWORD>"
+#        - name: "generate-hmac"
+#          providerId: "hmac-generated" #DO NOT CHANGE THIS
+#          config:
+#            algorithm:
+#              - "HS256"
+#            secretSize:
+#              - "64"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#        - name: "generate-aes"
+#          providerId: "aes-generated" #DO NOT CHANGE THIS
+#          config:
+#            secretSize:
+#              - "16"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#        - name: "generate-ecdsa"
+#          providerId: "ecdsa-generated" #DO NOT CHANGE THIS
+#          config:
+#            ecdsaEllipticCurveKey:
+#              - "P-256"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
 #      aup:
 #        enabled: true
 #        defaultAction: true
@@ -79,6 +199,78 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 #        auth_enabled: false
 #        auth_username: ""
 #        auth_password: ""
+      federations:
+        - providerId: "saml" # DO NOT CHANGE THIS!
+          url: "<THE URL OF THE FEDERATION's XML>"
+          alias: "<SET AN ALIAS>"
+          updateFrequencyInMins: 1440
+          config:
+            nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+            principalType: "SUBJECT"
+            postBindingAuthnRequest: "true"
+            wantAuthnRequestsSigned: "true"
+            wantAssertionsSigned: "true"
+            wantAssertionsEncrypted: "true"
+            multiplePrincipals: "[{\"principalType\":\"SUBJECT\",\"nameIDPolicyFormat\":\"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\"}]"
+          entityIdWhiteList:
+            - "https://aaa.bbb.com/entity1"
+          entityIdBlackList:
+            - "https://aaa.bbb.com/entity2"
+          registrationAuthorityWhiteList:
+            - "registration-authority-1"
+          registrationAuthorityBlackList:
+            - "registration-authority-2"
+          categoryWhiteList:
+            attribute-name-1:
+              - "attribute-value-1"
+            attribute-name-2:
+              - "attribute-value-2"
+          categoryBlackList:
+            attribute-name-1:
+              - "attribute-value-1"
+            attribute-name-2:
+              - "attribute-value-2"
+#      saml_idps:
+#        - metadataUrl: "<THE REMOTE IDP METADATA XML URL>"
+#          data:
+#            providerId: "saml" #do not change this
+#            alias: "<A UNIQUE ALIAS NAME>"
+#            enabled: true
+#            authenticateByDefault: false
+#            firstBrokerLoginFlowAlias: "first broker login"
+#            postBrokerLoginFlowAlias: ""
+#            storeToken: ""
+#            addReadTokenRoleOnCreate: ""
+#            trustEmail: ""
+#            linkOnly: ""
+#            displayName: "<THE DESIRED DISPLAY NAME>"
+#            config:
+#              useJwksUrl: "true"
+#              syncMode: "IMPORT"
+#              principalType: "SUBJECT"
+#              signatureAlgorithm: "RSA_SHA256"
+#              xmlSigKeyInfoKeyNameTransformer: "KEY_ID"
+#              allowCreate: "false"
+#              guiOrder: 1
+#              entityId: "<THE ENTITY ID>"
+#              authnContextComparisonType: "exact"
+#              hideOnLoginPage: "false"
+#              promotedLoginbutton: ""
+#              backchannelSupported: ""
+#              postBindingResponse: "true"
+#              postBindingAuthnRequest: "true"
+#              postBindingLogout: "true"
+#              wantAuthnRequestsSigned: "true"
+#              wantAssertionsSigned: "true"
+#              wantAssertionsEncrypted: "true"
+#              forceAuthn: ""
+#              signSpMetadata: ""
+#              loginHint: "false"
+#              addExtensionsElementWithKeyInfo: "false"
+#              attributeConsumingServiceName: "<ADD A NAME HERE>"
+#              multiplePrincipals: "[{\"principalType\":\"ATTRIBUTE\",\"principalAttribute\":\"urn:oasis:names:tc:SAML:attribute:subject-id\"}]"
+#              allowedClockSkew: ""
+#              attributeConsumingServiceIndex: ""
 #      social_idps:
 #        - providerId: "google" #do not change this
 #          alias: "google"  #do not change this

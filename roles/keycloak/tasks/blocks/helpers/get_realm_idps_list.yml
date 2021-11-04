@@ -1,0 +1,13 @@
+---
+
+- name: "Get list of idps"
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ result.json.access_token }}"
+    status_code: 200
+  register: "idps_result"
+
+- set_fact:
+    idps_list: "{{idps_result.json | json_query('[].alias')}}"
