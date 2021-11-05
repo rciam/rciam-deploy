@@ -1,8 +1,8 @@
 dn: cn=config
 changetype: modify
 replace: olcServerID
-olcServerID: {{ openldap_olc_server_ids[0].id }} {{ openldap_olc_server_ids[0].uri }}
-olcServerID: {{ openldap_olc_server_ids[1].id }} {{ openldap_olc_server_ids[1].uri }}
+olcServerID: {{ hostvars[groups['openldap'][0]].openldap_olcServerID }} {{ hostvars[groups['openldap'][0]].openldap_uri }}
+olcServerID: {{ hostvars[groups['openldap'][1]].openldap_olcServerID }} {{ hostvars[groups['openldap'][1]].openldap_uri }}
 
 dn: olcOverlay=syncprov,olcDatabase={0}config,cn=config
 changetype: add
@@ -13,12 +13,14 @@ olcOverlay: syncprov
 dn: olcDatabase={0}config,cn=config
 changetype: modify
 add: olcSyncRepl
-olcSyncRepl: rid=001 provider={{openldap_olc_server_ids[0].uri}} binddn="cn=admin,cn=config" bindmethod=simple
+olcSyncRepl: rid=001 provider={{ hostvars[groups['openldap'][0]].openldap_uri }} binddn="cn=admin,cn=config" bindmethod=simple
     credentials={{ openldap_admin_password }} searchbase="cn=config" type=refreshAndPersist
     retry="5 5 300 5" timeout=1
-olcSyncRepl: rid=002 provider={{openldap_olc_server_ids[1].uri}} binddn="cn=admin,cn=config" bindmethod=simple
+    tls_reqcert=never
+olcSyncRepl: rid=002 provider={{ hostvars[groups['openldap'][1]].openldap_uri }} binddn="cn=admin,cn=config" bindmethod=simple
     credentials={{ openldap_admin_password }} searchbase="cn=config" type=refreshAndPersist
     retry="5 5 300 5" timeout=1
+    tls_reqcert=never
 -
 add: olcMirrorMode
 olcMirrorMode: TRUE

@@ -16,12 +16,14 @@ replace: olcRootPW
 olcRootPW: {{ openldap_admin_password }}
 -
 add: olcSyncRepl
-olcSyncRepl: rid=003 provider={{openldap_olc_server_ids[0].uri}} binddn="{{ openldap_bind_id }}" bindmethod=simple
+olcSyncRepl: rid=003 provider={{ hostvars[groups['openldap'][0]].openldap_uri }} binddn="{{ openldap_bind_id }}" bindmethod=simple
   credentials={{ openldap_admin_password }} searchbase="{{ openldap_base }}" type=refreshOnly
   interval=00:00:00:10 retry="5 5 300 5" timeout=1
-olcSyncRepl: rid=004 provider={{openldap_olc_server_ids[1].uri}} binddn="{{ openldap_bind_id }}" bindmethod=simple
+  tls_reqcert=never
+olcSyncRepl: rid=004 provider={{ hostvars[groups['openldap'][1]].openldap_uri }} binddn="{{ openldap_bind_id }}" bindmethod=simple
   credentials={{ openldap_admin_password }} searchbase="{{ openldap_base }}" type=refreshOnly
   interval=00:00:00:10 retry="5 5 300 5" timeout=1
+  tls_reqcert=never
 -
 add: olcMirrorMode
 olcMirrorMode: TRUE

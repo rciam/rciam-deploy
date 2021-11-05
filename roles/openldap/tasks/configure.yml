@@ -18,6 +18,83 @@
     backup: yes
   become: yes
 
+- name: Ensure /etc/ldap/certs dir exists
+  file: 
+    path: /etc/ldap/certs
+    state: directory
+    owner: openldap
+    group: openldap
+  become: yes
+  when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
+
+- name: Copy certificates config file
+  template:
+    src: "etc/ldap/certs/certs.ldif.j2"
+    dest: "/etc/ldap/slapd.d/certs.ldif"
+    owner: root
+    group: root
+    mode: 0640
+  become: yes
+  when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
+
+- name: Ensure /etc/ldap/cacerts dir exists
+  file: 
+    path: /etc/ldap/cacerts
+    state: directory
+    owner: openldap
+    group: openldap
+  become: yes
+  when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
+
+- name: Ensure CA certificate is copied
+  copy:
+    dest: "/etc/ldap/cacerts/{{ openldap_ca_certificate_file }}"
+    content: "{{ openldap_ca_certificate }}"
+    owner: openldap
+    group: openldap
+    mode: '0600'
+    backup: yes
+  when: openldap_ca_certificate_file is defined and openldap_ca_certificate is defined
+        and openldap_ca_certificate|length > 0
+  become: yes
+
+- name: Ensure certificate is copied
+  copy:
+    dest: "/etc/ldap/certs/{{ openldap_certificate_file }}"
+    content: "{{ openldap_certificate }}"
+    owner: openldap
+    group: openldap
+    mode: '0600'
+    backup: yes
+  when: openldap_certificate_file is defined and openldap_certificate is defined
+        and openldap_certificate|length > 0
+  become: yes
+
+- name: Ensure certificate key is copied
+  copy:
+    dest: "/etc/ldap/certs/{{ openldap_certificate_key_file }}"
+    content: "{{ openldap_certificate_key }}"
+    owner: openldap
+    group: openldap
+    mode: '0600'
+    backup: yes
+  when: openldap_certificate_key_file is defined and openldap_certificate_key is defined
+        and openldap_certificate_key|length > 0
+  become: yes
+  no_log: yes
+
+- name: Add certificate config file to OpenLDAP
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/certs.ldif'
+  ignore_errors: yes  #set to get around erroring out that items already exist
+  when: openldap_ca_certificate is defined
+        and openldap_ca_certificate|length > 0
+        and openldap_certificate is defined
+        and openldap_certificate|length > 0
+        and openldap_certificate_key is defined
+        and openldap_certificate_key|length > 0
+  become: yes
+  notify: Restart slapd
+
 - name: Copy admin_password to /etc/ldap/slapd.d/.slapdadmin
   copy: 
     content: "{{ openldap_admin_password | password_hash('ldap_salted_sha1', openldap_admin_password_salt) }}" 
@@ -41,6 +118,7 @@
 - name: Finally set the admin password
   shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/adminpwd.ldif
   when: openldap_admin_password is defined and admin_pass_file is changed
+  become: yes
 
 - name: Run replicate tasks
   when: "groups['openldap'] | length  > 1"
@@ -120,10 +198,17 @@
       become: yes
       when: replicate_database_file is changed
       run_once: true
+    
+    - name: Restart slapd
+      systemd:
+        name: slapd
+        enabled: yes
+        daemon_reload: yes
+        state: restarted
+      become: yes
 
     - name: Trigger replicate to openLDAP
       shell: 'ldapadd -c -x -H ldapi:/// -D {{ openldap_bind_id }} -w "{{ openldap_admin_password }}" -f /etc/ldap/slapd.d/trigger_replicate.ldif'
-      ignore_errors: yes  #set to get around erroring out that items already exist
       become: yes
       run_once: true
 
@@ -149,17 +234,6 @@
   register: acl_file
   run_once: true
 
-- name: Copy certificates config file
-  template:
-    src: "etc/ldap/certs/certs.ldif.j2"
-    dest: "/etc/ldap/slapd.d/certs.ldif"
-    owner: root
-    group: root
-    mode: 0640
-  become: yes
-  when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
-  run_once: true
-
 - name: Add schemas to openLDAP
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/modify_schemas.ldif'
   ignore_errors: yes  #set to get around erroring out that items already exist
@@ -180,61 +254,4 @@
   become: yes
   run_once: true
 
-- name: Ensure /etc/ldap/cacerts dir exists
-  file: 
-    path: /etc/ldap/cacerts
-    state: directory
-    owner: openldap
-    group: openldap
-  become: yes
-  when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
 
-- name: Ensure CA certificate is copied
-  copy:
-    dest: "/etc/ldap/cacerts/{{ openldap_ca_certificate_file }}"
-    content: "{{ openldap_ca_certificate }}"
-    owner: openldap
-    group: openldap
-    mode: '0600'
-    backup: yes
-  when: openldap_ca_certificate_file is defined and openldap_ca_certificate is defined
-        and openldap_ca_certificate|length > 0
-  become: yes
-
-- name: Ensure certificate is copied
-  copy:
-    dest: "/etc/ldap/certs/{{ openldap_certificate_file }}"
-    content: "{{ openldap_certificate }}"
-    owner: openldap
-    group: openldap
-    mode: '0600'
-    backup: yes
-  when: openldap_certificate_file is defined and openldap_certificate is defined
-        and openldap_certificate|length > 0
-  become: yes
-
-- name: Ensure certificate key is copied
-  copy:
-    dest: "/etc/ldap/certs/{{ openldap_certificate_key_file }}"
-    content: "{{ openldap_certificate_key }}"
-    owner: openldap
-    group: openldap
-    mode: '0600'
-    backup: yes
-  when: openldap_certificate_key_file is defined and openldap_certificate_key is defined
-        and openldap_certificate_key|length > 0
-  become: yes
-  no_log: yes
-
-- name: Add certificate config file to OpenLDAP
-  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/certs.ldif'
-  ignore_errors: yes  #set to get around erroring out that items already exist
-  when: openldap_ca_certificate is defined
-        and openldap_ca_certificate|length > 0
-        and openldap_certificate is defined
-        and openldap_certificate|length > 0
-        and openldap_certificate_key is defined
-        and openldap_certificate_key|length > 0
-  become: yes
-  notify: Restart slapd
-  run_once: true
