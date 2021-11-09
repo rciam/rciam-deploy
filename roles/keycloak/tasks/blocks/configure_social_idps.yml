@@ -3,14 +3,16 @@
 - name: "Configuring IdP: {{item[1].alias}} Get current IdPs list for realm: {{item[0].name}}"
   include_tasks: blocks/helpers/get_realm_idps_list.yml
 
-- name: "Add idp: {{ item[1].alias }}"
+- set_fact:
+    new_idp: "{% if item[1].alias not in idps_list %}true{% else %}false{% endif %}"
+
+- name: "{% if new_idp %}Add{% else %}Update{% endif %} idp: {{ item[1].alias }}"
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
-    method: POST
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{item[1].alias}}{% endif %}"
+    method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
     body_format: json
     headers:
       Authorization: "Bearer {{ result.json.access_token }}"
     body:
       "{{item[1]}}"
-    status_code: 201
-  when: "item[1].alias not in idps_list"
+    status_code: "{% if new_idp %}201{% else %}204{% endif %}"

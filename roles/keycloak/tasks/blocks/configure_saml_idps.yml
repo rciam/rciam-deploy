@@ -3,7 +3,10 @@
 - name: "Get current IdPs list of realm: {{item[0].name}}"
   include_tasks: blocks/helpers/get_realm_idps_list.yml
 
-- name: "Installing saml IdP: {{item[1].data.alias}}"
+- set_fact:
+    new_idp: "{% if item[1].data.alias not in idps_list %}true{% else %}false{% endif %}"
+
+- name: "{% if new_idp %}Installing{% else %}Updating{% endif %} saml IdP: {{item[1].data.alias}}"
   block:
     - name: "Get config from url: {{ item[1].metadataUrl }}"
       uri:
@@ -20,12 +23,11 @@
 
     - name: "Setup saml IdP {{ item[1].data.alias }}"
       uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
-        method: POST
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{item[1].data.alias}}{% endif %}"
+        method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
         body_format: json
         headers:
           Authorization: "Bearer {{ result.json.access_token }}"
         body:
           "{{ { 'config': saml_idp_result.json } | combine( item[1].data, recursive=True ) }}"
-        status_code: 201
-  when: "item[1].data.alias not in idps_list"
+        status_code: "{% if new_idp %}201{% else %}204{% endif %}"
