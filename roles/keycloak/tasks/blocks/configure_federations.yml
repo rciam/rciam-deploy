@@ -4,18 +4,20 @@
   include_tasks: blocks/helpers/get_realm_federations.yml
 
 - set_fact:
-    exists: true
+    federation_exists: "{{realm_federation_matches | length > 0 }}"
+
+- set_fact:
     additional_info:
       internalId: "{{realm_federation_matches[0].internalId}}"
-  when: "{{ realm_federation_matches | length > 0 }}"
+  when: federation_exists
 
 - set_fact:
     body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
-  when: exists
+  when: federation_exists
 
 - set_fact:
     body: "{{ item[1] }}"
-  when: not exists
+  when: not federation_exists
 
 
 - name: "Configuring federation: {{item[1].alias}}"
