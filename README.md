@@ -25,6 +25,7 @@ pip install ansible==2.10.7
 pip install dnspython
 ansible-galaxy install ipr-cnrs.nftables
 ansible-galaxy install arillso.logrotate
+ansible-galaxy install infopen.openjdk-jdk
 🍺
 ```
 
