@@ -141,7 +141,7 @@ ssp_mods_extra_files: []
 
 # ssp_module_proxystatistics_detailed_days: 0
 
-# ssp_module_proxystatistics_user_id_attribute: "uid"
+# ssp_module_proxystatistics_user_id_attribute: "null"
 
 # ssp_module_proxystatistics_table_name:
 #   statistics: "statistics"

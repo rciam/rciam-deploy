@@ -94,7 +94,11 @@ $config = [
      * Which attribute should be used as user ID.
      * @default uid
      */
+{% if ssp_module_proxystatistics_user_id_attribute == None %}
+    'userIdAttribute' => null,
+{% else %}
     'userIdAttribute' => '{{ ssp_module_proxystatistics_user_id_attribute }}',
+{% endif %}
 
     /*
      * Which users should be blacklisted
