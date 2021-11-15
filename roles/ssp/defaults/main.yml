@@ -111,7 +111,14 @@ ssp_database_slaves: []
 #    password: "secret" 
 #    persistent: no
 
-ssp_debug: false
+ssp_debug_saml: false
+# Available log levels are:
+# ERR          No statistics, only errors
+# WARNING      No statistics, only warnings/errors
+# NOTICE       Statistics and errors
+# INFO         Verbose logs
+# DEBUG        Full debug logs - not recommended for production
+ssp_debug_saml_level: DEBUG
 ssp_showerrors: false
 ssp_errorreporting: true
 
