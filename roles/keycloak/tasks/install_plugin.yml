@@ -5,16 +5,22 @@
     file:
       path: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main"
       state: directory
+      owner: "{{keycloak_service_user}}"
+      group: "{{keycloak_service_user}}"
 
   - name: Download plugin jar
     get_url:
       url: "{{ item.value.jar_url }}"
       dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+      owner: "{{keycloak_service_user}}"
+      group: "{{keycloak_service_user}}"
 
   - name: Install module.xml
     get_url:
       url: "{{ item.value.modulexml_url }}"
       dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+      owner: "{{keycloak_service_user}}"
+      group: "{{keycloak_service_user}}"
 
   - name: Setup keycloak xml providers
     xml:
@@ -39,6 +45,7 @@
         sub: "{{ namespaces.domain_server }}"
     when: "{{ item.value.isTheme | default(false) }}"
 
+  become: yes
   when: not item is undefined
   tags: "install_plugins"
 
