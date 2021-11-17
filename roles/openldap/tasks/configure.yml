@@ -234,6 +234,17 @@
   register: acl_file
   run_once: true
 
+- name: Copy Attribute Options config file
+  template:
+    src: "etc/ldap/slapd.d/olc_attribute_options.ldif.j2"
+    dest: "/etc/ldap/slapd.d/olc_attribute_options.ldif"
+    owner: root
+    group: root
+    mode: 0640
+  become: yes
+  register: olc_attribute_options_file
+  run_once: true
+
 - name: Add schemas to openLDAP
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/modify_schemas.ldif'
   ignore_errors: yes  #set to get around erroring out that items already exist
@@ -251,6 +262,13 @@
         openldap_acl is defined and
         openldap_acl and
         acl_file is changed
+  become: yes
+  run_once: true
+
+- name: Enable Attribute Options to openLDAP
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/olc_attribute_options.ldif'
+  ignore_errors: yes  #set to get around erroring out that items already exist
+  when: olc_attribute_options_file is changed
   become: yes
   run_once: true
 
