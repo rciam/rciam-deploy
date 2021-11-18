@@ -128,6 +128,7 @@
     group: "{{keycloak_service_user}}"
     recurse: yes
   become: yes
+  tags: "setup_file_permissions"
 
 ############### Setup admin user
 - name: "Task block: Setup admin user"
