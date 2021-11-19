@@ -62,6 +62,7 @@
     get_url:
       url: "{{keycloak_archive_url}}"
       dest: "/tmp/keycloak_archive"
+      timeout: 30
   - name: unpack keycloak
     unarchive:
       src: "/tmp/keycloak_archive"
