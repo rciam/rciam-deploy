@@ -39,6 +39,7 @@
         sub: "{{ namespaces.domain_server }}"
     when: "{{ item.value.isTheme | default(false) }}"
 
+  become: yes
   when: not item is undefined
   tags: "install_plugins"
 
