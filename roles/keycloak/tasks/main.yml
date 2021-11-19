@@ -4,7 +4,7 @@
 - name:
   block:
   - name: Stop running instance
-    systemd:
+    service:
       name: keycloak
       state: restarted
     become: yes
@@ -168,18 +168,15 @@
       src: templates/keycloak.service.j2
       dest: /etc/systemd/system/keycloak.service
     become: yes
-  - name: enable keycloak
-    systemd:
-      name: keycloak
-      enabled: yes
-    become: yes
-  - name: restart keycloak
-    systemd:
-      name: keycloak
-      state: restarted
-    become: yes
   tags: "setup_sys_service"
+  # TODO trigger systemctl daemon-reload when changed
 
+- name: Ensure Keycloak service is active and enabled on boot
+  service:
+    name: "keycloak"
+    state: "started"
+    enabled: yes
+  become: yes
 
 ##### configure keycloak
 
