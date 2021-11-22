@@ -49,7 +49,7 @@
   service:
     name: '{{ deployer_mitreid_name }}'
     enabled: yes
-    state: started
+    state: restarted
   when: fedreg_agent_enable_mitreid
   become: yes
   tags:
@@ -61,7 +61,7 @@
   service:
     name: '{{ deployer_ssp_name }}'
     enabled: yes
-    state: started
+    state: restarted
   when: fedreg_agent_enable_ssp
   become: yes
   tags:
