@@ -22,9 +22,11 @@ On the control machine, you need a recent version of Ansible. We recommend insta
 
 ```sh
 pip install ansible==2.10.7
-pip install dnspython
+pip install dnspython==2.1.0
+pip install jmespath==0.10.0
 ansible-galaxy install ipr-cnrs.nftables
 ansible-galaxy install arillso.logrotate
+ansible-galaxy collection install community.general
 🍺
 ```
 
