@@ -16,25 +16,6 @@
       status_code: "200"
       timeout: 600
 
-### wayf plugin configuration
-- name: Configure wayf plugin
-  block:
-  - name: Select wayf plugin for login UI
-    community.general.keycloak_realm:
-      auth_client_id: admin-cli
-      auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
-      auth_realm: master
-      auth_username: "{{keycloak_admin.user}}"
-      auth_password: "{{keycloak_admin.pass}}"
-      id: "{{item}}"
-      realm: "{{item}}"
-      login_theme: "eosc-kc"
-      state: present
-    with_items: "{{keycloak_plugins.wayf.add_to_realms}}"
-    run_once: true
-  when: "{{keycloak_plugins.wayf.enabled | default(false)}} == true"
-  tags: "wayf_plugin"
-
 
 - name: Acquire token
   uri:
@@ -153,3 +134,21 @@
 
   tags: "realm_configuration"
 
+### wayf plugin configuration
+- name: Configure wayf plugin
+  block:
+    - name: Select wayf plugin for login UI
+      community.general.keycloak_realm:
+        auth_client_id: admin-cli
+        auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
+        auth_realm: master
+        auth_username: "{{keycloak_admin.user}}"
+        auth_password: "{{keycloak_admin.pass}}"
+        id: "{{item}}"
+        realm: "{{item}}"
+        login_theme: "{{keycloak_plugins.wayf.module.theme.name}}"
+        state: present
+      with_items: "{{keycloak_plugins.wayf.module.theme.add_to_realms}}"
+      run_once: true
+  when: "{{keycloak_plugins.wayf.enabled | default(false)}} == true"
+  tags: "wayf_plugin"

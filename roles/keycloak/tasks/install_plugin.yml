@@ -11,12 +11,12 @@
 
         - name: "Download plugin jar (of plugin: {{ item.value.name }})"
           get_url:
-            url: "{{ item.value.jar_url }}"
+            url: "{{ item.value.module.jar_url }}"
             dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
 
         - name: "Install module.xml (for plugin: {{ item.value.name }})"
           get_url:
-            url: "{{ item.value.modulexml_url }}"
+            url: "{{ item.value.module.modulexml_url }}"
             dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
 
         - name: "Setup keycloak xml providers (for plugin: {{ item.value.name }})"
@@ -40,22 +40,22 @@
             namespaces:
               srv: "{{ namespaces.domain }}"
               sub: "{{ namespaces.domain_server }}"
-          when: "{{ item.value.isTheme | default(false) }}"
+          when: "{{ item.value.module.theme is defined }}"
 
-      when: item.value.installing_as == "module"
+      when: item.value.module is defined
 
     - name: "Installing plugin {{ item.value.name }} with hot deploy"
       block:
         - name: "Download plugin jar into folder /tmp (for plugin: {{ item.value.name }})"
           get_url:
-            url: "{{ item.value.jar_url }}"
+            url: "{{ item.value.hotdeploy.jar_url }}"
             dest: "/tmp/"
           register: download_result
         #do not download directly to deployment folder (if it's downloaded slowly or the file is large, the deployment might be broken)
         - name: "Move into deployment folder (for plugin: {{ item.value.name }})"
           command: "mv {{download_result.dest}} {{keycloak_home}}/standalone/deployments/"
 
-      when: item.value.installing_as == "hotdeploy"
+      when: item.value.hotdeploy is defined
 
   when: not item is undefined
   become: yes
