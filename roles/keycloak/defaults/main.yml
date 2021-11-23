@@ -533,4 +533,109 @@ config:
 #            disableUserInfo: ""  #boolean
 #            hideOnLoginPage: ""  #boolean
 #            promotedLoginbutton: ""   #boolean
-
+#      idp_mappers:
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: saml-advanced-role-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            attributes: "[{\"key\":\"attrKey1\",\"value\":\"attrVal1\"}]"
+#            role: <ROLE_NAME>
+#            are.attribute.values.regex: true
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: saml-username-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            template: <TEMPLATE>
+#            target: "LOCAL" #one of {LOCAL, BROKER_ID, BROKER_USERNAME}
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: saml-javascript-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            single: true
+#            Script: "<ADD HERE THE SCRIPT>"
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: hardcoded-user-session-attribute-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            attribute: <ATTRIBUTE NAME>
+#            attribute.value: <ATTRIBUTE VALUE>
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: user-hashedid-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            user.attribute: <USER ATTRIBUTE>
+#            hash.id.salt: <SALT>
+#            hash.id.scope: <SCOPE>
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: saml-user-attribute-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            attribute.name: <ATTRIBUTE NAME>
+#            attribute.friendly.name: <FRIENDLY NAME>
+#            attribute.name.format: "ATTRIBUTE_FORMAT_BASIC"  # one of: {ATTRIBUTE_FORMAT_BASIC, ATTRIBUTE_FORMAT_URI, ATTRIBUTE_FORMAT_UNSPECIFIED}
+#            user.attribute: <USER ATTRIBUTE NAME>
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: oidc-hardcoded-role-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            role: <ROLE NAME>
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: hardcoded-attribute-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            attribute: <ATTRIBUTE NAME>
+#            attribute.value: <ATTRIBUTE VALUE>
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: saml-role-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            attribute.name: "attrib1"
+#            attribute.friendly.name: "friendlyname1"
+#            attribute.value: "value1"
+#            role: "role1"
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: oidc-user-attribute-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            claim: "myclaim1"
+#            user.attribute: "userattrib1"
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: oidc-advanced-role-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            claims: "[]"
+#            are.claim.values.regex: "true"
+#            role: "role1"
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: javascript-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            single: true
+#            Script: "<ADD HERE THE SCRIPT>"
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: oidc-role-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            claim: "claimname1"
+#            claim.value: "claimvalue1"
+#            role: "role1"
+#        - name: <MAPPER_UNIQUE_NAME>
+#          identityProviderAlias: <IDP_ALIAS>
+#          identityProviderMapper: oidc-username-idp-mapper
+#          config:
+#            syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#            template: <TEMPLATE>
+#            target: "LOCAL" #one of {LOCAL, BROKER_ID, BROKER_USERNAME}

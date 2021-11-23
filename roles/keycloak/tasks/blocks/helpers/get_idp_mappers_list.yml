@@ -1,0 +1,15 @@
+---
+
+- name: "Get list of idp's mappers"
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ item[1].identityProviderAlias }}/mappers"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ result.json.access_token }}"
+    status_code: 200
+  register: "idp_mappers_result"
+
+- set_fact:
+    idp_mapper_match: "{{ idp_mappers_result.json | json_query(query) | default([]) }}"
+  vars:
+    query: '[?name == `{{ item[1].name }}` ].{name: name, id: id }'
