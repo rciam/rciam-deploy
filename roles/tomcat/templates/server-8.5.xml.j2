@@ -177,7 +177,7 @@
             />
 {% endfor %}
           </Interceptor>
-          <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatch15Interceptor" />
+          <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor" />
         </Channel>
         <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=".*\.gif;.*\.js;.*\.jpg;.*\.png;.*\.htm;.*\.html;.*\.css;.*\.txt;" />
         <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener" />
