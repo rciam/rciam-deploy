@@ -19,6 +19,8 @@
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.repo_url is defined
+  tags:
+    - ssp-modules:install:repo
 
 
 - name: Download & unarchive to /tmp/ ( zip only )
@@ -38,6 +40,7 @@
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
+
 
 - name: Set a version file in module directory (zip only) [2/3]
   copy:
@@ -59,8 +62,6 @@
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
-
-
 
 
 - name: Create PostgreSQL tables for SSP modules via SQL scripts
