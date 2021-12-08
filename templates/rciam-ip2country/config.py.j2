@@ -2,7 +2,7 @@
 
 [source_database]
 
-host = {{ lookup('dig', groups['dbmaster'][0]) }}
+host = {{ rciam_dbs.proxy.host | default(lookup('dig', groups['dbmaster'][0])) }}
 database = {{ rciam_dbs.proxy.name }}
 user = {{ rciam_dbs.proxy.owner_username }}
 password = {{ rciam_dbs.proxy.owner_password }}
