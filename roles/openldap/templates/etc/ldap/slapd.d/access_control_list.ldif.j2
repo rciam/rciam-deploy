@@ -11,4 +11,4 @@ olcAccess: {2}to dn.children="ou=people,{{ openldap_base }}" by set.exact="([cn=
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcAccess
-olcAccess: {3}to * by * read
+olcAccess: {3}to * by users read
