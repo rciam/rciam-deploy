@@ -49,7 +49,7 @@
     update_cache: true
   become: true
 
-- name: Ensure log file owned by nagios user
+- name: Ensure log file owned by nagios user (RedHat)
   file:
     dest: "{{ rciam_probes_log_dir }}"
     state: directory
@@ -57,4 +57,21 @@
     owner: nagios
     group: nagios
   become: true
+
+- name: Upgrade pip3 (RedHat)
+  pip:
+    name: pip
+    executable: pip3
+    extra_args: --upgrade
+
+# Ensuring the umask is 0022 (to ensure other users can use it)
+- name: Install python3 packages (RedHat)
+  pip:
+    name: "{{ item.name }}"
+    version: "{{ item.version }}"
+    umask: "0022"
+    executable: pip3
+  loop: "{{ pip_dependencies | default([]) }}"
+  become: true
+  when: pip_dependencies is defined
 
