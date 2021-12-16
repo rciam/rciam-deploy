@@ -29,6 +29,7 @@
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_python: "{{ fedreg_agent_venv_python }}"
     extra_args: -i https://test.pypi.org/simple/
+    state: latest
   become: yes
   tags:
     - agent
@@ -41,6 +42,7 @@
     name: rciam-federation-registry-agent
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_python: "{{ fedreg_agent_venv_python }}"
+    state: latest
   become: yes
   tags:
    - agent
