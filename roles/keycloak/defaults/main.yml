@@ -38,18 +38,24 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 #  wayf:
 #    enabled: true
 #    name: "keycloak-theme-vanilla" #PLEASE, do not change this
-#    jar_url: "<location of plugin jar>"
-#    modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-theme-vanilla/master/module.xml"
-#    isTheme: true
-#    add_to_realms:
-#      - "master"
+#    module:
+#      jar_url: "<location of plugin jar>"
+#      modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-theme-vanilla/master/module.xml"
+#      theme:
+#        name: "rciam"
+#        add_to_realms:
+#          - "master"
 #  idp_hashedid_mapper:
 #    enabled: true
 #    name: "keycloak-idp-hashedId-mapper" #PLEASE, do not change this
-#    jar_url: "<location of plugin jar>"
-#    modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-idp-hashedId-mapper/master/module.xml"
-#    isTheme: false
-
+#    module:
+#      jar_url: "<location of plugin jar>"
+#      modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-idp-hashedId-mapper/master/module.xml"
+#  orcid_idp:
+#    enabled: true
+#    name: "orcid-idp"
+#    hotdeploy:
+#      jar_url: "https://github.com/eosc-kc/keycloak-orcid/releases/download/1.0.0/keycloak-orcid-1.0.0.jar"
 
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.

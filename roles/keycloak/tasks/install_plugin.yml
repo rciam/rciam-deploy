@@ -1,47 +1,62 @@
 ---
-- name: Installing a plugin
-  block:
-  - name: Create plugin dir with parent directories
-    file:
-      path: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main"
-      state: directory
 
-  - name: Download plugin jar
-    get_url:
-      url: "{{ item.value.jar_url }}"
-      dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+- block:
+    - name: "Installing plugin {{ item.value.name }} as a module"
+      block:
 
-  - name: Install module.xml
-    get_url:
-      url: "{{ item.value.modulexml_url }}"
-      dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+        - name: "Create plugin dir with parent directories (for plugin: {{ item.value.name }})"
+          file:
+            path: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main"
+            state: directory
 
-  - name: Setup keycloak xml providers
-    xml:
-      path: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
-      xpath: /srv:server/srv:profile/sub:subsystem/sub:providers
-      input_type: xml
-      add_children:
-        - "<provider>module:org.keycloak.{{ item.value.name }}</provider>"
-      namespaces:
-        srv: "{{ namespaces.domain }}"
-        sub: "{{ namespaces.domain_server }}"
+        - name: "Download plugin jar (of plugin: {{ item.value.name }})"
+          get_url:
+            url: "{{ item.value.module.jar_url }}"
+            dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
 
-  - name: Setup keycloak xml theme modules
-    xml:
-      path: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
-      xpath: /srv:server/srv:profile/sub:subsystem/sub:theme
-      input_type: xml
-      add_children:
-        - "<modules>  <module>org.keycloak.{{ item.value.name }}</module>  </modules>"
-      namespaces:
-        srv: "{{ namespaces.domain }}"
-        sub: "{{ namespaces.domain_server }}"
-    when: "{{ item.value.isTheme | default(false) }}"
+        - name: "Install module.xml (for plugin: {{ item.value.name }})"
+          get_url:
+            url: "{{ item.value.module.modulexml_url }}"
+            dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
 
-  become: yes
+        - name: "Setup keycloak xml providers (for plugin: {{ item.value.name }})"
+          xml:
+            path: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
+            xpath: /srv:server/srv:profile/sub:subsystem/sub:providers
+            input_type: xml
+            add_children:
+              - "<provider>module:org.keycloak.{{ item.value.name }}</provider>"
+            namespaces:
+              srv: "{{ namespaces.domain }}"
+              sub: "{{ namespaces.domain_server }}"
+
+        - name: "Setup keycloak xml theme modules (for plugin: {{ item.value.name }})"
+          xml:
+            path: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
+            xpath: /srv:server/srv:profile/sub:subsystem/sub:theme
+            input_type: xml
+            add_children:
+              - "<modules>  <module>org.keycloak.{{ item.value.name }}</module>  </modules>"
+            namespaces:
+              srv: "{{ namespaces.domain }}"
+              sub: "{{ namespaces.domain_server }}"
+          when: "{{ item.value.module.theme is defined }}"
+
+      when: item.value.module is defined
+
+    - name: "Installing plugin {{ item.value.name }} with hot deploy"
+      block:
+        - name: "Download plugin jar into folder /tmp (for plugin: {{ item.value.name }})"
+          get_url:
+            url: "{{ item.value.hotdeploy.jar_url }}"
+            dest: "/tmp/"
+          register: download_result
+        #do not download directly to deployment folder (if it's downloaded slowly or the file is large, the deployment might be broken)
+        - name: "Move into deployment folder (for plugin: {{ item.value.name }})"
+          command: "mv {{download_result.dest}} {{keycloak_home}}/standalone/deployments/"
+
+      when: item.value.hotdeploy is defined
+
   when: not item is undefined
+  become: yes
   tags: "install_plugins"
-
-
-
