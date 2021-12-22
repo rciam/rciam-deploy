@@ -26,6 +26,7 @@ pip install dnspython==2.1.0
 pip install jmespath==0.10.0
 ansible-galaxy install ipr-cnrs.nftables
 ansible-galaxy install arillso.logrotate
+ansible-galaxy install infopen.openjdk-jdk
 ansible-galaxy collection install community.general
 🍺
 ```
