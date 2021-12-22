@@ -10,4 +10,7 @@
   register: "realm_result"
 
 - set_fact:
-    realm_federations: "{{realm_result.json.identityProvidersFederations | json_query('[].alias') | default([]) }}"
+    realm_federation_matches: "{{realm_result.json.identityProvidersFederations | json_query(query) | default([]) }}"
+  vars:
+    query: '[?alias == `{{ item[1].alias }}` ].{alias: alias, internalId: internalId }'
+

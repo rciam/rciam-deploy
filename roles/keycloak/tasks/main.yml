@@ -4,7 +4,7 @@
 - name:
   block:
   - name: Stop running instance
-    systemd:
+    service:
       name: keycloak
       state: restarted
     become: yes
@@ -16,6 +16,7 @@
     args:
       removes: "{{keycloak_home}}"
       creates: "{{keycloak_home}}/../keycloak-previous-{{ file_timestamp }}"
+    become: yes
   when: keycloak_is_upgrade
 
 ## now start the installation of keycloak
@@ -40,48 +41,85 @@
   tags:
     - always
 
-
-- name: Capture logged in user name
-  set_fact:
-    loggedin_user: "{{ansible_user_id}}"
-
+### create keycloak_service_user
+- name: Create Keycloak service user/group
+  user:
+    name: "{{keycloak_service_user}}"
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+    system: yes
+    create_home: no
+  become: yes
 
 #### Extract keycloak from archive
-- name: "Task block: Download and extract keycloak"
-  block:
-  - name: Create keycloak directory
-    file:
-      path: "/tmp/keycloak-tmp"
-      state: directory
-  - name: Download keycloak archive file
-    get_url:
-      url: "{{keycloak_archive_url}}"
-      dest: "/tmp/keycloak_archive"
-  - name: unpack keycloak
-    unarchive:
-      src: "/tmp/keycloak_archive"
-      dest: "/tmp/keycloak-tmp"
-      copy: no
-  - name: Find keycloak extracted folder name
-    find:
-      paths: /tmp/keycloak-tmp
-      patterns: 'keycloak*'
-      file_type: directory
-      recurse: no
-    register: find_result
-  - name: Remove any previous installation
-    ansible.builtin.file:
-      path: "{{keycloak_home}}/../{{keycloak_dir_name}}"
-      state: absent
-  - name: Move extracted keycloak to final keycloak folder
-    command: "mv {{find_result.files[0].path}} {{keycloak_home}}"
-    args:
-      removes: "{{find_result.files[0].path}}"
-      creates: "{{keycloak_home}}"
+- block:
+  - name: "Task block: Download keycloak"
+    block:
+    - name: Create keycloak temp directory
+      file:
+        path: "/tmp/keycloak-tmp"
+        state: directory
+    - name: Download keycloak archive file
+      get_url:
+        url: "{{keycloak_archive_url}}"
+        dest: "/tmp/keycloak_archive"
+        timeout: 30
+    - name: Compute sha1 hash of archive
+      stat:
+        path: "/tmp/keycloak_archive"
+        checksum_algorithm: sha1
+      register: keycloak_sha1
+    - name: create empty file if not exists
+      ansible.builtin.copy:
+        dest: "{{ keycloak_home }}/sha1"
+        content: ""
+        force: no
+    - name: Previous sha1
+      shell: "cat {{ keycloak_home }}/sha1"
+      register: previous_sha1
+    - name: "Compare sha1"
+      set_fact:
+        is_same_archive: "{{ true if keycloak_sha1.stat.checksum == previous_sha1.stdout else false }}"
+    become: yes
+
+  - name: "Task block: Extract keycloak"
+    block:
+    - name: unpack keycloak
+      unarchive:
+        src: "/tmp/keycloak_archive"
+        dest: "/tmp/keycloak-tmp"
+        remote_src: yes
+        extra_opts: "--no-same-owner" #since it's run with elevated priviledges, to avoid preserving ownership from the archive
+    - name: Find keycloak extracted folder name
+      find:
+        paths: /tmp/keycloak-tmp
+        patterns: 'keycloak*'
+        file_type: directory
+        recurse: no
+      register: find_result
+    - name: Remove any previous installation
+      ansible.builtin.file:
+        path: "{{keycloak_home}}"
+        state: absent
+    - name: Move extracted keycloak to final keycloak folder
+      command: "mv {{find_result.files[0].path}} {{keycloak_home}}"
+      args:
+        removes: "{{find_result.files[0].path}}"
+        creates: "{{keycloak_home}}"
+
+    - name: Store previous sha1
+      copy:
+        dest: "{{keycloak_home}}/sha1"
+        content: "{{ keycloak_sha1.stat.checksum }}"
+    become: yes
+    when: not is_same_archive
+
+  always:
   - name: Delete downloaded archive
     ansible.builtin.file:
       path: "/tmp/keycloak_archive"
       state: absent
+  become: yes
   tags: "download_extract"
 
 
@@ -100,6 +138,7 @@
     template:
       src: templates/module.xml.j2
       dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
+  become: yes
   tags: "postgresql_plugin"
 
 ######## Install template standalone-ha.xml
@@ -109,7 +148,18 @@
     mode: 0644
     src: templates/{{keycloak_version}}/standalone-ha.xml.j2
     dest: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
+  become: yes
   tags: "install_standaloneha"
+
+##### Set keycloak working dir and logs writable for service user
+- name: "Setting standalone folder writable for user: {{keycloak_service_user}} - where the logs and it's internal temporary files are created"
+  file:
+    dest: "{{keycloak_home}}/standalone"
+    owner: "{{keycloak_service_user}}"
+    group: "{{keycloak_service_user}}"
+    recurse: yes
+  become: yes
+  tags: "setup_file_permissions"
 
 ############### Setup admin user
 - name: "Task block: Setup admin user"
@@ -122,6 +172,7 @@
     shell: "{{keycloak_home}}/bin/add-user-keycloak.sh -u {{ keycloak_admin.user }} -p {{ keycloak_admin.pass }}"
     args:
       executable: /bin/bash
+  become: yes
   tags: "setup_admin"
 
 
@@ -147,18 +198,15 @@
       src: templates/keycloak.service.j2
       dest: /etc/systemd/system/keycloak.service
     become: yes
-  - name: enable keycloak
-    systemd:
-      name: keycloak
-      enabled: yes
-    become: yes
-  - name: restart keycloak
-    systemd:
-      name: keycloak
-      state: restarted
-    become: yes
   tags: "setup_sys_service"
+  # TODO trigger systemctl daemon-reload when changed
 
+- name: Ensure Keycloak service is active and enabled on boot
+  service:
+    name: "keycloak"
+    state: "started"
+    enabled: yes
+  become: yes
 
 ##### configure keycloak
 

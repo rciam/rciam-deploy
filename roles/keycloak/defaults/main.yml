@@ -10,6 +10,8 @@ keycloak_archive_url: "https://github.com/keycloak/keycloak/releases/download/{{
 ## if a different database is defined, the installation will be a clear one. If the same (previous) database is used, it will upgrade to the new version.
 keycloak_is_upgrade: false
 
+keycloak_service_user: "keycloak"
+
 keycloak_admin:
   user: "<SET AN ADMIN USER>"
   pass: "<SET AN ADMIN PASS>"
@@ -22,15 +24,13 @@ keycloak_db:
 keycloak_db_host: "{{ groups['db'][0] }}"
 keycloak_proxy_host: "{{ groups['proxy'][0] }}"
 
-#keycloak_home should always end with the keycloak folder name, i.e '/keycloak'
-keycloak_home: "{{ansible_user_dir}}/{{keycloak_dir_name}}"
+keycloak_home: "/srv/keycloak"
+
 keycloak_bind_address: "0.0.0.0"
 keycloak_bind_port: "8080"
 
 keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 
-
-keycloak_dir_name: "keycloak"
 
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)
@@ -38,18 +38,24 @@ keycloak_dir_name: "keycloak"
 #  wayf:
 #    enabled: true
 #    name: "keycloak-theme-vanilla" #PLEASE, do not change this
-#    jar_url: "<location of plugin jar>"
-#    modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-theme-vanilla/master/module.xml"
-#    isTheme: true
-#    add_to_realms:
-#      - "master"
+#    module:
+#      jar_url: "<location of plugin jar>"
+#      modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-theme-vanilla/master/module.xml"
+#      theme:
+#        name: "rciam"
+#        add_to_realms:
+#          - "master"
 #  idp_hashedid_mapper:
 #    enabled: true
 #    name: "keycloak-idp-hashedId-mapper" #PLEASE, do not change this
-#    jar_url: "<location of plugin jar>"
-#    modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-idp-hashedId-mapper/master/module.xml"
-#    isTheme: false
-
+#    module:
+#      jar_url: "<location of plugin jar>"
+#      modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-idp-hashedId-mapper/master/module.xml"
+#  orcid_idp:
+#    enabled: true
+#    name: "orcid-idp"
+#    hotdeploy:
+#      jar_url: "https://github.com/eosc-kc/keycloak-orcid/releases/download/1.0.0/keycloak-orcid-1.0.0.jar"
 
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.

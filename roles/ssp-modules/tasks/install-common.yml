@@ -19,6 +19,8 @@
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.repo_url is defined
+  tags:
+    - ssp-modules:install:repo
 
 
 - name: Download & unarchive to /tmp/ ( zip only )
@@ -31,15 +33,27 @@
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.zip_url is defined
   register: zip_downloaded
+  tags:
+    - ssp-modules:install:zip
 
 
-- name: Move unarchived module files from /tmp/ to module directory (zip only) [1/3]
+- name: Backup old version (zip only) [1/4]
+  command: "mv {{ item.path }} {{ item.path }}.{{ ansible_date_time.iso8601 }}"
+  become: yes
+  with_items: "{{ ssp_mods_extra_enabled }}"
+  when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
+  tags:
+    - ssp-modules:install:zip
+
+- name: Move unarchived module files from /tmp/ to module directory (zip only) [2/4]
   command: "mv /tmp/{{ item.fullname }} {{ item.path }}"
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
+  tags:
+    - ssp-modules:install:zip
 
-- name: Set a version file in module directory (zip only) [2/3]
+- name: Set a version file in module directory (zip only) [3/4]
   copy:
     content: ""
     dest: "{{ item.path }}/{{ item.version }}"
@@ -50,18 +64,18 @@
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
+  tags:
+    - ssp-modules:install:zip
 
-
-- name: Remove unused directories from /tmp/ (zip only) [3/3]
+- name: Remove unused directories from /tmp/ (zip only) [4/4]
   file:
     path: "/tmp/{{ item.fullname }}"
     state: absent
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
-
-
-
+  tags:
+    - ssp-modules:install:zip
 
 - name: Create PostgreSQL tables for SSP modules via SQL scripts
   postgresql_query:

@@ -220,6 +220,14 @@ $config = [
      * SAML messages will be logged, including plaintext versions of encrypted
      * messages.
      *
+     * - 'saml.level': Define the log level of SAML messages to log.
+     * Available levels:
+     *   - SimpleSAML\Logger::ERR     No statistics, only errors
+     *   - SimpleSAML\Logger::WARNING No statistics, only warnings/errors
+     *   - SimpleSAML\Logger::NOTICE  Statistics and errors
+     *   - SimpleSAML\Logger::INFO    Verbose logs
+     *   - SimpleSAML\Logger::DEBUG   Full debug logs - not recommended for production
+     *
      * - 'backtraces': this action controls the logging of error backtraces so you
      * can debug any possible errors happening in SimpleSAMLphp.
      *
@@ -232,7 +240,8 @@ $config = [
      * empty array.
      */
     'debug' => [
-        'saml' => {{ ssp_debug }},
+        'saml' => {{ ssp_debug_saml }},
+        'saml.level' => SimpleSAML\Logger::{{ ssp_debug_saml_level }},
         'backtraces' => true,
         'validatexml' => false,
     ],

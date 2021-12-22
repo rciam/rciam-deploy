@@ -3,6 +3,22 @@
 - name: "Get current list of federations of the realm: {{item[0].name}}"
   include_tasks: blocks/helpers/get_realm_federations.yml
 
+- set_fact:
+    federation_exists: "{{realm_federation_matches | length > 0 }}"
+
+- set_fact:
+    additional_info:
+      internalId: "{{realm_federation_matches[0].internalId}}"
+  when: federation_exists
+
+- set_fact:
+    body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
+  when: federation_exists
+
+- set_fact:
+    body: "{{ item[1] }}"
+  when: not federation_exists
+
 
 - name: "Configuring federation: {{item[1].alias}}"
   block:
@@ -15,8 +31,6 @@
         headers:
           Authorization: "Bearer {{ result.json.access_token }}"
         body:
-          "{{ item[1] }}"
+          "{{body}}"
         status_code: 201
-
-  when: "item[1].alias not in realm_federations"
 
