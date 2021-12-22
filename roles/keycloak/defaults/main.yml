@@ -533,6 +533,7 @@ config:
 #            disableUserInfo: ""  #boolean
 #            hideOnLoginPage: ""  #boolean
 #            promotedLoginbutton: ""   #boolean
+#     #Each entry of idp_mappers list is a IdentityProviderMapperRepresentation, see here: https://www.keycloak.org/docs-api/15.0/rest-api/index.html#_identityprovidermapperrepresentation
 #      idp_mappers:
 #        - name: <MAPPER_UNIQUE_NAME>
 #          identityProviderAlias: <IDP_ALIAS>
