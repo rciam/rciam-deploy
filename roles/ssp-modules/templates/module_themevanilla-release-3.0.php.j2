@@ -28,4 +28,8 @@ $config = [
 {% endif %}
     'enable_cookies_banner' => {{ ssp_module_themevanilla_enable_cookies_banner }},
     'ribbon_text' => '{{ ssp_module_themevanilla_ribbon_text }}',
+{% if ssp_module_themevanilla_noty_top is defined %}
+    'noty_text' => '{{ ssp_module_themevanilla_noty_top.text }}',
+    'noty_class' => '{{ ssp_module_themevanilla_noty_top.class }}',
+{% endif %}
 ];

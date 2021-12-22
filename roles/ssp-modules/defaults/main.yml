@@ -107,6 +107,10 @@ ssp_mods_extra_files: []
 
 # ssp_module_themevanilla_enable_cookies_banner: false
 # ssp_module_themevanilla_ribbon_text: "Demo"
+# Available classes: info(blue), warning(yellow), error(red), success(green)
+# ssp_module_themevanilla_noty_top:
+#   text: 'Thank you for using RCIAM AAI'
+#   class: 'info'
 
 ###########################
 # SSP mod proxystatistics #
