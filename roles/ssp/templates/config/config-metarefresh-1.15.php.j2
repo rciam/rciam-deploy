@@ -1,0 +1,154 @@
+<?php
+/*
+ * Configuration for metarefresh module.
+ * {{ ansible_managed }}
+ */
+
+$config = array(
+{% if ssp_mod_metarefresh_blacklist is defined %}
+    /*
+     * Global blacklist: entityIDs that should be excluded from ALL sets.
+     */
+    'blacklist' => array(
+{% for entity_id in ssp_mod_metarefresh_blacklist %}
+        '{{ entity_id }}',
+{% endfor %}
+    ),
+{% endif %}
+    /*
+     * Conditional GET requests
+     * Efficient downloading so polling can be done more frequently.
+     * Works for sources that send 'Last-Modified' or 'Etag' headers.
+     * Note that the 'data' directory needs to be writable for this to work.
+     */
+    //'conditionalGET'	=> TRUE,
+
+    'sets' => array(
+{% for set in ssp_mod_metarefresh_sets %}
+        '{{ set.name }}' => array(
+            'cron'           => array('{{ set.cron }}'),
+            'sources'=> array(
+{% for src in set.sources %}
+                array(
+{% if src.blacklist is defined %}
+                    /*
+                     * entityIDs that should be excluded from this src.
+                     */
+                    'blacklist' => array(
+{% for entity_id in src.blacklist %}
+                        '{{ entity_id }}',
+{% endfor %}
+                    ),
+{% endif %}
+{% if src.whitelist is defined %}
+                    /*
+                     * Whitelist: only keep these EntityIDs.
+                     */
+                    'whitelist' => array(
+{% for entity_id in src.whitelist %}
+                        '{{ entity_id }}',
+{% endfor %}
+                    ),
+{% endif %}
+                    //'conditionalGET' => TRUE,
+                    'src' => '{{ src.url }}',
+                    //'certificates' => array(
+                    //    'current.crt',
+                    //    'rollover.crt',
+                    //),
+{% if src.validate_fingerprint is defined %}
+                    'validateFingerprint' => '{{ src.validate_fingerprint }}',
+{% endif %}
+                    'template' => array(
+{% if src.tags is defined %}
+                        'tags' => array(
+{% for tag in src.tags %}
+                            '{{ tag }}',
+{% endfor %}
+                        ),
+{% endif %}
+{% if src.authproc is defined %}
+                        'authproc' => array(
+{% for entry in src.authproc %}
+{% for priority, filter_params in entry.items() %}
+                            {{ priority }} => array(
+{% for key, value in filter_params.items() %}
+{% if value == None %}
+                                '{{ key }}',
+{% elif value is iterable and value is not string %}
+                                '{{ key }}' => array(
+{% for item in value %}
+                                    '{{ item }}',
+{% endfor %}
+                                ),
+{% elif value == true or value == false or value is number %}
+                                '{{ key }}' => {{ value }},
+{% else %}
+                                '{{ key }}' => '{{ value }}',
+{% endif %}
+{% endfor %}
+                            ),
+{% endfor %}
+{% endfor %}
+                        ),
+{% elif src.authproc_raw is defined %}
+                        'authproc' => array(
+                            {{ src.authproc_raw | indent(width=28, indentfirst=False) }}
+                        ),
+{% endif %}
+{% if src.extra_parameters is defined %}
+{{ src.extra_parameters | indent(width=24, indentfirst=True) }}
+{% endif %}
+                    ),
+{% if src.types is defined %}
+                    /*
+                     * The sets of entities to load, any combination of:
+                     *  - 'saml20-idp-remote'
+                     *  - 'saml20-sp-remote'
+                     *  - 'shib13-idp-remote'
+                     *  - 'shib13-sp-remote'
+                     *  - 'attributeauthority-remote'
+                     *
+                     * All of them will be used by default.
+                     *
+                     * This option takes precedence over the same option per metadata set.
+                     */
+                     'types' => array(
+{% for type in src.types %}
+                         '{{ type }}',
+{% endfor %}
+                     ),
+{% endif %}
+                ),
+{% endfor %}
+            ),
+            // Maximum cache time in seconds
+            'expireAfter' => 60*60*24*{{ set.expire_after }},
+            'outputDir'   => 'metadata/{{ set.output_dir }}/',
+            /*
+             * Which output format the metadata should be saved as.
+             * Can be 'flatfile' or 'serialize'. 'flatfile' is the default.
+             */
+            'outputFormat' => '{{ set.output_format }}',
+{% if set.types is defined %}
+            /*
+             * The sets of entities to load, any combination of:
+             *  - 'saml20-idp-remote'
+             *  - 'saml20-sp-remote'
+             *  - 'shib13-idp-remote'
+             *  - 'shib13-sp-remote'
+             *  - 'attributeauthority-remote'
+             *
+             * All of them will be used by default.
+             */
+            'types' => array(
+{% for type in set.types %}
+                '{{ type }}',
+{% endfor %}
+            ),
+{% endif %}
+        ),
+{% endfor %}
+    ),
+);
+
