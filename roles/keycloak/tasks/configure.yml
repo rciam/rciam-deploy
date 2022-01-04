@@ -132,6 +132,14 @@
         - skip_missing: True
       run_once: true
 
+    - name: Setup IdP mappers
+      include_tasks: blocks/configure_idp_mappers.yml
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "idp_mappers"
+        - skip_missing: True
+      run_once: true
+
   tags: "realm_configuration"
 
 ### wayf plugin configuration
