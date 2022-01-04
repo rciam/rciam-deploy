@@ -50,6 +50,8 @@
     system: yes
     create_home: no
   become: yes
+  tags:
+    - always
 
 #### Extract keycloak from archive
 - block:
@@ -69,6 +71,10 @@
         path: "/tmp/keycloak_archive"
         checksum_algorithm: sha1
       register: keycloak_sha1
+    - name: Create keycloak_home if not exists
+      file:
+        path: "{{ keycloak_home }}"
+        state: directory
     - name: create empty file if not exists
       ansible.builtin.copy:
         dest: "{{ keycloak_home }}/sha1"
