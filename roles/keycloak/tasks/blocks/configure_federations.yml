@@ -1,7 +1,7 @@
 ---
 
-- name: "Get current list of federations of the realm: {{item[0].name}}"
-  include_tasks: blocks/helpers/get_realm_federations.yml
+- name: "Initiating federation search in keycloak"
+  include_tasks: blocks/helpers/search_realm_federations.yml
 
 - set_fact:
     federation_exists: "{{realm_federation_matches | length > 0 }}"
@@ -12,25 +12,49 @@
   when: federation_exists
 
 - set_fact:
-    body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
-  when: federation_exists
+    body: "{% if federation_exists %}{{ item[1] | combine(additional_info , recursive=True ) }}{% else %}{{ item[1] }}{% endif %}"
 
-- set_fact:
-    body: "{{ item[1] }}"
-  when: not federation_exists
+- set_fact: # remove the 'mappers' field from the body (if it exists)
+    body: '{{  body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
 
+- name: "Configuring federation {{ item[1].alias }}"
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ result.json.access_token }}"
+    body:
+      "{{ body }}"
+    status_code: 201
 
-- name: "Configuring federation: {{item[1].alias}}"
+  #get once more the federation_matches. now federation_matches should contain exactly one object in the list with the internalId and alias of the current federation
+- name: "Initiating federation search in keycloak"
+  include_tasks: blocks/helpers/search_realm_federations.yml
+
+- name: "Configuring mappers of the federation {{item[1].alias}} of the realm: {{item[0].name}}"
   block:
 
-    - name: "Configuring federation {{ item[1].alias }}"
+    - name: "Get list of federation {{ item[1].alias }} mappers"
       uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances"
-        method: POST
-        body_format: json
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers"
+        method: GET
         headers:
           Authorization: "Bearer {{ result.json.access_token }}"
-        body:
-          "{{body}}"
-        status_code: 201
+        status_code: 200
+      register: existing_mappers
+
+    - set_fact:
+        existing_mappers_name_id: "{{existing_mappers.json | json_query(query) | default([]) }}"
+      vars:
+        query: '[].{name: name, id: id }'
+
+    - name: Setup federation mapper
+      include_tasks: blocks/configure_federation_mapper.yml
+      with_items: "{{ item[1].mappers }}"
+      loop_control:
+        loop_var: mapper
+      run_once: true
+
+  when: "realm_federation_matches | length > 0"
 

@@ -1,6 +1,6 @@
 ---
 
-- name: "Get list of federations"
+- name: "Search federation {{item[1].alias}} in keycloak"
   uri:
     url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}"
     method: GET
