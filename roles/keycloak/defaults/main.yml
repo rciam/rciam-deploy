@@ -41,10 +41,24 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 #    module:
 #      jar_url: "<location of plugin jar>"
 #      modulexml_url: "https://raw.githubusercontent.com/eosc-kc/keycloak-theme-vanilla/master/module.xml"
-#      theme:
-#        name: "rciam"
-#        add_to_realms:
-#          - "master"
+#    theme:
+#      name: "rciam"
+#      add_to_realms:
+#        - "master"
+#    theme:
+#      name: "rciam"
+#      add_to_realms:
+#        - name: "demo"
+#          terms: "{{ lookup('file', inventory_dir + '/group_vars/keycloak/terms/einfra.html') }}"
+#          config:
+#            ribbonText:
+#              - "Demo"
+#            htmlFooterText:
+#              - "Copyright © 2021-2022"
+#            supportUrl:
+#              - "eid-support@einfra.grnet.gr"
+#            privacyPolicyUrl:
+#              - "https://eid-proxy.aai-dev.grnet.gr/static/privacy-policy.pdf"
 #  idp_hashedid_mapper:
 #    enabled: true
 #    name: "keycloak-idp-hashedId-mapper" #PLEASE, do not change this

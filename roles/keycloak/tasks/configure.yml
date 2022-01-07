@@ -27,8 +27,10 @@
       username: "{{keycloak_admin.user}}"
       password: "{{keycloak_admin.pass}}"
       grant_type: "password"
-  register: "result"    # token is in "result.json.access_token"
-  tags: "realm_configuration"
+  register: "tokens"    # token is in "tokens.json.access_token"
+  tags:
+    - "realm_configuration"
+    - "wayf_plugin"
 
 
 # configure AUP, realm keys, etc
@@ -65,7 +67,7 @@
         method: PUT
         body_format: json
         headers:
-          Authorization: "Bearer {{ result.json.access_token }}"
+          Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
           alias: "terms_and_conditions"
           name: "Terms and Conditions"
@@ -148,15 +150,19 @@
     - name: Select wayf plugin for login UI
       community.general.keycloak_realm:
         auth_client_id: admin-cli
-        auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
+        auth_keycloak_url: "https://{{ keycloak_proxy_host }}/auth"
         auth_realm: master
         auth_username: "{{keycloak_admin.user}}"
         auth_password: "{{keycloak_admin.pass}}"
-        id: "{{item}}"
-        realm: "{{item}}"
-        login_theme: "{{keycloak_plugins.wayf.module.theme.name}}"
+        id: "{{item.name}}"
+        realm: "{{item.name}}"
+        login_theme: "{{keycloak_plugins.wayf.theme.name}}"
         state: present
-      with_items: "{{keycloak_plugins.wayf.module.theme.add_to_realms}}"
+      with_items: "{{keycloak_plugins.wayf.theme.add_to_realms}}"
       run_once: true
+    - name: "Setting additional theme stuff (config, terms of use)"
+      include_tasks: blocks/configure_theme.yml
+      with_items: "{{keycloak_plugins.wayf.theme.add_to_realms}}"
+
   when: "{{keycloak_plugins.wayf.enabled | default(false)}} == true"
   tags: "wayf_plugin"

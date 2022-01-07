@@ -9,7 +9,7 @@
     method: POST
     body_format: json
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
       name: "{{ item[1].name }}"
       providerId: "{{ item[1].providerId }}"

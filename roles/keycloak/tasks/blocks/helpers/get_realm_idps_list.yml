@@ -5,7 +5,7 @@
     url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances"
     method: GET
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 200
   register: "idps_result"
 

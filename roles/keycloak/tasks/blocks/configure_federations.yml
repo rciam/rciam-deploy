@@ -17,16 +17,16 @@
 - set_fact: # remove the 'mappers' field from the body (if it exists)
     body: '{{  body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
 
-- name: "Configuring federation {{ item[1].alias }}"
-  uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances"
-    method: POST
-    body_format: json
-    headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
-    body:
-      "{{ body }}"
-    status_code: 201
+    - name: "Configuring federation {{ item[1].alias }}"
+      uri:
+        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances"
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          "{{body}}"
+        status_code: 201
 
   #get once more the federation_matches. now federation_matches should contain exactly one object in the list with the internalId and alias of the current federation
 - name: "Initiating federation search in keycloak"
