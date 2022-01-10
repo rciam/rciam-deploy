@@ -1,5 +1,8 @@
 ---
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
 - name: "Add {{keycloak_plugins.wayf.theme.name}} theme's terms of use for the realm {{ item.name }}"
   uri:
     url: "https://{{ keycloak_proxy_host }}/auth/realms/{{ item.name }}/theme-info/terms-of-use"

@@ -1,5 +1,8 @@
 ---
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
 - name: "Configuring IdP: {{item[1].alias}} Get current IdPs list for realm: {{item[0].name}}"
   include_tasks: blocks/helpers/get_realm_idps_list.yml
 
