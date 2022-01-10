@@ -1,5 +1,17 @@
 ---
 
+- name: Add ENV vars in cron.d file
+  cron:
+    name: "{{ item.name }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    env: yes
+    cron_file: "{{ item.filename }}"
+    state: present
+  loop: "{{ comanage_plugins_cron_env | default([]) }}"
+  become: true
+  when: comanage_plugins_cron_env is defined and comanage_plugins_cron_jobs is defined and comanage_plugins_cron_jobs_enabled
+
 - name: Ensure COmanage Registry Plugins cron jobs are installed
   cron:
     name: "{{ item.name }}"
@@ -24,6 +36,6 @@
     state: link
     owner: root
     group: root
-  loop: "{{ comanage_symlinks | default([]) }}"
+  loop: "{{ comanage_plugins_symlinks | default([]) }}"
   become: true
-  when: comanage_symlinks is defined
+  when: comanage_plugins_symlinks is defined
