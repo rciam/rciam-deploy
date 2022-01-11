@@ -12,7 +12,8 @@ keycloak_is_upgrade: false
 
 keycloak_service_user: "keycloak"
 
-keycloak_enable_technology_preview: false
+keycloak_enable_technology_preview: false  # this is for enabling any new experimental features
+keycloak_proxy_subpath: ""  #leave this blank "" if you don't want any (normally, you don't)
 
 keycloak_admin:
   user: "<SET AN ADMIN USER>"

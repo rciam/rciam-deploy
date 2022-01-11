@@ -7,7 +7,7 @@ Type=idle
 Environment=JBOSS_HOME={{keycloak_home}} JBOSS_LOG_DIR={{keycloak_home}}/standalone/log "JAVA_OPTS={{ keycloak_java_opts }}"
 User={{keycloak_service_user}}
 Group={{keycloak_service_user}}
-ExecStart=/bin/bash -c "{{keycloak_home}}/bin/standalone.sh --server-config=standalone-ha.xml -Djboss.bind.address={{ keycloak_bind_address }} -Djboss.bind.address.management={{ keycloak_bind_address }} -Djboss.http.port={{ keycloak_bind_port }} {% if keycloak_enable_technology_preview is defined and keycloak_enable_technology_preview == true %} -Dkeycloak.profile=preview {% endif %}"
+ExecStart=/bin/bash -c "{{keycloak_home}}/bin/standalone.sh --server-config=standalone-ha.xml -Djboss.bind.address={{ keycloak_bind_address }} -Djboss.bind.address.management={{ keycloak_bind_address }} -Djboss.http.port={{ keycloak_bind_port }} {% if keycloak_enable_technology_preview is defined and keycloak_enable_technology_preview == true %} -Dkeycloak.profile=preview {% endif %} "
 TimeoutStartSec=600
 TimeoutStopSec=600
 

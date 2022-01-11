@@ -558,8 +558,8 @@
                 <default-provider>default</default-provider>
                 <provider name="default" enabled="true">
                     <properties>
-                        <property name="frontendUrl" value="${keycloak.frontendUrl:}"/>
-                        <property name="forceBackendUrlToFrontendUrl" value="false"/>
+                        <property name="frontendUrl" {% if keycloak_proxy_subpath is defined and keycloak_proxy_subpath != '' %}value="https://{{keycloak_proxy_host}}{{keycloak_proxy_subpath}}/auth"{% else %}value="${keycloak.frontendUrl:}"{% endif %}/>
+                        <property name="forceBackendUrlToFrontendUrl" {% if keycloak_proxy_subpath is defined and keycloak_proxy_subpath != '' %}value="true"{% else %}value="false"{% endif %}/>
                     </properties>
                 </provider>
             </spi>

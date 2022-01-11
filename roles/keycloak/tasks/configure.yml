@@ -1,4 +1,10 @@
 ---
+- name: Check if there is a proxy subpath and reform the keycloak_proxy_host url
+  set_fact:
+    keycloak_proxy_host: "{{ keycloak_proxy_host }}{{ keycloak_proxy_subpath }}"
+  when: (keycloak_proxy_subpath is defined) and (keycloak_proxy_subpath|length > 0)
+
+
 # this is an important block! Do now remove
 - name: Wait for keycloak to initialize
   block:
