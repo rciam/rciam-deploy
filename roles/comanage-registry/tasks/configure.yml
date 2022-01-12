@@ -112,6 +112,18 @@
   tags:
   - comanage-registry:config:core
 
+- name: Add ENV vars in cron.d file
+  cron:
+    name: "{{ item.name }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    env: yes
+    cron_file: "{{ item.filename }}"
+    state: present
+  loop: "{{ comanage_cron_env | default([]) }}"
+  become: true
+  when: comanage_cron_env is defined and comanage_cron_jobs is defined and comanage_cron_jobs_enabled
+
 - name: Ensure COmanage Registry cron jobs are installed
   cron:
     name: "{{ item.name }}"

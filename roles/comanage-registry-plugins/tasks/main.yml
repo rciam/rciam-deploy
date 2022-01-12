@@ -23,10 +23,10 @@
     file: install.yml
     apply:
       tags:
-        - install
+        - comanage-registry-plugins:install
   loop: "{{ comanage_registry_plugins|flatten(levels=1) }}"
   tags:
-  - install
+  - comanage-registry-plugins:install
 
 # Include configuration tasks
 - name: Include Configure tasks
@@ -34,6 +34,6 @@
     file: configure.yml
     apply:
       tags:
-        - configure
+        - comanage-registry-plugins:configure
   tags:
-    - configure
+    - comanage-registry-plugins:configure
