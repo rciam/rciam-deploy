@@ -1,0 +1,42 @@
+# file: pyff/tasks/install-Debian.yml
+
+---
+
+- name: Ensure dependencies are installed
+  apt:
+    name:
+      - git
+      - python3-venv
+      - python3-pip
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
+  become: yes
+
+- name: Ensure pyff directory exists
+  file:
+    state: directory
+    path: "{{ pyff_working_directory }}"
+    owner: "{{ pyff_default_user }}"
+    group: "{{ pyff_default_group }}"
+    mode: "0750"
+  become: yes
+
+- name: Upgrade pip3
+  pip:
+    name: pip
+    state: latest
+    virtualenv: "{{ pyff_virtual_environment }}"
+    extra_args: --upgrade
+  become: yes
+  become_user: "{{ pyff_default_user }}"
+
+- name: Ensure pyFF is installed in venv
+  pip:
+    name: "pyff=={{ pyff_version }}"
+    virtualenv: "{{ pyff_virtual_environment }}"
+    virtualenv_python: python3
+  become: yes
+  become_user: "{{ pyff_default_user }}"
+

@@ -1,0 +1,33 @@
+- when update:
+    - load:
+{% for url in metadata_urls %}
+        - {{ url }}
+{% endfor %}
+    - select
+    - store:
+        directory: "{{ pyff_working_directory }}/store"
+    - publish:
+        output: "{{ pyff_working_directory }}/publish/metadata.xml"
+        update_store: true
+        hash_link: true
+        urlencode_filenames: true
+    - break
+- when request:
+    - select
+    - pipe:
+        - when accept application/samlmetadata+xml application/xml:
+             - xslt:
+                 stylesheet: tidy.xsl
+             - first
+             - finalize:
+                cacheDuration: PT12H
+                validUntil: P10D
+             - sign:
+                 key: sign.key
+                 cert: sign.crt
+             - emit application/xml
+             - break
+        - when accept application/json:
+             - discojson:
+             - emit application/json:
+             - break
