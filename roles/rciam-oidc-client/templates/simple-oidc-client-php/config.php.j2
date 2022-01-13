@@ -1,0 +1,29 @@
+<?php
+// index.php interface configuration
+$title = "{{ item.config.title }}";
+$img = "{{ item.config.logo }}";
+$scope_info = "{{ item.config.scope_info }}";
+
+// Client configuration
+$issuer = "{{ item.config.issuer }}";
+$client_id = "{{ item.config.client_id }}";
+{% if item.config.client_secret is defined and item.config.client_secret != None %}
+$client_secret = "{{ item.config.client_secret }}";  // comment if you are using PKCE
+{% endif %}
+{% if item.config.pkce_code_challenge_method is defined and item.config.pkce_code_challenge_method != None %}
+$pkceCodeChallengeMethod = "{{ item.config.pkce_code_challenge_method }}";   // uncomment to use PKCE
+{% endif %}
+$redirect_url = "{{ item.config.redirect_url }}";
+// add scopes as keys and a friendly message of the scope as value
+$scopesDefine = array(
+{% for scope in item.config.scope_definitions %}
+    "{{ scope.name }}" => "{{ scope.definition }}",
+{% endfor %}
+);
+// refreshtoken.php interface configuration
+$refresh_token_note = "{{ item.config.refresh_token_note }}";
+$access_token_note = "{{ item.config.access_token_note }}";
+$manage_token_note = "{{ item.config.manage_token_note }}";
+$manageTokens = "{{ item.config.manage_token_link }}";
+$sessionName = "{{ item.config.session_name }}";
+$sessionLifetime = {{ item.config.session_lifetime }};   // must be equal to access token validation time in seconds
