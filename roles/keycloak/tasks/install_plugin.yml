@@ -40,7 +40,7 @@
             namespaces:
               srv: "{{ namespaces.domain }}"
               sub: "{{ namespaces.domain_server }}"
-          when: "{{ item.value.module.theme is defined }}"
+          when: item.value.theme is defined
 
       when: item.value.module is defined
 

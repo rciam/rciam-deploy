@@ -1,5 +1,8 @@
 ---
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
 - name: "Get current keys list of realm: {{item[0].name}}"
   include_tasks: blocks/helpers/get_realm_keys.yml
 
@@ -9,7 +12,7 @@
     method: POST
     body_format: json
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
       name: "{{ item[1].name }}"
       providerId: "{{ item[1].providerId }}"

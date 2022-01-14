@@ -1,5 +1,8 @@
 ---
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
 - name: "Get current IdPs list of realm: {{item[0].name}}"
   include_tasks: blocks/helpers/get_realm_idps_list.yml
 
@@ -14,7 +17,7 @@
         method: POST
         body_format: json
         headers:
-          Authorization: "Bearer {{ result.json.access_token }}"
+          Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
           fromUrl: "{{ item[1].metadataUrl }}"
           providerId: "saml"
@@ -27,7 +30,7 @@
         method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
         body_format: json
         headers:
-          Authorization: "Bearer {{ result.json.access_token }}"
+          Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
           "{{ { 'config': saml_idp_result.json } | combine( item[1].data, recursive=True ) }}"
         status_code: "{% if new_idp %}201{% else %}204{% endif %}"

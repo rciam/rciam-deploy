@@ -1,0 +1,28 @@
+---
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Add {{keycloak_plugins.wayf.theme.name}} theme's terms of use for the realm {{ item.name }}"
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/realms/{{ item.name }}/theme-info/terms-of-use"
+    method: POST
+    body_format: raw
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+      Content-Type: text/html
+    body: "{{ item.terms }}"
+    status_code: 201
+  when: not item.terms is undefined
+- name: "Add {{keycloak_plugins.wayf.theme.name}} theme's configuration for the realm {{ item.name }}"
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/realms/{{ item.name }}/theme-info/theme-config"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ item.config }}"
+    status_code: 201
+  when: not item.config is undefined
+
+

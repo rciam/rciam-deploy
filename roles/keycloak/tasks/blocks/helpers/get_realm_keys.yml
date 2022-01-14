@@ -4,7 +4,7 @@
     url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/components?parent=demo&type=org.keycloak.keys.KeyProvider"
     method: GET
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 200
   register: "keys_result"
 

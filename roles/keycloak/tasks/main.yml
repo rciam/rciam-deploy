@@ -3,11 +3,14 @@
 ## this is to check if it's about upgrading (upgrade process is handled internally by keycloak/liquibase)
 - name:
   block:
-  - name: Stop running instance
+  - name: Populate service facts
+    ansible.builtin.service_facts:
+  - name: Stop running keycloak instance (if exists)
     service:
       name: keycloak
-      state: restarted
+      state: stopped
     become: yes
+    when: "'keycloak.service' in services"
   - name: Generate timestamp
     set_fact:
       file_timestamp: "{{ ansible_date_time.iso8601_basic_short }}"

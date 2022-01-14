@@ -1,5 +1,8 @@
 ---
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
 - name: "Configuring IdP: {{item[1].alias}} Get current IdPs list for realm: {{item[0].name}}"
   include_tasks: blocks/helpers/get_realm_idps_list.yml
 
@@ -12,7 +15,7 @@
     method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
     body_format: json
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
       "{{item[1]}}"
     status_code: "{% if new_idp %}201{% else %}204{% endif %}"

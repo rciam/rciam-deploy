@@ -1,5 +1,8 @@
 ---
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
 - name: "Initiating federation search in keycloak"
   include_tasks: blocks/helpers/search_realm_federations.yml
 
@@ -23,9 +26,9 @@
     method: POST
     body_format: json
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
-      "{{ body }}"
+      "{{body}}"
     status_code: 201
 
   #get once more the federation_matches. now federation_matches should contain exactly one object in the list with the internalId and alias of the current federation

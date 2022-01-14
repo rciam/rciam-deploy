@@ -1,5 +1,8 @@
 ---
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
 - name: "Get current mappers of idp: {{item[0].name}}"
   include_tasks: blocks/helpers/get_idp_mappers_list.yml
 
@@ -25,7 +28,7 @@
     method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
     body_format: json
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
       "{{ body }}"
     status_code: "{% if mapper_exists %}204{% else %}201{% endif %}"
