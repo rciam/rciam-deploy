@@ -250,6 +250,19 @@ config:
               - "attribute-value-1"
             attribute-name-2:
               - "attribute-value-2"
+#          mappers:
+#            - name: "test_mapper"
+#              identityProviderMapper: hardcoded-attribute-idp-mapper
+#              config:
+#                syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#                attribute: "attrib1"
+#                attribute.value: "value1"
+#            - name: "test_mapper_2"
+#              identityProviderMapper: hardcoded-attribute-idp-mapper
+#              config:
+#                syncMode: INHERIT #one of {INHERIT , LEGACY, IMPORT, FORCE}
+#                attribute: "attrib22222222222"
+#                attribute.value: "value22222222"
 #      saml_idps:
 #        - metadataUrl: "<THE REMOTE IDP METADATA XML URL>"
 #          data:
