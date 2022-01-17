@@ -7,10 +7,17 @@
     state: present
   become: true
 
+- name: Create temp directories in /tmp
+  file:
+    path: "/tmp/{{ item.name }}"
+    state: directory
+  become: true
+  loop: "{{ rciam_oidc_clients }}"
+
 - name: Download & unarchive webapp to /tmp
   unarchive:
     src: "{{ item.release }}"
-    dest: "/tmp/"
+    dest: "/tmp/{{ item.name }}"
     creates: "{{ item.path }}/{{ item.name }}/{{ item.version }}"
     remote_src: true
   become: true
@@ -22,16 +29,12 @@
     - name: Backup old webapp version [1/4]
       command:
         cmd: "mv {{ item.item.path }}/{{ item.item.name }} {{ item.item.path }}/{{ item.item.name }}.{{ ansible_date_time.iso8601 }}"
-        removes: "{{ item.item.path }}/{{ item.item.name }}/{{ item.item.version }}"
+        removes: "{{ item.item.path }}/{{ item.item.name }}"
       become: true
       loop: "{{ zip_downloaded.results }}"
       when: item.changed or not (item.changed or item.failed or item.skipped)
     - name: Move webapp from /tmp to target location [2/4]
-      # command: "mv /tmp/{{ item.item.unzip_filename }} {{ item.item.path }}/{{ item.item.name }}"
-      copy:
-        src: "/tmp/{{ item.item.unzip_filename }}"
-        dest: "{{ item.item.path }}/{{ item.item.name }}"
-        remote_src: true
+      command: "mv /tmp/{{ item.item.name }}/{{ item.item.unzip_filename }} {{ item.item.path }}/{{ item.item.name }}"
       become: true
       loop: "{{ zip_downloaded.results }}"
       when: item.changed or not (item.changed or item.failed or item.skipped)
@@ -46,11 +49,11 @@
       become: true
       loop: "{{ zip_downloaded.results }}"
       when: item.changed or not (item.changed and item.failed)
-    - name: Clean downloaded files from /tmp [4/4]
-      file:
-        path: "/tmp/{{ item.item.unzip_filename }}"
-        state: absent
-      become: true
-      loop: "{{ zip_downloaded.results }}"
-      when: item.changed or not (item.changed and item.failed)
   when: zip_downloaded.changed
+
+- name: Clean temp directories from /tmp
+  file:
+    path: "/tmp/{{ item.name }}"
+    state: absent
+  become: true
+  loop: "{{ rciam_oidc_clients }}"
