@@ -12,8 +12,11 @@ keycloak_is_upgrade: false
 
 keycloak_service_user: "keycloak"
 
-keycloak_enable_technology_preview: false  # this is for enabling any new experimental features
-keycloak_proxy_subpath: ""  #leave this blank "" if you don't want any (normally, you don't)
+# Extra run params used in the keycloak systemd service. Multiple `-D` params can be specified.  E.g. uncomment the following to enable technology preview features
+#keycloak_extra_run_params: "-Dkeycloak.profile=preview"
+
+keycloak_base_url_path: "auth" # The base URL path for frontend and backend requests. Note that this cannot be empty.
+
 
 keycloak_admin:
   user: "<SET AN ADMIN USER>"
@@ -25,7 +28,7 @@ keycloak_db:
   pass: "<DB USER PASSWORD>"
 
 keycloak_db_host: "{{ groups['db'][0] }}"
-keycloak_proxy_host: "{{ groups['proxy'][0] }}"
+keycloak_proxy_host: "http://localhost:{{ keycloak_bind_port }}/{{ keycloak_base_url_path }}"
 
 keycloak_home: "/srv/keycloak"
 

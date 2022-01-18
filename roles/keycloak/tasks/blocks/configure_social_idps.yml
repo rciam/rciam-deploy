@@ -11,7 +11,7 @@
 
 - name: "{% if new_idp %}Add{% else %}Update{% endif %} idp: {{ item[1].alias }}"
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{item[1].alias}}{% endif %}"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{item[1].alias}}{% endif %}"
     method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
     body_format: json
     headers:

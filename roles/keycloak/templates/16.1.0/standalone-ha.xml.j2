@@ -485,7 +485,7 @@
             <jpa default-extended-persistence-inheritance="DEEP"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:keycloak-server:1.1">
-            <web-context>auth</web-context>
+            <web-context>{{ keycloak_base_url_path }}</web-context>
             <providers>
                 <provider>
                     classpath:${jboss.home.dir}/providers/*
@@ -558,8 +558,8 @@
                 <default-provider>default</default-provider>
                 <provider name="default" enabled="true">
                     <properties>
-                        <property name="frontendUrl" {% if keycloak_proxy_subpath is defined and keycloak_proxy_subpath != '' %}value="https://{{keycloak_proxy_host}}{{keycloak_proxy_subpath}}/auth"{% else %}value="${keycloak.frontendUrl:}"{% endif %}/>
-                        <property name="forceBackendUrlToFrontendUrl" {% if keycloak_proxy_subpath is defined and keycloak_proxy_subpath != '' %}value="true"{% else %}value="false"{% endif %}/>
+                        <property name="frontendUrl" value="${keycloak.frontendUrl:}"/>
+                        <property name="forceBackendUrlToFrontendUrl" value="true"/>
                     </properties>
                 </provider>
             </spi>

@@ -1,9 +1,4 @@
 ---
-- name: Check if there is a proxy subpath and reform the keycloak_proxy_host url
-  set_fact:
-    keycloak_proxy_host: "{{ keycloak_proxy_host }}{{ keycloak_proxy_subpath }}"
-  when: (keycloak_proxy_subpath is defined) and (keycloak_proxy_subpath|length > 0)
-
 
 # this is an important block! Do now remove
 - name: Wait for keycloak to initialize
@@ -37,7 +32,7 @@
     - name: Ensure that realm already exists
       community.general.keycloak_realm:
         auth_client_id: admin-cli
-        auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
+        auth_keycloak_url: "{{ keycloak_proxy_host }}"
         auth_realm: master
         display_name_html: "<div class=\"kc-logo-text\"><span>{{item.displayNameHtml}}</span></div>"
         auth_username: "{{keycloak_admin.user}}"
@@ -60,7 +55,7 @@
 
     - name: Configure AUP (Terms and Conditions)
       uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
         method: PUT
         body_format: json
         headers:
@@ -83,7 +78,7 @@
     - name: Setup SMTP
       community.general.keycloak_realm:
         auth_client_id: admin-cli
-        auth_keycloak_url: https://{{ keycloak_proxy_host }}/auth
+        auth_keycloak_url: "{{ keycloak_proxy_host }}"
         auth_realm: master
         auth_username: "{{keycloak_admin.user}}"
         auth_password: "{{keycloak_admin.pass}}"
@@ -147,7 +142,7 @@
     - name: Select wayf plugin for login UI
       community.general.keycloak_realm:
         auth_client_id: admin-cli
-        auth_keycloak_url: "https://{{ keycloak_proxy_host }}/auth"
+        auth_keycloak_url: "{{ keycloak_proxy_host }}"
         auth_realm: master
         auth_username: "{{keycloak_admin.user}}"
         auth_password: "{{keycloak_admin.pass}}"

@@ -13,7 +13,7 @@
   block:
     - name: "Get config from url: {{ item[1].metadataUrl }}"
       uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/import-config"
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/import-config"
         method: POST
         body_format: json
         headers:
@@ -26,7 +26,7 @@
 
     - name: "Setup saml IdP {{ item[1].data.alias }}"
       uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{item[1].data.alias}}{% endif %}"
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{item[1].data.alias}}{% endif %}"
         method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
         body_format: json
         headers:

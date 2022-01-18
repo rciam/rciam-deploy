@@ -24,7 +24,7 @@
 
 - name: "{% if mapper_exists %}Update{% else %}Add{% endif %} idp mapper: {{ item[1].name }} for idp: {{ item[1].identityProviderAlias }}"
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances/{{body.identityProviderAlias}}/mappers{% if mapper_exists %}/{{body.id}}{% endif %}"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{body.identityProviderAlias}}/mappers{% if mapper_exists %}/{{body.id}}{% endif %}"
     method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
     body_format: json
     headers:

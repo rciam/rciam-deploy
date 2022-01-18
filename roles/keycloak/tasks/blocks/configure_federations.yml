@@ -22,7 +22,7 @@
 
 - name: "Configuring federation {{ item[1].alias }}"
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances"
     method: POST
     body_format: json
     headers:
@@ -40,7 +40,7 @@
 
     - name: "Get list of federation {{ item[1].alias }} mappers"
       uri:
-        url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers"
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers"
         method: GET
         headers:
           Authorization: "Bearer {{ result.json.access_token }}"

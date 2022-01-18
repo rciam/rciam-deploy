@@ -8,7 +8,7 @@
 
 - name: "Install {{ item[1].providerId }} key with name '{{ item[1].name }}'"
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/components"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/components"
     method: POST
     body_format: json
     headers:
