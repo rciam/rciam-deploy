@@ -2,7 +2,7 @@
 
 - name: "Get list of idp's mappers"
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ item[1].identityProviderAlias }}/mappers"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ item[1].identityProviderAlias }}/mappers"
     method: GET
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"

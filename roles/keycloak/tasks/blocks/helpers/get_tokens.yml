@@ -2,7 +2,7 @@
 
 - name: Acquire tokens
   uri:
-    url: https://{{ keycloak_proxy_host }}/auth/realms/master/protocol/openid-connect/token
+    url: "{{ keycloak_proxy_host }}/realms/master/protocol/openid-connect/token"
     method: POST
     body_format: form-urlencoded
     body:
