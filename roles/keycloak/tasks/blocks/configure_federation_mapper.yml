@@ -30,7 +30,19 @@
     method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
     body_format: json
     headers:
-      Authorization: "Bearer {{ result.json.access_token }}"
+      Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
       "{{ body }}"
     status_code: "{% if mapper_exists %}204{% else %}201{% endif %}"
+
+
+# this is meant to run after a successful first deployment of the federations and the mappers (that's why the "when: mapper_exists")
+# You should execute it only when you are sure that the federation(s) are fully populated
+- name: Apply mappers (propagate) to federation IdP(s)
+  uri:
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{body.id}}/idp/add"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: 204
+  when: mapper_exists

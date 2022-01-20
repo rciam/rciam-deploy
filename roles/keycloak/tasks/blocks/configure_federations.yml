@@ -43,7 +43,7 @@
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers"
         method: GET
         headers:
-          Authorization: "Bearer {{ result.json.access_token }}"
+          Authorization: "Bearer {{ tokens.json.access_token }}"
         status_code: 200
       register: existing_mappers
 
