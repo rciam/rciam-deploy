@@ -54,7 +54,7 @@
 
     - name: Setup federation mapper
       include_tasks: blocks/configure_federation_mapper.yml
-      with_items: "{{ item[1].mappers }}"
+      with_items: "{{ item[1].mappers | default([]) }}"
       loop_control:
         loop_var: mapper
       run_once: true
