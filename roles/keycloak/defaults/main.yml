@@ -234,6 +234,20 @@ config:
 #            display.on.consent.screen: "true"
 #            gui.order: "4"
 #            consent.screen.text: "aaaaa1"
+#          mappers:
+#            - name: "dummymapper"
+#              protocol: "openid-connect"
+#              protocolMapper: "oidc-usermodel-attribute-mapper"
+#              config:
+#                access.token.claim: "true"
+#                aggregate.attrs: ""
+#                claim.name: "claim11"
+#                id.token.claim: "true"
+#                introspection.response.claim: "false"
+#                jsonType.label: "String"
+#                multivalued: ""
+#                user.attribute: "attrib11"
+#                userinfo.token.claim: "true"
       federations:
         - providerId: "saml" # DO NOT CHANGE THIS!
           url: "<THE URL OF THE FEDERATION's XML>"

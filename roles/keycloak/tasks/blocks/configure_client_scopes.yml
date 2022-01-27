@@ -7,11 +7,11 @@
   include_tasks: blocks/helpers/get_client_scopes_list.yml
 
 - set_fact:
-    client_scope_exists: "{{client_scope_match | length > 0 }}"
+    client_scope_exists: "{{client_scope_matches | length > 0 }}"
 
 - set_fact:
     additional_info:
-      id: "{{client_scope_match[0].id}}"
+      id: "{{client_scope_matches[0].id}}"
   when: client_scope_exists
 
 - set_fact:
@@ -21,6 +21,9 @@
 - set_fact:
     body: "{{ item[1] }}"
   when: not client_scope_exists
+
+- set_fact: # remove the 'mappers' field from the body (if it exists)
+    body: '{{  body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
 
 - name: "{% if client_scope_exists %}Update{% else %}Add{% endif %} client scope: {{ item[1].name }} in realm: {{item[0].name}}"
   uri:
@@ -32,3 +35,17 @@
     body:
       "{{ body }}"
     status_code: "{% if client_scope_exists %}204{% else %}201{% endif %}"
+
+# now update its mappers
+
+- name: "Get again the client_scopes if there was a newly created just before of realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_client_scopes_list.yml
+  when: not client_scope_exists
+
+- name: "Setup mappers of the client scope {{ item[1].name }} of the realm: {{item[0].name}}"
+  include_tasks: blocks/configure_client_scope_mappers.yml
+  with_items: "{{ item[1].mappers | default([]) }}"
+  loop_control:
+    loop_var: mapper
+  run_once: true
+  when: "item[1].mappers | default([]) | length > 0"
