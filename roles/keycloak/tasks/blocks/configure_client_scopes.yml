@@ -1,0 +1,34 @@
+---
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Get current client scopes of realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_client_scopes_list.yml
+
+- set_fact:
+    client_scope_exists: "{{client_scope_match | length > 0 }}"
+
+- set_fact:
+    additional_info:
+      id: "{{client_scope_match[0].id}}"
+  when: client_scope_exists
+
+- set_fact:
+    body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
+  when: client_scope_exists
+
+- set_fact:
+    body: "{{ item[1] }}"
+  when: not client_scope_exists
+
+- name: "{% if client_scope_exists %}Update{% else %}Add{% endif %} client scope: {{ item[1].name }} in realm: {{item[0].name}}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes{% if client_scope_exists %}/{{body.id}}{% endif %}"
+    method: "{% if client_scope_exists %}PUT{% else %}POST{% endif %}"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      "{{ body }}"
+    status_code: "{% if client_scope_exists %}204{% else %}201{% endif %}"

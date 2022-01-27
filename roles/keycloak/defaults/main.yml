@@ -225,6 +225,15 @@ config:
 #        auth_enabled: false
 #        auth_username: ""
 #        auth_password: ""
+#      client_scopes:
+#        - name: "dummy"
+#          description: "this is a dummy one"
+#          protocol: "openid-connect"
+#          attributes:
+#            include.in.token.scope: "true"
+#            display.on.consent.screen: "true"
+#            gui.order: "4"
+#            consent.screen.text: "aaaaa1"
       federations:
         - providerId: "saml" # DO NOT CHANGE THIS!
           url: "<THE URL OF THE FEDERATION's XML>"

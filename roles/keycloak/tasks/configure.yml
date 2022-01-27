@@ -134,6 +134,14 @@
         - skip_missing: True
       run_once: true
 
+    - name: Setup client scopes
+      include_tasks: blocks/configure_client_scopes.yml
+      with_subelements:
+        - "{{config.realms | default([])}} "
+        - "client_scopes"
+        - skip_missing: True
+      run_once: true
+
   tags: "realm_configuration"
 
 ### wayf plugin configuration
