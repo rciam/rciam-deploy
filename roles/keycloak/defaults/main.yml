@@ -234,6 +234,7 @@ config:
 #            display.on.consent.screen: "true"
 #            gui.order: "4"
 #            consent.screen.text: "aaaaa1"
+#          set_as: "default"   # could be one of: {"default", "optional"}. Leave it commented out to skip this setting
 #          mappers:
 #            - name: "dummymapper"
 #              protocol: "openid-connect"
