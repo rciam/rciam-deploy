@@ -1,0 +1,88 @@
+---
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Get current client scopes of realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_client_scopes_list.yml
+
+- set_fact:
+    client_scope_exists: "{{client_scope_matches | length > 0 }}"
+
+- set_fact:
+    additional_info:
+      id: "{{client_scope_matches[0].id}}"
+  when: client_scope_exists
+
+- set_fact:
+    body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
+  when: client_scope_exists
+
+- set_fact:
+    body: "{{ item[1] }}"
+  when: not client_scope_exists
+
+- set_fact: # remove the 'mappers' field from the body (if it exists)
+    body: '{{  body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
+
+- set_fact: # remove the 'set_as' field from the body (if it exists)
+    body: '{{  body | dict2items | rejectattr("key", "equalto", "set_as") | list | items2dict }}'
+
+- name: "{% if client_scope_exists %}Update{% else %}Add{% endif %} client scope: {{ item[1].name }} in realm: {{item[0].name}}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes{% if client_scope_exists %}/{{body.id}}{% endif %}"
+    method: "{% if client_scope_exists %}PUT{% else %}POST{% endif %}"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      "{{ body }}"
+    status_code: "{% if client_scope_exists %}204{% else %}201{% endif %}"
+
+- name: "Get again the client_scopes if there was a newly created just before of realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_client_scopes_list.yml
+  when: not client_scope_exists
+
+
+
+# set default or optional (if defined)
+- name: "Configuring default/optional client-scope (tasks block)"
+  block:
+
+    - name: "Clear the default client scopes list"
+      uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ client_scope_mode }}-client-scopes/{{ client_scope_matches[0].id }}"
+        method: "DELETE"
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        status_code: "204"
+      with_items:
+        - optional
+        - default
+      loop_control:
+        loop_var: client_scope_mode
+      ignore_errors: yes
+
+    - name: "Setting the client scope as '{{ item[1].set_as }}'"
+      uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ item[1].set_as }}-client-scopes/{{ client_scope_matches[0].id }}"
+        method: "PUT"
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          { realm: "{{ item[0].name }}", clientScopeId: "{{ client_scope_matches[0].id }}" }
+        status_code: "204"
+
+
+  when: not item[1].set_as is undefined
+
+
+# now update its mappers
+- name: "Setup mappers of the client scope {{ item[1].name }} of the realm: {{item[0].name}}"
+  include_tasks: blocks/configure_client_scope_mappers.yml
+  with_items: "{{ item[1].mappers | default([]) }}"
+  loop_control:
+    loop_var: mapper
+  run_once: true
+  when: "item[1].mappers | default([]) | length > 0"
