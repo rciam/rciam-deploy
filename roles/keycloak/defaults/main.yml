@@ -80,7 +80,7 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.
 ### also, you can just comment out any of the {key, aup, smtp} sub trees and let the remaining get configured
-config:
+keycloak_config:
   realms:
     - name: master
       verifyEmail: true

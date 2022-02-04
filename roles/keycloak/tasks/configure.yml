@@ -42,13 +42,13 @@
         verify_email: "{{item.verifyEmail}}"
         enabled: true
         state: present
-      with_items: "{{config.realms | default([])}}"
+      with_items: "{{keycloak_config.realms | default([])}}"
       run_once: true
 
     - name: Configure keys
       include_tasks: blocks/configure_keys.yml
       with_subelements:
-        - "{{config.realms | default([])}} "
+        - "{{keycloak_config.realms | default([])}} "
         - "keys"
         - skip_missing: True
       run_once: true
@@ -71,7 +71,7 @@
             reset_every: "{{ item.aup.reset_every }}"
             reset_every_multiplier: "{{ item.aup.reset_every_multiplier }}"
         status_code: 204
-      with_items: "{{ config.realms | default([]) }}"
+      with_items: "{{ keycloak_config.realms | default([]) }}"
       when: not item.aup is undefined
       run_once: true
 
@@ -98,14 +98,14 @@
           user: "{{ item.smtp.auth_username }}"
           password: "{{ item.smtp.auth_password }}"
         state: present
-      with_items: "{{config.realms | default([])}}"
+      with_items: "{{keycloak_config.realms | default([])}}"
       when: not item.smtp is undefined
       run_once: true
 
     - name: Setup federations
       include_tasks: blocks/configure_federations.yml
       with_subelements:
-        - "{{config.realms | default([])}} "
+        - "{{keycloak_config.realms | default([])}} "
         - "federations"
         - skip_missing: True
       run_once: true
@@ -113,7 +113,7 @@
     - name: Setup social IdPs
       include_tasks: blocks/configure_social_idps.yml
       with_subelements:
-        - "{{config.realms | default([])}} "
+        - "{{keycloak_config.realms | default([])}} "
         - "social_idps"
         - skip_missing: True
       run_once: true
@@ -121,7 +121,7 @@
     - name: Setup saml IdPs
       include_tasks: blocks/configure_saml_idps.yml
       with_subelements:
-        - "{{config.realms | default([])}} "
+        - "{{keycloak_config.realms | default([])}} "
         - "saml_idps"
         - skip_missing: True
       run_once: true
@@ -129,7 +129,7 @@
     - name: Setup IdP mappers
       include_tasks: blocks/configure_idp_mappers.yml
       with_subelements:
-        - "{{config.realms | default([])}} "
+        - "{{keycloak_config.realms | default([])}} "
         - "idp_mappers"
         - skip_missing: True
       run_once: true
