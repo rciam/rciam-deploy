@@ -156,5 +156,7 @@
       include_tasks: blocks/configure_theme.yml
       with_items: "{{keycloak_plugins.wayf.theme.add_to_realms}}"
 
-  when: "{{keycloak_plugins.wayf.enabled | default(false)}} == true"
+  when: wayf_enabled == true
+  vars:
+    wayf_enabled: "{{keycloak_plugins.wayf.enabled | default(false)}}"
   tags: "wayf_plugin"
