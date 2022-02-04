@@ -6,22 +6,22 @@
 
         - name: "Create plugin dir with parent directories (for plugin: {{ item.value.name }})"
           file:
-            path: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main"
+            path: "{{ keycloak_home }}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main"
             state: directory
 
         - name: "Download plugin jar (of plugin: {{ item.value.name }})"
           get_url:
             url: "{{ item.value.module.jar_url }}"
-            dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+            dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
 
         - name: "Install module.xml (for plugin: {{ item.value.name }})"
           get_url:
             url: "{{ item.value.module.modulexml_url }}"
-            dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+            dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
 
         - name: "Setup keycloak xml providers (for plugin: {{ item.value.name }})"
           xml:
-            path: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
+            path: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
             xpath: /srv:server/srv:profile/sub:subsystem/sub:providers
             input_type: xml
             add_children:
@@ -32,7 +32,7 @@
 
         - name: "Setup keycloak xml theme modules (for plugin: {{ item.value.name }})"
           xml:
-            path: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
+            path: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
             xpath: /srv:server/srv:profile/sub:subsystem/sub:theme
             input_type: xml
             add_children:

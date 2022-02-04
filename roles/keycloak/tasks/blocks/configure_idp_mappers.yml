@@ -3,15 +3,15 @@
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Get current mappers of idp: {{item[0].name}}"
+- name: "Get current mappers of idp: {{ item[0].name }}"
   include_tasks: blocks/helpers/get_idp_mappers_list.yml
 
 - set_fact:
-    mapper_exists: "{{idp_mapper_match | length > 0 }}"
+    mapper_exists: "{{ idp_mapper_match | length > 0 }}"
 
 - set_fact:
     additional_info:
-      id: "{{idp_mapper_match[0].id}}"
+      id: "{{ idp_mapper_match[0].id }}"
   when: mapper_exists
 
 - set_fact:
@@ -24,7 +24,7 @@
 
 - name: "{% if mapper_exists %}Update{% else %}Add{% endif %} idp mapper: {{ item[1].name }} for idp: {{ item[1].identityProviderAlias }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{body.identityProviderAlias}}/mappers{% if mapper_exists %}/{{body.id}}{% endif %}"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ body.identityProviderAlias }}/mappers{% if mapper_exists %}/{{ body.id }}{% endif %}"
     method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
     body_format: json
     headers:

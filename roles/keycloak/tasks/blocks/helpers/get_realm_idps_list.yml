@@ -10,4 +10,4 @@
   register: "idps_result"
 
 - set_fact:
-    idps_list: "{{idps_result.json | json_query('[].alias')}}"
+    idps_list: "{{ idps_result.json | json_query('[].alias') }}"

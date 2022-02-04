@@ -15,10 +15,10 @@
     set_fact:
       file_timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
   - name: Move previous installation (folder will be named keycloak-previous-{runtime_timestamp} at keycloak_home)
-    command: "mv {{keycloak_home}} {{keycloak_home}}/../keycloak-previous-{{ file_timestamp }}"
+    command: "mv {{ keycloak_home }} {{ keycloak_home }}/../keycloak-previous-{{ file_timestamp }}"
     args:
-      removes: "{{keycloak_home}}"
-      creates: "{{keycloak_home}}/../keycloak-previous-{{ file_timestamp }}"
+      removes: "{{ keycloak_home }}"
+      creates: "{{ keycloak_home }}/../keycloak-previous-{{ file_timestamp }}"
     become: yes
   when: keycloak_is_upgrade
 
@@ -47,7 +47,7 @@
 ### create keycloak_service_user
 - name: Create Keycloak service user/group
   user:
-    name: "{{keycloak_service_user}}"
+    name: "{{ keycloak_service_user }}"
     home: /nonexistent
     shell: /usr/sbin/nologin
     system: yes
@@ -66,7 +66,7 @@
         state: directory
     - name: Download keycloak archive file
       get_url:
-        url: "{{keycloak_archive_url}}"
+        url: "{{ keycloak_archive_url }}"
         dest: "/tmp/keycloak_archive"
         timeout: 30
     - name: Compute sha1 hash of archive
@@ -108,17 +108,17 @@
       register: find_result
     - name: Remove any previous installation
       ansible.builtin.file:
-        path: "{{keycloak_home}}"
+        path: "{{ keycloak_home }}"
         state: absent
     - name: Move extracted keycloak to final keycloak folder
-      command: "mv {{find_result.files[0].path}} {{keycloak_home}}"
+      command: "mv {{ find_result.files[0].path }} {{ keycloak_home }}"
       args:
-        removes: "{{find_result.files[0].path}}"
-        creates: "{{keycloak_home}}"
+        removes: "{{ find_result.files[0].path }}"
+        creates: "{{ keycloak_home }}"
 
     - name: Store previous sha1
       copy:
-        dest: "{{keycloak_home}}/sha1"
+        dest: "{{ keycloak_home }}/sha1"
         content: "{{ keycloak_sha1.stat.checksum }}"
     become: yes
     when: not is_same_archive
@@ -137,16 +137,16 @@
   block:
   - name: create postresql plugin dir with parent directories
     file:
-      path: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main"
+      path: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main"
       state: directory
   - name: Download postgresql JDBC driver
     get_url:
-      url: "https://jdbc.postgresql.org/download/{{keycloak_postgresql_jar_name}}"
-      dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main"
+      url: "https://jdbc.postgresql.org/download/{{ keycloak_postgresql_jar_name }}"
+      dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main"
   - name: Installing postgresql plugin
     template:
       src: templates/module.xml.j2
-      dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
+      dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
   become: yes
   tags: "keycloak:postgresql_plugin"
 
@@ -155,17 +155,17 @@
 - name: Installing keycloak configuration (standalone-ha.xml)
   template:
     mode: 0644
-    src: templates/{{keycloak_version}}/standalone-ha.xml.j2
-    dest: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
+    src: "templates/{{ keycloak_version }}/standalone-ha.xml.j2"
+    dest: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
   become: yes
   tags: "keycloak:install_standaloneha"
 
 ##### Set keycloak working dir and logs writable for service user
-- name: "Setting standalone folder writable for user: {{keycloak_service_user}} - where the logs and it's internal temporary files are created"
+- name: "Setting standalone folder writable for user: {{ keycloak_service_user }} - where the logs and it's internal temporary files are created"
   file:
-    dest: "{{keycloak_home}}/standalone"
-    owner: "{{keycloak_service_user}}"
-    group: "{{keycloak_service_user}}"
+    dest: "{{ keycloak_home }}/standalone"
+    owner: "{{ keycloak_service_user }}"
+    group: "{{ keycloak_service_user }}"
     recurse: yes
   become: yes
   tags: "keycloak:setup_file_permissions"
@@ -175,10 +175,10 @@
   block:
   - name: Remove file (delete file if exists)
     ansible.builtin.file:
-      path: "{{keycloak_home}}/standalone/configuration/keycloak-add-user.json"
+      path: "{{ keycloak_home }}/standalone/configuration/keycloak-add-user.json"
       state: absent
   - name: Create admin user
-    shell: "{{keycloak_home}}/bin/add-user-keycloak.sh -u {{ keycloak_admin.user }} -p {{ keycloak_admin.pass }}"
+    shell: "{{ keycloak_home }}/bin/add-user-keycloak.sh -u {{ keycloak_admin.user }} -p {{ keycloak_admin.pass }}"
     args:
       executable: /bin/bash
   become: yes

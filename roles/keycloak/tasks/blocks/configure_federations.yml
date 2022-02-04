@@ -7,11 +7,11 @@
   include_tasks: blocks/helpers/search_realm_federations.yml
 
 - set_fact:
-    federation_exists: "{{realm_federation_matches | length > 0 }}"
+    federation_exists: "{{ realm_federation_matches | length > 0 }}"
 
 - set_fact:
     additional_info:
-      internalId: "{{realm_federation_matches[0].internalId}}"
+      internalId: "{{ realm_federation_matches[0].internalId }}"
   when: federation_exists
 
 - set_fact:
@@ -28,14 +28,14 @@
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
-      "{{body}}"
+      "{{ body }}"
     status_code: 201
 
   #get once more the federation_matches. now federation_matches should contain exactly one object in the list with the internalId and alias of the current federation
 - name: "Initiating federation search in keycloak"
   include_tasks: blocks/helpers/search_realm_federations.yml
 
-- name: "Configuring mappers of the federation {{item[1].alias}} of the realm: {{item[0].name}}"
+- name: "Configuring mappers of the federation {{ item[1].alias }} of the realm: {{ item[0].name }}"
   block:
 
     - name: "Get list of federation {{ item[1].alias }} mappers"
@@ -48,7 +48,7 @@
       register: existing_mappers
 
     - set_fact:
-        existing_mappers_name_id: "{{existing_mappers.json | json_query(query) | default([]) }}"
+        existing_mappers_name_id: "{{ existing_mappers.json | json_query(query) | default([]) }}"
       vars:
         query: '[].{name: name, id: id }'
 

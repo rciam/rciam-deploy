@@ -6,14 +6,14 @@
   #wait for port to open
   - name: Waiting for service port to be opened...
     wait_for:
-      host: "{{ansible_facts.default_ipv4.address}}"
+      host: "{{ ansible_facts.default_ipv4.address }}"
       port: 8080
       delay: 10
       timeout: 180
   #wait for service to respond
   - name: Waiting for service to be up and running...
     uri:
-      url: "http://{{ansible_facts.default_ipv4.address}}:8080"
+      url: "http://{{ ansible_facts.default_ipv4.address }}:8080"
       status_code: "200"
       timeout: 600
 
@@ -34,21 +34,21 @@
         auth_client_id: admin-cli
         auth_keycloak_url: "{{ keycloak_proxy_host }}"
         auth_realm: master
-        display_name_html: "<div class=\"kc-logo-text\"><span>{{item.displayNameHtml}}</span></div>"
-        auth_username: "{{keycloak_admin.user}}"
-        auth_password: "{{keycloak_admin.pass}}"
-        id: "{{item.name}}"
-        realm: "{{item.name}}"
-        verify_email: "{{item.verifyEmail}}"
+        display_name_html: "<div class=\"kc-logo-text\"><span>{{ item.displayNameHtml }}</span></div>"
+        auth_username: "{{ keycloak_admin.user }}"
+        auth_password: "{{ keycloak_admin.pass }}"
+        id: "{{ item.name }}"
+        realm: "{{ item.name }}"
+        verify_email: "{{ item.verifyEmail }}"
         enabled: true
         state: present
-      with_items: "{{keycloak_config.realms | default([])}}"
+      with_items: "{{ keycloak_config.realms | default([]) }}"
       run_once: true
 
     - name: Configure keys
       include_tasks: blocks/configure_keys.yml
       with_subelements:
-        - "{{keycloak_config.realms | default([])}} "
+        - "{{ keycloak_config.realms | default([]) }} "
         - "keys"
         - skip_missing: True
       run_once: true
@@ -80,10 +80,10 @@
         auth_client_id: admin-cli
         auth_keycloak_url: "{{ keycloak_proxy_host }}"
         auth_realm: master
-        auth_username: "{{keycloak_admin.user}}"
-        auth_password: "{{keycloak_admin.pass}}"
-        id: "{{item.name}}"
-        realm: "{{item.name}}"
+        auth_username: "{{ keycloak_admin.user }}"
+        auth_password: "{{ keycloak_admin.pass }}"
+        id: "{{ item.name }}"
+        realm: "{{ item.name }}"
         smtpServer:
           port: "{{ item.smtp.port }}"
           ssl: "{{ item.smtp.enable_ssl }}"
@@ -98,14 +98,14 @@
           user: "{{ item.smtp.auth_username }}"
           password: "{{ item.smtp.auth_password }}"
         state: present
-      with_items: "{{keycloak_config.realms | default([])}}"
+      with_items: "{{ keycloak_config.realms | default([]) }}"
       when: not item.smtp is undefined
       run_once: true
 
     - name: Setup federations
       include_tasks: blocks/configure_federations.yml
       with_subelements:
-        - "{{keycloak_config.realms | default([])}} "
+        - "{{ keycloak_config.realms | default([]) }} "
         - "federations"
         - skip_missing: True
       run_once: true
@@ -113,7 +113,7 @@
     - name: Setup social IdPs
       include_tasks: blocks/configure_social_idps.yml
       with_subelements:
-        - "{{keycloak_config.realms | default([])}} "
+        - "{{ keycloak_config.realms | default([]) }} "
         - "social_idps"
         - skip_missing: True
       run_once: true
@@ -121,7 +121,7 @@
     - name: Setup saml IdPs
       include_tasks: blocks/configure_saml_idps.yml
       with_subelements:
-        - "{{keycloak_config.realms | default([])}} "
+        - "{{ keycloak_config.realms | default([]) }} "
         - "saml_idps"
         - skip_missing: True
       run_once: true
@@ -129,7 +129,7 @@
     - name: Setup IdP mappers
       include_tasks: blocks/configure_idp_mappers.yml
       with_subelements:
-        - "{{keycloak_config.realms | default([])}} "
+        - "{{ keycloak_config.realms | default([]) }} "
         - "idp_mappers"
         - skip_missing: True
       run_once: true
@@ -152,17 +152,17 @@
         auth_client_id: admin-cli
         auth_keycloak_url: "{{ keycloak_proxy_host }}"
         auth_realm: master
-        auth_username: "{{keycloak_admin.user}}"
-        auth_password: "{{keycloak_admin.pass}}"
-        id: "{{item.name}}"
-        realm: "{{item.name}}"
-        login_theme: "{{keycloak_plugins.wayf.theme.name}}"
+        auth_username: "{{ keycloak_admin.user }}"
+        auth_password: "{{ keycloak_admin.pass }}"
+        id: "{{ item.name }}"
+        realm: "{{ item.name }}"
+        login_theme: "{{ keycloak_plugins.wayf.theme.name }}"
         state: present
-      with_items: "{{keycloak_plugins.wayf.theme.add_to_realms}}"
+      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
       run_once: true
     - name: "Setting additional theme stuff (config, terms of use)"
       include_tasks: blocks/configure_theme.yml
-      with_items: "{{keycloak_plugins.wayf.theme.add_to_realms}}"
+      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
 
   when: wayf_enabled == true
   vars:
