@@ -158,7 +158,7 @@
     src: "templates/{{ keycloak_version }}/standalone-ha.xml.j2"
     dest: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
   become: yes
-  tags: "keycloak:install_standaloneha"
+  tags: "keycloak:install:standaloneha"
 
 ##### Set keycloak working dir and logs writable for service user
 - name: "Setting standalone folder writable for user: {{ keycloak_service_user }} - where the logs and it's internal temporary files are created"
@@ -192,7 +192,7 @@
   include_tasks: "install_plugin.yml"
   when: not keycloak_plugins is undefined
   loop: "{{ lookup('dict', keycloak_plugins, wantlist=True) }}"
-  tags: "keycloak:install_plugins"
+  tags: "keycloak:install:plugins"
 
 
 ############### Setup keycloak as a service
@@ -221,4 +221,4 @@
 
 - name: Configure various keycloak aspects
   import_tasks: "configure.yml"
-  tags: "keycloak:configure"
+  tags: "keycloak:config"

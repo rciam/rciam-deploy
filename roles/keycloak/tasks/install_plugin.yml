@@ -59,4 +59,4 @@
 
   when: not item is undefined
   become: yes
-  tags: "keycloak:install_plugins"
+  tags: "keycloak:install:plugins"

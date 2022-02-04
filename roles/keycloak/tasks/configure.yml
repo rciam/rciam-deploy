@@ -21,8 +21,8 @@
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
   tags:
-    - "keycloak:configure:realm_configuration"
-    - "keycloak:configure:wayf_plugin"
+    - "keycloak:config:realm_configuration"
+    - "keycloak:config:wayf_plugin"
 
 
 # configure AUP, realm keys, etc
@@ -142,7 +142,7 @@
         - skip_missing: True
       run_once: true
 
-  tags: "keycloak:configure:realm_configuration"
+  tags: "keycloak:config:realm_configuration"
 
 ### wayf plugin configuration
 - name: Configure wayf plugin
@@ -167,4 +167,4 @@
   when: wayf_enabled == true
   vars:
     wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
-  tags: "keycloak:configure:wayf_plugin"
+  tags: "keycloak:config:wayf_plugin"
