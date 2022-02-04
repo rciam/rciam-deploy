@@ -129,7 +129,7 @@
       path: "/tmp/keycloak_archive"
       state: absent
   become: yes
-  tags: "download_extract"
+  tags: "keycloak:download_extract"
 
 
 ######## Create postgresql plugin
@@ -148,7 +148,7 @@
       src: templates/module.xml.j2
       dest: "{{keycloak_home}}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
   become: yes
-  tags: "postgresql_plugin"
+  tags: "keycloak:postgresql_plugin"
 
 ######## Install template standalone-ha.xml
 
@@ -158,7 +158,7 @@
     src: templates/{{keycloak_version}}/standalone-ha.xml.j2
     dest: "{{keycloak_home}}/standalone/configuration/standalone-ha.xml"
   become: yes
-  tags: "install_standaloneha"
+  tags: "keycloak:install_standaloneha"
 
 ##### Set keycloak working dir and logs writable for service user
 - name: "Setting standalone folder writable for user: {{keycloak_service_user}} - where the logs and it's internal temporary files are created"
@@ -168,7 +168,7 @@
     group: "{{keycloak_service_user}}"
     recurse: yes
   become: yes
-  tags: "setup_file_permissions"
+  tags: "keycloak:setup_file_permissions"
 
 ############### Setup admin user
 - name: "Task block: Setup admin user"
@@ -182,7 +182,7 @@
     args:
       executable: /bin/bash
   become: yes
-  tags: "setup_admin"
+  tags: "keycloak:setup_admin"
 
 
 ### install other plugins
@@ -192,7 +192,7 @@
   include_tasks: "install_plugin.yml"
   when: not keycloak_plugins is undefined
   loop: "{{ lookup('dict', keycloak_plugins, wantlist=True) }}"
-  tags: "install_plugins"
+  tags: "keycloak:install_plugins"
 
 
 ############### Setup keycloak as a service
@@ -207,7 +207,7 @@
       src: templates/keycloak.service.j2
       dest: /etc/systemd/system/keycloak.service
     become: yes
-  tags: "setup_sys_service"
+  tags: "keycloak:setup_sys_service"
   # TODO trigger systemctl daemon-reload when changed
 
 - name: Ensure Keycloak service is active and enabled on boot
@@ -221,4 +221,4 @@
 
 - name: Configure various keycloak aspects
   import_tasks: "configure.yml"
-  tags: "configure"
+  tags: "keycloak:configure"
