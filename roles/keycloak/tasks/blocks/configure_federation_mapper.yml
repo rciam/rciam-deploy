@@ -7,17 +7,17 @@
 # mapper -> contains the new mapper json (from ansible config vars) i.e. {"config":{},"identityProviderMapper":"hardcoded-attribute-idp-mapper","name":"test_mapper2"}
 
 - set_fact:
-    mapper_matches: "{{existing_mappers_name_id | json_query(query) | default([]) }}"
+    mapper_matches: "{{ existing_mappers_name_id | json_query(query) | default([]) }}"
   vars:
     query: '[?name == `{{ mapper.name }}` ].{id: id, name: name }'
 
 
 - set_fact:
-    mapper_exists: "{{mapper_matches | length > 0 }}"
+    mapper_exists: "{{ mapper_matches | length > 0 }}"
 
 - set_fact:
     additional_info:
-      id: "{{mapper_matches[0].id}}"
+      id: "{{ mapper_matches[0].id }}"
   when: mapper_exists
 
 - set_fact:
@@ -26,7 +26,7 @@
 
 - name: "{% if mapper_exists %} Update {% else %} Create {% endif %} federation mapper {{ mapper.name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers{% if mapper_exists %}/{{body.id}}{% endif %}"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers{% if mapper_exists %}/{{ body.id }}{% endif %}"
     method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
     body_format: json
     headers:
@@ -40,7 +40,7 @@
 # You should execute it only when you are sure that the federation(s) are fully populated
 - name: Apply mappers (propagate) to federation IdP(s)
   uri:
-    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{body.id}}/idp/add"
+    url: "https://{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}/idp/add"
     method: POST
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"

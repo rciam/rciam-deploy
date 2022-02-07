@@ -3,13 +3,13 @@
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Get current IdPs list of realm: {{item[0].name}}"
+- name: "Get current IdPs list of realm: {{ item[0].name }}"
   include_tasks: blocks/helpers/get_realm_idps_list.yml
 
 - set_fact:
     new_idp: "{% if item[1].data.alias not in idps_list %}true{% else %}false{% endif %}"
 
-- name: "{% if new_idp %}Installing{% else %}Updating{% endif %} saml IdP: {{item[1].data.alias}}"
+- name: "{% if new_idp %}Installing{% else %}Updating{% endif %} saml IdP: {{ item[1].data.alias }}"
   block:
     - name: "Get config from url: {{ item[1].metadataUrl }}"
       uri:
@@ -26,7 +26,7 @@
 
     - name: "Setup saml IdP {{ item[1].data.alias }}"
       uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{item[1].data.alias}}{% endif %}"
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{ item[1].data.alias }}{% endif %}"
         method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
         body_format: json
         headers:
