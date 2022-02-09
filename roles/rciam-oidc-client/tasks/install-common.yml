@@ -1,59 +1,20 @@
 # file: rciam-oidc-client/tasks/install-common.yml
 #
 ---
-- name: Install unzip
+
+- name: Ensure unzip is installed
   package:
     name: unzip
     state: present
   become: true
 
-- name: Create temp directories in /tmp
-  file:
-    path: "/tmp/{{ item.name }}"
-    state: directory
-  become: true
+- name: Check which RCIAM OIDC Clients need to be installed 
+  stat:
+    path: "{{ item.path }}/{{ item.version }}" 
   loop: "{{ rciam_oidc_clients }}"
+  register: rciam_oidc_client_stats
 
-- name: Download & unarchive webapp to /tmp
-  unarchive:
-    src: "{{ item.release }}"
-    dest: "/tmp/{{ item.name }}"
-    creates: "{{ item.path }}/{{ item.name }}/{{ item.version }}"
-    remote_src: true
-  become: true
-  loop: "{{ rciam_oidc_clients }}"
-  register: zip_downloaded
-
-- name: Move RCIAM OIDC Client to target location
-  block:
-    - name: Backup old webapp version [1/4]
-      command:
-        cmd: "mv {{ item.item.path }}/{{ item.item.name }} {{ item.item.path }}/{{ item.item.name }}.{{ ansible_date_time.iso8601 }}"
-        removes: "{{ item.item.path }}/{{ item.item.name }}"
-      become: true
-      loop: "{{ zip_downloaded.results }}"
-      when: item.changed or not (item.changed or item.failed or item.skipped)
-    - name: Move webapp from /tmp to target location [2/4]
-      command: "mv /tmp/{{ item.item.name }}/{{ item.item.unzip_filename }} {{ item.item.path }}/{{ item.item.name }}"
-      become: true
-      loop: "{{ zip_downloaded.results }}"
-      when: item.changed or not (item.changed or item.failed or item.skipped)
-    - name: Create a file with the version of the webapp [3/4]
-      copy:
-        content: ""
-        dest: "{{ item.item.path }}/{{ item.item.name }}/{{ item.item.version }}"
-        force: false
-        owner: "root"
-        group: "root"
-        mode: "0644"
-      become: true
-      loop: "{{ zip_downloaded.results }}"
-      when: item.changed or not (item.changed and item.failed)
-  when: zip_downloaded.changed
-
-- name: Clean temp directories from /tmp
-  file:
-    path: "/tmp/{{ item.name }}"
-    state: absent
-  become: true
-  loop: "{{ rciam_oidc_clients }}"
+- name: Ensure RCIAM OIDC Client is installed
+  include_tasks: install-common-client.yml
+  loop: "{{ rciam_oidc_client_stats.results }}"
+  when: not item.stat.exists

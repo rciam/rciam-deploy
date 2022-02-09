@@ -1,0 +1,48 @@
+# file: rciam-oidc-client/tasks/install-common-client.yml
+#
+---
+
+- name: Create RCIAM OIDC Client temp directory
+  file:
+    path: "/tmp/{{ item.item.name }}"
+    state: directory
+  become: yes
+
+- name: Download & unarchive RCIAM OIDC Client to temp directory
+  unarchive:
+    src: "{{ item.item.release }}"
+    dest: "/tmp/{{ item.item.name }}"
+    remote_src: yes
+    list_files: yes
+  register: rciam_oidc_client_unarchive
+  become: yes
+
+- name: Setting RCIAM OIDC Client temp directory
+  set_fact:
+    rciam_oidc_client_tmp_dir: "/tmp/{{ item.item.name }}/{{ rciam_oidc_client_unarchive.files[0].split('/')[0] }}"
+
+- name: Backup old version of RCIAM OIDC Client
+  command:
+    cmd: "mv {{ item.item.path }} {{ item.item.path }}.{{ ansible_date_time.iso8601 }}"
+    removes: "{{ item.item.path }}"
+  become: yes
+
+- name: Move RCIAM OIDC Client from temp directory to target path
+  command: "mv {{ rciam_oidc_client_tmp_dir }} {{ item.item.path }}"
+  become: yes
+
+- name: Create a file with the version of the RCIAM OIDC Client
+  copy:
+    content: ""
+    dest: "{{ item.item.path }}/{{ item.item.version }}"
+    force: no
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  become: yes
+
+- name: Ensure RCIAM OIDC Client temp directory is absent
+  file:
+    path: "/tmp/{{ item.item.name }}"
+    state: absent
+  become: yes
