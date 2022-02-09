@@ -1,0 +1,20 @@
+# file: rciam-oidc-client/tasks/install-common.yml
+#
+---
+
+- name: Ensure unzip is installed
+  package:
+    name: unzip
+    state: present
+  become: true
+
+- name: Check which RCIAM OIDC Clients need to be installed 
+  stat:
+    path: "{{ item.path }}/{{ item.version }}" 
+  loop: "{{ rciam_oidc_clients }}"
+  register: rciam_oidc_client_stats
+
+- name: Ensure RCIAM OIDC Client is installed
+  include_tasks: install-common-client.yml
+  loop: "{{ rciam_oidc_client_stats.results }}"
+  when: not item.stat.exists

@@ -1,0 +1,12 @@
+# file: rciam-oidc-client/tasks/main.yml
+#
+---
+# Include OS-specific installation tasks
+- include: install-common.yml
+  tags:
+    - install
+
+# Include OS-independent configuration tasks
+- include: configure-common.yml
+  tags:
+    - config
