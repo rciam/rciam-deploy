@@ -44,37 +44,31 @@
   when: not client_scope_exists
 
 
+- name: "Clear from all the default client scopes list (iff applicable)"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ client_scope_mode }}-client-scopes/{{ client_scope_matches[0].id }}"
+    method: "DELETE"
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: "204"
+  with_items:
+    - optional
+    - default
+  loop_control:
+    loop_var: client_scope_mode
+  ignore_errors: yes
 
 # set default or optional (if defined)
-- name: "Configuring default/optional client-scope (tasks block)"
-  block:
-
-    - name: "Clear the default client scopes list"
-      uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ client_scope_mode }}-client-scopes/{{ client_scope_matches[0].id }}"
-        method: "DELETE"
-        headers:
-          Authorization: "Bearer {{ tokens.json.access_token }}"
-        status_code: "204"
-      with_items:
-        - optional
-        - default
-      loop_control:
-        loop_var: client_scope_mode
-      ignore_errors: yes
-
-    - name: "Setting the client scope as '{{ item[1].set_as }}'"
-      uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ item[1].set_as }}-client-scopes/{{ client_scope_matches[0].id }}"
-        method: "PUT"
-        body_format: json
-        headers:
-          Authorization: "Bearer {{ tokens.json.access_token }}"
-        body:
-          { realm: "{{ item[0].name }}", clientScopeId: "{{ client_scope_matches[0].id }}" }
-        status_code: "204"
-
-
+- name: "Configuring default/optional client-scope as '{{ item[1].set_as }}'"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ item[1].set_as }}-client-scopes/{{ client_scope_matches[0].id }}"
+    method: "PUT"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      { realm: "{{ item[0].name }}", clientScopeId: "{{ client_scope_matches[0].id }}" }
+    status_code: "204"
   when: not item[1].set_as is undefined
 
 
