@@ -184,7 +184,6 @@
     src: "{{ item.src_path }}"
     dest: "{{ item.dest_path }}"
     backup: yes
-  become: yes
   with_items: "{{ ssp_extra_files }}"
   when: item.src_path is defined and item.dest_path is defined
   become: yes
