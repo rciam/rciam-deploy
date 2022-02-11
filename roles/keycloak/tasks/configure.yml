@@ -134,6 +134,12 @@
         - skip_missing: True
       run_once: true
 
+    - name: "Check if there is any default IdP (will skip the WAYF and redirect to that one) defined"
+      include_tasks: blocks/configure_default_idp.yml
+      with_items: "{{ keycloak_config.realms | default([]) }}"
+      loop_control:
+        loop_var: current_realm
+
     - name: Setup client scopes
       include_tasks: blocks/configure_client_scopes.yml
       with_subelements:
