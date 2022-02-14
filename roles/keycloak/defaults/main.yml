@@ -85,6 +85,7 @@ keycloak_config:
     - name: master
       verifyEmail: true
       displayNameHtml: Keycloak
+#      defaultIdPAlias: "" #setting this, will skip the WAYF and redirect to that IdP
 #      keys:
 #        - name: "rsa-sig"
 #          providerId: "rsa" #DO NOT CHANGE THIS
