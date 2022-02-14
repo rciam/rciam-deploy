@@ -140,13 +140,22 @@
       loop_control:
         loop_var: current_realm
 
-    - name: Setup client scopes
-      include_tasks: blocks/configure_client_scopes.yml
-      with_subelements:
-        - "{{config.realms | default([])}} "
-        - "client_scopes"
-        - skip_missing: True
-      run_once: true
+    - name: "Setup client scopes (block)"
+      block:
+        - name: "Clear all assigned default and optional client scopes"
+          include_tasks: blocks/helpers/unassign_default_client_scopes.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+
+        - name: Setup client scopes
+          include_tasks: blocks/configure_client_scopes.yml
+          with_subelements:
+            - "{{keycloak_config.realms | default([])}} "
+            - "client_scopes"
+            - skip_missing: True
+          run_once: true
 
   tags: "keycloak:config:realm_configuration"
 
