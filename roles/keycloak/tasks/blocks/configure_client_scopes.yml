@@ -44,7 +44,7 @@
   when: not client_scope_exists
 
 
-- name: "Clear from all the default client scopes list (iff applicable)"
+- name: "Clear from all the default client scopes list (if applicable)"
   uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ client_scope_mode }}-client-scopes/{{ client_scope_matches[0].id }}"
     method: "DELETE"
