@@ -40,7 +40,6 @@
         id: "{{ item.name }}"
         realm: "{{ item.name }}"
         verify_email: "{{ item.verifyEmail }}"
-        connection_timeout: 60
         enabled: true
         state: present
       with_items: "{{ keycloak_config.realms | default([]) }}"
@@ -85,7 +84,6 @@
         auth_password: "{{ keycloak_admin.pass }}"
         id: "{{ item.name }}"
         realm: "{{ item.name }}"
-        connection_timeout: 60
         smtpServer:
           port: "{{ item.smtp.port }}"
           ssl: "{{ item.smtp.enable_ssl }}"
@@ -174,7 +172,6 @@
         id: "{{ item.name }}"
         realm: "{{ item.name }}"
         login_theme: "{{ keycloak_plugins.wayf.theme.name }}"
-        connection_timeout: 60
         state: present
       with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
       run_once: true
