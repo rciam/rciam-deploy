@@ -254,37 +254,37 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 #                multivalued: ""
 #                user.attribute: "attrib11"
 #                userinfo.token.claim: "true"
-      federations:
-        - providerId: "saml" # DO NOT CHANGE THIS!
-          url: "<THE URL OF THE FEDERATION's XML>"
-          alias: "<SET AN ALIAS>"
-          updateFrequencyInMins: 1440
-          config:
-            nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
-            principalType: "SUBJECT"
-            postBindingAuthnRequest: "true"
-            wantAuthnRequestsSigned: "true"
-            wantAssertionsSigned: "true"
-            wantAssertionsEncrypted: "true"
-            multiplePrincipals: "[{\"principalType\":\"SUBJECT\",\"nameIDPolicyFormat\":\"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\"}]"
-          entityIdWhiteList:
-            - "https://aaa.bbb.com/entity1"
-          entityIdBlackList:
-            - "https://aaa.bbb.com/entity2"
-          registrationAuthorityWhiteList:
-            - "registration-authority-1"
-          registrationAuthorityBlackList:
-            - "registration-authority-2"
-          categoryWhiteList:
-            attribute-name-1:
-              - "attribute-value-1"
-            attribute-name-2:
-              - "attribute-value-2"
-          categoryBlackList:
-            attribute-name-1:
-              - "attribute-value-1"
-            attribute-name-2:
-              - "attribute-value-2"
+#      federations:
+#        - providerId: "saml" # DO NOT CHANGE THIS!
+#          url: "<THE URL OF THE FEDERATION's XML>"
+#          alias: "<SET AN ALIAS>"
+#          updateFrequencyInMins: 1440
+#          config:
+#            nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+#            principalType: "SUBJECT"
+#            postBindingAuthnRequest: "true"
+#            wantAuthnRequestsSigned: "true"
+#            wantAssertionsSigned: "true"
+#            wantAssertionsEncrypted: "true"
+#            multiplePrincipals: "[{\"principalType\":\"SUBJECT\",\"nameIDPolicyFormat\":\"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\"}]"
+#          entityIdWhiteList:
+#            - "https://aaa.bbb.com/entity1"
+#          entityIdBlackList:
+#            - "https://aaa.bbb.com/entity2"
+#          registrationAuthorityWhiteList:
+#            - "registration-authority-1"
+#          registrationAuthorityBlackList:
+#            - "registration-authority-2"
+#          categoryWhiteList:
+#            attribute-name-1:
+#              - "attribute-value-1"
+#            attribute-name-2:
+#              - "attribute-value-2"
+#          categoryBlackList:
+#            attribute-name-1:
+#              - "attribute-value-1"
+#            attribute-name-2:
+#              - "attribute-value-2"
 #          mappers:
 #            - name: "test_mapper"
 #              identityProviderMapper: hardcoded-attribute-idp-mapper
