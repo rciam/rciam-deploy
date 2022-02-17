@@ -27,7 +27,7 @@ pip install jmespath==0.10.0
 ansible-galaxy install ipr-cnrs.nftables
 ansible-galaxy install arillso.logrotate
 ansible-galaxy install infopen.openjdk-jdk
-ansible-galaxy collection install community.general
+ansible-galaxy collection install community.general:>=4.5.0
 🍺
 ```
 
