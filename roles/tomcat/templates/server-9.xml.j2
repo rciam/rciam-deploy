@@ -170,7 +170,7 @@
                     port="{{ member.port }}"
 {% endif %}
 {% if member.unique_id is defined %}
-                    uniqueId="{{ member.unique_id }}"
+                    uniqueId="{% raw %}{{% endraw %}{{ member.unique_id }}{% raw %}}{% endraw %}"
 {% endif %}
             />
 {% endfor %}
