@@ -29,20 +29,11 @@
 - name: Configure the keycloak (AUP, realm keys, etc)
   block:
 
-    - name: Ensure that realm already exists
-      community.general.keycloak_realm:
-        auth_client_id: admin-cli
-        auth_keycloak_url: "{{ keycloak_proxy_host }}"
-        auth_realm: master
-        display_name_html: "<div class=\"kc-logo-text\"><span>{{ item.displayNameHtml }}</span></div>"
-        auth_username: "{{ keycloak_admin.user }}"
-        auth_password: "{{ keycloak_admin.pass }}"
-        id: "{{ item.name }}"
-        realm: "{{ item.name }}"
-        verify_email: "{{ item.verifyEmail }}"
-        enabled: true
-        state: present
+    - name: Apply realm.config parameters
+      include_tasks: blocks/configure_basic_realm.yml
       with_items: "{{ keycloak_config.realms | default([]) }}"
+      loop_control:
+        loop_var: current_realm_item
       run_once: true
 
     - name: Configure keys
@@ -73,33 +64,6 @@
         status_code: 204
       with_items: "{{ keycloak_config.realms | default([]) }}"
       when: not item.aup is undefined
-      run_once: true
-
-    - name: Setup SMTP
-      community.general.keycloak_realm:
-        auth_client_id: admin-cli
-        auth_keycloak_url: "{{ keycloak_proxy_host }}"
-        auth_realm: master
-        auth_username: "{{ keycloak_admin.user }}"
-        auth_password: "{{ keycloak_admin.pass }}"
-        id: "{{ item.name }}"
-        realm: "{{ item.name }}"
-        smtpServer:
-          port: "{{ item.smtp.port }}"
-          ssl: "{{ item.smtp.enable_ssl }}"
-          starttls: "{{ item.smtp.enable_starttls }}"
-          host: "{{ item.smtp.host }}"
-          fromDisplayName: "{{ item.smtp.from_name }}"
-          from: "{{ item.smtp.from_email }}"
-          replyToDisplayName: "{{ item.smtp.reply_to_name }}"
-          replyTo: "{{ item.smtp.reply_to_email }}"
-          envelopeFrom: "{{ item.smtp.envelope_from }}"
-          auth: "{{ item.smtp.auth_enabled }}"
-          user: "{{ item.smtp.auth_username }}"
-          password: "{{ item.smtp.auth_password }}"
-        state: present
-      with_items: "{{ keycloak_config.realms | default([]) }}"
-      when: not item.smtp is undefined
       run_once: true
 
     - name: Setup federations
