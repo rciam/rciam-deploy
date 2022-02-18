@@ -80,11 +80,29 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.
 ### also, you can just comment out any of the {key, aup, smtp} sub trees and let the remaining get configured
-keycloak_config:
-  realms:
-    - name: master
-      verifyEmail: true
-      displayNameHtml: Keycloak
+#keycloak_config:
+#  realms:
+#    - name: master
+#      defaultIdPAlias: "" #setting this to an IdP's name, will skip the WAYF and redirect to that IdP
+#      config:
+#        enabled: true  #do not change this
+#        displayNameHtml: "<div class=\"kc-logo-text\"><span>Keycloak</span></div>"
+#        verifyEmail: true
+#        ssoSessionIdleTimeout: 31536000
+#        ssoSessionMaxLifespan: 34128000
+#        smtpServer:
+#          host: ""
+#          from: ""
+#          port: ""
+#          ssl: ""
+#          starttls: ""
+#          fromDisplayName: ""
+#          envelopeFrom: ""
+#          replyTo: ""
+#          replyToDisplayName: ""
+#          auth: "false"
+#          user: ""
+#          password: ""
 #      defaultIdPAlias: "" #setting this, will skip the WAYF and redirect to that IdP
 #      keys:
 #        - name: "rsa-sig"
