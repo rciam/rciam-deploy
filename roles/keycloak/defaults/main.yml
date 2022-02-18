@@ -230,20 +230,6 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 #        defaultAction: true
 #        reset_every: 165  # it goes (reset_every * reset_every_multiplier) seconds
 #        reset_every_multiplier: 3600 # use 3600 for hours, 86400 for days
-#      smtp:
-#        host: "smtp.example.com"
-#        from_email: "noreply@example.com"
-#        port: 25
-#        ## values below are optional
-#        enable_ssl: true
-#        enable_starttls: true
-#        from_name: ""
-#        reply_to_name: ""
-#        reply_to_email: ""
-#        envelope_from: ""
-#        auth_enabled: false
-#        auth_username: ""
-#        auth_password: ""
 #      client_scopes:
 #        - name: "dummy"
 #          description: "this is a dummy one"
