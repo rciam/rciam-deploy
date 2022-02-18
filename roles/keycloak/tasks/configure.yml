@@ -66,6 +66,9 @@
       when: not item.aup is undefined
       run_once: true
 
+    - name: Setup roles
+      include_tasks: blocks/roles_configuration/configure.yml
+
     - name: Setup federations
       include_tasks: blocks/configure_federations.yml
       with_subelements:
