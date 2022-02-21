@@ -1,0 +1,21 @@
+#!/bin/bash
+
+## call this script with the following command
+## find <FOLDER_OF_LOGS> -type f -name 'server.log.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' -exec sh logcleaner.sh {} <DAYS-TO-KEEP-LOGS> \;
+## so, we assume that $1 holds the filename fullpath and $2 holds the maximum days from today to keep
+
+fullpath=$1
+days=$2
+
+filename=$(basename $1)
+filedate=$(echo $filename | grep -Eo '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}')
+file_timestamp=$(date -d $filedate +"%s")
+
+notbefore_timestamp=$(date -d 'now - '$days' days' +"%s")
+
+
+if [ $notbefore_timestamp -gt $file_timestamp ]
+then
+   echo "Found file $fullpath to be older than the maximum allowed $days days"
+   rm $fullpath
+fi
