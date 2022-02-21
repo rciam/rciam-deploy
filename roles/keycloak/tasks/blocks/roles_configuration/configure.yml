@@ -1,0 +1,25 @@
+---
+
+- name: Setup roles
+  include_tasks: configure_roles.yml
+  with_subelements:
+    - "{{ keycloak_config.realms | default([]) }} "
+    - "role_management.roles"
+    - skip_missing: true
+  run_once: true
+
+- name: Setup default roles
+  include_tasks: configure_default_roles.yml
+  with_subelements:
+    - "{{ keycloak_config.realms | default([]) }} "
+    - "role_management.default_roles"
+    - skip_missing: true
+  run_once: true
+
+- name: Setup composite roles
+  include_tasks: configure_role_composites.yml
+  with_subelements:
+    - "{{ keycloak_config.realms | default([]) }} "
+    - "role_management.composite_roles"
+    - skip_missing: true
+  run_once: true

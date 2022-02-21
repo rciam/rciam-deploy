@@ -1,0 +1,62 @@
+---
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Check if realm {{ current_realm_item.name }} already exists"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm_item.name }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: [200, 404]
+  register: "current_realm_search_result"
+
+- set_fact:
+    current_realm_exists: "{% if current_realm_search_result.status == 200 %}true{% else %}false{% endif %}"
+
+- name: "Initialize realm '{{ current_realm_item.name }}'"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      enabled: true
+      id: "{{ current_realm_item.name }}"
+      realm: "{{ current_realm_item.name }}"
+    status_code: 201
+  when: current_realm_exists == false
+
+
+- name: "Get realm {{ current_realm_item.name }} config"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm_item.name }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: 200
+  register: "current_realm_search_result"
+
+
+#at this point, we have a realm, either a created or an existing, loaded into the current_realm_search_result variable
+
+- name: "Fuse realm '{{ current_realm_item.name }}' configurations (existing and ansible's)"
+  set_fact:
+    realm_config_to_set: "{{ current_realm_search_result.json | combine(current_realm_item.config | default({}) , recursive=True ) }}"
+
+#now HTTP PUT the information (either the fused or the ansible's original config) to the realm's REST API
+- name: "Update realm {{ current_realm_item.name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm_item.name }}"
+    method: "PUT"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      "{{ realm_config_to_set }}"
+    status_code: "204"
+
+
+

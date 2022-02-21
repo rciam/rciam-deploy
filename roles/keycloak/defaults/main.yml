@@ -80,12 +80,49 @@ keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.
 ### also, you can just comment out any of the {key, aup, smtp} sub trees and let the remaining get configured
-keycloak_config:
-  realms:
-    - name: master
-      verifyEmail: true
-      displayNameHtml: Keycloak
-#      defaultIdPAlias: "" #setting this, will skip the WAYF and redirect to that IdP
+#keycloak_config:
+#  realms:
+#    - name: master
+#      defaultIdPAlias: "" #setting this to an IdP's name, will skip the WAYF and redirect to that IdP
+#      config:
+#        enabled: true  #do not change this
+#        displayNameHtml: "<div class=\"kc-logo-text\"><span>Keycloak</span></div>"
+#        verifyEmail: true
+#        ssoSessionIdleTimeout: 31536000
+#        ssoSessionMaxLifespan: 34128000
+#        smtpServer:
+#          host: ""
+#          from: ""
+#          port: ""
+#          ssl: ""
+#          starttls: ""
+#          fromDisplayName: ""
+#          envelopeFrom: ""
+#          replyTo: ""
+#          replyToDisplayName: ""
+#          auth: "false"
+#          user: ""
+#          password: ""
+#      role_management:
+#        roles:
+#          - name: "student"
+#            description: "this is a blah blah"
+#            attributes:
+#              key1:
+#                - "value1"
+#          - name: "teacher"
+#            description: "this is a blah blah"
+#        default_roles:
+#          - "student"
+#          - "teacher"
+#        composite_roles:
+#          - name: "student"
+#            composites:
+#              - "offline_access"
+#              - "uma_authorization"
+#          - name: "teacher"
+#            composites:
+#              - "student"
 #      keys:
 #        - name: "rsa-sig"
 #          providerId: "rsa" #DO NOT CHANGE THIS
@@ -212,20 +249,6 @@ keycloak_config:
 #        defaultAction: true
 #        reset_every: 165  # it goes (reset_every * reset_every_multiplier) seconds
 #        reset_every_multiplier: 3600 # use 3600 for hours, 86400 for days
-#      smtp:
-#        host: "smtp.example.com"
-#        from_email: "noreply@example.com"
-#        port: 25
-#        ## values below are optional
-#        enable_ssl: true
-#        enable_starttls: true
-#        from_name: ""
-#        reply_to_name: ""
-#        reply_to_email: ""
-#        envelope_from: ""
-#        auth_enabled: false
-#        auth_username: ""
-#        auth_password: ""
 #      client_scopes:
 #        - name: "dummy"
 #          description: "this is a dummy one"
@@ -250,37 +273,37 @@ keycloak_config:
 #                multivalued: ""
 #                user.attribute: "attrib11"
 #                userinfo.token.claim: "true"
-      federations:
-        - providerId: "saml" # DO NOT CHANGE THIS!
-          url: "<THE URL OF THE FEDERATION's XML>"
-          alias: "<SET AN ALIAS>"
-          updateFrequencyInMins: 1440
-          config:
-            nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
-            principalType: "SUBJECT"
-            postBindingAuthnRequest: "true"
-            wantAuthnRequestsSigned: "true"
-            wantAssertionsSigned: "true"
-            wantAssertionsEncrypted: "true"
-            multiplePrincipals: "[{\"principalType\":\"SUBJECT\",\"nameIDPolicyFormat\":\"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\"}]"
-          entityIdWhiteList:
-            - "https://aaa.bbb.com/entity1"
-          entityIdBlackList:
-            - "https://aaa.bbb.com/entity2"
-          registrationAuthorityWhiteList:
-            - "registration-authority-1"
-          registrationAuthorityBlackList:
-            - "registration-authority-2"
-          categoryWhiteList:
-            attribute-name-1:
-              - "attribute-value-1"
-            attribute-name-2:
-              - "attribute-value-2"
-          categoryBlackList:
-            attribute-name-1:
-              - "attribute-value-1"
-            attribute-name-2:
-              - "attribute-value-2"
+#      federations:
+#        - providerId: "saml" # DO NOT CHANGE THIS!
+#          url: "<THE URL OF THE FEDERATION's XML>"
+#          alias: "<SET AN ALIAS>"
+#          updateFrequencyInMins: 1440
+#          config:
+#            nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+#            principalType: "SUBJECT"
+#            postBindingAuthnRequest: "true"
+#            wantAuthnRequestsSigned: "true"
+#            wantAssertionsSigned: "true"
+#            wantAssertionsEncrypted: "true"
+#            multiplePrincipals: "[{\"principalType\":\"SUBJECT\",\"nameIDPolicyFormat\":\"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\"}]"
+#          entityIdWhiteList:
+#            - "https://aaa.bbb.com/entity1"
+#          entityIdBlackList:
+#            - "https://aaa.bbb.com/entity2"
+#          registrationAuthorityWhiteList:
+#            - "registration-authority-1"
+#          registrationAuthorityBlackList:
+#            - "registration-authority-2"
+#          categoryWhiteList:
+#            attribute-name-1:
+#              - "attribute-value-1"
+#            attribute-name-2:
+#              - "attribute-value-2"
+#          categoryBlackList:
+#            attribute-name-1:
+#              - "attribute-value-1"
+#            attribute-name-2:
+#              - "attribute-value-2"
 #          mappers:
 #            - name: "test_mapper"
 #              identityProviderMapper: hardcoded-attribute-idp-mapper
