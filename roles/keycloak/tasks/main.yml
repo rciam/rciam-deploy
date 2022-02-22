@@ -185,6 +185,28 @@
   tags: "keycloak:setup_admin"
 
 
+#### Setup logcleaner script
+- name: "Task block: Setup logcleaner script"
+  block:
+    - name: "Install the logcleaner script template"
+      template:
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
+        mode: 0644
+        src: templates/logcleaner.sh.j2
+        dest: "{{ keycloak_home }}/logcleaner.sh"
+    - name: "Create the cronjob"
+      ansible.builtin.cron:
+        name: keycloak logcleaner
+        day: "*"
+        hour: "0"
+        minute: "0"
+        user: "{{ keycloak_service_user }}"
+        job: "find {{ keycloak_home }}/standalone/log -type f -name 'server.log.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' -exec sh {{ keycloak_home }}/logcleaner.sh {} {{ keycloak_logs_max_days }} \\;"
+  become: yes
+  tags: "keycloak:setup_logcleaner"
+
+
 ### install other plugins
 
 # would loop over block of tasks within install_plugins.yml, but looping on blocks is not allowed in ansible
@@ -207,11 +229,12 @@
       src: templates/keycloak.service.j2
       dest: /etc/systemd/system/keycloak.service
     become: yes
+    notify:
+      - Reload systemd daemon
   tags: "keycloak:setup_sys_service"
-  # TODO trigger systemctl daemon-reload when changed
 
 - name: Ensure Keycloak service is active and enabled on boot
-  service:
+  systemd:
     name: "keycloak"
     state: "started"
     enabled: yes
