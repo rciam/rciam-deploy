@@ -202,7 +202,7 @@
         hour: "0"
         minute: "0"
         user: "{{ keycloak_service_user }}"
-        job: "find {{ keycloak_home }}/standalone/log -type f -name 'server.log.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' -exec sh {{ keycloak_home }}/logcleaner.sh {} {{ keycloak_logs_max_days }} \\;"
+        job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_home }}/standalone/log {{ keycloak_logs_max_days }}"
   become: yes
   tags: "keycloak:setup_logcleaner"
 
@@ -230,7 +230,7 @@
       dest: /etc/systemd/system/keycloak.service
     become: yes
     notify:
-      - Reload systemd daemon
+      - Reload keycloak
   tags: "keycloak:setup_sys_service"
 
 - name: Ensure Keycloak service is active and enabled on boot
