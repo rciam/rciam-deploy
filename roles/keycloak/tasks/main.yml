@@ -161,7 +161,7 @@
   tags: "keycloak:install:standaloneha"
 
 ##### Set keycloak working dir and logs writable for service user
-- name: "Setting standalone folder writable for user: {{ keycloak_service_user }} - where the logs and it's internal temporary files are created"
+- name: "Setting standalone folder writable for user: {{ keycloak_service_user }} - where it's internal temporary files are created"
   file:
     dest: "{{ keycloak_home }}/standalone"
     owner: "{{ keycloak_service_user }}"
@@ -184,6 +184,10 @@
   become: yes
   tags: "keycloak:setup_admin"
 
+### setup the logs foilder (also do some actions to preserve backwards compatibility)
+- name: "Setup logs folder"
+  include_tasks: "blocks/helpers/setup_logs_folder.yml"
+  tags: "keycloak:setup_logs_folder"
 
 #### Setup logcleaner script
 - name: "Task block: Setup logcleaner script"
@@ -202,7 +206,7 @@
         hour: "0"
         minute: "0"
         user: "{{ keycloak_service_user }}"
-        job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_home }}/standalone/log {{ keycloak_logs_max_days }}"
+        job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_logs_folder }} {{ keycloak_logs_max_days }}"
   become: yes
   tags: "keycloak:setup_logcleaner"
 
