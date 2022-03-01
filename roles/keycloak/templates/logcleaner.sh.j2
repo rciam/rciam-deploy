@@ -1,0 +1,24 @@
+#!/bin/sh
+
+log_files_path=$1
+num_of_days=$2
+
+find $log_files_path -type f -name 'server.log.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' -exec sh -c '
+
+  fullpath=$1
+  days=$2
+
+  filename=$(basename $fullpath)
+  filedate=$(echo $filename | grep -Eo "[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}")
+  file_timestamp=$(date -d $filedate +"%s")
+
+  notbefore_timestamp=$(date -d "now - $days days" +"%s")
+
+  if [ $notbefore_timestamp -gt $file_timestamp ]
+  then
+     echo "Found file $fullpath to be older than the maximum allowed $days days"
+     rm $fullpath
+  fi
+
+
+' sh {} $num_of_days \;

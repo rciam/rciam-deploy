@@ -161,7 +161,7 @@
   tags: "keycloak:install:standaloneha"
 
 ##### Set keycloak working dir and logs writable for service user
-- name: "Setting standalone folder writable for user: {{ keycloak_service_user }} - where the logs and it's internal temporary files are created"
+- name: "Setting standalone folder writable for user: {{ keycloak_service_user }} - where it's internal temporary files are created"
   file:
     dest: "{{ keycloak_home }}/standalone"
     owner: "{{ keycloak_service_user }}"
@@ -183,6 +183,32 @@
       executable: /bin/bash
   become: yes
   tags: "keycloak:setup_admin"
+
+### setup the logs foilder (also do some actions to preserve backwards compatibility)
+- name: "Setup logs folder"
+  include_tasks: "blocks/helpers/setup_logs_folder.yml"
+  tags: "keycloak:setup_logs_folder"
+
+#### Setup logcleaner script
+- name: "Task block: Setup logcleaner script"
+  block:
+    - name: "Install the logcleaner script template"
+      template:
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
+        mode: 0644
+        src: templates/logcleaner.sh.j2
+        dest: "{{ keycloak_home }}/logcleaner.sh"
+    - name: "Create the cronjob"
+      ansible.builtin.cron:
+        name: keycloak logcleaner
+        day: "*"
+        hour: "0"
+        minute: "0"
+        user: "{{ keycloak_service_user }}"
+        job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_logs_folder }} {{ keycloak_logs_max_days }}"
+  become: yes
+  tags: "keycloak:setup_logcleaner"
 
 
 ### install other plugins
@@ -207,11 +233,12 @@
       src: templates/keycloak.service.j2
       dest: /etc/systemd/system/keycloak.service
     become: yes
+    notify:
+      - Reload keycloak
   tags: "keycloak:setup_sys_service"
-  # TODO trigger systemctl daemon-reload when changed
 
 - name: Ensure Keycloak service is active and enabled on boot
-  service:
+  systemd:
     name: "keycloak"
     state: "started"
     enabled: yes

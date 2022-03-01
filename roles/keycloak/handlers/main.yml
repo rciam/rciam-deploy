@@ -1,19 +1,26 @@
 ---
 
 - name: Start keycloak
-  service:
+  systemd:
     name: keycloak
     state: started
   become: yes
 
 - name: Stop keycloak
-  service:
+  systemd:
     name: keycloak
     state: stopped
   become: yes
 
 - name: Restart keycloak
-  service: 
+  systemd:
     name: keycloak
     state: restarted
+  become: yes
+
+- name: Reload keycloak
+  systemd:
+    name: keycloak
+    state: restarted
+    daemon_reload: yes
   become: yes
