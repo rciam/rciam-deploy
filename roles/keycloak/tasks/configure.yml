@@ -139,6 +139,7 @@
         id: "{{ item.name }}"
         realm: "{{ item.name }}"
         login_theme: "{{ keycloak_plugins.wayf.theme.name }}"
+        connection_timeout: 60
         state: present
       with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
       run_once: true
