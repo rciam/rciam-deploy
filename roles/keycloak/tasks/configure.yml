@@ -124,6 +124,13 @@
             - skip_missing: True
           run_once: true
 
+        - name: "Setup client registration policies"
+          include_tasks: blocks/configure_client_reg_policies.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+
   tags: "keycloak:config:realm_configuration"
 
 ### wayf plugin configuration
