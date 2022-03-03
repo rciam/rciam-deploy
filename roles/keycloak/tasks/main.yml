@@ -56,6 +56,11 @@
   tags:
     - always
 
+### setup the logs folder (also do some actions to preserve backwards compatibility)
+- name: "Setup logs folder"
+  include_tasks: "blocks/helpers/setup_logs_folder.yml"
+  tags: "keycloak:setup_logs_folder"
+
 #### Extract keycloak from archive
 - block:
   - name: "Task block: Download keycloak"
@@ -184,11 +189,6 @@
   become: yes
   tags: "keycloak:setup_admin"
 
-### setup the logs foilder (also do some actions to preserve backwards compatibility)
-- name: "Setup logs folder"
-  include_tasks: "blocks/helpers/setup_logs_folder.yml"
-  tags: "keycloak:setup_logs_folder"
-
 #### Setup logcleaner script
 - name: "Task block: Setup logcleaner script"
   block:
@@ -240,7 +240,7 @@
 - name: Ensure Keycloak service is active and enabled on boot
   systemd:
     name: "keycloak"
-    state: "started"
+    state: "restarted"
     enabled: yes
   become: yes
 
