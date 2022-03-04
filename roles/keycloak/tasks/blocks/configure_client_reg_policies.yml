@@ -1,0 +1,30 @@
+---
+# scope vars:
+# current_realm = the current realm (loop item) of the config
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Get all existing client registration policies of realm {{ current_realm.name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/components?type=org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: [200]
+  register: "found_cli_reg_pols"
+
+- set_fact:
+    found_cli_reg_pols: "{{ found_cli_reg_pols.json | default([]) }}"
+
+- include_tasks: blocks/client_registration_policies/create_update_client_reg_policy.yml
+  with_items: "{{ current_realm.client_registration_policies.create_update | default([]) }}"
+  loop_control:
+    loop_var: current_cli_reg_pol
+
+- include_tasks: blocks/client_registration_policies/delete_client_reg_policy.yml
+  with_items: "{{ current_realm.client_registration_policies.delete | default([]) }}"
+  loop_control:
+    loop_var: del_cli_reg_policy
+
+

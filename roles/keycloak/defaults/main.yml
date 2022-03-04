@@ -106,6 +106,21 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #          auth: "false"
 #          user: ""
 #          password: ""
+#      client_registration_policies:
+#        create_update:
+#          - name: "Allowed Client Scopes"
+#            providerId: "allowed-client-templates"
+#            providerType: "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy"
+#            subType: "anonymous"
+#            config:
+#              allow-default-scopes:
+#                - "false"
+#              allowed-client-scopes:
+#                - "openid"
+#        delete:
+#          - name: "Trusted Hosts"
+#            providerId: "trusted-hosts"
+#            subType: "anonymous"
 #      role_management:
 #        roles:
 #          - name: "student"
