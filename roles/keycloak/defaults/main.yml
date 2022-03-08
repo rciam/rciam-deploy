@@ -116,8 +116,11 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #          - name: "teacher"
 #            description: "this is a blah blah"
 #        default_roles:
-#          - "student"
-#          - "teacher"
+#          add:
+#            - "student"
+#            - "teacher"
+#          remove:
+#            - "uma_authorization"
 #        composite_roles:
 #          - name: "student"
 #            composites:
