@@ -261,6 +261,7 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #            display.on.consent.screen: "true"
 #            gui.order: "4"
 #            consent.screen.text: "aaaaa1"
+#            hide.from.openID.provider.metadata: "true"   # default value is "false". If not included in the config, it is set = "false", the default value
 #          set_as: "default"   # could be one of: {"default", "optional"}. Leave it commented out to skip this setting
 #          mappers:
 #            - name: "dummymapper"
