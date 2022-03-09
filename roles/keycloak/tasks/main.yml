@@ -56,6 +56,11 @@
   tags:
     - always
 
+### setup the logs folder (also do some actions to preserve backwards compatibility)
+- name: "Setup logs folder"
+  include_tasks: "blocks/helpers/setup_logs_folder.yml"
+  tags: "keycloak:install:setup_logs_folder"
+
 #### Extract keycloak from archive
 - block:
   - name: "Task block: Download keycloak"
@@ -129,7 +134,7 @@
       path: "/tmp/keycloak_archive"
       state: absent
   become: yes
-  tags: "keycloak:download_extract"
+  tags: "keycloak:install:download_extract"
 
 
 ######## Create postgresql plugin
@@ -148,7 +153,7 @@
       src: templates/module.xml.j2
       dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
   become: yes
-  tags: "keycloak:postgresql_plugin"
+  tags: "keycloak:install:postgresql_plugin"
 
 ######## Install template standalone-ha.xml
 
@@ -168,7 +173,7 @@
     group: "{{ keycloak_service_user }}"
     recurse: yes
   become: yes
-  tags: "keycloak:setup_file_permissions"
+  tags: "keycloak:install:setup_file_permissions"
 
 ############### Setup admin user
 - name: "Task block: Setup admin user"
@@ -182,12 +187,7 @@
     args:
       executable: /bin/bash
   become: yes
-  tags: "keycloak:setup_admin"
-
-### setup the logs foilder (also do some actions to preserve backwards compatibility)
-- name: "Setup logs folder"
-  include_tasks: "blocks/helpers/setup_logs_folder.yml"
-  tags: "keycloak:setup_logs_folder"
+  tags: "keycloak:install:setup_admin"
 
 #### Setup logcleaner script
 - name: "Task block: Setup logcleaner script"
@@ -208,7 +208,7 @@
         user: "{{ keycloak_service_user }}"
         job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_logs_folder }} {{ keycloak_logs_max_days }}"
   become: yes
-  tags: "keycloak:setup_logcleaner"
+  tags: "keycloak:install:setup_logcleaner"
 
 
 ### install other plugins
@@ -233,16 +233,16 @@
       src: templates/keycloak.service.j2
       dest: /etc/systemd/system/keycloak.service
     become: yes
-    notify:
-      - Reload keycloak
-  tags: "keycloak:setup_sys_service"
+  tags: "keycloak:install:setup_sys_service"
 
-- name: Ensure Keycloak service is active and enabled on boot
+- name: "Restart keycloak"
   systemd:
-    name: "keycloak"
-    state: "started"
+    name: keycloak
+    state: restarted
+    daemon_reload: yes
     enabled: yes
   become: yes
+  tags: "keycloak:install:restart_sys_service"
 
 ##### configure keycloak
 

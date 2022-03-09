@@ -3,6 +3,11 @@
 # this is an important block! Do now remove
 - name: Wait for keycloak to initialize
   block:
+  - name: Ensure Keycloak service is running
+    systemd:
+      name: "keycloak"
+      state: "started"
+    become: yes
   #wait for port to open
   - name: Waiting for service port to be opened...
     wait_for:
