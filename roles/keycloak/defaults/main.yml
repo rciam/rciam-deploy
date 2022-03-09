@@ -129,6 +129,13 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #          - name: "teacher"
 #            composites:
 #              - "student"
+#        client_default_roles:
+#          - name: "account"
+#            add:
+#              - "manage-account-basic-auth"
+#              - "manage-account-2fa"
+#            remove:
+#              - "view-profile"
 #      keys:
 #        - name: "rsa-sig"
 #          providerId: "rsa" #DO NOT CHANGE THIS

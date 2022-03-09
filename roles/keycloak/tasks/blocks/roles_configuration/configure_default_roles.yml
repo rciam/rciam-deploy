@@ -3,7 +3,7 @@
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Find full payload of all roles in the default_roles list"
+- name: "Find full payload of all roles in the '{{ default_role_mode }}' list"
   uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/{{ default_role_name }}"
     method: "GET"
