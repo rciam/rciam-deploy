@@ -205,11 +205,21 @@
 {% endfor %}
 
 {% for resolver in shibboleth_sp_attribute_resolvers %}
-        <AttributeResolver type="{{ resolver.type }}" 
-{% if resolver.subject_match is defined %}
-            subjectMatch="{{ resolver.subject_match }}"
-{% endif %}
-        />
+        <AttributeResolver
+    {%- for key, value in resolver.items() -%}
+        {% if "regex" not in key %}
+ {{ key }}="{{ value }}"
+        {%- endif -%}
+    {%- endfor %}>
+    {% if resolver.regex is defined %}
+        {% for regex_properties in resolver.regex -%}
+           <Regex
+        {%- for key, value in regex_properties.properties.items() %}
+ {{ key }}="{{ value }}"
+        {%- endfor %}>{{ regex_properties.value | default('') }}</Regex>
+        {% endfor %}
+    {%-  endif -%}
+        </AttributeResolver>
 {% endfor %}
 
         <!-- Default filtering policy for recognized attributes, lets other data pass. -->
