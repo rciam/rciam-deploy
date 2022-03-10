@@ -131,8 +131,11 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #          - name: "teacher"
 #            description: "this is a blah blah"
 #        default_roles:
-#          - "student"
-#          - "teacher"
+#          add:
+#            - "student"
+#            - "teacher"
+#          remove:
+#            - "uma_authorization"
 #        composite_roles:
 #          - name: "student"
 #            composites:
@@ -141,6 +144,13 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #          - name: "teacher"
 #            composites:
 #              - "student"
+#        client_default_roles:
+#          - name: "account"
+#            add:
+#              - "manage-account-basic-auth"
+#              - "manage-account-2fa"
+#            remove:
+#              - "view-profile"
 #      keys:
 #        - name: "rsa-sig"
 #          providerId: "rsa" #DO NOT CHANGE THIS

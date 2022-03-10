@@ -1,0 +1,27 @@
+---
+# variables passed from caller:
+# realm_and_client_roles[0] : the current realm of the config
+# realm_and_client_roles[1] : the current element of the client_default_roles list
+# found_client: the found client
+# client_roles: all the roles of the found_client
+# client_default_role_mode: either "add" or "remove"
+
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- set_fact:
+    body: "{{ client_roles | json_query(query) | default([]) }}"
+  vars:
+    query: "{% if client_default_role_mode=='add' %}[?contains(`{{ realm_and_client_roles[1].add | to_json }}`, name)]{% elif client_default_role_mode=='remove' %}[?contains(`{{ realm_and_client_roles[1].remove | to_json }}`, name)]{% endif %}"
+
+- name: "{{ client_default_role_mode }} default-roles in realm {{ realm_and_client_roles[0].name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ realm_and_client_roles[0].name }}/roles/default-roles-{{ realm_and_client_roles[0].name }}/composites"
+    method: "{% if client_default_role_mode=='add' %}POST{% elif client_default_role_mode=='remove' %}DELETE{% endif %}"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      "{{ body }}"
+    status_code: 204
