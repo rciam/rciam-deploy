@@ -22,7 +22,7 @@
 
 - name: "Edit default-roles in realm {{ item[0].name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/default-roles-{{ item[0].name }}/composites"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/default-roles-{{ item[0].name | lower }}/composites"
     method: "{% if default_role_mode=='add' %}POST{% elif default_role_mode=='remove' %}DELETE{% endif %}"
     body_format: json
     headers:

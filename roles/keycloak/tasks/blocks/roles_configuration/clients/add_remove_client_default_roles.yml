@@ -17,7 +17,7 @@
 
 - name: "{{ client_default_role_mode }} default-roles in realm {{ realm_and_client_roles[0].name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ realm_and_client_roles[0].name }}/roles/default-roles-{{ realm_and_client_roles[0].name }}/composites"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ realm_and_client_roles[0].name }}/roles/default-roles-{{ realm_and_client_roles[0].name | lower }}/composites"
     method: "{% if client_default_role_mode=='add' %}POST{% elif client_default_role_mode=='remove' %}DELETE{% endif %}"
     body_format: json
     headers:
