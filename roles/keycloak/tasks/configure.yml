@@ -49,6 +49,13 @@
         - skip_missing: True
       run_once: true
 
+    - name: Configure events logging
+      include_tasks: blocks/configure_event_logging.yml
+      with_items: "{{ keycloak_config.realms | default([]) }}"
+      loop_control:
+        loop_var: current_realm_item
+      run_once: true
+
     - name: Configure AUP (Terms and Conditions)
       uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
