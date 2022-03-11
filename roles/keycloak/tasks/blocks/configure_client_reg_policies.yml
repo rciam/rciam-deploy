@@ -21,10 +21,12 @@
   with_items: "{{ current_realm.client_registration_policies.create_update | default([]) }}"
   loop_control:
     loop_var: current_cli_reg_pol
+  run_once: true
 
 - include_tasks: blocks/client_registration_policies/delete_client_reg_policy.yml
   with_items: "{{ current_realm.client_registration_policies.delete | default([]) }}"
   loop_control:
     loop_var: del_cli_reg_policy
+  run_once: true
 
 
