@@ -106,6 +106,13 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #          auth: "false"
 #          user: ""
 #          password: ""
+#      events_logging:
+#        eventsEnabled: true
+#        eventsExpiration: 47347200 # this is 548 days in seconds
+#        adminEventsDetailsEnabled: false
+#        adminEventsEnabled: true
+#        eventsListeners: ["jboss-logging"]  # optional. if you want you can override with the array with the desired ones
+#        enabledEventTypes: ["UPDATE_CONSENT_ERROR", "SEND_RESET_PASSWORD", "GRANT_CONSENT",…] # optional. if you want you can override with the array with the desired ones
 #      client_registration_policies:
 #        create_update:
 #          - name: "Allowed Client Scopes"
