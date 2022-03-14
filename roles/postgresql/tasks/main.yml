@@ -54,6 +54,13 @@
   tags:
     - always
 
+- name: Define PostgreSQL python module version
+  set_fact:
+    postgresql_psycopg2_package: "{{ postgresql_default_psycopg2_package }}"
+  when: postgresql_psycopg2_package is not defined
+  tags:
+    - always
+
 # Install OS-specific packages
 - include: install-Debian.yml
   when: ansible_os_family == 'Debian'
