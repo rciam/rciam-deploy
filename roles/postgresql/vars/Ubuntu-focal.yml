@@ -1,8 +1,8 @@
-# file: postgresql/vars/Debian-stretch.yml
+# file: postgresql/vars/Ubuntu-focal.yml
 #
 ---
 
-postgresql_default_version: "9.6"
+postgresql_default_version: "12"
 postgresql_default_conf_path: "/etc/postgresql/{{ postgresql_version }}"
 postgresql_default_data_path: "/var/lib/postgresql/{{ postgresql_version }}"
 
@@ -11,4 +11,4 @@ postgresql_default_service: "postgresql"
 postgresql_default_user: "postgres"
 postgresql_default_group: "postgres"
 
-postgresql_default_psycopg2_package: "python-psycopg2"
+postgresql_default_psycopg2_package: "python3-psycopg2"

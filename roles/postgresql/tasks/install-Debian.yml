@@ -16,7 +16,7 @@
 # using this module.
 - name: Ensure PostgreSQL python module is installed (Debian)
   apt:
-    name: python-psycopg2
+    name: "{{ postgresql_psycopg2_package }}"
     state: present
     install_recommends: no
     update_cache: yes
