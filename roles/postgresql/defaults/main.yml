@@ -216,11 +216,11 @@ postgresql_hot_standby_mode: "off"
 # If set, the PostgreSQL server will try to connect to the master using this
 # connection string and receive XLOG records continuously.
 # e.g. 'host={{ postgresql_master_host }} port={{ postgresql_master_port }}'
-postgresql_master_conninfo: null
+#postgresql_master_conninfo: "host={{ postgresql_master_host }} port={{ postgresql_master_port }} user={{ postgresql_replication_user }} password={{ postgresql_replication_password }}"
 
 # By default, a standby server keeps restoring XLOG records from the primary
 # indefinitely. If you want to stop the standby mode, finish recovery and open
 # the system in read/write mode, specify a path to a trigger file. The server
 # will poll the trigger file path periodically and start as a primary server
 # when it's found.
-postgresql_trigger_file: null
+#postgresql_trigger_file: "/tmp/postgresql.trigger.5432"

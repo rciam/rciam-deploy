@@ -309,7 +309,7 @@ wal_keep_segments = {{ postgresql_wal_keep_segments }}		# in logfile segments; 0
 
 # These settings are ignored on a master server.
 
-{% if postgresql_master_conninfo != None %}
+{% if postgresql_master_conninfo is defined %}
 primary_conninfo = '{{ postgresql_master_conninfo }}'			# connection string to sending server
 {% else %}
 #primary_conninfo = ''			# connection string to sending server
@@ -317,7 +317,7 @@ primary_conninfo = '{{ postgresql_master_conninfo }}'			# connection string to s
 					# (change requires restart)
 #primary_slot_name = ''			# replication slot on sending server
 					# (change requires restart)
-{% if postgresql_trigger_file != None %}
+{% if postgresql_trigger_file is defined %}
 promote_trigger_file = '{{ postgresql_trigger_file }}'		# file name whose presence ends recovery
 {% else %}
 #promote_trigger_file = ''		# file name whose presence ends recovery

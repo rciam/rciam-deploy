@@ -29,4 +29,4 @@
     group: "{{ postgresql_group }}"
     mode: 0640
   become: yes
-  when: postgresql_default_version is version('12', operator='lt', strict=True)
+  when: postgresql_version is version('12', '<')
