@@ -1,0 +1,50 @@
+---
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Get current keys list of realm: {{item[0].name}}"
+  include_tasks: blocks/helpers/get_realm_keys.yml
+
+- set_fact:
+    item0: "{{ item[0] }}"
+    item1: "{{ item[1] }}"
+
+- include_tasks: blocks/keys/create_javakeystores.yml
+  when: item1.keystore_config is defined
+
+- name: "Install {{ item1.providerId }} key with name '{{ item1.name }}'"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item0.name }}/components"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      name: "{{ item1.name }}"
+      providerId: "{{ item1.providerId }}"
+      providerType: org.keycloak.keys.KeyProvider #never change this
+      parentId: "{{ item0.name }}"
+      config: "{{ item1.config }}"
+    status_code: 201
+  run_once: true
+  when: keys_provideridName2id[item1.providerId + ':' + item1.name] is not defined
+
+
+- name: "Update {{ item1.providerId }} key with name '{{ item1.name }}'"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item0.name }}/components/{{ keys_provideridName2id[item1.providerId + ':' + item1.name] }}"
+    method: PUT
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      id: "{{ keys_provideridName2id[item1.providerId + ':' + item1.name] }}"
+      name: "{{ item1.name }}"
+      providerId: "{{ item1.providerId }}"
+      providerType: org.keycloak.keys.KeyProvider #never change this
+      parentId: "{{ item0.name }}"
+      config: "{{ item1.config }}"
+    status_code: 204
+  run_once: true
+  when: keys_provideridName2id[item1.providerId + ':' + item1.name] is defined

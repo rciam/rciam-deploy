@@ -158,7 +158,7 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #              - "manage-account-2fa"
 #            remove:
 #              - "view-profile"
-#      keys:
+#      keys:    ### if the (providerId,name) entry already exists in the realm, ansible updates it. If not, it creates the key. So, in any subsequent run, it updates all the config parameters of the key.
 #        - name: "rsa-sig"
 #          providerId: "rsa" #DO NOT CHANGE THIS
 #          config:
@@ -244,6 +244,32 @@ keycloak_logs_max_days: 548  # that's ~18 months
 #              - "<KEY_ALIAS>"
 #            keyPassword:
 #              - "<KEY_PASSWORD>"
+#        ## This (below) is an alternative way to setup a java keystore key AND create the underlying keystore.
+#        ## Notice the "keystore_config" variable, which is not present in the above (simple) definition
+#        - name: "java-keystore-sig"
+#          providerId: "java-keystore" #DO NOT CHANGE THIS
+#          config:
+#            keyUse:
+#              - "sig"
+#            priority:
+#              - 100
+#            enabled:
+#              - true
+#            active:
+#              - true
+#            algorithm:
+#              - "RS256"
+#          keystore_config:
+#            key_alias: "rsa-sig"
+#            keystore_password: "foobar"
+#            key_passphrase: "foobar"
+#            certificate: |
+#              -----BEGIN CERTIFICATE-----
+#              MIIDlzCCAn+gAwIBAgIUY40W77SRlRZp2DvMPm8aOZLW5tEwDQYJKoZIhvcNAQEL
+#              ...
+#              ntMwxWz0A5vcvXM=
+#              -----END CERTIFICATE-----
+#            privatekey: "{{ USE_A_VAULT_VARIABLE_HERE }}"
 #        - name: "generate-hmac"
 #          providerId: "hmac-generated" #DO NOT CHANGE THIS
 #          config:
