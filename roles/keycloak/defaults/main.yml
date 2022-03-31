@@ -41,6 +41,9 @@ keycloak_logs_folder: "/var/log/keycloak"
 
 keycloak_logs_max_days: 548  # that's ~18 months
 
+keycloak_logs_level:
+  saml: INFO
+
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)
 #keycloak_plugins:

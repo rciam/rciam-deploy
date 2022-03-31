@@ -87,6 +87,12 @@
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
+            <logger category="org.apache.xml.security.encryption.XMLCipher">
+                <level name="{{keycloak_logs_level.saml}}"/>
+            </logger>
+            <logger category="org.keycloak.saml.SAMLRequestParser">
+                <level name="{{keycloak_logs_level.saml}}"/>
+             </logger>
             <root-logger>
                 <level name="INFO"/>
                 <handlers>
