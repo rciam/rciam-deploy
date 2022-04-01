@@ -41,7 +41,7 @@ keycloak_logs_folder: "/var/log/keycloak"
 
 keycloak_logs_max_days: 548  # that's ~18 months
 
-keycloak_logs_level:
+keycloak_log_level:
   saml: INFO
 
 ### plugins
