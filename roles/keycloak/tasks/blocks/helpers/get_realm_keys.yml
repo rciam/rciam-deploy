@@ -9,7 +9,8 @@
   register: "keys_result"
 
 - set_fact:
-    keys_descr_list: "{{ keys_result.json | to_json | from_json | json_query(keys_query)}}"
-  vars:
-    keys_query: "[].join(':',[providerId, name])"
-
+    keys_provideridName2id: "{{ keys_provideridName2id | default({}) | combine( { current_key.providerId + ':' + current_key.name : current_key.id } ) }}"
+  loop_control:
+    loop_var: current_key
+  with_items:
+    - "{{ keys_result.json }}"
