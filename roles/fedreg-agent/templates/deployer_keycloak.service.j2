@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Keycloak deployer service
+
+[Service]
+User=root
+ExecStart={{ fedreg_agent_venv_path }}/bin/deployer_keycloak -c {{ fedreg_agent_conf_dir }}/deployers.config
+Restart=always
+RestartSec=60s
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

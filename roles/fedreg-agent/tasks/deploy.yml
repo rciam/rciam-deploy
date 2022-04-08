@@ -59,19 +59,19 @@
    - config
 
 
-- name: Create SSP & MitreID federation registry configuration file
+- name: Create deployer configuration file
   template:
     src: deployers.config.json.j2
     dest: "{{ fedreg_agent_conf_dir }}/deployers.config"
     backup: yes 
-  when: fedreg_agent_enable_ssp or fedreg_agent_enable_mitreid
+  when: fedreg_agent_enable_ssp or fedreg_agent_enable_mitreid or fedreg_agent_enable_keycloak
   become: yes
   tags:
    - agent
    - config
 
 
-- name: Create MitreId federation registry service file
+- name: Create MITREid deployer service file
   template:
     src: deployer_mitreid.service.j2
     dest: "{{ fedreg_agent_services_path }}/deployer_mitreid.service"
@@ -83,7 +83,19 @@
    - agent
    - service
 
-- name: Create SSP federation registry service file
+- name: Create Keycloak deployer service file
+  template:
+    src: deployer_keycloak.service.j2
+    dest: "{{ fedreg_agent_services_path }}/deployer_keycloak.service"
+    backup: yes 
+  register: keycloak_service
+  when: fedreg_agent_enable_keycloak
+  become: yes
+  tags:
+   - agent
+   - service
+
+- name: Create SSP deployer service file
   template:
     src: deployer_ssp.service.j2
     dest: "{{ fedreg_agent_services_path }}/deployer_ssp.service"
@@ -98,7 +110,7 @@
 
 - name: Reload systemd
   command: systemctl daemon-reload
-  when: mitreid_service.changed or ssp_service.changed
+  when: mitreid_service.changed or ssp_service.changed or keycloak_service.changed
   become: yes
   tags:
    - agent
@@ -106,7 +118,7 @@
    - daemon-reload
 
 
-- name: MitreId federation registry service enable
+- name: MITREid deployer service enable
   service:
     name: deployer_mitreid
     #pattern: "{{ fedreg_agent_services_path }}/deployer_mitreid.service"
@@ -119,7 +131,20 @@
    - service
    - service_enable
 
-- name: SSP federation registry service enable
+- name: Keycloak deployer service enable
+  service:
+    name: deployer_keycloak
+    #pattern: "{{ fedreg_agent_services_path }}/deployer_keycloak.service"
+    enabled: yes
+    state: started
+  when: fedreg_agent_enable_keycloak
+  become: yes
+  tags:
+   - agent
+   - service
+   - service_enable
+
+- name: SSP deployer service enable
   service:
     name: deployer_ssp
     #pattern: "{{ fedreg_agent_services_path }}/deployer_ssp.service"
@@ -131,4 +156,3 @@
    - agent
    - service
    - service_enable
-

@@ -17,6 +17,7 @@ fedreg_agent_services_path: /etc/systemd/system
 fedreg_agent_log_conf: "{{ fedreg_agent_conf_dir }}/logger.conf"
 fedreg_agent_enable_ssp: no
 fedreg_agent_enable_mitreid: no
+fedreg_agent_enable_keycloak: no
 
 
 # Federation registry agent parameters
@@ -43,6 +44,18 @@ fedreg_agent_ssp:
 fedreg_agent_mitreid:
   id: "pull-sub-agent-id"
   url: "https://mitreid.host"
+  pull_topic: "ams-topic"
+  pull_sub: "ams-sub"
+  refresh_token: "token"
+  client_id: "clientId"
+  client_secret: "secret"
+
+
+## Keycloak
+fedreg_agent_keycloak:
+  id: "pull-sub-agent-id"
+  auth_server: "https://example.com/auth"
+  realm: "example"
   pull_topic: "ams-topic"
   pull_sub: "ams-sub"
   refresh_token: "token"
