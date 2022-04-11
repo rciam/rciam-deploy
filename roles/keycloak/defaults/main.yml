@@ -161,6 +161,10 @@ keycloak_log_level:
 #              - "manage-account-2fa"
 #            remove:
 #              - "view-profile"
+#     # For key rotation: whenever you need to rotate keys, this should normally be done as follows:
+#     # Step 1: You need to add new keypairs, so you need to have both the new and the previous keys (4 keypairs) active in the realm. So you rename the placeholders "current" keys (in vault and in this file) as "previous", and you add two new keypairs (sig and enc) which will get the "current" linking in the vault.
+#     # Step 2: Transition period is over, so you just mark the "previous" keys as (enabled: false) and (active: false). This means that the keys exist in the realm, but they are never used.
+#     # Step 3: Rotation day has come, so you need to add new keys, thus, perform step 1.
 #      keys:    ### if the (providerId,name) entry already exists in the realm, ansible updates it. If not, it creates the key. So, in any subsequent run, it updates all the config parameters of the key.
 #        - name: "rsa-sig"
 #          providerId: "rsa" #DO NOT CHANGE THIS
