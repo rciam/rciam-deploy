@@ -1,10 +1,8 @@
 ---
 # tasks file for fedreg-agent
 
-
 - name: Configuration tasks
   include: "configure-common.yml"
 
-- name: Deloy tasks
+- name: Deploy tasks
   include: "deploy.yml"
-
