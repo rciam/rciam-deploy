@@ -1,19 +1,17 @@
 ---
 # tasks file for fedreg-agent
 
-
 - name: Install basic common utils
   package:
-   name: "{{ item }}"
-   state: latest
+    name: "{{ item }}"
+    state: latest
   loop:
-   - git
-   - python3-pip
+    - git
+    - python3-pip
   become: yes
   tags:
-   - agent
-   - basic_common_utils
-
+    - agent
+    - basic_common_utils
 
 - name: Upgrade pip3
   pip:
@@ -23,9 +21,8 @@
     executable: pip3
   become: yes
   tags:
-   - agent
-   - python
-
+    - agent
+    - python
 
 - name: Install Virtualenv via pip3
   pip:
@@ -34,7 +31,5 @@
     executable: pip3
   become: yes
   tags:
-   - agent
-   - python
-
-
+    - agent
+    - python
