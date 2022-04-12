@@ -129,20 +129,24 @@
 ### wayf plugin configuration
 - name: Configure wayf plugin
   block:
+    - name: Acquire tokens
+      include_tasks: blocks/helpers/get_tokens.yml
     - name: Select wayf plugin for login UI
-      community.general.keycloak_realm:
-        auth_client_id: admin-cli
-        auth_keycloak_url: "{{ keycloak_proxy_host }}"
-        auth_realm: master
-        auth_username: "{{ keycloak_admin.user }}"
-        auth_password: "{{ keycloak_admin.pass }}"
-        id: "{{ item.name }}"
-        realm: "{{ item.name }}"
-        login_theme: "{{ keycloak_plugins.wayf.theme.name }}"
-        connection_timeout: 60
-        state: present
+      uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}"
+        method: "PUT"
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          "{{ body_payload }}"
+        status_code: "204"
       with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
       run_once: true
+      vars:
+        - body_payload:
+            loginTheme: "{{ keycloak_plugins.wayf.theme.name }}"
+            accountTheme: "{{ keycloak_plugins.wayf.theme.name }}"
     - name: "Setting additional theme stuff (config, terms of use)"
       include_tasks: blocks/configure_theme.yml
       with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
