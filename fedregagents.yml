@@ -6,11 +6,11 @@
 - name: RCIAM federation registry agent demo
   hosts: fedreg_agents_demo
   roles:
-    - { role: fedreg-agent,    tags: agent }
+    - { role: fedreg-agent,    tags: agent_demo }
 
 
 - name: RCIAM federation registry agent production
   hosts: fedreg_agents_prod
   roles:
-    - { role: fedreg-agent,    tags: agent }
+    - { role: fedreg-agent,    tags: agent_prod }
 
