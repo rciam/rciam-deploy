@@ -3,6 +3,7 @@
 build_branch: devel
 deployer_ssp_name: deployer_ssp_demo
 deployer_mitreid_name: deployer_mitreid_demo
+deployer_keycloak_name: deployer_keycloak_demo
 deployers_config_name: deployers_demo.config
 
 # Virtualenv path
