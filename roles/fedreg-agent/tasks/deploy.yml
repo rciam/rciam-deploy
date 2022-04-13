@@ -4,7 +4,7 @@
 - name: Download only the requirements.txt from rciam-federation-registry-agent repository
   get_url:
     url: "{{ fedreg_agent_registry_requirements_url }}"
-    dest: /tmp/requirements.txt
+    dest: /tmp/requirements_{{ build_branch }}.txt
   become: yes
   tags:
     - agent
@@ -12,8 +12,8 @@
     - requirements
 
 - name: Install python requirements
-  pip:
-    requirements: /tmp/requirements.txt
+  pip: 
+    requirements: /tmp/requirements_{{ build_branch }}.txt
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_python: "{{ fedreg_agent_venv_python }}"
   become: yes
@@ -23,16 +23,32 @@
     - requirements
 
 - name: Install rciam-federation-registry-agent (test.pypi.org)
+  when: build_branch == "devel"
   pip:
     name: rciam-federation-registry-agent
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_python: "{{ fedreg_agent_venv_python }}"
     extra_args: -i https://test.pypi.org/simple/
+    state: latest
   become: yes
   tags:
     - agent
     - python
     - requirements
+
+- name: Install rciam-federation-registry-agent
+  when: build_branch == "master"
+  pip:
+    name: rciam-federation-registry-agent
+    virtualenv: "{{ fedreg_agent_venv_path }}"
+    virtualenv_python: "{{ fedreg_agent_venv_python }}"
+    state: latest
+  become: yes
+  tags:
+   - agent
+   - python
+   - requirements
+
 
 - name: "Ensure {{ fedreg_agent_conf_dir }} dir exists"
   file:
@@ -52,98 +68,3 @@
   tags:
     - agent
     - config
-
-- name: Create deployer configuration file
-  template:
-    src: deployers.config.json.j2
-    dest: "{{ fedreg_agent_conf_dir }}/deployers.config"
-    backup: yes
-  when: fedreg_agent_enable_ssp or fedreg_agent_enable_mitreid or fedreg_agent_enable_keycloak
-  become: yes
-  tags:
-    - agent
-    - config
-
-- name: Create MITREid deployer service file
-  template:
-    src: deployer_mitreid.service.j2
-    dest: "{{ fedreg_agent_services_path }}/deployer_mitreid.service"
-    backup: yes
-  register: mitreid_service
-  when: fedreg_agent_enable_mitreid
-  become: yes
-  tags:
-    - agent
-    - service
-
-- name: Create Keycloak deployer service file
-  template:
-    src: deployer_keycloak.service.j2
-    dest: "{{ fedreg_agent_services_path }}/deployer_keycloak.service"
-    backup: yes
-  register: keycloak_service
-  when: fedreg_agent_enable_keycloak
-  become: yes
-  tags:
-    - agent
-    - service
-
-- name: Create SSP deployer service file
-  template:
-    src: deployer_ssp.service.j2
-    dest: "{{ fedreg_agent_services_path }}/deployer_ssp.service"
-    backup: yes
-  register: ssp_service
-  when: fedreg_agent_enable_ssp
-  become: yes
-  tags:
-    - agent
-    - service
-
-- name: Reload systemd
-  command: systemctl daemon-reload
-  when: mitreid_service.changed or ssp_service.changed or keycloak_service.changed
-  become: yes
-  tags:
-    - agent
-    - service
-    - daemon-reload
-
-- name: MITREid deployer service enable
-  service:
-    name: deployer_mitreid
-    #pattern: "{{ fedreg_agent_services_path }}/deployer_mitreid.service"
-    enabled: yes
-    state: started
-  when: fedreg_agent_enable_mitreid
-  become: yes
-  tags:
-    - agent
-    - service
-    - service_enable
-
-- name: Keycloak deployer service enable
-  service:
-    name: deployer_keycloak
-    #pattern: "{{ fedreg_agent_services_path }}/deployer_keycloak.service"
-    enabled: yes
-    state: started
-  when: fedreg_agent_enable_keycloak
-  become: yes
-  tags:
-    - agent
-    - service
-    - service_enable
-
-- name: SSP deployer service enable
-  service:
-    name: deployer_ssp
-    #pattern: "{{ fedreg_agent_services_path }}/deployer_ssp.service"
-    enabled: yes
-    state: started
-  when: fedreg_agent_enable_ssp
-  become: yes
-  tags:
-    - agent
-    - service
-    - service_enable

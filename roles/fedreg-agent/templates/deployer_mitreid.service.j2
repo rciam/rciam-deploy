@@ -1,11 +1,11 @@
 # {{ ansible_managed }}
 
 [Unit]
-Description=MitreId deployer service
+Description=MitreId deployer service {{ build_branch }}
 
 [Service]
 User=root
-ExecStart={{ fedreg_agent_venv_path }}/bin/deployer_mitreid -c {{ fedreg_agent_conf_dir }}/deployers.config
+ExecStart={{ fedreg_agent_venv_path }}/bin/deployer_mitreid -c {{ fedreg_agent_conf_dir }}/{{ deployers_config_name }}
 Restart=always
 RestartSec=60s
 Type=simple

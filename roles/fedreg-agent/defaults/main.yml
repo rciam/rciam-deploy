@@ -1,13 +1,18 @@
 ---
 # defaults file for fedreg-agent
+build_branch: devel
+deployer_ssp_name: deployer_ssp_demo
+deployer_mitreid_name: deployer_mitreid_demo
+deployer_keycloak_name: deployer_keycloak_demo
+deployers_config_name: deployers_demo.config
 
 # Virtualenv path
 fedreg_agent_venv_python: "python3"
-fedreg_agent_venv_path: "/srv/fedregistryagent"
-fedreg_agent_conf_dir: "/etc/fedregistryagent"
+fedreg_agent_venv_path: "/srv/fedregistryagent_{{ build_branch }}"
+fedreg_agent_conf_dir: "/etc/fedregistryagent_{{ build_branch }}"
 
 # Git
-fedreg_agent_registry_requirements_url: "https://raw.githubusercontent.com/rciam/rciam-federation-registry-agent/devel/requirements.txt"
+fedreg_agent_registry_requirements_url: "https://raw.githubusercontent.com/rciam/rciam-federation-registry-agent/{{ build_branch }}/requirements.txt"
 
 # Service
 fedreg_agent_services_path: /etc/systemd/system
