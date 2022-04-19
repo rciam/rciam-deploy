@@ -34,3 +34,5 @@ rciam_oidc_clients: []
 #      manage_token_link: "{{ manage_token_note }}manage/user/services"
 #      session_name: "oidc-client"
 #      session_lifetime: "60*60"
+#      allow_introspection: True
+#      enable_active_tokens_table: False
