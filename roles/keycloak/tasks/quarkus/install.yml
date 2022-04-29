@@ -1,0 +1,236 @@
+---
+
+## start the installation of keycloak
+
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "os/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "os/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "os/{{ ansible_distribution }}.yml"
+    - "os/{{ ansible_os_family }}.yml"
+  tags:
+    - always
+
+- name: Include keycloak-specific variables
+  include_vars: "keycloak/{{ keycloak_version }}.yml"
+  tags:
+    - always
+
+### Install Java with OS-specific packages
+- include: "java/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+  tags:
+    - always
+
+### create keycloak_service_user
+- name: Create Keycloak service user/group
+  user:
+    name: "{{ keycloak_service_user }}"
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+    system: yes
+    create_home: no
+  become: yes
+  tags:
+    - always
+
+### setup the logs folder (also do some actions to preserve backwards compatibility)
+- name: "Setup logs folder"
+  include_tasks: "blocks/helpers/setup_logs_folder.yml"
+  tags: "keycloak:install:setup_logs_folder"
+
+#### Extract keycloak from archive
+- block:
+  - name: "Task block: Download keycloak"
+    block:
+      - name: Create keycloak temp directory
+        file:
+          path: "/tmp/keycloak-tmp"
+          state: directory
+      - name: Download keycloak archive file
+        get_url:
+          url: "{{ keycloak_archive_url }}"
+          dest: "/tmp/keycloak_archive"
+          timeout: 30
+      - name: Compute sha1 hash of archive
+        stat:
+          path: "/tmp/keycloak_archive"
+          checksum_algorithm: sha1
+        register: keycloak_sha1
+      - name: Create keycloak_home if not exists
+        file:
+          path: "{{ keycloak_home }}"
+          state: directory
+      - name: create empty file if not exists
+        copy:
+          dest: "{{ keycloak_home }}/sha1"
+          content: ""
+          force: no
+      - name: Previous sha1
+        shell: "cat {{ keycloak_home }}/sha1"
+        register: previous_sha1
+      - name: "Compare sha1"
+        set_fact:
+          is_same_archive: "{{ true if keycloak_sha1.stat.checksum == previous_sha1.stdout else false }}"
+    become: yes
+
+  - name: "Task block: Extract keycloak"
+    block:
+      - name: unpack keycloak
+        unarchive:
+          src: "/tmp/keycloak_archive"
+          dest: "/tmp/keycloak-tmp"
+          remote_src: yes
+          extra_opts: "--no-same-owner" #since it's run with elevated priviledges, to avoid preserving ownership from the archive
+      - name: Find keycloak extracted folder name
+        find:
+          paths: /tmp/keycloak-tmp
+          patterns: 'keycloak*'
+          file_type: directory
+          recurse: no
+        register: find_result
+      - name: Remove any previous installation
+        file:
+          path: "{{ keycloak_home }}"
+          state: absent
+      - name: Move extracted keycloak to final keycloak folder
+        command: "mv {{ find_result.files[0].path }} {{ keycloak_home }}"
+        args:
+          removes: "{{ find_result.files[0].path }}"
+          creates: "{{ keycloak_home }}"
+
+      - name: Store previous sha1
+        copy:
+          dest: "{{ keycloak_home }}/sha1"
+          content: "{{ keycloak_sha1.stat.checksum }}"
+    become: yes
+    when: not is_same_archive
+
+  always:
+    - name: Delete downloaded archive
+      file:
+        path: "/tmp/keycloak_archive"
+        state: absent
+  become: yes
+  tags: "keycloak:install:download_extract"
+
+
+######### Install configuration templates
+
+- block:
+
+    - name: Installing keycloak main configuration (keycloak.conf)
+      template:
+        mode: 0644
+        src: "templates/{{ keycloak_version }}/keycloak.conf.j2"
+        dest: "{{ keycloak_home }}/conf/keycloak.conf"
+      become: yes
+
+    - name: Installing keycloak cache configuration
+      template:
+        mode: 0644
+        src: "templates/{{ keycloak_version }}/cache-ispn-jdbc-ping.xml.j2"
+        dest: "{{ keycloak_home }}/conf/cache-ispn-jdbc-ping.xml"
+      become: yes
+
+    - name: Installing keycloak quarkus configuration
+      template:
+        mode: 0644
+        src: "templates/{{ keycloak_version }}/quarkus.properties.j2"
+        dest: "{{ keycloak_home }}/conf/quarkus.properties"
+      become: yes
+
+  tags: "keycloak:install:config"
+
+
+##### Set keycloak working dir and logs writable for service user
+- block:
+    - name: "Setting data folder writable for user: {{ keycloak_service_user }}"
+      file:
+        dest: "{{ keycloak_home }}/data"
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
+        recurse: yes
+    - name: "Setting lib folder writable for user: {{ keycloak_service_user }}"
+      file:
+        dest: "{{ keycloak_home }}/lib"
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
+        recurse: yes
+  become: yes
+  tags: "keycloak:install:setup_file_permissions"
+
+#### Setup logcleaner script
+- name: "Task block: Setup logcleaner script"
+  block:
+    - name: "Ensure the logs folder exists"
+      file:
+        path: "{{ keycloak_logs_folder }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
+        recurse: yes
+    - name: "Install the logcleaner script template"
+      template:
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
+        mode: 0644
+        src: templates/logcleaner.sh.j2
+        dest: "{{ keycloak_home }}/logcleaner.sh"
+    - name: "Create the cronjob"
+      cron:
+        name: keycloak logcleaner
+        day: "*"
+        hour: "0"
+        minute: "0"
+        user: "{{ keycloak_service_user }}"
+        job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_logs_folder }} {{ keycloak_logs_max_days }}"
+  become: yes
+  tags: "keycloak:install:setup_logcleaner"
+
+
+### install other plugins
+
+# would loop over block of tasks within install_plugin.yml, but looping on blocks is not allowed in ansible
+- name: Install other plugins
+  include_tasks: "quarkus/install_plugin.yml"
+  when: not keycloak_plugins is undefined
+  loop: "{{ lookup('dict', keycloak_plugins, wantlist=True) }}"
+  tags: "keycloak:install:plugins"
+
+
+############### Setup keycloak as a service
+
+- name: "Task block: Setup keycloak as a service"
+  block:
+    - name: keycloak systemd setup
+      template:
+        owner: root
+        group: root
+        mode: 0644
+        src: templates/keycloak.service.quarkus.j2
+        dest: /etc/systemd/system/keycloak.service
+      become: yes
+  tags: "keycloak:install:setup_sys_service"
+
+- name: "Restart keycloak"
+  systemd:
+    name: keycloak
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  environment: # See this https://www.keycloak.org/docs/latest/server_admin/index.html#creating-the-account-remotely
+    KEYCLOAK_ADMIN: "{{ keycloak_admin.user }}"
+    KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_admin.pass }}"
+  become: yes
+  tags: "keycloak:install:restart_sys_service"
+
+##### configure keycloak
+
+- name: Configure various keycloak aspects
+  import_tasks: "configure.yml"
+  tags: "keycloak:config"
+
+
+
