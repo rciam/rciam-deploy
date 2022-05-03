@@ -123,8 +123,8 @@
                     <connection-url>jdbc:postgresql://{{keycloak_db_host}}/{{keycloak_db.name}}</connection-url>
                     <driver>postgresql</driver>
                     <security>
-                        <user-name>{{keycloak_db.user}}</user-name>
-                        <password>{{keycloak_db.pass}}</password>
+                        <user-name>{{ keycloak_db.user }}</user-name>
+                        <password>{{ keycloak_db.pass | escape }}</password>
                     </security>
                 </datasource>
                 <drivers>
