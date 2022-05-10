@@ -202,16 +202,14 @@
 
 ############### Setup keycloak as a service
 
-- name: "Task block: Setup keycloak as a service"
-  block:
-    - name: keycloak systemd setup
-      template:
-        owner: root
-        group: root
-        mode: 0644
-        src: templates/keycloak.service.quarkus.j2
-        dest: /etc/systemd/system/keycloak.service
-      become: yes
+- name: "Setup keycloak as a service"
+  template:
+    owner: root
+    group: root
+    mode: 0644
+    src: templates/keycloak.service.quarkus.j2
+    dest: /etc/systemd/system/keycloak.service
+  become: yes
   tags: "keycloak:install:setup_sys_service"
 
 - name: "Restart keycloak"
@@ -220,9 +218,6 @@
     state: restarted
     daemon_reload: yes
     enabled: yes
-  environment: # See this https://www.keycloak.org/docs/latest/server_admin/index.html#creating-the-account-remotely
-    KEYCLOAK_ADMIN: "{{ keycloak_admin.user }}"
-    KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_admin.pass }}"
   become: yes
   tags: "keycloak:install:restart_sys_service"
 
