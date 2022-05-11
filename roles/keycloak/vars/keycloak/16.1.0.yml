@@ -1,5 +1,10 @@
 ---
 
+keycloak_federation:
+  saml:
+    api_path: "identity-provider-federation"
+    representation_entity: "identityProvidersFederations"
+
 namespaces:
   domain: "urn:jboss:domain:19.0"
   domain_server: "urn:jboss:domain:keycloak-server:1.1"

@@ -26,7 +26,7 @@
 
 - name: "{% if mapper_exists %} Update {% else %} Create {% endif %} federation mapper {{ mapper.name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers{% if mapper_exists %}/{{ body.id }}{% endif %}"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers{% if mapper_exists %}/{{ body.id }}{% endif %}"
     method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
     body_format: json
     headers:
@@ -40,7 +40,7 @@
 # You should execute it only when you are sure that the federation(s) are fully populated
 - name: Apply mappers (propagate) to federation IdP(s)
   uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}/idp/add"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}/idp/add"
     method: POST
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
