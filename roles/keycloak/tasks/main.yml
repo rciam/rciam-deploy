@@ -1,7 +1,7 @@
 ---
 
 - import_tasks: "quarkus/install.yml"
-  when: keycloak_version.split('.')[0] | int >= 17
+  when: keycloak_version.split('.')[0] | int >= 18
 
 - import_tasks: "wildfly/install.yml"
-  when: keycloak_version.split('.')[0] | int < 17
+  when: keycloak_version.split('.')[0] | int < 18

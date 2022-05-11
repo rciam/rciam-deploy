@@ -200,6 +200,18 @@
   tags: "keycloak:install:plugins"
 
 
+#### setup admin user (it's just adding a file with env variables which are picked up by keycloak upon startup)
+- name: "Set env variables for admin user configuration"
+  template:
+    owner: "{{ keycloak_service_user }}"
+    group: "{{ keycloak_service_user }}"
+    mode: 0644
+    src: "templates/{{ keycloak_version }}/env.conf.j2"
+    dest: "{{ keycloak_home }}/conf/env.conf"
+  become: yes
+  tags: "keycloak:config:setup_admin_user"
+
+
 ############### Setup keycloak as a service
 
 - name: "Setup keycloak as a service"
