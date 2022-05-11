@@ -115,10 +115,11 @@
   tags: "keycloak:install:download_extract"
 
 
-- name: "Installation mode determined: {{ keycloak_deployment_mode }}. Importing mode specific tasks"
-  import_tasks: "{{ keycloak_deployment_mode }}/install.yml"
-  vars:
-    - keycloak_deployment_mode: "{% if keycloak_version.split('.')[0] | int >= 18 %}quarkus{% elif keycloak_version.split('.')[0] | int < 18 %}wildfly{% endif %}"
+- import_tasks: "quarkus/install.yml"
+  when: keycloak_version.split('.')[0] | int >= 18
+
+- import_tasks: "wildfly/install.yml"
+  when: keycloak_version.split('.')[0] | int < 18
 
 
 ##### configure keycloak
