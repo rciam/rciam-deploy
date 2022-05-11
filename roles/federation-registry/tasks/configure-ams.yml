@@ -1,7 +1,8 @@
 ---
   - name: Create deployment_response topic
+
     uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}?key={{ federation_registry_ams.token }}"
+      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}?key={{ federation_registry_ams.admin_token }}"
       method: PUT
       return_content: yes
     register: response
@@ -11,7 +12,7 @@
   - name: Modify acl for topic
     run_once: true
     uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}:modifyAcl?key={{ federation_registry_ams.token }}"
+      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}:modifyAcl?key={{ federation_registry_ams.admin_token }}"
       body: "{{lookup('template','ams_authorized_users.j2')}}"
       method: POST
       return_content: yes
@@ -21,7 +22,7 @@
 
   - name: Delete express push subscription
     uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}?key={{ federation_registry_ams.token }}"
+      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}?key={{ federation_registry_ams.admin_token }}"
       method: DELETE
       return_content: yes
     register: response
@@ -30,7 +31,7 @@
 
   - name: Create express push subscription
     uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}?key={{ federation_registry_ams.token }}"
+      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}?key={{ federation_registry_ams.admin_token }}"
       method: PUT
       body: "{{lookup('template','ams_push_body.j2')}}"
       headers:
@@ -42,13 +43,23 @@
 
   - name: Get express push subscription
     uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}?key={{ federation_registry_ams.token }}"
+      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}?key={{ federation_registry_ams.admin_token }}"
       method: GET
       return_content: yes
     register: get_ams_push_response
     ignore_errors: yes
     run_once: true
     when: "post_ams_push_config_response is defined"
+
+  - name: Modify Acl for Push Subscription
+    uri:
+      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:modifyAcl?key={{ federation_registry_ams.admin_token }}"
+      body: "{{lookup('template','ams_authorized_users.j2')}}"
+      method: POST
+      headers:
+        Content-Type: "application/json"
+      body_format: json
+    run_once: true
 
   - name: Save Ams Facts
     run_once: true

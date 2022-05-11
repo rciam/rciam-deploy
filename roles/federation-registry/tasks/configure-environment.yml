@@ -2,8 +2,6 @@
   - name: Install dependencies
     apt:
       pkg:
-        - postgresql
-        - postgresql-contrib
         - curl
         - git
         - nginx
