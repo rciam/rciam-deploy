@@ -6,10 +6,6 @@ keycloak_version: "15.0.2"
 # if the keycloak archive is from the "stage" branch, then you might enable the wayf plugin (keycloak-theme-vanilla)
 keycloak_archive_url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_version }}/keycloak-{{ keycloak_version }}.tar.gz"
 
-## if set to true, any existing installation will moved aside (not deleted) and the new keycloak from the archive will be installed.
-## if a different database is defined, the installation will be a clear one. If the same (previous) database is used, it will upgrade to the new version.
-keycloak_is_upgrade: false
-
 keycloak_service_user: "keycloak"
 
 # Extra run params used in the keycloak systemd service. Multiple `-D` params can be specified.  E.g. uncomment the following to enable technology preview features
