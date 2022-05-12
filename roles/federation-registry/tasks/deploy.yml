@@ -56,7 +56,7 @@
       dest: "{{federation_registry_express_path}}/db-config/db-config.json"
       backup: yes
 
-  - name: Expres env
+  - name: Express env
     template:
       src: express-env.j2
       dest: "{{federation_registry_express_path}}/JavaScript/.env"
@@ -66,6 +66,12 @@
     template:
       src: ams-env.j2
       dest: "{{federation_registry_ams_agent_path}}/.env"
+      backup: yes
+
+  - name: Agent config
+    template:
+      src: ams_authorized_users.j2
+      dest: "{{federation_registry_ams_agent_path}}/config.json"
       backup: yes
 
   - name: delete existing pm2 processes if running
@@ -120,7 +126,7 @@
   - name: Verify push endpoint if not verified
     run_once: true
     uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:verifyPushEndpoint?key={{ federation_registry_ams.token }}"
+      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:verifyPushEndpoint?key={{ federation_registry_ams.admin_token }}"
       method: POST
       return_content: yes
       headers:

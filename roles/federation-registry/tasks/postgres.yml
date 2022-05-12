@@ -4,7 +4,7 @@
 
 - name: Send Create Tables SQL File
   copy:
-    src: private_files/setup_db.sql
+    src: create_tables.sql
     dest: "{{rciam_dbs.federation.script_path}}"
 
 - name: Create PostgreSQL tables for Federation Registry via SQL scripts
