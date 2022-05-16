@@ -14,6 +14,7 @@
     body: "{{ item.terms }}"
     status_code: 201
   when: not item.terms is undefined
+
 - name: "Add {{keycloak_plugins.wayf.theme.name}} theme's configuration for the realm {{ item.name }}"
   uri:
     url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/theme-info/theme-config"
@@ -24,5 +25,45 @@
     body: "{{ item.config }}"
     status_code: 201
   when: not item.config is undefined
+
+
+- block:
+
+  - name: "Ensure resource folder for realm exists"
+    file:
+      path: "{{ keycloak_home }}/standalone/theme-config/resources/{{ item.name }}"
+      state: directory
+      mode: '0755'
+      recurse: yes
+
+  - name: "Add resource files"
+    copy:
+      src: "{{ theme_realm_resource.path }}"
+      dest: "{{ keycloak_home }}/standalone/theme-config/resources/{{ item.name }}/{{ theme_realm_resource.filename }}"
+      owner: "{{ keycloak_service_user }}"
+      group: "{{ keycloak_service_user }}"
+      mode: '0644'
+    loop_control:
+      loop_var: theme_realm_resource
+    with_items: "{{ item.resources | default([]) }}"
+
+  become: yes
+
+##### Alternative way for above block (using the REST API, for ansible versions >= 2.10 )
+#    - name: "Add resource files"
+#      uri:
+#        url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/theme-info/resource/{{ theme_realm_resource.filename }}"
+#        method: POST
+#        headers:
+#          Authorization: "Bearer {{ tokens.json.access_token }}"
+#        body_format: form-multipart
+#        body:
+#          file:
+#            filename: "{{ theme_realm_resource.path }}"
+#            mime_type: application/octet-stream
+#        status_code: 201
+#      loop_control:
+#        loop_var: theme_realm_resource
+#      with_items: "{{ item.resources | default([]) }}"
 
 
