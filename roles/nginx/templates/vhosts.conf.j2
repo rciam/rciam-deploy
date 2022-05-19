@@ -20,6 +20,18 @@ upstream {{ upstream_group.name }} {
 {% endfor %}
 }
 {% endfor %}
+
+{% if nginx_geo is defined %}
+{% for geos in nginx_geo %}
+geo {{ geos.name }} {
+{% for ip_range in geos.ip_ranges %}
+    {{ ip_range.range }} {{ ip_range.allow | default(0) }};
+{% endfor %}
+    default {{ geos.default }};
+}
+{% endfor %}
+{% endif %}
+
 {% for vhost in nginx_vhosts %}
 
 server {

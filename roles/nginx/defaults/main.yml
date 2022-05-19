@@ -33,6 +33,8 @@ nginx_ssl_certificate_key_file_mode: "0600"
 # Number of bits used for generating DH parameter set
 nginx_dhparam_size: 2048 
 
+nginx_enable_rsyslog_pgsql_logs: false
+
 #nginx_upstream_groups: 
 #  - name: "web_backend"
 #    servers:

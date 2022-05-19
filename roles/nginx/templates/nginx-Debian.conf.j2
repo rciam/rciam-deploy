@@ -56,10 +56,13 @@ http {
 	##
 	# Logging Settings
 	##
-
+{% if nginx_enable_rsyslog_pgsql_logs == false %}
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log;
-
+{% else %}
+	access_log syslog:server=unix:/dev/log,tag=nginx,nohostname,severity=info combined;
+	error_log  syslog:server=unix:/dev/log,tag=nginx,nohostname,severity=error;
+{% endif %}
 	##
 	# Gzip Settings
 	##
