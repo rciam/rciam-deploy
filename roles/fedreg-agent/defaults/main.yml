@@ -59,3 +59,7 @@ fedreg_agent_enable_keycloak: no
 #   refresh_token: "token"
 #   client_id: "clientId"
 #   client_secret: "secret"
+#   service_account:
+#     attribute_name: "voPersonID"
+#     candidate: "id"
+#     scope: "example.org"
