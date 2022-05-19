@@ -17,7 +17,12 @@
         "refresh_token": "{{ fedreg_agent_keycloak.refresh_token }}",
     {% endif %}
         "client_id": "{{ fedreg_agent_keycloak.client_id }}",
-        "client_secret": "{{ fedreg_agent_keycloak.client_secret }}"
+        "client_secret": "{{ fedreg_agent_keycloak.client_secret }}",
+        "service_account": {
+            "attribute_name": "{{ fedreg_agent_keycloak.service_account.attribute_name }}",
+            "candidate": "{{ fedreg_agent_keycloak.service_account.candidate }}",
+            "scope": "{{ fedreg_agent_keycloak.service_account.scope }}"
+        }
     },
 {% endif %}
 {% if fedreg_agent_enable_mitreid | bool == True %}
