@@ -1,0 +1,3 @@
+---
+rsyslog_service: rsyslog
+rsyslogd_path: /etc/rsyslog.d

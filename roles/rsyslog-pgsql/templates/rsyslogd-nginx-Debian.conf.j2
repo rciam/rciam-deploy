@@ -1,0 +1,13 @@
+##
+# {{ ansible_managed }}
+##
+
+if $syslogfacility-text == 'local7' and $syslogseverity-text == 'info' and $programname == 'nginx' then /var/log/nginx/access.log
+if $syslogfacility-text == 'local7' and $syslogseverity-text == 'error' and $programname == 'nginx' then /var/log/nginx/error.log
+
+$ActionQueueType LinkedList # use asynchronous processing
+$ActionQueueFileName dbq # set file name, also enables disk mode
+
+module(load="ompgsql")
+$template SQLWithProcessID2,"insert into syslogs (service, log_message, created) values ('%programname%', E'%msg%', '%timereported:::date-pgsql%')",sql
+if $syslogfacility-text == 'local7' and $programname == 'nginx' then :ompgsql:{{ groups['dbmaster'][0] }},{{ rciam_dbs.proxy.name }},{{ rciam_dbs.proxy.owner_username }},{{ rciam_dbs.proxy.owner_password }};SQLWithProcessID2
