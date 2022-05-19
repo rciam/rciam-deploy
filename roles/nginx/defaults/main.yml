@@ -31,7 +31,7 @@ nginx_ssl_certificate_key_file_mode: "0600"
 # Uncomment to generate file with custom DH parameters for DHE ciphers
 #nginx_dhparam_file: "dhparam.pem"
 # Number of bits used for generating DH parameter set
-nginx_dhparam_size: 2048 
+nginx_dhparam_size: 2048
 
 nginx_enable_rsyslog_pgsql_logs: false
 
