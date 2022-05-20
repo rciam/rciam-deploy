@@ -62,6 +62,9 @@ keycloak_log_level:
 #      add_to_realms:
 #        - name: "demo"
 #          terms: "{{ lookup('file', inventory_dir + '/group_vars/keycloak/terms/einfra.html') }}"
+#          resources:
+#            - filename: "logo.png"
+#              path: "{{ inventory_dir + '/files/web/vhosts/' + rciam_hostname + '/static/resources/images/logo.png' }}"
 #          config:
 #            ribbonText:
 #              - "Demo"
