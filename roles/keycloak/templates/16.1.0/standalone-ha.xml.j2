@@ -126,6 +126,11 @@
                         <user-name>{{ keycloak_db.user }}</user-name>
                         <password>{{ keycloak_db.pass | escape }}</password>
                     </security>
+                    <validation>
+                        <check-valid-connection-sql>select 1</check-valid-connection-sql>
+                        <background-validation>true</background-validation>
+                        <background-validation-millis>15000</background-validation-millis>
+                   </validation>
                 </datasource>
                 <drivers>
                     <driver name="postgresql" module="org.postgresql">
