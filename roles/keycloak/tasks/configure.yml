@@ -1,6 +1,6 @@
 ---
 
-# this is an important block! Do now remove
+# this is an important block! Do not remove
 - name: Wait for keycloak to initialize
   block:
   - name: Ensure Keycloak service is running
@@ -8,21 +8,21 @@
       name: "keycloak"
       state: "started"
     become: yes
+  - set_fact:
+      keycloak_local_address: "{% if ansible_facts.default_ipv4.address is defined %}{{ ansible_facts.default_ipv4.address }}{% elif ansible_facts.default_ipv6.address is defined %}{{ ansible_facts.default_ipv6.address }}{% else %}localhost{% endif %}"
   #wait for port to open
   - name: Waiting for service port to be opened...
     wait_for:
-      host: "{{ ansible_facts.default_ipv4.address }}"
+      host: "{{ keycloak_local_address }}"
       port: 8080
       delay: 10
       timeout: 180
   #wait for service to respond
   - name: Waiting for service to be up and running...
     uri:
-      url: "http://{{ check_local_address }}:8080/{{ keycloak_base_url_path }}"
+      url: "http://{{ keycloak_local_address }}:8080/{{ keycloak_base_url_path }}"
       status_code: "200"
       timeout: 600
-    vars:
-      check_local_address: "{% if ansible_facts.default_ipv4.address is defined %}{{ ansible_facts.default_ipv4.address }}{% elif ansible_facts.default_ipv6.address is defined %}{{ ansible_facts.default_ipv6.address }}{% else %}localhost{% endif %}"
 
 
 - name: Acquire tokens
