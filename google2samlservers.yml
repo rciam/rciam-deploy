@@ -9,8 +9,8 @@
     - { role: ssp, tags: ssp }
     - { role: ssp-modules, tags: ssp-modules }
   tasks:
-    - name: Install SSP mod authoauth2 v3.1.0
-      shell: php composer.phar require cirrusidentity/simplesamlphp-module-authoauth2:v3.1.0 --ignore-platform-reqs --no-interaction --no-scripts
+    - name: Install modules using composer
+      shell: php composer.phar require cirrusidentity/simplesamlphp-module-authoauth2:v3.1.0 league/oauth2-google --ignore-platform-reqs --no-interaction --no-scripts
       args:
         chdir: "{{ ssp_path }}/"
         executable: /bin/bash
@@ -20,6 +20,7 @@
       become: true
       tags:
         - install
+        - install-composer
         - ssp:install
         - ssp:install:mods
         - ssp-modules:install
