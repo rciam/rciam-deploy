@@ -7,6 +7,8 @@
       path: "{{ keycloak_logs_folder }}"
       owner: "{{ keycloak_service_user }}"
       group: "{{ keycloak_service_user }}"
+      mode: '0750'
+      recurse: yes
       state: directory
     become: yes
 
@@ -24,7 +26,7 @@
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
         remote_src: true
-        mode: preserve
+        mode: '640'
       become: yes
       when: keycloak_old_logs_folder.stat.exists
 
