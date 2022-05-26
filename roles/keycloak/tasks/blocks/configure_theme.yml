@@ -33,7 +33,7 @@
     file:
       path: "{{ keycloak_home }}/standalone/theme-config/resources/{{ item.name }}"
       state: directory
-      mode: '0755'
+      mode: 0755
       recurse: yes
 
   - name: "Add resource files"
@@ -42,7 +42,7 @@
       dest: "{{ keycloak_home }}/standalone/theme-config/resources/{{ item.name }}/{{ theme_realm_resource.filename }}"
       owner: "{{ keycloak_service_user }}"
       group: "{{ keycloak_service_user }}"
-      mode: '0644'
+      mode: 0644
     loop_control:
       loop_var: theme_realm_resource
     with_items: "{{ item.resources | default([]) }}"
