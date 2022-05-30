@@ -6,21 +6,27 @@
 
     - name: Installing keycloak main configuration (keycloak.conf)
       template:
-        mode: 0644
+        mode: 0600
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
         src: "templates/{{ keycloak_version }}/keycloak.conf.j2"
         dest: "{{ keycloak_home }}/conf/keycloak.conf"
       become: yes
 
     - name: Installing keycloak cache configuration
       template:
-        mode: 0644
+        mode: 0600
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
         src: "templates/{{ keycloak_version }}/cache-ispn-jdbc-ping.xml.j2"
         dest: "{{ keycloak_home }}/conf/cache-ispn-jdbc-ping.xml"
       become: yes
 
     - name: Installing keycloak quarkus configuration
       template:
-        mode: 0644
+        mode: 0600
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
         src: "templates/{{ keycloak_version }}/quarkus.properties.j2"
         dest: "{{ keycloak_home }}/conf/quarkus.properties"
       become: yes
@@ -90,7 +96,7 @@
   template:
     owner: "{{ keycloak_service_user }}"
     group: "{{ keycloak_service_user }}"
-    mode: 0644
+    mode: 0600
     src: "templates/{{ keycloak_version }}/env.conf.j2"
     dest: "{{ keycloak_home }}/conf/env.conf"
   become: yes

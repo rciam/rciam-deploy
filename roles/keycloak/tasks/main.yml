@@ -62,7 +62,7 @@
             path: "{{ keycloak_home }}"
             state: directory
         - name: create empty file if not exists
-          copy:
+          ansible.builtin.copy:
             dest: "{{ keycloak_home }}/sha1"
             content: ""
             force: no
@@ -90,7 +90,7 @@
             recurse: no
           register: find_result
         - name: Remove any previous installation
-          file:
+          ansible.builtin.file:
             path: "{{ keycloak_home }}"
             state: absent
         - name: Move extracted keycloak to final keycloak folder
@@ -108,7 +108,7 @@
 
   always:
     - name: Delete downloaded archive
-      file:
+      ansible.builtin.file:
         path: "/tmp/keycloak_archive"
         state: absent
   become: yes

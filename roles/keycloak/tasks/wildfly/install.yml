@@ -22,7 +22,7 @@
 
 - name: Installing keycloak configuration (standalone-ha.xml)
   template:
-    mode: 0644
+    mode: 0600
     src: "templates/{{ keycloak_version }}/standalone-ha.xml.j2"
     dest: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
   become: yes
@@ -59,7 +59,7 @@
       template:
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
-        mode: 0644
+        mode: 0640
         src: templates/logcleaner.sh.j2
         dest: "{{ keycloak_home }}/logcleaner.sh"
     - name: "Create the cronjob"
