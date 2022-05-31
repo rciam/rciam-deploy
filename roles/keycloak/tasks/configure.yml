@@ -25,13 +25,6 @@
       timeout: 600
 
 
-- name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
-  tags:
-    - "keycloak:config:realm_configuration"
-    - "keycloak:config:wayf_plugin"
-
-
 # configure AUP, realm keys, etc
 - name: Configure the keycloak (AUP, realm keys, etc)
   block:
