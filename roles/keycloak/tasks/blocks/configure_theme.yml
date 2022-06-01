@@ -3,6 +3,16 @@
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
 
+- name: "Ensure theme's base config folder exists"
+  file:
+    path: "{{ keycloak_home }}/theme-config"
+    state: directory
+    mode: 0755
+    owner: "{{ keycloak_service_user }}"
+    group: "{{ keycloak_service_user }}"
+    recurse: yes
+
+
 - name: "Add {{keycloak_plugins.wayf.theme.name}} theme's terms of use for the realm {{ item.name }}"
   uri:
     url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/theme-info/terms-of-use"
