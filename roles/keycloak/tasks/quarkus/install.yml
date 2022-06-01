@@ -1,7 +1,18 @@
 ---
 
-######### Install configuration templates
+##### Set service user as owner of keycloak base dir
+- block:
+    - name: "Setting everything under keycloak_home dir to belong to user: {{ keycloak_service_user }}"
+      file:
+        dest: "{{ keycloak_home }}"
+        owner: "{{ keycloak_service_user }}"
+        group: "{{ keycloak_service_user }}"
+        recurse: yes
+  become: yes
+  tags: "keycloak:install:setup_file_permissions"
 
+
+######### Install configuration templates
 - block:
 
     - name: Installing keycloak main configuration (keycloak.conf)
@@ -33,23 +44,6 @@
 
   tags: "keycloak:install:config"
 
-
-##### Set keycloak working dir and logs writable for service user
-- block:
-    - name: "Setting data folder writable for user: {{ keycloak_service_user }}"
-      file:
-        dest: "{{ keycloak_home }}/data"
-        owner: "{{ keycloak_service_user }}"
-        group: "{{ keycloak_service_user }}"
-        recurse: yes
-    - name: "Setting lib folder writable for user: {{ keycloak_service_user }}"
-      file:
-        dest: "{{ keycloak_home }}/lib"
-        owner: "{{ keycloak_service_user }}"
-        group: "{{ keycloak_service_user }}"
-        recurse: yes
-  become: yes
-  tags: "keycloak:install:setup_file_permissions"
 
 #### Setup logcleaner script
 - name: "Task block: Setup logcleaner script"
