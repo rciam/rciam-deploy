@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=idle
-Environment="JAVA_OPTS={{ keycloak_java_opts }}"
+Environment="QUARKUS_HOME={{ keycloak_home }} JAVA_OPTS={{ keycloak_java_opts }}"
 EnvironmentFile=-{{ keycloak_home }}/conf/env.conf
 User={{ keycloak_service_user }}
 Group={{ keycloak_service_user }}
