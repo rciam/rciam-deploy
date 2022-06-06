@@ -13,7 +13,7 @@
         },
         "auth_server": "{{ fedreg_agent_keycloak.auth_server }}",
         "realm": "{{ fedreg_agent_keycloak.realm }}",
-    {% if fedreg_agent_enable_keycloak is defined %}
+    {% if fedreg_agent_keycloak.refresh_token is defined %}
         "refresh_token": "{{ fedreg_agent_keycloak.refresh_token }}",
     {% endif %}
         "client_id": "{{ fedreg_agent_keycloak.client_id }}",
