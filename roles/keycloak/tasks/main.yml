@@ -80,6 +80,8 @@
           unarchive:
             src: "/tmp/keycloak_archive"
             dest: "/tmp/keycloak-tmp"
+            owner: "{{ keycloak_service_user }}"
+            group: "{{ keycloak_service_user }}"
             remote_src: yes
             extra_opts: "--no-same-owner" #since it's run with elevated priviledges, to avoid preserving ownership from the archive
         - name: Find keycloak extracted folder name

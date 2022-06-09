@@ -25,10 +25,6 @@
       timeout: 600
 
 
-- import_tasks: "blocks/configure_admin_user.yml"
-  tags: "keycloak:config:setup_admin_user"
-
-
 # configure AUP, realm keys, etc
 - name: Configure the keycloak (AUP, realm keys, etc)
   block:
