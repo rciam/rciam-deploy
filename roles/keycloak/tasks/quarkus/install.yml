@@ -15,6 +15,13 @@
 ######### Install configuration templates
 - block:
 
+    - name: Set the appropriate permissions for the keycloak's config folder
+      file:
+        path: "{{ keycloak_home }}/conf"
+        state: directory
+        mode: 0700
+      become: yes
+
     - name: Installing keycloak main configuration (keycloak.conf)
       template:
         mode: 0600
@@ -24,7 +31,7 @@
         dest: "{{ keycloak_home }}/conf/keycloak.conf"
       become: yes
 
-    - name: Installing keycloak cache configuration
+    - name: Installing keycloak cache configuration (cache-ispn-jdbc-ping.xml)
       template:
         mode: 0600
         owner: "{{ keycloak_service_user }}"
@@ -33,7 +40,7 @@
         dest: "{{ keycloak_home }}/conf/cache-ispn-jdbc-ping.xml"
       become: yes
 
-    - name: Installing keycloak quarkus configuration
+    - name: Installing keycloak quarkus configuration (quarkus.properties)
       template:
         mode: 0600
         owner: "{{ keycloak_service_user }}"
