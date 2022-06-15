@@ -40,7 +40,7 @@
 # You should execute it only when you are sure that the federation(s) are fully populated
 - name: Apply mappers (propagate) to federation IdP(s)
   uri:
-    url: "{{ keycloak_proxy_host }}/auth/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}/idp/add"
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider-federation/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}/idp/add"
     method: POST
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
