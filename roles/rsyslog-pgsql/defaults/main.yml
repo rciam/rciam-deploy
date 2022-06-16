@@ -1,0 +1,2 @@
+---
+rsyslog_pgsql_enable_logs: false

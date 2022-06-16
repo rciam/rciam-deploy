@@ -56,6 +56,12 @@
 # Apply OS-independent configuration
 - include: configure-common.yml
 
+# Deploy .war file
+- include: deploy-webapp.yml
+  tags:
+    - never
+    - tomcat:deploy
+
 - name: Ensure Tomcat service is started and enabled on boot
   service:
     name: "{{ tomcat_service }}"

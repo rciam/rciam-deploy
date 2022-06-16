@@ -18,7 +18,7 @@
   become: yes
   become_user: "{{ postgresql_user }}"
   with_items:
-    - pg_basebackup -h {{ postgresql_master_host }} -p {{  postgresql_master_port }} -D {{ postgresql_data_path }}/main -U {{ postgresql_replication_user }} -X stream
+    - pg_basebackup -h {{ postgresql_master_host }} -p {{  postgresql_master_port }} -D {{ postgresql_data_path }}/main -U {{ postgresql_replication_user }} -X stream -R
     - sleep 15
 
 - name: Configure PostgreSQL replication

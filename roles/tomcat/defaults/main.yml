@@ -49,3 +49,12 @@ tomcat_cluster_mode: no
 #    - host: "192.168.10.2"
 #      port: "4100"
 #      unique_id: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,2"
+
+# webapp_github_repo: "<USERNAME>/<PROJECT>"
+# webapp_github_repo_token: "secret"
+# webapp_github_release_file: "<FILENAME>"
+# webapp_github_release_version: "<RELEASE_VERSION>"
+# webapp_download_path: "/tmp"
+# webapp_context_path: "<TEMP_DIR>"
+# webapp_file: "<FILENAME_IN_DESTINATION>"
+# webapp_path: "/var/lib/tomcat{{tomcat_version}}/webapps"
