@@ -76,19 +76,3 @@
   when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
   tags:
     - ssp-modules:install:zip
-
-- name: Create PostgreSQL tables for SSP modules via SQL scripts
-  postgresql_query:
-    db: "{{ item.db_name }}"
-    login_user: "{{ item.db_username }}"
-    login_password: "{{ item.db_password }}"
-    path_to_script: "{{ item.db_script_path }}"
-    login_host: "{{ item.db_host }}"
-    #positional_args:
-    #- 1
-  register: postgresql_result
-  failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
-  with_items: "{{ ssp_modules_db }}"
-  when: "ssp_modules_db is defined"
-  tags:
-    - ssp-modules:install:db

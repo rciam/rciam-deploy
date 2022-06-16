@@ -20,6 +20,12 @@
     - ssp:install:mods
     - ssp-modules:install
 
+# Run OS-independent installation tasks
+- include: install-db.yml
+  tags:
+    - never
+    - ssp-modules:install:db
+
 # Apply OS-independent configuration
 - include: configure-common.yml
   tags:
