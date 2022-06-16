@@ -20,8 +20,8 @@ upstream {{ upstream_group.name }} {
 {% endfor %}
 }
 {% endfor %}
-
 {% if nginx_geo is defined %}
+
 {% for geos in nginx_geo %}
 geo {{ geos.name }} {
 {% for ip_range in geos.ip_ranges %}
@@ -33,7 +33,6 @@ geo {{ geos.name }} {
 {% endif %}
 
 {% for vhost in nginx_vhosts %}
-
 server {
 {% if vhost.listen is defined %}
 {% for listen_parameters in vhost.listen %}
