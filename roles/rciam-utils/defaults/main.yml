@@ -50,3 +50,7 @@ rciam_utils: []
 
 # Whether to install RCIAM util cron jobs; Enabled by default
 rciam_utils_cron_enabled: yes
+
+rciam_utils_sync_client_names:
+  op: "mitreid"
+  # realm: "example_realm"
