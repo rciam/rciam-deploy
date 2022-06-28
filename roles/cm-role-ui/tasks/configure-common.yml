@@ -1,0 +1,14 @@
+---
+
+- name: Configure cm-role-ui
+  template:
+    src: configuration.php.j2
+    dest: "{{ roles_path }}/configuration.php"
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    force: yes
+  become: yes
+  tags:
+    - cm-role-ui:configure
