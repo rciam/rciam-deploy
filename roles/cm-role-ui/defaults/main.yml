@@ -1,8 +1,9 @@
 ---
 # All attributes are required
+git_token: "{{vault_git_token}}"
 roles_src: "cm-role-ui"
 roles_version: "v2.0.0"
-roles_repo: "https:///{{git_user|urlencode()}}:{{git_token|urlencode()}}@github.com/grnet/comanage-registry-roles-portal.git"
+roles_repo: "https:///{{git_token|urlencode()}}@github.com/grnet/comanage-registry-roles-portal.git"
 roles_root_dir: "/srv"
 roles_path: "{{ roles_root_dir }}/{{ roles_src }}"
 
