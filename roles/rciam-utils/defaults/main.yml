@@ -50,3 +50,9 @@ rciam_utils: []
 
 # Whether to install RCIAM util cron jobs; Enabled by default
 rciam_utils_cron_enabled: yes
+
+rciam_utils_sync_client_names:
+  # Type of OP: "mitreid" or "keycloak". Defaults to "mitreid".
+  op: "mitreid"
+  # For "keycloak" OP, define the name of the realm.
+  # realm: "example_realm"
