@@ -15,11 +15,11 @@ $pkceCodeChallengeMethod = "{{ item.config.pkce_code_challenge_method }}";   // 
 {% endif %}
 $redirectUrl = "{{ item.config.redirect_url }}";
 // add scopes as keys and a friendly message of the scope as value
-$scopesDefine = array(
+$scopesDefine = [
 {% for scope in item.config.scope_definitions %}
     "{{ scope.name }}" => "{{ scope.definition }}",
 {% endfor %}
-);
+];
 // refreshtoken.php interface configuration
 $refreshTokenNote = "{{ item.config.refresh_token_note }}";
 $accessTokenNote = "{{ item.config.access_token_note }}";
