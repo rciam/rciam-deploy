@@ -11,9 +11,10 @@ $clientId = "{{ item.config.client_id }}";
 $clientSecret = "{{ item.config.client_secret }}";  // comment if you are using PKCE
 {% endif %}
 {% if item.config.pkce_code_challenge_method is defined and item.config.pkce_code_challenge_method != None %}
-$pkceCodeChallengeMethod = "{{ item.config.pkce_code_challenge_method }}";   // uncomment to use PKCE
+$pkceCodeChallengeMethod = "{{ item.config.pkce_code_challenge_method }}";  // uncomment to use PKCE
 {% endif %}
-$redirectUrl = "{{ item.config.redirect_url }}";
+$redirectPage = "{{ item.config.redirect_page }}";  // select between "refreshtoken.php" and "auth.php"
+$redirectUrl = {{ item.config.redirect_url }};
 // add scopes as keys and a friendly message of the scope as value
 $scopesDefine = [
 {% for scope in item.config.scope_definitions %}
@@ -27,5 +28,7 @@ $manageTokenNote = "{{ item.config.manage_token_note }}";
 $manageTokens = "{{ item.config.manage_token_link }}";
 $sessionName = "{{ item.config.session_name }}";
 $sessionLifetime = {{ item.config.session_lifetime }};  // must be equal to access token validation time in seconds
+$bannerText = "{{ item.config.banner_text }}";
+$bannerType = "{{ item.config.banner_type }}";  // Select one of "info", "warning", "error" or "success"
 $allowIntrospection = {{ item.config.allow_introspection }};
 $enableActiveTokensTable = {{ item.config.enable_active_tokens_table }};

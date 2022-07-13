@@ -20,7 +20,8 @@ rciam_oidc_clients: []
 #      client_id: "some-client-id"
 #      client_secret: "some-client-secret"
 #      pkce_code_challenge_method: "S256"
-#      redirect_url: "http://localhost/simple-oidc-client-php/refreshtoken.php"
+#      redirect_page: "refreshtoken.php"
+#      redirect_url: "\"http://localhost/simple-oidc-client-php/\" . $redirectPage"
 #      scope_definitions:
 #        - name: "openid"
 #          definition: "log in using your identity"
@@ -34,5 +35,7 @@ rciam_oidc_clients: []
 #      manage_token_link: "{{ manage_token_note }}manage/user/services"
 #      session_name: "oidc-client"
 #      session_lifetime: "60*60"
+#      banner_text: "dummie message"
+#      banner_type: "info"
 #      allow_introspection: True
 #      enable_active_tokens_table: False
