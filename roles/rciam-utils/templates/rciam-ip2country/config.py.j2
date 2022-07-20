@@ -13,7 +13,7 @@ ip_table = {{ rciam_utils_ip2country.source_tables.ip_table}}
 
 [destination_database]
 
-host = {{ rciam_utils_ip2country.destination_database.host }}
+host = {{ rciam_utils_ip2country.destination_database.host | default(rciam_dbs.registry.host) }}
 database = {{ rciam_utils_ip2country.destination_database.database | default(rciam_dbs.registry.name) }}
 user = {{ rciam_utils_ip2country.destination_database.user | default(rciam_dbs.registry.owner_username) }}
 password = {{ rciam_utils_ip2country.destination_database.password | default(rciam_dbs.registry.owner_password) }}
