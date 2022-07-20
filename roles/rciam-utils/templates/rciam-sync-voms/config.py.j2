@@ -20,7 +20,7 @@ voms = {
 registry = {
     "db": {
         "name": "{{ rciam_dbs.registry.name }}",
-        "host": "{{ lookup('dig', groups['dbmaster'][0]) }}",
+        "host": "{{ rciam_dbs.registry.host }}",
         "user": "{{ rciam_dbs.registry.owner_username }}",
         "password": "{{ rciam_dbs.registry.owner_password }}"
     }

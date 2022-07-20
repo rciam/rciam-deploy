@@ -4,17 +4,17 @@ mitreid_config = {
 {% if rciam_utils_sync_client_names.op == "mitreid" %}
     "dbname": "{{ rciam_dbs.oidc.name }}",
     "user": "{{ rciam_dbs.oidc.owner_username }}",
-    "host": "{{ lookup('dig', groups['dbmaster'][0]) }}",
+    "host": "{{ rciam_dbs.oidc.host }}",
     "password": "{{ rciam_dbs.oidc.owner_password }}"
 {% endif %}
 }
 
 keycloak_config = { 
 {% if rciam_utils_sync_client_names.op == "keycloak" %}
-    "dbname": "{{ rciam_dbs.oidc.name }}",
-    "user": "{{ rciam_dbs.oidc.owner_username }}",
-    "host": "{{ lookup('dig', groups['dbmaster'][0]) }}",
-    "password": "{{ rciam_dbs.oidc.owner_password }}",
+    "dbname": "{{ rciam_dbs.keycloak.name }}",
+    "user": "{{ rciam_dbs.keycloak.owner_username }}",
+    "host": "{{ rciam_dbs.keycloak.host }}",
+    "password": "{{ rciam_dbs.keycloak.owner_password }}",
     "realm": "{{ rciam_utils_sync_client_names.realm }}"
 {% endif %}
 }
@@ -22,6 +22,6 @@ keycloak_config = {
 proxystats_config = { 
     "dbname": "{{ rciam_dbs.proxy.name }}",
     "user": "{{ rciam_dbs.proxy.owner_username }}",
-    "host": "{{ rciam_dbs.proxy.host | default(lookup('dig', groups['dbmaster'][0])) }}",
+    "host": "{{ rciam_dbs.proxy.host }}",
     "password": "{{ rciam_dbs.proxy.owner_password }}"
 }
