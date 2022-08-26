@@ -10,12 +10,9 @@
     - { role: shibboleth-sp, tags: shibboleth-sp }
     - { role: comanage-registry, tags: comanage-registry }
     - { role: comanage-registry-plugins, tags: comanage-registry-plugins }
-    - { role: cm-role-ui, tags: cm-role-ui }
 
 
 # Deploy clean COmanage environment
 # ansible-playbook -v -i inventories/instances/hosts.ini registryservers.yml --tags "comanage-registry" --ask-vault-pass
 # Deploy changes.
 # ansible-playbook -v -i inventories/instances/hosts.ini registryservers.yml --tags [comanage-registry,comanage-registry:install,comanage-registry:config,] --ask-vault-pass
-# Deploy CM Roles simple UI
-# ansible-playbook -v -u user --ask-become-pass -i inventories/openaire-dev/hosts.ini registryservers.yml --tags "cm-role-ui:configure" --ask-vault-pass --diff --extra-vars "git_user=<username> git_pass=<git token or password>"
