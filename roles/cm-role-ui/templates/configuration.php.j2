@@ -1,0 +1,54 @@
+<?php
+require_once('./configuration.php');
+$DEBUG = TRUE;
+
+$api_base_url = "{{ roles_api_base_url }}";
+$api_username = "{{ roles_api_username }}";
+$api_password = "{{ roles_api_password }}";
+
+$db_host = "{{ roles_db_host }}";
+$db_username = "{{ roles_db_username }}";
+$db_password = "{{ roles_db_password }}";
+$db_name = "{{ roles_db_name }}";
+
+$uid_key = "{{ roles_uid_key }}";
+$username_key = "{{ roles_username_key }}";
+
+$email_host = "{{ roles_email_host }}";
+$email_port = {{ roles_email_port }};
+$email_security = "{{ roles_email_security }}";
+$email_username = "{{ roles_email_username }}";
+$email_password = "{{ roles_email_password }}";
+$email_from_address = "{{ roles_email_from_address }}";
+$email_from_name = "{{ roles_email_from_name }}";
+$email_subject = "{{ roles_email_subject }}";
+$email_admin_url = "{{ roles_email_admin_url }}";
+
+$co_name = array(
+{% for co_name in roles_co_name %}
+    "{{ co_name }}",
+{% endfor %}
+);
+
+$ccEmails = array(
+{% for address in roles_email_cc_addresses %}
+    array(
+        "email" => "{{ address.email }}",
+        "name" => "{{ address.name }}",
+    ),
+{% endfor %}
+);
+
+$non_removable_roles = array(
+{% for role in roles_non_removable %}
+    "{{ role }}",
+{% endfor %}
+);
+
+$non_listed_roles = array(
+{% for role in non_listed_roles %}
+    "{{ role }}",
+{% endfor %}
+);
+
+?>
