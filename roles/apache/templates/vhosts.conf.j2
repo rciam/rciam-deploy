@@ -1,7 +1,11 @@
 # {{ ansible_managed }}
 {# Set up VirtualHosts #}
 {% for vhost in apache_vhosts %}
+{% if vhost.port is defined %}
+<VirtualHost *:{{ vhost.port }}>
+{% else %}
 <VirtualHost *:{{ apache_http_port }}>
+{% endif %}
   ServerName {{ vhost.servername }}
 {% if vhost.serveralias is defined %}
   ServerAlias {{ vhost.serveralias }}
