@@ -11,6 +11,8 @@ Group={{ keycloak_service_user }}
 ExecStart=/bin/bash -c "{{ keycloak_home }}/bin/kc.sh start --auto-build {% if keycloak_extra_run_params is defined and keycloak_extra_run_params|length > 0 %} {{ keycloak_extra_run_params }} {% endif %}"
 TimeoutStartSec=600
 TimeoutStopSec=600
+Restart=on-failure
+RestartSec=60s
 
 [Install]
 WantedBy=multi-user.target

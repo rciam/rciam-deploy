@@ -10,6 +10,8 @@ Group={{ keycloak_service_user }}
 ExecStart=/bin/bash -c "{{ keycloak_home }}/bin/standalone.sh --server-config=standalone-ha.xml -Djboss.bind.address={{ keycloak_bind_address }} -Djboss.bind.address.management={{ keycloak_bind_address }} -Djboss.http.port={{ keycloak_bind_port }} -Djboss.server.log.dir={{ keycloak_logs_folder }} {% if keycloak_extra_run_params is defined and keycloak_extra_run_params|length > 0 %} {{ keycloak_extra_run_params }} {% endif %}"
 TimeoutStartSec=600
 TimeoutStopSec=600
+Restart=on-failure
+RestartSec=60s
 
 [Install]
 WantedBy=multi-user.target
