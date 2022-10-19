@@ -8,8 +8,6 @@
       name: "keycloak"
       state: "started"
     become: yes
-  - set_fact:
-      keycloak_local_address: "{% if ansible_facts.default_ipv4.address is defined %}{{ ansible_facts.default_ipv4.address }}{% elif ansible_facts.default_ipv6.address is defined %}{{ ansible_facts.default_ipv6.address }}{% else %}localhost{% endif %}"
   #wait for port to open
   - name: Waiting for service port to be opened...
     wait_for:

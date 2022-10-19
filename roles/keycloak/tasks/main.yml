@@ -22,6 +22,12 @@
   tags:
     - always
 
+- name: Find local keycloak address
+  set_fact:
+    keycloak_local_address: "{% if ansible_facts.default_ipv4.address is defined %}{{ ansible_facts.default_ipv4.address }}{% elif ansible_facts.default_ipv6.address is defined %}{{ ansible_facts.default_ipv6.address }}{% else %}localhost{% endif %}"
+  tags:
+    - always
+
 ### create keycloak_service_user
 - name: Create Keycloak service user/group
   user:
