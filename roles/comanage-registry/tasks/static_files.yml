@@ -8,6 +8,8 @@
   register: comanage_files
   ignore_errors: yes
   delegate_to: 127.0.0.1
+  vars:
+    ansible_connection: local
 
 - name: Display files to be copied
   debug:
