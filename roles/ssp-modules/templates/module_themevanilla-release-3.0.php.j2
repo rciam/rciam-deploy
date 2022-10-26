@@ -28,6 +28,12 @@ $config = [
 {% endif %}
     'enable_cookies_banner' => {{ ssp_module_themevanilla_enable_cookies_banner }},
     'ribbon_text' => '{{ ssp_module_themevanilla_ribbon_text }}',
+{% if ssp_module_themevanilla_header_logo is defined %}
+    'header_logo' => {{ ssp_module_themevanilla_header_logo }},
+{% endif %}
+{% if ssp_module_themevanilla_hide_language_bar is defined %}
+    'hideLanguageBar' => {{ ssp_module_themevanilla_hide_language_bar }},
+{% endif %}
 {% if ssp_module_themevanilla_noty_top is defined %}
     'noty_text' => '{{ ssp_module_themevanilla_noty_top.text }}',
     'noty_class' => '{{ ssp_module_themevanilla_noty_top.class }}',
