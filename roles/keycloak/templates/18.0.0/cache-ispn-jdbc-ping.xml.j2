@@ -8,7 +8,7 @@
     <jgroups>
         <stack name="jdbc-ping-tcp" extends="tcp">
             <JDBC_PING connection_driver="org.postgresql.Driver"
-                       connection_username="{{ keycloak_db.user }}" connection_password="{{ keycloak_db.pass }}"
+                       connection_username="{{ keycloak_db.user }}" connection_password="{{ keycloak_db.pass | escape }}"
                        connection_url="jdbc:postgresql://{{keycloak_db_host}}/{{keycloak_db.name}}"
                        initialize_sql="CREATE TABLE IF NOT EXISTS JGROUPSPING (own_addr varchar(200) NOT NULL, cluster_name varchar(200) NOT NULL, ping_data BYTEA, constraint PK_JGROUPSPING PRIMARY KEY (own_addr, cluster_name));"
                        info_writer_sleep_time="500"
