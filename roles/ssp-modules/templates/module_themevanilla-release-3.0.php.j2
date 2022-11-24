@@ -1,0 +1,41 @@
+<?php
+/**
+ * Configuration of SimpleSAMLphp themevanila.
+ * {{ ansible_managed }}
+ */
+$config = [
+    'cookiePolicy' => [
+{% for cookie_policy in ssp_module_themevanilla_cookie_policies %}
+        [
+            'type' => '{{ cookie_policy.type }}',
+            'provider' => '{{ cookie_policy.provider }}',
+            'name' => '{{ cookie_policy.name }}',
+            'thirdParty' => {{ cookie_policy.third_party }},
+            'category' => '{{ cookie_policy.category }}',
+            'purpose' => '{{ cookie_policy.purpose }}',
+        ],
+{% endfor %}
+    ],
+{% if ssp_module_themevanilla_views is defined %}
+    'views' => [
+{% for view_name, view_url in ssp_module_themevanilla_views.items() %}
+        '{{ view_name }}' => '{{ view_url }}',
+{% endfor %}
+    ],
+{% endif %}
+{% if ssp_module_themevanilla_loader is defined %}
+    'loader' => '{{ ssp_module_themevanilla_loader }}',
+{% endif %}
+    'enable_cookies_banner' => {{ ssp_module_themevanilla_enable_cookies_banner }},
+    'ribbon_text' => '{{ ssp_module_themevanilla_ribbon_text }}',
+{% if ssp_module_themevanilla_header_logo is defined %}
+    'header_logo' => {{ ssp_module_themevanilla_header_logo }},
+{% endif %}
+{% if ssp_module_themevanilla_hide_language_bar is defined %}
+    'hideLanguageBar' => {{ ssp_module_themevanilla_hide_language_bar }},
+{% endif %}
+{% if ssp_module_themevanilla_noty_top is defined %}
+    'noty_text' => '{{ ssp_module_themevanilla_noty_top.text }}',
+    'noty_class' => '{{ ssp_module_themevanilla_noty_top.class }}',
+{% endif %}
+];

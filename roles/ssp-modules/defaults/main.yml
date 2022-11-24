@@ -1,0 +1,162 @@
+---
+
+
+ssp_mods_extra_enabled: []
+ssp_modules_db: []
+
+
+# Examples of use cases:
+
+## Modules
+#ssp_mods_extra_enabled:
+#  - name: "module1"
+#    path: "{{ ssp_path }}/modules/module1_directory"
+#    repo_url: "https://github.com/example/module1.git"
+#    version: "release-3.0"
+#    # Specify ( if you have a template for this module ) the path for the template file.
+#    src_config_path: "{{ role_path }}/templates/config/module1_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module1_config.php"
+#  - name: "module2"
+#    path: "{{ ssp_path }}/modules/module2_directory"
+#    repo_url: "https://github.com/example/module2.git"
+#    version: "devel"
+#    # config_path: It does not have - so I just do not set this value.
+#  - name: "module3"
+#    path: "{{ ssp_path }}/modules/module3_directory"
+#    repo_url: "https://github.com/example/module3.git"
+#    version: "master"
+#  # Themes (from repository)
+#  - name: "theme1"
+#    path: "{{ ssp_path }}/modules/theme1"
+#    repo_url: "https://github.com/example/theme1.git"
+#    version: "release-2.0.0"
+#    src_config_path: "{{ role_path }}/templates/config/module_theme1_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module_theme1_config.php"
+#  # Themes (from release zip)
+#  - name: "theme2"
+#    fullname: "simplesamlphp-module-theme2 - 1st level of unziped directory"
+#    path: "{{ ssp_path }}/modules/themeX"
+#    zip_url: "https://github.com/example/simplesamlphp-module-theme2/releases/download/2.0.0/theme2.zip"
+#    version: "2.0.0"
+#    src_config_path: "{{ role_path }}/templates/config/module_theme2_config.php.j2"
+#    # or for example :
+#    src_config_path: "{{ inventory_dir }}/files/templates/config/module_theme2_config.php.j2"
+#    dest_config_path: "{{ ssp_path }}/config/module_theme2_config.php"
+
+## Extra SSP module files to copy, e.g. dictionaries
+ssp_mods_extra_files: []
+#  - name: module_dictionary_1
+#    src_path: "{{ inventory_dir }}/files/templates/dictionaries/tabs.definition.json"
+#    dest_path: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
+#  - name: module_dictionary_2
+#    src_path: "{{ inventory_dir }}/files/templates/dictionaries/theme/default.definition.json"
+#    dest_path: "{{ ssp_path }}/modules/theme/dictionaries/default.definition.json"
+
+## Database
+#ssp_modules_db:
+#  - db_host: "127.0.0.1" or "{{ lookup('dig', groups['dbmaster'][0]) }}"
+#    db_name: database_name or "{{ rciam_dbs.proxy.name }}"
+#    db_username: database_username or "{{ rciam_dbs.proxy.owner_username }}"
+#    db_password: database_password or "{{ rciam_dbs.proxy.owner_password }}"
+#    db_script_path: "{{ ssp_path }}/modules/amodule/configfiles/pgsql_tables.sql"
+
+
+######################
+# SSP mod RCIAM info #
+######################
+# ssp_module_rciaminfo_store:
+#   table: "client_details"
+#   pdo:
+#     database_dsn: "pgsql:host=localhost;dbname=example_db;sslmode=require"
+#     database_username: "example_username"
+#     database_password: "example_password"
+#     database_prefix: "db_prefix"
+#     database_persistent: false
+#     driver_options:
+#       - option: "PDO::ATTR_PERSISTENT"
+#         value: true
+#       - option: "PDO::MYSQL_ATTR_SSL_CAPATH"
+#         value: "'/path/to/ca'"
+#     database_slaves: []
+#       # - dsn:
+#       #   username:
+#       #   password:
+#       #   persistent:
+
+# ssp_module_rciaminfo_service_id_exclude_list: []
+
+# ssp_module_rciaminfo_metadata_src_exclude_list: []
+
+# ssp_module_rciaminfo_info_config:
+#   - name: "table"
+#     options:
+#     - key: "length"
+#       value: 10
+
+
+#########################
+# SSP mod theme vanilla #
+#########################
+# ssp_module_themevanilla_cookie_policies:
+#   - type: "Session State"
+#     provider: "example.org"
+#     name: "rciam_proxy"
+#     third_party: false
+#     category: "Session"
+#     purpose: "Preserve user authentication token to prevent session fixation attacks"
+
+# ssp_module_themevanilla_enable_cookies_banner: false
+# ssp_module_themevanilla_ribbon_text: "Demo"
+# Available classes: info(blue), warning(yellow), error(red), success(green)
+# ssp_module_themevanilla_noty_top:
+#   text: 'Thank you for using RCIAM AAI'
+#   class: 'info'
+
+###########################
+# SSP mod proxystatistics #
+###########################
+# # One of the following modes: "PROXY", "IDP", "SP"
+# ssp_module_proxystatistics_mode: "PROXY"
+
+# # REQUIRED FOR "IDP" MODE
+# # EntityId of IdP
+# #ssp_module_proxystatistics_idp_entity_id: "https://idp.example.org"
+# # Name of IdP
+# #ssp_module_proxystatistics_idp_entity_name: "IDP NAME"
+
+# # REQUIRED FOR "SP" MODE
+# # EntityId of SP
+# #ssp_module_proxystatistics_sp_entity_id: "https://sp.example.org"
+# # Name of SP
+# #ssp_module_proxystatistics_sp_entity_name: "SP NAME"
+
+# ssp_module_proxystatistics_db:
+#   name: "STATS"
+#   dsn: "mysql:host=localhost;port=3306;dbname=STATS;charset=utf8"
+#   username: "stats"
+#   password: "stats"
+#   prefix: ""
+#   persistent: no
+#   #slaves:
+#   #  - dsn: "mysql:host=slavedbhost;port=3306;dbname=STATS;charset=utf8" 
+#   #    username: "stats"
+#   #    password: "stats"
+#   #    persistent: no
+
+# ssp_module_proxystatistics_detailed_days: 0
+
+# ssp_module_proxystatistics_user_id_attribute: "null"
+
+# ssp_module_proxystatistics_table_name:
+#   statistics: "statistics"
+#   detailed_statistics: "statistics_detail"
+#   ip_statistics: "statistics_ip"
+#   identity_providers_map: "identityProvidersMap"
+#   service_providers_map: "serviceProvidersMap"
+
+# ssp_module_proxystatistics_oidc_issuer: "http://example.org/openidconnect/sp"
+
+# ssp_module_proxystatistics_user_id_blacklist: []
+#   # - "xxx@example.org"
+#   # - "yyy@example.org"
+#   # - "zzz@example.org"

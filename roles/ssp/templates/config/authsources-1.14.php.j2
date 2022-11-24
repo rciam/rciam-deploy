@@ -4,6 +4,10 @@
  * {{ ansible_managed }}
  */
 
+{% if ssp_authsources_preamble is defined %}
+{{ ssp_authsources_preamble }}
+{% endif %}
+
 $config = array(
 
     // This is a authentication source which handles admin authentication.
@@ -22,7 +26,11 @@ $config = array(
         // Can be NULL/unset, in which case an entity ID is generated based on the metadata URL.
         'entityID' => '{{ authsource.entity_id }}',
 {% endif %}
-{% if authsource.idp is defined %}
+{% if authsource.idp_function is defined %}
+        // The function returning the entity ID of the IdP this SP should contact.
+        // Can be NULL/unset, in which case the user will be shown a list of available IdPs.
+        'idp' => {{ authsource.idp_function }},
+{% elif authsource.idp is defined %}
         // The entity ID of the IdP this should SP should contact.
         // Can be NULL/unset, in which case the user will be shown a list of available IdPs.
         'idp' => '{{ authsource.idp }}',
@@ -32,7 +40,7 @@ $config = array(
         // Can be NULL/unset, in which case a builtin discovery service will be used.
         'discoURL' => '{{ authsource.disco_url }}',
 {% endif %}
-{% if authsource.generate_ssl_certificate %}
+{% if authsource.ssl_certificate_generate|default(True) or authsource.ssl_certificate is defined %}
         // X.509 key and certificate. Relative to the cert directory.
         'privatekey' => 'sp-{{ authsource.name }}.key',
         'certificate' => 'sp-{{ authsource.name }}.crt',

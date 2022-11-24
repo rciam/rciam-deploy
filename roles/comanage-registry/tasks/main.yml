@@ -7,9 +7,80 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
+  tags:
+  - always
 
-# Include OS-independent installation tasks
-- include: install.yml
+# Check if COmanage current is available
+- name: Check if COmanage Current directory is present
+  stat:
+    path: "{{ comanage_path }}"
+  register: comanage_current_dir
+  tags:
+    - always
 
-# Include OS-independent configuration tasks
-- include: configure.yml
+- name: COmanage Current directory exists?
+  debug:
+    msg: "COmanage Current Exists: {{comanage_current_dir.stat.exists}}"
+  tags:
+    - always
+
+#Create a task to take backup of the directory first
+- name: Backup comanage directory
+  copy:
+    src: "{{ comanage_current_dir.stat.lnk_target }}"
+    dest: "{{ comanage_current_dir.stat.lnk_target }}.{{ ansible_date_time.iso8601 }}"
+    remote_src: yes
+    force: yes
+    owner: root
+    mode: preserve
+    backup: true
+  become: yes
+  when:
+    - comanage_backup is defined
+    - comanage_backup|bool
+    - comanage_current_dir.stat.exists
+  tags:
+  - always
+
+- name: COmanage clear cache
+  shell: Console/clearcache
+  args:
+    executable: /bin/bash
+    chdir: "{{ comanage_path }}/app"
+  become: yes
+  become_user: "{{ comanage_webserver_user }}"
+  ignore_errors: yes
+  when:
+    - comanage_current_dir.stat.exists
+  tags:
+    - always
+
+# Tasks deploying COmanage framework. There is none conditional task.
+- name: Include OS-independent installation tasks
+  include_tasks:
+    file: install.yml
+    apply:
+      tags:
+      - comanage-registry:install
+  tags:
+  - comanage-registry:install
+
+  # Tasks required for basic Framework functionality
+- name: Include OS-independent initialize tasks
+  include_tasks:
+    file: initialize.yml
+    apply:
+      tags:
+        - comanage-registry:init
+  tags:
+    - comanage-registry:init
+
+# Tasks that are Deployment Specific
+- name: Include OS-independent configuration tasks
+  include_tasks:
+    file: configure.yml
+    apply:
+      tags:
+      - comanage-registry:config
+  tags:
+  - comanage-registry:config

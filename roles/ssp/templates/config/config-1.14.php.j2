@@ -750,7 +750,7 @@ $config = array(
      *
      */
     'memcache_store.servers' => array(
-{% if ssp_memcache_store_servers_group is defined and ssp_memcache_store_servers_group in group_names %}
+{% if ssp_memcache_store_servers_group is defined and ssp_memcache_store_servers_group in groups %}
 {% for host in groups[ssp_memcache_store_servers_group] %}
         array(
             array(

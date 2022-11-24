@@ -1,0 +1,16 @@
+---
+- name: "Get list of keys of realm: {{ item[0].name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/components?parent={{ item[0].name }}&type=org.keycloak.keys.KeyProvider"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: 200
+  register: "keys_result"
+
+- set_fact:
+    keys_provideridName2id: "{{ keys_provideridName2id | default({}) | combine( { current_key.providerId + ':' + current_key.name : current_key.id } ) }}"
+  loop_control:
+    loop_var: current_key
+  with_items:
+    - "{{ keys_result.json }}"

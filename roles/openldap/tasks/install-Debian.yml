@@ -1,0 +1,78 @@
+---
+- name: "Gather the package facts"
+  package_facts:
+    manager: "auto"
+
+- name: "Run Initialise tasks"
+  when: ('slapd' not in ansible_facts.packages or 'ldap-utils' not in ansible_facts.packages) or openldap_init == true
+  block:
+      # run these tasks only when initialise variable is true or slapd/ldap-utils are not installed
+    - name: Define slapd installation settings
+      debconf:
+        name: "slapd"
+        question: "{{ item.question }}"
+        value: "{{ item.value }}"
+        vtype: "{{ item.vtype }}"
+      with_items:
+        - question: 'slapd/no_configuration'
+          value: 'false'
+          vtype: 'boolean'
+        - question: "slapd/purge_database"
+          value: 'true'
+          vtype: 'boolean'
+        - question: "slapd/backend"
+          value: 'MDB'
+          vtype: 'string'
+        - question: "slapd/move_old_database"
+          value: 'true'
+          vtype: 'boolean'
+        - question: "slapd/domain"
+          value: "{{ pri_domain_name }}"
+          vtype: 'string'
+        - question: "shared/organization"
+          value: "{{ openldap_org }}"
+          vtype: 'string'
+      become: yes
+
+    - name: Install required packages
+      apt:
+        name: "{{ openldap_debian_packages }}"
+        state: present
+        install_recommends: no
+        update_cache: yes
+        cache_valid_time: 86400
+      become: yes
+
+    - name: Find /var/backups ending with .ldapdb or matching with slapd-*+*
+      find:
+        paths: /var/backups
+        patterns: "*.ldapdb,slapd-*+*"
+        file_type: directory
+      become: yes
+      register: backup_files
+
+    - name: Ensure /var/backups/openldap dir exists
+      file:
+        path: /var/backups/openldap
+        state: directory
+        owner: openldap
+        group: openldap
+      become: yes
+
+    - name: Move Backup Files to another folder
+      command: mv {{ item.path }} /var/backups/openldap/{{ item.path | replace("/var/backups/","") }}.{{ ansible_date_time.epoch }}
+      with_items: "{{ backup_files.files }}"
+      ignore_errors: true
+      become: yes
+
+    - name: Reconfigure slapd
+      command: dpkg-reconfigure -f noninteractive slapd
+      become: yes
+
+    - name: Restart slapd
+      systemd:
+        name: slapd
+        enabled: yes
+        daemon_reload: yes
+        state: restarted
+      become: yes

@@ -1,0 +1,9 @@
+---
+
+- name: Ensure that the vm has java 11
+  apt:
+    name: openjdk-11-jdk
+    state: present
+    update_cache: yes
+    cache_valid_time: 86400
+  become: yes

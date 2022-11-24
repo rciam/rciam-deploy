@@ -1,0 +1,137 @@
+<?php
+
+/**
+ * Example configuration for SimpleSAMLphp RCIAM Info module.
+ *
+ * @author Nicolas Liampotis <nliam@grnet.gr>
+ */
+
+$config = [
+
+    /**
+     * Configuration options for database-based service store.
+     */
+    'store' => [
+
+        /**
+         * Name of the table containing service information
+         * @default 'client_details'
+         */
+        'table' => '{{ ssp_module_rciaminfo_store.table }}',
+
+        /**
+         * Configuration for SimpleSAML\Database.
+         * If not specified, the global SimpleSAML\Database config is used.
+         * @see SimpleSAML\Database
+         */
+        'pdo' => [
+            /**
+             * Database connection string.
+             * Ensure that you have the required PDO database driver
+             * installed for your connection string.
+             * Examples:
+             * mysql:host=localhost;port=3306;dbname=testdb
+             * mysql:unix_socket=/tmp/mysql.sock;dbname=testdb
+             * pgsql:host=localhost;port=5432;dbname=testdb
+             */
+            'database.dsn' => '{{ ssp_module_rciaminfo_store.pdo.database_dsn }}',
+
+            /**
+             * Database credentials
+             */
+            'database.username' => '{{ ssp_module_rciaminfo_store.pdo.database_username }}',
+            'database.password' => '{{ ssp_module_rciaminfo_store.pdo.database_password }}',
+
+            /**
+             * (Optional) Table prefix
+             */
+            'database.prefix' => '{{ ssp_module_rciaminfo_store.pdo.database_prefix }}',
+
+            /**
+             * Whether to use persistent database connections
+             */
+            'database.persistent' => {{ ssp_module_rciaminfo_store.pdo.database_persistent }},
+
+            /**
+             * (Optional) Driver options
+             */
+            'database.driver_options' => [
+{% if ssp_module_rciaminfo_store.pdo.driver_options is defined and ssp_module_rciaminfo_store.pdo.driver_options | length > 0 %}
+{% for driver_option in ssp_module_rciaminfo_store.pdo.driver_options %}
+                {{ driver_option.option }} => {{ driver_option.value }},
+{% endfor %}
+{% endif %}
+            ],
+
+            /**
+             * Secondary database server configuration is optional. If you
+             * are only running a single database server, leave this blank.
+             * If you have a primary/secondary configuration, you can
+             * define as many secondary servers as you want here. Secondary
+             * servers will be picked at random when executing read queries.
+             *
+             * Configuration options in the secondaries array are exactly
+             * the same as the options for the primary above with the
+             * exception of the table prefix.
+             */
+            'database.slaves' => [
+{% if ssp_module_rciaminfo_store.pdo.database_slaves is defined and ssp_module_rciaminfo_store.pdo.database_slaves | length > 0 %}
+{% for database_slave in ssp_module_rciaminfo_store.pdo.database_slaves %}
+                [
+                    'dsn' => '{{ database_slave.dsn }}',
+                    'username' => '{{ database_slave.username }}',
+                    'password' => '{{ database_slave.password }}',
+                    'persistent' => {{ database_slave.persistent }},
+                ],
+{% endfor %}
+{% endif %}
+            ],
+        ],
+    ],
+
+    /**
+     * List of Service IDs (SAML SP entityIDs or OIDC Client IDs) to exclude
+     * @default []
+     */
+    'serviceIdExcludeList' => [
+{% if ssp_module_rciaminfo_service_id_exclude_list is defined and ssp_module_rciaminfo_service_id_exclude_list | length > 0 %}
+{% for service_id in ssp_module_rciaminfo_service_id_exclude_list %}
+        '{{ service_id }}',
+{% endfor %}
+{% endif %}
+    ],
+
+    /**
+     * List of SAML SP metadata sources to exclude
+     * @default []
+     */
+    'metadataSrcExcludeList' => [
+{% if ssp_module_rciaminfo_metadata_src_exclude_list is defined and ssp_module_rciaminfo_metadata_src_exclude_list | length > 0 %}
+{% for metadata_src in ssp_module_rciaminfo_metadata_src_exclude_list %}
+        '{{ metadata_src }}',
+{% endfor %}
+{% endif %}
+    ],
+
+    /**
+     * List of Configurations relative to Info presentation
+     * @default []
+     */
+    'infoConfig' => [
+{% if ssp_module_rciaminfo_info_config is defined and ssp_module_rciaminfo_info_config | length > 0 %}
+{% for info_config in ssp_module_rciaminfo_info_config %}
+        /**
+         * List of onfigurations for the info table
+         * @default []
+         */
+        '{{ info_config.name }}' => [
+{% if info_config.options is defined and info_config.options | length > 0 %}
+{% for option in info_config.options %}
+            '{{ option.key }}' => {{ option.value }},
+{% endfor %}
+{% endif %}
+        ],
+{% endfor %}
+{% endif %}
+    ],
+];

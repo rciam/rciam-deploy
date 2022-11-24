@@ -1,0 +1,35 @@
+dn: olcOverlay=syncprov,olcDatabase={1}mdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcSuffix
+olcSuffix: {{ openldap_base }}
+-
+replace: olcRootDN
+olcRootDN: cn=admin,{{ openldap_base }}
+-
+replace: olcRootPW
+olcRootPW: {{ openldap_admin_password }}
+-
+add: olcSyncRepl
+olcSyncRepl: rid=003 provider={{ hostvars[groups['openldap'][0]].openldap_uri }} binddn="{{ openldap_bind_id }}" bindmethod=simple
+  credentials={{ openldap_admin_password }} searchbase="{{ openldap_base }}" type=refreshOnly
+  interval=00:00:00:10 retry="5 5 300 5" timeout=1
+  tls_reqcert=never
+olcSyncRepl: rid=004 provider={{ hostvars[groups['openldap'][1]].openldap_uri }} binddn="{{ openldap_bind_id }}" bindmethod=simple
+  credentials={{ openldap_admin_password }} searchbase="{{ openldap_base }}" type=refreshOnly
+  interval=00:00:00:10 retry="5 5 300 5" timeout=1
+  tls_reqcert=never
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
+
+dn: olcDatabase={1}mdb,cn=config
+changetype:  modify
+add: olcDbIndex
+olcDbIndex: entryCSN eq
+olcDbIndex: entryUUID eq

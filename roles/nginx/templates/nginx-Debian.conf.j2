@@ -40,7 +40,7 @@ http {
         ssl_session_cache   shared:SSL:5m;
         ssl_session_timeout 5m;
 
-        ssl_ciphers EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS;
+        ssl_ciphers {{ nginx_ssl_ciphers }};
 
 {% if nginx_dhparam_file is defined %}
         # openssl dhparam -out dhparam.pem 2048
@@ -57,8 +57,13 @@ http {
 	# Logging Settings
 	##
 
+{% if nginx_enable_rsyslog_pgsql_logs == true %}
+	access_log syslog:server=unix:/dev/log,tag=nginx,nohostname,severity=info combined;
+	error_log  syslog:server=unix:/dev/log,tag=nginx,nohostname,severity=error;
+{% else %}
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log;
+{% endif %}
 
 	##
 	# Gzip Settings

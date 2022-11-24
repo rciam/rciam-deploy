@@ -10,3 +10,5 @@ postgresql_default_service: "postgresql"
 
 postgresql_default_user: "postgres"
 postgresql_default_group: "postgres"
+
+postgresql_default_psycopg2_package: "python-psycopg2"

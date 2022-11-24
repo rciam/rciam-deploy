@@ -11,6 +11,8 @@ nginx_remove_default_vhost: false
 
 # SSL protocols that should be enabled
 nginx_ssl_protocols: "TLSv1.2"
+# SSL ciphers that should be enabled
+nginx_ssl_ciphers: "EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS"
 
 # Name of the user that should own the file containing the SSL certificate
 nginx_ssl_certificate_file_owner: "root"
@@ -29,7 +31,9 @@ nginx_ssl_certificate_key_file_mode: "0600"
 # Uncomment to generate file with custom DH parameters for DHE ciphers
 #nginx_dhparam_file: "dhparam.pem"
 # Number of bits used for generating DH parameter set
-nginx_dhparam_size: 2048 
+nginx_dhparam_size: 2048
+
+nginx_enable_rsyslog_pgsql_logs: false
 
 #nginx_upstream_groups: 
 #  - name: "web_backend"

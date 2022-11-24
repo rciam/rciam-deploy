@@ -10,8 +10,6 @@
     backup: yes
     force: yes
   become: yes
-  notify:
-    - restart webserver
   tags:
     - ssp:config:config
 
@@ -21,8 +19,35 @@
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.generate_ssl_certificate
+  when: item.ssl_certificate_generate | default(True) | bool == True
   become: yes
+  tags:
+    - ssp:config:authsources
+
+- name: Copy SP SSL certificate (.crt)
+  copy:
+    content: '{{ item.ssl_certificate }}'
+    dest: "{{ ssp_certdir }}/sp-{{ item.name }}.crt"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0644"
+  with_items: "{{ ssp_authsources_saml }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False
+  become: yes
+  tags:
+    - ssp:config:authsources
+
+- name: Copy SP SSL certificate (.key)
+  copy:
+    content: '{{ item.ssl_certificate_key }}'
+    dest: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0600"
+  with_items: "{{ ssp_authsources_saml }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False
+  become: yes
+  no_log: yes
   tags:
     - ssp:config:authsources
 
@@ -34,6 +59,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_authsources_saml }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate_key is defined
   become: yes
   tags:
     - ssp:config:authsources
@@ -46,6 +72,7 @@
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_authsources_saml }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate is defined
   become: yes
   tags:
     - ssp:config:authsources
@@ -66,8 +93,38 @@
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
   with_items: "{{ ssp_idp_hosts }}"
-  when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
+  when: (ssp_idp_saml20_enabled or ssp_idp_shib13_enabled) and item.ssl_certificate_generate | default(True)
   become: yes
+  tags:
+    - ssp:config:saml20-idp-hosted
+    - ssp:config:shib13-idp-hosted
+
+- name: Copy IdP certificate (.crt)
+  copy:
+    content: '{{ item.ssl_certificate }}'
+    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.crt"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0644"
+  with_items: "{{ ssp_idp_hosts }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False and item.ssl_certificate is defined
+  become: yes
+  no_log: yes
+  tags:
+    - ssp:config:saml20-idp-hosted
+    - ssp:config:shib13-idp-hosted
+
+- name: Copy IdP certificate (.key)
+  copy:
+    content: '{{ item.ssl_certificate_key }}'
+    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0600"
+  with_items: "{{ ssp_idp_hosts }}"
+  when: item.ssl_certificate_generate | default(True) | bool == False and item.ssl_certificate_key is defined
+  become: yes
+  no_log: yes
   tags:
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
@@ -122,6 +179,17 @@
   tags:
     - ssp:config:shib13-idp-hosted
 
+- name: Ensure SSP extra files are copied
+  copy:
+    src: "{{ item.src_path }}"
+    dest: "{{ item.dest_path }}"
+    backup: yes
+  with_items: "{{ ssp_extra_files }}"
+  when: item.src_path is defined and item.dest_path is defined
+  become: yes
+  tags:
+    - ssp:config:files
+
 - name: Enable required SSP modules
   command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
   args:
@@ -164,7 +232,7 @@
 
 - name: Configure SSP cron module
   template:
-    src: config/module_cron.php.j2
+    src: config/module_cron-{{ ssp_version }}.php.j2
     dest: "{{ ssp_configdir }}/module_cron.php"
     backup: yes
     force: yes
@@ -217,7 +285,7 @@
 
 - name: Configure SSP discopower module
   template:
-    src: config/module_discopower.php.j2
+    src: config/module_discopower-{{ ssp_version }}.php.j2
     dest: "{{ ssp_configdir }}/module_discopower.php"
     backup: yes
     force: yes
@@ -238,3 +306,5 @@
   tags:
     - ssp:config:mods
     - ssp:config:mods:discopower
+
+

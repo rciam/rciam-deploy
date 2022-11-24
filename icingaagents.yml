@@ -1,0 +1,7 @@
+# file: icingaagents.yml
+#
+
+---
+- hosts: all
+  roles:
+    - { role: icinga, become: yes }

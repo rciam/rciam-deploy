@@ -1,0 +1,168 @@
+---
+
+# this is an important block! Do not remove
+- name: Wait for keycloak to initialize
+  block:
+  - name: Ensure Keycloak service is running
+    systemd:
+      name: "keycloak"
+      state: "started"
+    become: yes
+  #wait for port to open
+  - name: Waiting for service port to be opened...
+    wait_for:
+      host: "{{ keycloak_local_address }}"
+      port: 8080
+      delay: 10
+      timeout: 180
+  #wait for service to respond
+  - name: Waiting for service to be up and running...
+    uri:
+      url: "http://{{ keycloak_local_address }}:8080/{{ keycloak_base_url_path }}"
+      status_code: "200"
+      timeout: 600
+
+
+# configure AUP, realm keys, etc
+- name: Configure the keycloak (AUP, realm keys, etc)
+  block:
+
+    - name: Apply realm.config parameters
+      include_tasks: blocks/configure_basic_realm.yml
+      with_items: "{{ keycloak_config.realms | default([]) }}"
+      loop_control:
+        loop_var: current_realm_item
+      run_once: true
+
+    - name: Configure keys
+      include_tasks: blocks/keys/configure_keys.yml
+      with_subelements:
+        - "{{ keycloak_config.realms | default([]) }} "
+        - "keys"
+        - skip_missing: True
+
+    - name: Configure events logging
+      include_tasks: blocks/configure_event_logging.yml
+      with_items: "{{ keycloak_config.realms | default([]) }}"
+      loop_control:
+        loop_var: current_realm_item
+      run_once: true
+
+    - name: Configure AUP (Terms and Conditions)
+      uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
+        method: PUT
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          alias: "terms_and_conditions"
+          name: "Terms and Conditions"
+          providerId: "terms_and_conditions"
+          enabled: "{{ item.aup.enabled }}"
+          defaultAction: "{{ item.aup.defaultAction }}"
+          priority: 20
+          config:
+            reset_every: "{{ item.aup.reset_every }}"
+            reset_every_multiplier: "{{ item.aup.reset_every_multiplier }}"
+        status_code: 204
+      with_items: "{{ keycloak_config.realms | default([]) }}"
+      when: not item.aup is undefined
+      run_once: true
+
+    - name: Setup roles
+      include_tasks: blocks/roles_configuration/configure.yml
+
+    - name: Setup federations
+      include_tasks: blocks/configure_federations.yml
+      with_subelements:
+        - "{{ keycloak_config.realms | default([]) }} "
+        - "federations"
+        - skip_missing: True
+      run_once: true
+
+    - name: Setup social IdPs
+      include_tasks: blocks/configure_social_idps.yml
+      with_subelements:
+        - "{{ keycloak_config.realms | default([]) }} "
+        - "social_idps"
+        - skip_missing: True
+      run_once: true
+
+    - name: Setup saml IdPs
+      include_tasks: blocks/configure_saml_idps.yml
+      with_subelements:
+        - "{{ keycloak_config.realms | default([]) }} "
+        - "saml_idps"
+        - skip_missing: True
+      run_once: true
+
+    - name: Setup IdP mappers
+      include_tasks: blocks/configure_idp_mappers.yml
+      with_subelements:
+        - "{{ keycloak_config.realms | default([]) }} "
+        - "idp_mappers"
+        - skip_missing: True
+      run_once: true
+
+    - name: "Check if there is any default IdP (will skip the WAYF and redirect to that one) defined"
+      include_tasks: blocks/configure_default_idp.yml
+      with_items: "{{ keycloak_config.realms | default([]) }}"
+      loop_control:
+        loop_var: current_realm
+
+    - name: "Setup client scopes (block)"
+      block:
+        - name: "Clear all assigned default and optional client scopes"
+          include_tasks: blocks/helpers/unassign_default_client_scopes.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+
+        - name: Setup client scopes
+          include_tasks: blocks/configure_client_scopes.yml
+          with_subelements:
+            - "{{keycloak_config.realms | default([])}} "
+            - "client_scopes"
+            - skip_missing: True
+          run_once: true
+
+        - name: "Setup client registration policies"
+          include_tasks: blocks/configure_client_reg_policies.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+
+  tags: "keycloak:config:realm_configuration"
+
+### wayf plugin configuration
+- name: Configure wayf plugin
+  block:
+    - name: Acquire tokens
+      include_tasks: blocks/helpers/get_tokens.yml
+    - name: Select wayf plugin for login UI
+      uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}"
+        method: "PUT"
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          "{{ body_payload }}"
+        status_code: "204"
+      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
+      run_once: true
+      vars:
+        - body_payload:
+            loginTheme: "{{ keycloak_plugins.wayf.theme.name }}"
+            accountTheme: "{{ keycloak_plugins.wayf.theme.name }}"
+    - name: "Setting additional theme stuff (config, terms of use)"
+      include_tasks: blocks/configure_theme.yml
+      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
+
+  when: wayf_enabled == true
+  vars:
+    wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
+  tags: "keycloak:config:wayf_plugin"

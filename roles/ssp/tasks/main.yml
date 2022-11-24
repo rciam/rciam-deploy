@@ -37,6 +37,15 @@
   tags:
     - always
 
+
+- name: Define SSP path
+  set_fact:
+    ssp_path: "{{ ssp_path }}-{{ ssp_version_suffix }}"
+  when: ssp_version_suffix is defined and ssp_version_suffix != ""
+  tags:
+    - always
+
+
 # Install OS-specific packages
 - include: install-Debian.yml
   when: ansible_os_family == 'Debian'

@@ -1,0 +1,18 @@
+<?php
+/*
+ * Configuration for the Cron module.
+ * {{ ansible_managed }}
+ */
+
+$config = array (
+
+    'key' => '{{ ssp_mod_cron_secret }}',
+    'allowed_tags' => array(
+{% for entry in ssp_mod_cron_entries %}
+        '{{ entry.tag }}',
+{% endfor %}
+    ),
+    'debug_message' => false,
+    'sendemail' => false,
+
+);

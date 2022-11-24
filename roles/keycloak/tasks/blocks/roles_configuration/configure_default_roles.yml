@@ -1,0 +1,34 @@
+---
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Find full payload of all roles in the '{{ default_role_mode }}' list"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/{{ default_role_name }}"
+    method: "GET"
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: 200
+  loop_control:
+    loop_var: default_role_name
+  with_items: "{{ item[1] }}"
+  register: search_results
+
+- set_fact:
+    default_roles_list_complete: "{{ search_results | json_query(query) | default([]) }}"
+  vars:
+    query: 'results[].json'
+
+- name: "Edit default-roles in realm {{ item[0].name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/default-roles-{{ item[0].name | lower }}/composites"
+    method: "{% if default_role_mode=='add' %}POST{% elif default_role_mode=='remove' %}DELETE{% endif %}"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      "{{ default_roles_list_complete }}"
+    status_code: 204
+
+

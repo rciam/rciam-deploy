@@ -14,49 +14,34 @@
     dest: "{{ comanage_root_dir }}/comanage-registry-{{ comanage_version }}"
     version: "{{ comanage_version }}"
     accept_hostkey: yes
-    update: no
-  register: GCOmanageCheck
+  ignore_errors: yes
   become: yes
-
-- name: Git pull COmanage Registry changes
-  shell: /usr/bin/git pull origin
-  args:
-    executable: /bin/bash
-    warn: false
-    chdir: "{{ comanage_root_dir }}/comanage-registry-{{ comanage_version }}"
-  register: GCOmanagePull
-  become: yes
-
-- debug:
-    var: GCOmanagePull.stdout
-    verbosity: 1
 
 - name: Ensure symbolic link to current COmanage Registry installation exists
   file:
     src: "{{ comanage_root_dir }}/comanage-registry-{{ comanage_version }}"
     dest: "{{ comanage_path }}"
+    force: yes
     state: link
     owner: root
     group: root
   become: yes
-  when: GCOmanageCheck.changed
 
 - name: Ensure COmanage Registry webroot directory exists
   file:
     src: "{{ comanage_path }}/app/webroot"
     dest: "{{ comanage_webroot }}"
     state: link
+    force: yes
     owner: root
     group: root
   become: yes
-  when: GCOmanageCheck.changed
 
 - name: Ensure COmanage Registry temp directory tree is initialised
   command: "cp -r {{ comanage_path }}/app/tmp.dist {{ comanage_temp_dir }}"
   args:
     creates: "{{ comanage_temp_dir }}"
   become: yes
-  when: GCOmanageCheck.changed
 
 - name: Ensure COmanage Registry temp directory exists and is writable by webserver only
   file:
@@ -65,17 +50,8 @@
     owner: "{{ comanage_webserver_user }}"
     group: "{{ comanage_webserver_group }}"
     mode: 0700
-  become: yes
-  when: GCOmanageCheck.changed
-
-- name: Ensure COmanage Registry temp directory tree is owned by webserver
-  file:
-    path: "{{ comanage_temp_dir }}"
-    owner: "{{ comanage_webserver_user }}"
-    group: "{{ comanage_webserver_group }}"
     recurse: yes
   become: yes
-  when: GCOmanageCheck.changed
 
 - name: Ensure link to COmanage Registry temp directory exists
   file:
@@ -84,5 +60,5 @@
     state: link
     owner: root
     group: root
+    follow: no
   become: yes
-  when: GCOmanageCheck.changed

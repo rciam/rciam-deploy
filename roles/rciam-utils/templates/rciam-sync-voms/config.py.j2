@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+
+voms = {
+    "vomses_file": {
+        "url": "{{ rciam_utils_sync_voms.vomses_file.url }}",
+{% if rciam_utils_sync_voms.vomses_file.ca_path is defined %}
+        # Uncomment the following line to use the specified CA_BUNDLE file or
+        # directory with certificates of trusted CAs for SSL verification of
+        # the vomses URL
+        "ca_path": "{{ rciam_utils_sync_voms.vomses_file.ca_path }}",
+{% endif %}
+    },
+    "api": {
+        "cert_path": "{{ rciam_utils_sync_voms.api.cert.path }}",
+        "key_path": "{{ rciam_utils_sync_voms.api.cert_key.path }}",
+        "ca_path": "{{ rciam_utils_sync_voms.api.ca_path }}",
+    },
+}
+
+registry = {
+    "db": {
+        "name": "{{ rciam_dbs.registry.name }}",
+        "host": "{{ rciam_dbs.registry.host }}",
+        "user": "{{ rciam_dbs.registry.owner_username }}",
+        "password": "{{ rciam_dbs.registry.owner_password }}"
+    }
+}
+
+logging = {
+    # Logging level: "DEBUG", "INFO", "WARNING, "ERROR", or "CRITICAL"
+    "level": "{{ rciam_utils_sync_voms.logging.level | default('INFO') }}",
+}

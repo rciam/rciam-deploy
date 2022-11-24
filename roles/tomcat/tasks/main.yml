@@ -19,6 +19,13 @@
   tags:
     - always
 
+- name: Define tomcat package name
+  set_fact:
+    tomcat_package: "{{ tomcat_default_package }}"
+  when: tomcat_package is not defined
+  tags:
+    - always
+
 - name: Define tomcat service name
   set_fact:
     tomcat_service: "{{ tomcat_default_service }}"
@@ -48,6 +55,12 @@
 
 # Apply OS-independent configuration
 - include: configure-common.yml
+
+# Deploy .war file
+- include: deploy-webapp.yml
+  tags:
+    - never
+    - tomcat:deploy
 
 - name: Ensure Tomcat service is started and enabled on boot
   service:
