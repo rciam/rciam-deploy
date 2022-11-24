@@ -2,9 +2,9 @@
 {% if fedreg_agent_enable_keycloak | bool == True %}
     "keycloak": {
         "ams": {
-    {% if fedreg_agent_keycloak.name is defined %}
+{% if fedreg_agent_keycloak.name is defined %}
             "deployer_name": "{{ fedreg_agent_keycloak.name }}",
-    {% endif %}
+{% endif %}
             "host": "{{ fedreg_agent_ams.host }}",
             "project": "{{ fedreg_agent_ams.project }}",
             "pull_topic": "{{ fedreg_agent_keycloak.pull_topic }}",
@@ -30,9 +30,9 @@
 {% if fedreg_agent_enable_mitreid | bool == True %}
     "mitreid": {
         "ams": {
-    {% if fedreg_agent_mitreid.name is defined %}
+{% if fedreg_agent_mitreid.name is defined %}
             "deployer_name": "{{ fedreg_agent_mitreid.name }}",
-    {% endif %}
+{% endif %}
             "host": "{{ fedreg_agent_ams.host }}",
             "project": "{{ fedreg_agent_ams.project }}",
             "pull_topic": "{{ fedreg_agent_mitreid.pull_topic }}",
@@ -50,9 +50,9 @@
 {% if fedreg_agent_enable_ssp | bool == True %}
     "ssp": {
         "ams": {
-    {% if fedreg_agent_ssp.name is defined %}
+{% if fedreg_agent_ssp.name is defined %}
             "deployer_name": "{{ fedreg_agent_ssp.name }}",
-    {% endif %}
+{% endif %}
             "host": "{{ fedreg_agent_ams.host }}",
             "project": "{{ fedreg_agent_ams.project }}",
             "pull_topic": "{{ fedreg_agent_ssp.pull_topic }}",
