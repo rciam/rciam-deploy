@@ -1,13 +1,65 @@
 ---
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags:
+    - always
+
+- name: Define SSP web server
+  set_fact:
+    ssp_webserver: "{{ ssp_default_webserver }}"
+  when: ssp_webserver is not defined
+  tags:
+    - always
+
+- name: Define SSP web user
+  set_fact:
+    ssp_webuser: "{{ ssp_default_webuser }}"
+  when: ssp_webuser is not defined
+  tags:
+    - always
+
+- name: Define SSP web group
+  set_fact:
+    ssp_webgroup: "{{ ssp_default_webgroup }}"
+  when: ssp_webgroup is not defined
+  tags:
+    - always
+
+- name: Define SSP cron module dependencies
+  set_fact:
+    ssp_mod_cron_deps: "{{ ssp_default_mod_cron_deps | list }}"
+  when: ssp_mod_cron_deps is not defined
+  tags:
+    - always
+
+
+- name: Define SSP path
+  set_fact:
+    ssp_path: "{{ ssp_path }}-{{ ssp_version_suffix }}"
+  when: ssp_version_suffix is defined and ssp_version_suffix != ""
+  tags:
+    - always
+
 
 # Install OS-specific packages
 - include: install-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: install-CentOS.yml
-#  when: ansible_os_family == 'CentOS'
+- include: install-RedHat.yml
+  when: ansible_os_family == 'RedHat'
 
 # Run OS-independent installation tasks
 - include: install-common.yml
+  tags:
+    - install
+    - ssp:install
 
 # Apply OS-independent configuration
 - include: configure-common.yml
+  tags:
+    - config
+    - ssp:config

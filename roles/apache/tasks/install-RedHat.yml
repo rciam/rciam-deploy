@@ -1,0 +1,20 @@
+---
+
+- name: Ensure Apache HTTP server is installed (Redhat)
+  yum: 
+    name: httpd
+    state: present
+    update_cache: yes
+  become: yes
+  notify:
+    - restart apache
+
+- name: Ensure Apache ssl module is installed (Redhat)
+  yum:
+    name: mod_ssl
+    state: present
+    update_cache: yes
+  become: yes
+  when: apache_vhosts_ssl is defined and apache_vhosts_ssl|length > 0
+  notify:
+    - restart apache

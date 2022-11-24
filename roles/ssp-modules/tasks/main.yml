@@ -1,0 +1,35 @@
+---
+
+
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags:
+    - always
+
+
+# Run OS-independent installation tasks
+- include: install-common.yml
+  tags:
+    - install
+    - ssp:install
+    - ssp:install:mods
+    - ssp-modules:install
+
+# Run OS-independent installation tasks
+- include: install-db.yml
+  tags:
+    - never
+    - ssp-modules:install:db
+
+# Apply OS-independent configuration
+- include: configure-common.yml
+  tags:
+    - config
+    - ssp:config
+    - ssp:config:mods
+    - ssp-modules:config

@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+voms = {
+    "vomses_url": "{{ rciam_util.voms.vomses_url }}",
+    "cert_path": "{{ rciam_util.voms.cert_path }}",
+    "key_path": "{{ rciam_util.voms.key_path }}",
+    "trusted_ca_path": "{{ rciam_util.voms.trusted_ca_path }}"
+}
+
+registry = {
+    "db": {
+        "name": "{{ rciam_dbs.registry.name }}",
+        "host": "{{ lookup('dig', groups['dbmaster'][0]) }}",
+        "user": "{{ rciam_dbs.registry.owner_username }}",
+        "password": "{{ rciam_dbs.registry.owner_password }}"
+    }
+}

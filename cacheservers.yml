@@ -1,5 +1,5 @@
 ---
 
-- hosts: sessionservers
+- hosts: cache
   roles:
     - memcached

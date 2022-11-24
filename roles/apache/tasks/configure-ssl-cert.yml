@@ -1,0 +1,54 @@
+---
+
+- name: Ensure apache SSL certificate directories exist
+  file:
+    path: "{{ item.certificate_file | dirname }}"
+    owner: "{{ apache_ssl_certificate_file_owner }}"
+    group: "{{ apache_ssl_certificate_file_group }}"
+    state: directory
+  with_items:
+    - "{{ apache_vhosts_ssl }}"
+  when: item.certificate_file is defined and item.certificate is defined
+  become: yes
+
+- name: Ensure apache SSL certificates are copied
+  copy:
+    dest: "{{ item.certificate_file }}"
+    content: "{{ item.certificate }}"
+    owner: "{{ apache_ssl_certificate_file_owner }}"
+    group: "{{ apache_ssl_certificate_file_group }}"
+    mode: "{{ apache_ssl_certificate_file_mode }}"
+    backup: yes
+  with_items:
+    - "{{ apache_vhosts_ssl }}"
+  when: item.certificate_file is defined and item.certificate is defined
+  become: yes
+  notify:
+    - restart apache
+
+- name: Ensure apache SSL certificate key directories exist
+  file:
+    path: "{{ item.certificate_key_file | dirname }}"
+    owner: "{{ apache_ssl_certificate_key_file_owner }}"
+    group: "{{ apache_ssl_certificate_key_file_group }}"
+    state: directory
+  with_items:
+    - "{{ apache_vhosts_ssl }}"
+  when: item.certificate_key_file is defined and item.certificate_key is defined
+  become: yes
+
+- name: Ensure apache SSL certificate keys are copied
+  copy:
+    dest: "{{ item.certificate_key_file }}"
+    content: '{{ item.certificate_key }}'
+    owner: "{{ apache_ssl_certificate_key_file_owner }}"
+    group: "{{ apache_ssl_certificate_key_file_group }}"
+    mode: "{{ apache_ssl_certificate_key_file_mode }}"
+    backup: yes
+  with_items:
+    - "{{ apache_vhosts_ssl }}"
+  when: item.certificate_key_file is defined and item.certificate_key is defined
+  become: yes
+  no_log: yes
+  notify:
+    - restart apache

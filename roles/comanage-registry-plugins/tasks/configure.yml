@@ -1,0 +1,41 @@
+---
+
+- name: Add ENV vars in cron.d file
+  cron:
+    name: "{{ item.name }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    env: yes
+    cron_file: "{{ item.filename }}"
+    state: present
+  loop: "{{ comanage_plugins_cron_env | default([]) }}"
+  become: true
+  when: comanage_plugins_cron_env is defined and comanage_plugins_cron_jobs is defined and comanage_plugins_cron_jobs_enabled
+
+- name: Ensure COmanage Registry Plugins cron jobs are installed
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute | default(omit) }}"
+    hour: "{{ item.hour | default(omit) }}"
+    day: "{{ item.day | default(omit) }}"
+    weekday: "{{ item.weekday | default(omit) }}"
+    month: "{{ item.month | default(omit) }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    cron_file: "{{ item.filename }}"
+    backup: true
+  loop: "{{ comanage_plugins_cron_jobs | default([]) }}"
+  become: true
+  when: comanage_plugins_cron_jobs is defined and comanage_plugins_cron_jobs_enabled
+
+- name: Create Symbolic links
+  file:
+    src: "{{ item.target }}"
+    dest: "{{ item.link }}"
+    force: yes
+    state: link
+    owner: root
+    group: root
+  loop: "{{ comanage_plugins_symlinks | default([]) }}"
+  become: true
+  when: comanage_plugins_symlinks is defined

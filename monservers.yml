@@ -1,0 +1,191 @@
+#
+---
+
+- hosts: monservers
+
+  vars:
+    extra_yum_repositories:
+      - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
+    extra_yum_keys:
+      - "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+
+  roles:
+    - { role: apache, tags: apache }
+    - { role: php, tags: php }
+    - { role: rciam-probes, tags: rciam-probes }
+
+  tasks:
+    - name: Ensure Repositories are installed (RedHat)
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ extra_yum_repositories }}"
+      become: true
+      when: ansible_os_family == 'RedHat' and extra_yum_repositories is defined
+      tags:
+        - common
+        - never
+
+    - name: Import repositories GPG key (RedHat).
+      rpm_key:
+        key: "{{ item }}"
+        state: present
+      loop: "{{ extra_yum_keys }}"
+      become: true
+      when: ansible_os_family == 'RedHat' and extra_yum_keys is defined
+      tags:
+        - common
+        - never
+
+    - name: Upgrade all
+      yum:
+        name: '*'
+        state: latest
+        update_cache: true
+      become: true
+      when: ansible_os_family == 'RedHat'
+      tags:
+        - never
+        - upgrade
+
+    - name: Ensure common packages are installed (RedHat)
+      yum:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      loop:
+        - tree
+        - wget
+        - ca-certificates
+        - vim-enhanced
+        - yum-utils
+      become: yes
+      when: ansible_os_family == 'RedHat'
+      tags:
+        - common
+        - never
+
+    - name: Configure timezone
+      timezone:
+        name: "{{ timezone }}"
+      become: yes
+      notify: restart crond
+      tags:
+        - common
+        - never
+
+    - name: Register private connection uuid (RedHat)
+      command: "nmcli -g GENERAL.CON-UUID  d show {{item}}"
+      loop: "{{ firewall_private_interfaces | default([]) }}"
+      register: firewall_private_uuids
+      when: ansible_os_family == 'RedHat'
+      tags: firewall
+
+    - name: Set zone internal to connections on network managed private interfaces (RedHat)
+      command: "nmcli connection modify {{ item.stdout }} connection.zone internal"
+      loop: "{{ firewall_private_uuids.results }}"
+      when: ansible_os_family == 'RedHat'
+      tags: firewall
+
+    - name: Clear firewall state (RedHat)
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/firewalld/services
+        - /etc/firewalld/zones
+        - /etc/firewalld/helpers
+        - /etc/firewalld/icmptypes
+        - /etc/firewalld/ipsets
+        - /etc/firewalld/direct.xml
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      notify: restart firewall
+
+    - name: Add default services to public zone (RedHat)
+      firewalld:
+        zone: public
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop:
+        - ssh
+        - dhcpv6-client
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      notify: restart firewall
+
+    - meta: flush_handlers
+      when: ansible_os_family == 'RedHat'
+
+    - name: Create firewall new zones (RedHat)
+      command: firewall-cmd --permanent --new-zone="{{ item }}"
+      loop: "{{ firewall_zones | default([]) }}"
+      notify: restart firewall
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      ignore_errors: true
+
+    - name: Create firewall new services (RedHat)
+      command: firewall-cmd --permanent --new-service="{{item.name}}"
+      loop: "{{ firewall_services | default([]) }}"
+      notify: restart firewall
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      ignore_errors: true
+
+    - name: Add port to services (RedHat)
+      command: firewall-cmd --permanent --service="{{ item.name }}" --add-port={{ item.port }}
+      loop: "{{ firewall_services | default([]) }}"
+      notify: restart firewall
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      ignore_errors: true
+
+    - name: Firewall add services to zones (RedHat)
+      firewalld:
+        zone: "{{ item.zone }}"
+        service: "{{ item.service }}"
+        permanent: true
+        state: enabled
+      loop: "{{ firewall_services_zones | default([]) }}"
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      notify: restart firewall
+
+    - name: Add sources to zones (RedHat)
+      firewalld:
+        zone: "{{ item.zone }}"
+        source: "{{ item.source }}"
+        permanent: true
+        state: enabled
+      loop: "{{ firewall_sources | default([]) }}"
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      notify: restart firewall
+
+    - name: Add interfaces to zones (RedHat)
+      firewalld:
+        zone: "{{ item.zone }}"
+        interface: "{{ item.interface }}"
+        permanent: true
+        state: enabled
+      loop: "{{ firewall_interfaces | default([]) }}"
+      tags: firewall
+      when: ansible_os_family == 'RedHat'
+      notify: restart firewall
+
+  handlers:
+    - name: reload firewall
+      command: "firewall-cmd --reload"
+
+    - name: restart firewall
+      service:
+        name: firewalld
+        state: restarted
+
+    - name: restart crond
+      service:
+        name: crond
+        state: restarted
+      become: yes

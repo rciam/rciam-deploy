@@ -1,0 +1,209 @@
+---
+# Set to yes/true to generate self-signed SSL certificate for signing requests/
+# response received from/sent to the IdP, as well as for receiving encrypted
+# responses.
+shibboleth_sp_ssl_cert_generate: no
+
+# SSL certificate subject (ignored when shibboleth_sp_ssl_cert_generate is set
+# to no)
+#shibboleth_sp_ssl_cert_subj: "/C=/ST=/L=/O=/CN=sp.example.org"
+
+# SSL certificate (ignored when shibboleth_sp_ssl_cert_generate is set to yes)
+#shibboleth_sp_ssl_cert: |
+#  -----BEGIN CERTIFICATE-----
+#  ...
+#  -----END CERTIFICATE-----
+
+# SSL certificate key (ignored when shibboleth_sp_ssl_cert_generate is set to
+# yes)
+#shibboleth_sp_ssl_cert_key: |
+#  -----BEGIN PRIVATE KEY-----
+#  ...
+#  -----END PRIVATE KEY-----
+
+# ApplicationDefaults
+# The SAML entityID of this SP
+shibboleth_sp_entity_id: "https://sp.example.org/shibboleth"
+# One or more attributes used for the primary identifier of the browser user
+# passed through the REMOTE_USER server variable.
+# Set to null to disable setting the variable. 
+shibboleth_sp_remote_user: "eppn persistent-id targeted-id"
+# Where the SP redirects the client to when there is nothing else that can be
+# done with a request and can be set to a standard home page or index page.
+#shibboleth_sp_home_url: "/"
+
+shibboleth_sp_session:
+  # The base location on the server that dispatches requests to the handlers
+  # configured inside the <Sessions> element. The location is specified as a
+  # relative or absolute URL. The default is "/Shibboleth.sso" on v2.4+,
+  # required otherwise.
+#  handler_url: "/Shibboleth.sso"
+  # When handlerSSL is set to true, only web requests over SSL/TLS will be
+  # processed by handlers. Other requests may be blocked, or possibly ignored
+  # (and usually result in a 404 error) depending on the web server, but will
+  # never be processed. This is useful for sites that want to protect SAML
+  # protocol traffic but leave actual content unencrypted.
+  handler_ssl: "false"
+  # Maximum duration in seconds that a session maintained by the SP will be
+  # valid. Default is 28800. Note that the actual time may be less than the
+  # specified value (if an IdP indicates it should be shorter) but will never
+  # be longer. Note that this will not influence sessions maintained by an
+  # application.
+  lifetime: 28000
+  # Maximum inactivity time in seconds allowed between requests in a session
+  # maintained by the SP. Default is 3600. This inactivity applies only to
+  # requests to this SP and is not aware of activity between the browser and
+  # other web sites (or even other applications on this system). A value of 0
+  # disables timeout checking.
+  timeout: 3600
+  # Max time of authentication in seconds. If set, the SP rejects assertions
+  # that indicate the user's actual time of authentication to the IdP is older
+  # than the difference between the current time and this value. Essentially
+  # this limits the amount of time between the act of authentication and the
+  # attempt to access the SP. This can be useful to ensure that the SAML 2.0
+  # ForceAuthn flag was honored.
+#  max_time_since_authn:
+  # The IdP will place the IP address of the user agent it authenticated into
+  # the assertions it issues. When true, the SP will check this address
+  # against the address of the client presenting an assertion before creating
+  # a session. While useful for security, NAT and proxy usage (as well as IPv6
+  # support on only either the webserver hosting the IdP or the SP) often make
+  # this setting a source of errors. Default is true.
+  check_address: "false"
+  # When consistentAddress is set to true, the SP will remember the IP address
+  # used when creating a session and ensure that all subsequent access
+  # associated with this session come from the same address. This can help
+  # protect against cookie theft and is less likely than the checkAddress
+  # setting to block legitimate access. Default is true.
+#  consistent_address: "true"
+  # Meta-properties like path or the secure and HttpOnly flags to attach to
+  # the cookies. Defautls to "; path=/; HttpOnly". If set to a custom string,
+  # the string is appended to the cookie values maintained by the SP. A common
+  # value for SSL-only use is "; path=/; secure; HttpOnly". As of v2.5, this
+  # property can be set to a pair of built-in values, "http" and "https",
+  # which expand to the default and SSL-only properties respectively.
+  cookie_props: "http"
+  # Cookie lifetime in seconds. If set, cookies used for session management
+  # will be created with the designated lifetime. When omitted, which is the
+  # default, such cookies are in-memory only and do not persist across browser
+  # restarts (assuming various session restore features aren't in use). Note
+  # that this will not affect "transitory" cookies used for maintaining state
+  # across redirects.
+#  cookie_lifetime:
+  # Controls how information associated with requests for authentication,
+  # primarily the original resource accessed, is preserved for the completion
+  # of the authentication process. If not specified, the resource URL is
+  # passed by value to the IdP, when possible. A value of "cookie" causes the
+  # URL to be saved in a cookie, to protect the user's privacy. A third
+  # option, which is recommended, is to use the SP's persistent storage by
+  # specifying a value of the form "ss:id", where id references a
+  # <StorageService> element, typically "ss:mem". As of v2.5, the "cookie"
+  # option can include a ":n" suffix, where n specifies the number of cookies
+  # to permit before purging old ones, defaulting to 25.
+  relay_state: "ss:mem"
+
+# SSO settings. To allow for >1 IdP, remove entity_id property and adjust
+# discovery_url to point to discovery service.
+shibboleth_sp_sso:
+  protocols: "SAML2 SAML1"
+  entity_id: "https://idp.example.org/idp/shibboleth"
+  discovery_protocol: "SAMLDS"
+  discovery_url: "https://ds.example.org/DS/WAYF"
+
+shibboleth_sp_logout:
+  protocols: "SAML2 Local"
+
+# See https://wiki.shibboleth.net/confluence/display/SP3/Handler
+shibboleth_sp_handlers:
+  - type: "MetadataGenerator"
+    location: "/Metadata"
+    signing: "false"
+  - type: "Status"
+    location: "/Status"
+    acl: "127.0.0.1 ::1"
+  - type: "Session"
+    location: "/Session"
+    show_attributes: "false"
+  - type: "DiscoveryFeed"
+    location: "/DiscoFeed"
+
+shibboleth_sp_supportcontact_email: "root@localhost"
+
+# TODO Add support for metadata filters
+shibboleth_sp_metadata_providers: []
+#  - type: "XML"
+#    uri: "http://federation.org/federation-metadata.xml"
+#    backing_file_path: "federation-metadata.xml"
+#    reload_interval: 7200
+#  - type: "XML" 
+#    file: "partner-metadata.xml"
+
+shibboleth_sp_attribute_extractors:
+  - type: "XML"
+    params:
+      validate: "true"
+      reloadChanges: "false"
+      path: "attribute-map.xml"
+
+shibboleth_sp_attribute_resolvers:
+  - type: "Query"
+    subject_match: "true"
+
+# The default settings can be overridden by creating ApplicationOverride
+# elements. When you use virtual hosting, there is no special handler
+# configuration needed; you can simply inherit the default settings because the
+# handlers will automatically be specific to each virtual host.
+# In contrast, when you divide things by path, you have to explicitly add XML
+# to the configuration to establish a special handlerURL for the new
+# application.
+# remote_user, home_url and session are optional
+shibboleth_sp_overrides: []
+#  - id: "admin"
+#    entity_id: "https://admin.example.org/shibboleth"
+#    remote_user: "eppn persistent-id targeted-id"
+#    home_url: "/"
+#    session:
+#      handler_url: "/Shibboleth.sso"
+#      handler_ssl: "false"
+#      lifetime: 28000
+#      timeout: 3600
+#      max_time_since_authn:
+#      check_address: "false"
+#      consistent_address: "true"
+#      cookie_props: "http"
+#      cookie_lifetime:
+#      relay_state: "ss:mem"
+#      sso:
+#        entity_id: "https://idp.example.org"
+#        name: "SAML2"
+#      logout:
+#        name: "Local"
+#      handlers:
+#        - handler:
+#          type: "MetadataGenerator" 
+#          location: "/Metadata"
+#          signing: "false"
+#        - handler:
+#          type: "Status"
+#          location: "/Status"
+#          acl: "127.0.0.1 ::1"
+#        - handler: 
+#          type: "Session"
+#          location: "/Session"
+#          show_attributes: "true"
+#        - handler:
+#          type: "DiscoveryFeed"
+#          location: "/DiscoFeed"
+
+shibboleth_sp_ext_libraries: []
+# Path to the library to load
+#  - path: "plugin.so"
+# If "true", a failure to load the library will fatally terminate the overall
+# initialisation of the SP. Defaults to "false".
+#    fatal: "false"
+
+# Path to file containing attribute mappings
+shibboleth_sp_attribute_map_file: "attribute-map.xml"
+
+# Path to file containing attribute policies
+shibboleth_sp_attribute_policy_file: "attribute-policy.xml"

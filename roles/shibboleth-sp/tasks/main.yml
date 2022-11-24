@@ -1,0 +1,67 @@
+# file: shibboleth-sp/tasks/main.yml
+#
+---
+
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags:
+    - always
+
+- name: Define Shibboleth SP version
+  set_fact:
+    shibboleth_sp_version: "{{ shibboleth_sp_default_version }}"
+  when: shibboleth_sp_version is not defined
+  tags:
+    - always
+
+- name: Define Shibboleth SP service name
+  set_fact:
+    shibboleth_sp_service: "{{ shibboleth_sp_default_service }}"
+  when: shibboleth_sp_service is not defined
+  tags:
+    - always
+
+- name: Define Shibboleth SP configuration path
+  set_fact:
+    shibboleth_sp_conf_path: "{{ shibboleth_sp_default_conf_path }}"
+  when: shibboleth_sp_conf_path is not defined
+  tags:
+    - always
+
+- name: Define Shibboleth SP user
+  set_fact:
+    shibboleth_sp_user: "{{ shibboleth_sp_default_user }}"
+  when: shibboleth_sp_user is not defined
+  tags:
+    - always
+
+- name: Define Shibboleth SP group
+  set_fact:
+    shibboleth_sp_group: "{{ shibboleth_sp_default_group }}"
+  when: shibboleth_sp_group is not defined
+  tags:
+    - always
+
+# Install OS-specific packages
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+#- include: install-CentOS.yml
+#  when: ansible_os_family == 'CentOS
+
+# Run OS-independent installation tasks
+- include: install-common.yml
+
+# Apply OS-independent configuration
+- include: configure-common.yml
+
+- name: Ensure Shibboleth SP service is started and enabled on boot
+  service:
+    name: "{{ shibboleth_sp_service }}"
+    state: "started"
+    enabled: yes
+  become: yes

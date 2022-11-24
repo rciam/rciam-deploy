@@ -1,0 +1,141 @@
+<?php
+/**
+ * Configuration of SimpleSAMLphp proxystatistics module.
+ * {{ ansible_managed }}
+ *
+ * @author Pavel Vyskočil <vyskocilpavel@muni.cz>
+ */
+
+$config = [
+
+    /*
+     * Choose one from the following modes: PROXY, IDP, SP
+     */
+    'mode' => '{{ ssp_module_proxystatistics_mode }}',
+
+{% if ssp_module_proxystatistics_idp_entity_id is defined %}
+    /*
+     * EntityId of IdP
+     * REQUIRED FOR IDP MODE
+     */
+    'idpEntityId' => '{{ ssp_module_proxystatistics_idp_entity_id }}',
+
+{% endif %}
+{% if ssp_module_proxystatistics_idp_entity_name is defined %}
+    /*
+     * Name of IdP
+     * REQUIRED FOR IDP MODE
+     */
+    'idpName' => '{{ ssp_module_proxystatistics_idp_entity_name }}',
+
+{% endif %}
+{% if ssp_module_proxystatistics_sp_entity_id is defined %}
+    /*
+     * EntityId of SP
+     * REQUIRED FOR SP MODE
+     */
+    'spEntityId' => '{{ ssp_module_proxystatistics_sp_entity_id }}',
+
+{% endif %}
+{% if ssp_module_proxystatistics_sp_entity_name is defined %}
+    /*
+     * Name of SP
+     * REQUIRED FOR SP MODE
+     */
+    'spName' => '{{ ssp_module_proxystatistics_sp_entity_name }}',
+
+{% endif %}
+    /*
+     * Fill config for SimpleSAML\Database.
+     * If not set, the global config is used.
+     * @see SimpleSAML\Database
+     */
+    'store' => [
+        'database.dsn' => '{{ ssp_module_proxystatistics_db.dsn }}',
+        'database.username' => '{{ ssp_module_proxystatistics_db.username }}',
+        'database.password' => '{{ ssp_module_proxystatistics_db.password }}',
+        'database.prefix' => '{{ ssp_module_proxystatistics_db.prefix }}',
+        'database.persistent' => {{ ssp_module_proxystatistics_db.persistent }},
+        'database.driver_options' => [],
+        // If you want to use SSL
+        /*
+        'database.driver_options' => [
+            // Path for the ssl key file
+            PDO::MYSQL_ATTR_SSL_KEY => '',
+            // Path for the ssl cert file
+            PDO::MYSQL_ATTR_SSL_CERT => '',
+            // Path for the ssl ca file
+            PDO::MYSQL_ATTR_SSL_CA => '',
+            // Path for the ssl ca dir
+            PDO::MYSQL_ATTR_SSL_CAPATH => '',
+        ],
+        */
+{% if ssp_module_proxystatistics_db.slaves is defined %}
+        'database.slaves' => [
+{% for db_slave in ssp_module_proxystatistics_db.slaves %}
+            [
+                'dsn' => '{{ db_slave.dsn }}',
+                'username' => '{{ db_slave.username }}',
+                'password' => '{{ db_slave.password }}',
+                'persistent' => {{ db_slave.persistent }},
+            ],
+{% endfor %}
+        ],
+{% endif %}
+    ],
+
+    /*
+     * For how many days should detailed statistics (per user) be kept.
+     * @default 0
+     */
+    'detailedDays' => {{ ssp_module_proxystatistics_detailed_days }},
+
+    /**
+     * Which attribute should be used as user ID.
+     * @default uid
+     */
+    'userIdAttribute' => '{{ ssp_module_proxystatistics_user_id_attribute }}',
+
+{% if ssp_module_proxystatistics_user_id_blacklist is defined %}
+     /*
+      * Which users should be blacklisted
+      * */
+     'userIdBlacklist' => [
+{% for identifier in ssp_module_proxystatistics_user_id_blacklist %}
+        '{{ identifier }}',
+{% endfor %}
+     ],
+{% endif %}
+
+    /*
+     * Fill the table name for statistics
+     */
+    'statisticsTableName' => '{{ ssp_module_proxystatistics_table_name.statistics }}',
+
+    /*
+     * Fill the table name for detailed statistics
+     * @default
+     */
+    'detailedStatisticsTableName' => '{{ ssp_module_proxystatistics_table_name.detailed_statistics }}',
+
+    /*
+     * Fill the table name for identityProvidersMap
+     */
+    'identityProvidersMapTableName' => '{{ ssp_module_proxystatistics_table_name.identity_providers_map }}',
+
+    /*
+     * Fill the table name for serviceProviders
+     */
+    'serviceProvidersMapTableName' => '{{ ssp_module_proxystatistics_table_name.service_providers_map }}',
+
+    /*
+     * Fill the entityID of OpenID Connect Provider
+     */
+    'oidcIssuer' => '{{ ssp_module_proxystatistics_oidc_issuer }}',
+
+    /**
+     * Authentication source name if authentication should be required.
+     * Defaults to empty string.
+     */
+    //'requireAuth.source' => 'default-sp',
+];

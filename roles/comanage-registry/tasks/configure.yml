@@ -1,0 +1,151 @@
+---
+
+- name: Configure COmanage Registry database connections
+  template:
+    src: "database.php.j2"
+    dest: "{{ comanage_path }}/local/Config/database.php"
+    owner: "{{ comanage_webserver_user }}"
+    group: "{{ comanage_webserver_group }}"
+    mode: 0600
+    backup: yes
+  become: yes
+  tags:
+  - comanage-registry:config:db
+
+- name: Configure COmanage Registry email settings
+  template:
+    src: "email.php.j2"
+    dest: "{{ comanage_path }}/local/Config/email.php"
+    owner: "{{ comanage_webserver_user }}"
+    group: "{{ comanage_webserver_group }}"
+    mode: 0600
+    backup: yes
+  become: yes
+  tags:
+  - comanage-registry:config:email
+
+- name: Configure COmanage Registry ldap entitlement settings
+  template:
+    src: "ldap.php.j2"
+    dest: "{{ comanage_path }}/local/Config/ldap.php"
+    owner: "{{ comanage_webserver_user }}"
+    group: "{{ comanage_webserver_group }}"
+    mode: 0600
+    backup: yes
+  become: yes
+  tags:
+  - comanage-registry:config:ldap
+
+# Seed: cat /dev/urandom | tr -dc '0-9' | fold -w 29 | head -n 1 | xargs echo -n
+# Salt: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1 | xargs echo -n
+- name: Configure COmanage Registry security.salt and security.seed
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ comanage_path }}/local/Config/{{ item }}"
+    owner: "{{ comanage_webserver_user }}"
+    group: "{{ comanage_webserver_group }}"
+    backup: yes
+  become: yes
+  loop:
+    - security.salt
+    - security.seed
+  tags:
+    - comanage-registry:config:security
+
+- name: Configure COmanage Registry app/webroot/.htaccess
+  blockinfile:
+    dest: "{{ comanage_path }}/app/webroot/.htaccess"
+    backup: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    insertafter: "EOF"
+    block: "{{ comanage_app_webroot_htaccess }}"
+  when: comanage_app_webroot_htaccess is defined
+  become: yes
+  tags:
+  - comanage-registry:config:webroot
+
+- name: Configure COmanage Registry auth session name
+  lineinfile:
+    dest: "{{ item }}"
+    regexp: "^session_name"
+    line: 'session_name("{{ comanage_session_name }}");'
+  with_items:
+     - "{{ comanage_path }}/app/webroot/auth/login/index.php"
+     - "{{ comanage_path }}/app/webroot/auth/logout/index.php"
+  become: yes
+  tags:
+  - comanage-registry:config:webroot
+
+- name: Configure COmanage Registry logout location
+  replace:
+    dest: "{{ comanage_path }}/app/webroot/auth/logout/index.php"
+    backup: yes
+    regexp: '\/registry\/users\/logout'
+    replace: "{{ comanage_logout_location }}"
+  when: comanage_logout_location is defined
+  become: yes
+  tags:
+  - comanage-registry:config:webroot
+
+- name: Configure COmanage Registry timezone cookie name
+  replace:
+    dest: "{{ item }}"
+    backup: yes
+    regexp: "cm_registry_tz_auto"
+    replace: "{{ comanage_timezone_cookie_name }}"
+  with_items:
+     - "{{ comanage_path }}/app/Controller/AppController.php"
+     - "{{ comanage_path }}/app/View/Layouts/default.ctp"
+     - "{{ comanage_path }}/app/View/Layouts/lightbox.ctp"
+  when: comanage_timezone_cookie_name is defined
+  become: yes
+
+# According to COmanage this is not a mandatory step for the setup
+- name: Configure COmanage Registry core.php
+  template:
+    src: "core.php.j2"
+    dest: "{{ comanage_path }}/app/Config/core.php"
+    owner: root
+    group: root
+    backup: yes
+  become: yes
+  tags:
+  - comanage-registry:config:core
+
+- name: Add ENV vars in cron.d file
+  cron:
+    name: "{{ item.name }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    env: yes
+    cron_file: "{{ item.filename }}"
+    state: present
+  loop: "{{ comanage_cron_env | default([]) }}"
+  become: true
+  when: comanage_cron_env is defined and comanage_cron_jobs is defined and comanage_cron_jobs_enabled
+
+- name: Ensure COmanage Registry cron jobs are installed
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute | default(omit) }}"
+    hour: "{{ item.hour | default(omit) }}"
+    weekday: "{{ item.weekday | default(omit) }}"
+    month: "{{ item.month | default(omit) }}"
+    day: "{{ item.day | default(omit) }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    cron_file: "{{ item.filename }}"
+    backup: true
+  loop: "{{ comanage_cron_jobs | default([]) }}"
+  become: true
+  when: comanage_cron_jobs is defined and comanage_cron_jobs_enabled
+
+# Tasks adding/copying/replacing files
+- name: Update/Copy tasks
+  include_tasks:
+    file: static_files.yml
+    apply:
+      tags:
+      - comanage-registry:config:staticfiles
+  tags:
+  - comanage-registry:config:staticfiles

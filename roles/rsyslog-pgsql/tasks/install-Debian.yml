@@ -1,0 +1,8 @@
+---
+- name: Ensure rsyslog & rsyslog-pgsql is installed (Debian)
+  apt: name={{item}} state=present install_recommends=no
+  loop:
+    - rsyslog
+    - rsyslog-pgsql
+  become: yes
+  when: rsyslog_pgsql_enable_logs == true

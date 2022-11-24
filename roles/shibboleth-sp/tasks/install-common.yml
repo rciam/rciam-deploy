@@ -1,0 +1,11 @@
+---
+- name: Ensure required Shibboleth SP dirs exist
+  file: 
+    path: "{{ shibboleth_sp_conf_path }}/{{ item }}"
+    state: directory
+    owner: "{{ shibboleth_sp_user }}"
+    group: "{{ shibboleth_sp_group }}"
+  with_items:
+    - metadata
+    - cert
+  become: yes

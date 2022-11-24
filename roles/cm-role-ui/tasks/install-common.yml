@@ -1,0 +1,34 @@
+---
+
+- name: Ensure Roles root directory exists
+  file:
+    path: "{{ roles_root_dir }}"
+    state: directory
+    owner: root
+    group: root
+  become: yes
+  tags:
+    - cm-role-ui:install
+
+- name: Ensure Roles source is cloned under root directory
+  git:
+    repo: "{{ roles_repo }}"
+    dest: "{{ roles_root_dir }}/{{ roles_src }}-{{ roles_version }}"
+    version: "{{ roles_version }}"
+    accept_hostkey: yes
+  ignore_errors: yes
+  become: yes
+  tags:
+    - cm-role-ui:install
+
+- name: Ensure symbolic link to current Roles installation exists
+  file:
+    src: "{{ roles_root_dir }}/{{ roles_src }}-{{ roles_version }}"
+    dest: "{{ roles_path }}"
+    force: yes
+    state: link
+    owner: root
+    group: root
+  become: yes
+  tags:
+    - cm-role-ui:install

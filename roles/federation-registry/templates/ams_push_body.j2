@@ -1,0 +1,12 @@
+{
+ "topic": "projects/{{federation_registry_ams.project}}/topics/{{ federation_registry_ams.topic }}",
+ "ackDeadlineSeconds":10,
+  "pushConfig": {
+    "pushEndpoint": "https://{{federation_registry_nginx_hostname}}/express/ams/ingest",
+    "maxMessages": 5,
+    "retryPolicy": {
+      "type": "linear",
+      "period": 1000
+    }
+   }
+}

@@ -1,0 +1,41 @@
+# file: rciam-oidc-client/defaults/main.yml
+#
+---
+
+# List of RCIAM OIDC Clients to deploy
+rciam_oidc_clients: []
+#  - name: "rciam-example"
+#    path: "/var/www/html/rciam-example"
+#    release: "https://github.com/rciam/simple-oidc-client-php/releases/download/v2.0.0/simple-oidc-client-php.tar.gz"
+#    version: "v2.0.0"
+#    # Client config template. Defaults to:
+#    # simple-oidc-client-php/templates/simple-oidc-client-php/config.php.j2
+#    src_config_path: "simple-oidc-client-php/config.php.j2"
+#    dest_config_path: "/var/www/html/rciam-example1/config.php"
+#    config:
+#      title: "Generate Tokens"
+#      logo: "https://clickhelp.co/images/feeds/blog/2016.05/keys.jpg"
+#      scope_info: "This service requires the following permissions for your account:"
+#      issuer: "https://example.com/oidc/"
+#      client_id: "some-client-id"
+#      client_secret: "some-client-secret"
+#      pkce_code_challenge_method: "S256"
+#      redirect_page: "refreshtoken.php"
+#      redirect_url: "\"http://localhost/simple-oidc-client-php/\" . $redirectPage"
+#      scope_definitions:
+#        - name: "openid"
+#          definition: "log in using your identity"
+#        - name: "email"
+#          definition: "read your email address"
+#        - name: "profile"
+#          definition: "read your basic profile info"
+#      refresh_token_note: "NOTE: New refresh tokens expire in 12 months."
+#      access_token_note: "NOTE: New access tokens expire in 1 hour."
+#      manage_token_note: "You can manage your refresh tokens in the following link: "
+#      manage_token_link: "{{ manage_token_note }}manage/user/services"
+#      session_name: "oidc-client"
+#      session_lifetime: "60*60"
+#      banner_text: "dummie message"
+#      banner_type: "info"
+#      allow_introspection: True
+#      enable_active_tokens_table: False

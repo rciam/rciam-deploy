@@ -1,0 +1,10 @@
+---
+
+- name: Configure Tomcat
+  template: src={{ item.src }} dest={{ item.dest }} backup=yes
+  with_items:
+    - { src: "default-{{ tomcat_version }}.j2", dest: "{{ tomcat_default_path }}/{{ tomcat_service }}" }
+    - { src: "server-{{ tomcat_version }}.xml.j2", dest: "{{ tomcat_conf_path }}/server.xml" }
+  become: yes
+  notify:
+    - Restart Tomcat

@@ -1,0 +1,7 @@
+# file: utilservers.yml
+#
+---
+
+- hosts: util
+  roles:
+    - { role: rciam-utils }

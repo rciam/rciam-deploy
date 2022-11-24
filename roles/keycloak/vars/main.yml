@@ -1,0 +1,6 @@
+---
+## Variables below should not be changed, unless you know what you're doing
+## cachetype should get one of the values: { distributed-cache, replicated-cache}. In case of replicated-cache, owners' value is ignored
+keycloak_session:
+  cachetype: "distributed-cache"
+  owners: "2"

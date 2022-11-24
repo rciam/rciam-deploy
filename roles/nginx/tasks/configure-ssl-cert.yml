@@ -1,0 +1,56 @@
+# file: nginx/tasks/configure-ssl-cert.yml
+#
+---
+
+- name: Ensure nginx SSL certificate directories exist
+  file:
+    path: "{{ item.certificate_file | dirname }}"
+    owner: "{{ nginx_ssl_certificate_file_owner }}"
+    group: "{{ nginx_ssl_certificate_file_group }}"
+    state: directory
+  with_items:
+    - "{{ nginx_vhosts }}"
+  when: item.certificate_file is defined and item.certificate is defined
+  become: yes
+
+- name: Ensure nginx SSL certificates are copied
+  copy:
+    dest: "{{ item.certificate_file }}"
+    content: "{{ item.certificate }}"
+    owner: "{{ nginx_ssl_certificate_file_owner }}"
+    group: "{{ nginx_ssl_certificate_file_group }}"
+    mode: "{{ nginx_ssl_certificate_file_mode }}"
+    backup: yes
+  with_items:
+    - "{{ nginx_vhosts }}"
+  when: item.certificate_file is defined and item.certificate is defined
+  become: yes
+  notify:
+    - Restart nginx
+
+- name: Ensure nginx SSL certificate key directories exist
+  file:
+    path: "{{ item.certificate_key_file | dirname }}"
+    owner: "{{ nginx_ssl_certificate_key_file_owner }}"
+    group: "{{ nginx_ssl_certificate_key_file_group }}"
+    state: directory
+  with_items:
+    - "{{ nginx_vhosts }}"
+  when: item.certificate_key_file is defined and item.certificate_key is defined
+  become: yes
+
+- name: Ensure nginx SSL certificate keys are copied
+  copy:
+    dest: "{{ item.certificate_key_file }}"
+    content: '{{ item.certificate_key }}'
+    owner: "{{ nginx_ssl_certificate_key_file_owner }}"
+    group: "{{ nginx_ssl_certificate_key_file_group }}"
+    mode: "{{ nginx_ssl_certificate_key_file_mode }}"
+    backup: yes
+  with_items:
+    - "{{ nginx_vhosts }}"
+  when: item.certificate_key_file is defined and item.certificate_key is defined
+  become: yes
+  no_log: yes
+  notify:
+    - Restart nginx

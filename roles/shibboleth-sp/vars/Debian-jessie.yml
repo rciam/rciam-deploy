@@ -1,0 +1,9 @@
+# file: shibboleth-sp/vars/Debian-jessie.yml
+#
+---
+
+shibboleth_sp_default_version: "2.5"
+shibboleth_sp_default_service: "shibd"
+shibboleth_sp_default_conf_path: "/etc/shibboleth"
+shibboleth_sp_default_user: "_shibd"
+shibboleth_sp_default_group: "_shibd"

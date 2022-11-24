@@ -1,0 +1,22 @@
+# memcached config file
+# {{ ansible_managed }}
+
+# Default connection port is 11211
+PORT="{{ memcached_listen_port_tcp }}"
+
+# The user to run memcached as
+USER="{{ memcached_user }}"
+
+# Limit the number of simultaneous incoming connections. Default is 1024.
+MAXCONN="{{ memcached_connections_max }}"
+
+# MB memory max to use for object storage; the default is 64 megabytes.
+CACHESIZE="{{ memcached_memory_max }}"
+
+# Extra options:
+#  -l IP address to listen on; the default is to listen on all IP addresses.
+# This is an important option to consider as there is no other way to secure
+# the installation. Binding to an internal or firewalled network interface is
+# suggested.
+#  -U UDP port to listen on; the default is port 11211, 0 is off.
+OPTIONS="-l {{ memcached_listen_address }} -U {{ memcached_listen_port_udp }} {{ memcached_log_verbosity }} >> {{ memcached_log_file }} 2>&1"

@@ -21,7 +21,7 @@
 		"en": "Switzerland"
 	},
 	"edugain": {
-		"en": "Europe (eduGAIN)"
+		"en": "eduGAIN"
 	},
 	"misc": {
 		"en": "Miscellaneous"
@@ -33,8 +33,8 @@
 		"en": "UK Access Federation"
 {% if ssp_mod_discopower_dictionaries is defined %}
 {% for entry in ssp_mod_discopower_dictionaries %}
-{% for tab, translations in entry.iteritems() %}
-{% for lang, translation in translations.iteritems() %}
+{% for tab, translations in entry.items() %}
+{% for lang, translation in translations.items() %}
 {% if lang == 'en' %}
 	},
 	"{{ tab }}": {

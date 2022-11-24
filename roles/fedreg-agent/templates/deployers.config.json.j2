@@ -1,0 +1,72 @@
+{
+{% if fedreg_agent_enable_keycloak | bool == True %}
+    "keycloak": {
+        "ams": {
+    {% if fedreg_agent_keycloak.name is defined %}
+            "deployer_name": "{{ fedreg_agent_keycloak.name }}",
+    {% endif %}
+            "host": "{{ fedreg_agent_ams.host }}",
+            "project": "{{ fedreg_agent_ams.project }}",
+            "pull_topic": "{{ fedreg_agent_keycloak.pull_topic }}",
+            "pull_sub": "{{ fedreg_agent_keycloak.pull_sub }}",
+            "token": "{{ fedreg_agent_ams.token }}",
+            "pub_topic": "{{ fedreg_agent_ams.pub_topic }}",
+            "poll_interval": {{ fedreg_agent_ams.time_interval }}
+        },
+        "auth_server": "{{ fedreg_agent_keycloak.auth_server }}",
+        "realm": "{{ fedreg_agent_keycloak.realm }}",
+    {% if fedreg_agent_keycloak.refresh_token is defined %}
+        "refresh_token": "{{ fedreg_agent_keycloak.refresh_token }}",
+    {% endif %}
+        "client_id": "{{ fedreg_agent_keycloak.client_id }}",
+        "client_secret": "{{ fedreg_agent_keycloak.client_secret }}",
+        "service_account": {
+            "attribute_name": "{{ fedreg_agent_keycloak.service_account.attribute_name }}",
+            "candidate": "{{ fedreg_agent_keycloak.service_account.candidate }}",
+            "scope": "{{ fedreg_agent_keycloak.service_account.scope }}"
+        }
+    },
+{% endif %}
+{% if fedreg_agent_enable_mitreid | bool == True %}
+    "mitreid": {
+        "ams": {
+    {% if fedreg_agent_mitreid.name is defined %}
+            "deployer_name": "{{ fedreg_agent_mitreid.name }}",
+    {% endif %}
+            "host": "{{ fedreg_agent_ams.host }}",
+            "project": "{{ fedreg_agent_ams.project }}",
+            "pull_topic": "{{ fedreg_agent_mitreid.pull_topic }}",
+            "pull_sub": "{{ fedreg_agent_mitreid.pull_sub }}",
+            "token": "{{ fedreg_agent_ams.token }}",
+            "pub_topic": "{{ fedreg_agent_ams.pub_topic }}",
+            "poll_interval": {{ fedreg_agent_ams.time_interval }}
+        },
+        "issuer": "{{ fedreg_agent_mitreid.url }}",
+        "refresh_token": "{{ fedreg_agent_mitreid.refresh_token }}",
+        "client_id": "{{ fedreg_agent_mitreid.client_id }}",
+        "client_secret": "{{ fedreg_agent_mitreid.client_secret }}"
+    },
+{% endif %}
+{% if fedreg_agent_enable_ssp | bool == True %}
+    "ssp": {
+        "ams": {
+    {% if fedreg_agent_ssp.name is defined %}
+            "deployer_name": "{{ fedreg_agent_ssp.name }}",
+    {% endif %}
+            "host": "{{ fedreg_agent_ams.host }}",
+            "project": "{{ fedreg_agent_ams.project }}",
+            "pull_topic": "{{ fedreg_agent_ssp.pull_topic }}",
+            "pull_sub": "{{ fedreg_agent_ssp.pull_sub }}",
+            "token": "{{ fedreg_agent_ams.token }}",
+            "pub_topic": "{{ fedreg_agent_ams.pub_topic }}",
+            "poll_interval": {{ fedreg_agent_ams.time_interval }}
+        },
+        "metadata_conf_file": "{{ fedreg_agent_ssp.metadata_file }}",
+        "cron_secret": "{{ fedreg_agent_ssp.metadata_key }}",
+        "cron_url": "{{ fedreg_agent_ssp.url }}",
+        "cron_tag": "hourly",
+        "request_timeout": {{ fedreg_agent_ssp.request_timeout }}
+    },
+{% endif %}
+    "log_conf": "{{ fedreg_agent_log_conf }}"
+}

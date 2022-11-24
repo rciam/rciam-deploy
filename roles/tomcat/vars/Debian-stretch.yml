@@ -1,0 +1,11 @@
+# file: tomcat/vars/Debian-stretch.yml
+#
+---
+
+tomcat_default_version: "8.5"
+tomcat_default_package: "tomcat8"
+tomcat_default_service: "tomcat8"
+tomcat_default_conf_path: "/etc/tomcat8"
+tomcat_default_java_home: "/usr/lib/jvm/java-8-openjdk-amd64"
+
+tomcat_default_path: "/etc/default"

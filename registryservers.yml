@@ -1,0 +1,18 @@
+# file: registryservers.yml
+#
+---
+
+- hosts: registry
+  roles:
+    - { role: git, tags: git }
+    - { role: apache, tags: apache }
+    - { role: php, tags: php }
+    - { role: shibboleth-sp, tags: shibboleth-sp }
+    - { role: comanage-registry, tags: comanage-registry }
+    - { role: comanage-registry-plugins, tags: comanage-registry-plugins }
+
+
+# Deploy clean COmanage environment
+# ansible-playbook -v -i inventories/instances/hosts.ini registryservers.yml --tags "comanage-registry" --ask-vault-pass
+# Deploy changes.
+# ansible-playbook -v -i inventories/instances/hosts.ini registryservers.yml --tags [comanage-registry,comanage-registry:install,comanage-registry:config,] --ask-vault-pass

@@ -2,4 +2,5 @@
 
 - hosts: authservers
   roles:
+    - common
     - ssp
