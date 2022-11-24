@@ -18,30 +18,28 @@ On the managed nodes, you need a way to communicate, normally ssh, which by defa
 
 ## Control Machine Requirements
 
-On the control machine, you need a recent version of Ansible. We recommend installing Ansible via “pip”, which is the Python package manager (though other options are also available):
+On the control machine, you need a recent version of Ansible and some necessary Python libraries. We recommend installing Ansible via “pip”, which is the Python package manager (though other options are also available).
+You can easily install all the prerequisites with the following two commands:
 
-```sh
-pip install ansible==2.10.7
-pip install dnspython==2.1.0
-pip install jmespath==0.10.0
-ansible-galaxy install ipr-cnrs.nftables
-ansible-galaxy install arillso.logrotate
-ansible-galaxy install infopen.openjdk-jdk
-🍺
-```
+    pip install -r requirements.txt
+    ansible-galaxy install ipr-cnrs.nftables
+    ansible-galaxy install arillso.logrotate
+    ansible-galaxy install infopen.openjdk-jdk
+    🍺
+
+**Tested Ansible version:** `2.10.7`
 
 ## Configuration
 
-* Set the hostnames/IP addresses of managed nodes in `inventories/ENV/inventory`, for each target environment, e.g. `testing`, `staging`, `production`, etc.
-* DO change the default SimpleSAMLphp admin password in `inventories/ENV/group_vars/authservers`
-* Modify variables in `inventories/ENV/group_vars/authservers` to generate the metadata of the IdP/SP proxy 
+* Set the hostnames/IP addresses of managed nodes in `inventories/ENV/hosts.ini`, for each target environment, e.g. `testing`, `staging`, `production`, etc.
+* Modify variables in `inventories/ENV/group_vars/<HOST_GROUP>`
 
 ## Executing the Playbook
 
-Assuming root access to the target machines, simple run the following command to execute the master playbook using the inventory file at the default location (see `ansible.cfg`):
+Assuming root access to the target machines, simple run the following command to execute the playbook using the specified inventory file:
 
 ```sh
-ansible-playbook -v site.yml
+ansible-playbook -v -i inventories/ENV/hosts.ini keycloakservers.yml
 ```
 
 ## License
