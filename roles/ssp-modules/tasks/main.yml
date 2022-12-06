@@ -11,6 +11,14 @@
   tags:
     - always
 
+# Install OS-specific packages
+- include: install-common-Ubuntu.yml
+  when: ansible_os_family == 'Debian' and ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'focal
+  tags:
+    - install
+    - ssp:install
+    - ssp:install:mods
+    - ssp-modules:install
 
 # Run OS-independent installation tasks
 - include: install-common.yml
