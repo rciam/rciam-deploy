@@ -9,7 +9,7 @@
   tasks:
     - name: Ensure static files for each Virtual Host are copied
       copy:
-        src: "{{ inventory_dir }}/files/web/vhosts/{{ item.servername }}/"
+        src: "{{ inventory_dir }}/files/web/vhosts/{{ item.servername | urlsplit('hostname') }}/"
         dest: "{{ item.documentroot }}/"
         owner: root
         group: root
