@@ -1,44 +1,6 @@
 # file: tasks/configure.yml
 ---
 
-- name: Ensure util groups exist
-  group:
-    name: "{{ item.user.group }}"
-    system: yes
-  loop: "{{ rciam_utils }}"
-  become: yes
-
-- name: Ensure util users exist
-  user:
-    name: "{{ item.user.name }}"
-    groups: "{{ item.user.group }}"
-    comment: "{{ item.user.gecos }}" 
-    shell: "{{ item.user.shell }}"
-    home: "{{ item.user.path }}"
-    system: yes
-    create_home: yes
-    skeleton: "/empty"
-  loop: "{{ rciam_utils }}"
-  become: yes
-
-- name: Ensure util code checkouts are up-to-date
-  git:
-    repo: "{{ item.repo }}"
-    dest: "{{ item.path }}"
-    version: "{{ item.version }}"
-  loop: "{{ rciam_utils }}"
-  become: yes
-  become_user: "{{ item.user.name }}"
-
-- name: Ensure util python requirements are installed in virtualenvs
-  pip:
-    requirements: "{{ item.path }}/requirements.txt"
-    virtualenv: "{{ item.path }}/.venv"
-    virtualenv_command: python3 -m venv
-  loop: "{{ rciam_utils }}"
-  become: yes
-  become_user: "{{ item.user.name }}"
-
 - name: Ensure utils are configured
   template:
     src: "{{ item.name }}/config.py.j2"
