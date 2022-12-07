@@ -35,6 +35,7 @@
     requirements: "{{ item.path }}/requirements.txt"
     virtualenv: "{{ item.path }}/.venv"
     virtualenv_command: python3 -m venv
+    state: latest
   loop: "{{ rciam_utils }}"
   become: yes
   become_user: "{{ item.user.name }}"
