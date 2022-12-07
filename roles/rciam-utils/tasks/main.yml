@@ -9,7 +9,7 @@
     - rciam_utils:install
 
 # Include OS-independent installation tasks
-- include: install-scripts.yml
+- include: install-common.yml
   tags:
     - rciam_utils:install
 

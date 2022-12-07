@@ -1,4 +1,4 @@
-# file: tasks/install-scripts.yml
+# file: tasks/install-common.yml
 ---
 
 - name: Ensure util groups exist
