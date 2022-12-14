@@ -10,6 +10,24 @@
       path: "{{ federation_registry_git.clone_dest }}"
     when: project_stat.stat.exists
 
+  - name: Clean Frontend Folder
+    file:
+      state: absent
+      path: "{{federation_registry_project_path}}/{{federation_registry_react_folder}}"
+    ignore_errors: true
+
+  - name: Clean Backend Folder
+    file:
+      state: absent
+      path: "{{federation_registry_project_path}}/{{federation_registry_express_folder}}"
+    ignore_errors: true
+
+  - name: Clean Ams Agent Folder
+    file:
+      state: absent
+      path: "{{federation_registry_project_path}}/{{federation_registry_ams_agent_folder}}"
+    ignore_errors: true
+
   - name: Clone the repository
     git:
       repo: "{{federation_registry_git.git_repo}}"
@@ -18,9 +36,22 @@
       key_file: "{{ federation_registry_git.key_path }}"
       force: yes
 
+  - name: Move Federation Backend to /var/www
+    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_express_folder}} {{federation_registry_project_path}} 
+
+  - name: Move Ams Agent to /var/www
+    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_ams_agent_folder}} {{federation_registry_project_path}} 
+  
+  - name: Move Swagger File to /var/www
+    shell: mv {{federation_registry_git.clone_dest}}/swagger.json {{federation_registry_project_path}}
+
+  - name: Create React Folder
+    shell: mkdir {{federation_registry_project_path}}/{{federation_registry_react_folder}} 
+    ignore_errors: True
+
   - name: Load package.json contents to package variable
     slurp:
-      src: "{{federation_registry_react_path}}/package.json"
+      src: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/package.json"
     register: imported_var
 
   - name: Append homepage value to package variable
@@ -30,11 +61,11 @@
   - name: Write package variable to package.json
     copy: 
       content: "{{ imported_var | to_nice_json }}" 
-      dest: "{{federation_registry_react_path}}/package.json"
+      dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/package.json"
      
   - name: Install node modules for react
     npm:
-      path: "{{federation_registry_react_path}}"
+      path: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}"
 
   - name: Install node modules for express
     npm:
@@ -47,7 +78,7 @@
   - name: React config
     template:
       src: react-config.j2
-      dest: "{{federation_registry_react_path}}/src/config.json"
+      dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/src/config.json"
       backup: yes
 
   - name: Configure express db_config
@@ -56,11 +87,14 @@
       dest: "{{federation_registry_express_path}}/db-config/db-config.json"
       backup: yes
 
-  - name: Express env
-    template:
-      src: express-env.j2
-      dest: "{{federation_registry_express_path}}/JavaScript/.env"
-      backup: yes
+  - name: Copy Tenant Configuration
+    copy:
+      src: "{{ inventory_dir }}/files/config.json"
+      dest: "{{federation_registry_express_path}}/JavaScript/config.json"
+      force: yes
+      owner: root
+      mode: 0664
+      backup: true
 
   - name: Agent env
     template:
@@ -83,6 +117,36 @@
      src: pm2_config.j2
      dest: "{{federation_registry_pm2_conf_path}}/ecosystem.config.js"
      backup: yes
+  
+  - name: react build
+    shell: "npm run build"
+    args:
+      chdir: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}"
+      executable: /bin/bash
+
+  - name: Creates federation directory
+    file:
+      path: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}}"
+      state: directory
+    when: federation_registry_react_base_url != "/"
+
+  - name: Move files from build folder to base folder
+    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/build/* {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}}
+    when: federation_registry_react_base_url != "/" 
+
+  - name: Move base folder inside build folder
+    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}} {{federation_registry_project_path}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}} 
+    when: federation_registry_react_base_url != "/"
+
+  - name: Move base folder inside build folder
+    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/build/* {{federation_registry_project_path}}/{{federation_registry_react_folder}} 
+    when: federation_registry_react_base_url == "/" 
+
+  - name: Express env
+    template:
+      src: express-env.j2
+      dest: "{{federation_registry_express_path}}/JavaScript/.env"
+      backup: yes
 
   - name: start Pm2 processes
     command: "pm2 start ecosystem.config.js"
@@ -90,36 +154,6 @@
   - name: restart Pm2 processes
     command: "pm2 restart all"
 
-  - name: react build
-    shell: "npm run build"
-    args:
-      chdir: "{{ federation_registry_react_path }}"
-      executable: /bin/bash
-
-  - name: Creates federation directory
-    file:
-      path: "{{federation_registry_react_path}}{{federation_registry_react_base_url}}"
-      state: directory
-    when: federation_registry_react_base_url != "/"
-
-  - name: Check if build foolder exists
-    stat:
-      path: "{{federation_registry_react_path}}/build"
-    register: build_folder
-
-  - name: Check if build folder is empty before proceeding
-    find:
-      paths: "{{federation_registry_react_path}}/build"
-    register: filesFound
-
-  - name: Move files from build folder to base folder
-    shell: mv {{federation_registry_react_path}}/build/* {{federation_registry_react_path}}{{federation_registry_react_base_url}}
-    when: federation_registry_react_base_url != "/" and build_folder.stat.exists and filesFound.matched > 0
-    
-  - name: Move base folder inside build folder
-    shell: mv {{federation_registry_react_path}}{{federation_registry_react_base_url}} {{federation_registry_react_path}}/build 
-    when: federation_registry_react_base_url != "/"
-          
   - debug:
       msg: ams_is_verif
 

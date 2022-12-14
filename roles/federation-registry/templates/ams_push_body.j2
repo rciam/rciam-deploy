@@ -2,7 +2,8 @@
  "topic": "projects/{{federation_registry_ams.project}}/topics/{{ federation_registry_ams.topic }}",
  "ackDeadlineSeconds":10,
   "pushConfig": {
-    "pushEndpoint": "https://{{federation_registry_nginx_hostname}}/express/ams/ingest",
+    "pushEndpoint": "https://{{federation_registry_nginx_hostname}}/federation-backend/ams/ingest",
+    "type":"http_endpoint",
     "maxMessages": 5,
     "retryPolicy": {
       "type": "linear",
