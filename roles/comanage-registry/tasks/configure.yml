@@ -112,6 +112,17 @@
   tags:
   - comanage-registry:config:core
 
+- name: Configure COmanage Registry bootstrap.php
+  template:
+    src: "bootstrap.php.j2"
+    dest: "{{ comanage_path }}/app/Config/bootstrap.php"
+    owner: root
+    group: root
+    backup: yes
+  become: yes
+  tags:
+  - comanage-registry:config:bootstrap
+
 - name: Add ENV vars in cron.d file
   cron:
     name: "{{ item.name }}"
