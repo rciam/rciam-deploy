@@ -136,11 +136,13 @@ $config = [
      */
     'serviceProvidersMapTableName' => '{{ ssp_module_proxystatistics_table_name.service_providers_map }}',
 
+{% if ssp_module_proxystatistics_oidc_issuer is defined %}
     /*
      * Fill the entityID of OpenID Connect Provider
      */
     'oidcIssuer' => '{{ ssp_module_proxystatistics_oidc_issuer }}',
 
+{% endif %}
 {% if ssp_module_proxystatistics_keycloak_sp is defined %}
     /*
      * The entityID of the downstream Keycloak SP Proxy

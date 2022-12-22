@@ -124,6 +124,9 @@
 {% if shibboleth_sp_session.handler_url is defined %}
                   handlerURL="{{ shibboleth_sp_session.handler_url }}"
 {% endif %}
+{% if shibboleth_sp_session.redirect_limit is defined %}
+                  redirectLimit="{{ shibboleth_sp_session.redirect_limit }}"
+{% endif %}
         >
 
             <!--
@@ -252,6 +255,9 @@
 {% endif %}
 {% if override.session.handler_url is defined %}
                       handlerURL="{{ override.session.handler_url }}"
+{% endif %}
+{% if override.redirect_limit is defined %}
+                      redirectLimit="{{ override.redirect_limit }}"
 {% endif %}
             >
 {% if override.sso is defined %}

@@ -15,11 +15,17 @@
         },
         "auth_server": "{{ fedreg_agent_keycloak.auth_server }}",
         "realm": "{{ fedreg_agent_keycloak.realm }}",
-    {% if fedreg_agent_keycloak.refresh_token is defined %}
+{% if fedreg_agent_keycloak.refresh_token is defined %}
         "refresh_token": "{{ fedreg_agent_keycloak.refresh_token }}",
-    {% endif %}
+{% endif %}
         "client_id": "{{ fedreg_agent_keycloak.client_id }}",
         "client_secret": "{{ fedreg_agent_keycloak.client_secret }}",
+{% if fedreg_agent_keycloak.oidc_consent is defined %}
+        "oidc_consent": {{ fedreg_agent_keycloak.oidc_consent | bool | to_json }},
+{% endif %}
+{% if fedreg_agent_keycloak.saml_consent is defined %}
+        "saml_consent": {{ fedreg_agent_keycloak.saml_consent | bool | to_json }},
+{% endif %}
         "service_account": {
             "attribute_name": "{{ fedreg_agent_keycloak.service_account.attribute_name }}",
             "candidate": "{{ fedreg_agent_keycloak.service_account.candidate }}",

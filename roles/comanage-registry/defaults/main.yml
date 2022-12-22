@@ -17,6 +17,10 @@ comanage_webroot: "/var/www/html/registry"
 comanage_temp_dir: "/var/cache/registry"
 comanage_app_base: "/registry"
 
+comanage_log_engine: "FileLog"
+comanage_log_size: "10MB"
+comanage_log_rotate: 10
+
 comanage_databases:
   - instance: "default"
     # Either "Database/Postgres" or "Database/Mysql"
