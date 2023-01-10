@@ -1,0 +1,133 @@
+# file: apiservers.yml
+#
+---
+
+- hosts: api
+  roles:
+    # ansible-galaxy install geerlingguy.nodejs
+    - { role: geerlingguy.nodejs, become: yes }
+    # ansible-galaxy install Oefenweb.yarn
+    - { role: Oefenweb.yarn, become: yes }
+  vars:
+    nodejs_version: "10.x"
+    nodejs_npm_global_packages:
+      - bunyan
+      - pm2
+    rciam_api:
+      name: vomembers-api
+      port: 8080
+      path: /srv/comanage-registry-simple-membership-api/VoMembers/v1
+      repo_url: https://github.com/grnet/comanage-registry-simple-membership-api.git
+      repo_version: devel
+      user:
+        name: rciam-comanage-registry-api
+        group: rciam-comanage-registry-api
+        gecos: "RCIAM COmanage Registry API Server,,,"
+        shell: /bin/bash
+        home: /srv/comanage-registry-simple-membership-api
+        
+  tasks:
+    - name: Ensure RCIAM API dependencies are installed
+      apt:
+        name:
+          - git
+        state: present
+        install_recommends: no
+        update_cache: yes
+        cache_valid_time: 86400
+      become: yes
+
+    - name: Ensure RCIAM COmanage Registry API group exists
+      group:
+        name: "{{ rciam_api.user.group }}"
+        system: yes
+      become: yes
+
+    - name: Ensure RCIAM COmanage Registry API user exists
+      user:
+        name: "{{ rciam_api.user.name }}"
+        groups: "{{ rciam_api.user.group }}"
+        comment: "{{ rciam_api.user.gecos }}" 
+        shell: "{{ rciam_api.user.shell }}"
+        home: "{{ rciam_api.user.home }}"
+        system: yes
+        create_home: yes
+        skeleton: "/empty"
+      become: yes
+
+    - name: Ensure RCIAM COmanage Registry API code checkout directory exists
+      file:
+        path: "{{ rciam_api.path }}"
+        owner: "{{ rciam_api.user.name }}"
+        group: "{{ rciam_api.user.group }}"
+        state: directory
+      become: yes
+
+    - name: Ensure RCIAM COmanage Registry API code checkout is up-to-date
+      git:
+        repo: "{{ rciam_api.repo_url }}"
+        dest: "{{ rciam_api.path }}"
+        version: "{{ rciam_api.repo_version }}"
+      become: yes
+      become_user: "{{ rciam_api.user.name }}"
+      notify: Restart RCIAM COmanage Registry API processes
+
+    # TODO- name: Ensure RCIAM COmanage Registry API current symlink to code checkout directory exists
+    #  file:
+    #    src: "{{ rciam_api.path }}"
+    #    path: "{{ rciam_api.path }}/current"
+    #    owner: "{{ rciam_api.user.name }}"
+    #    group: "{{ rciam_api.user.group }}"
+    #    state: link
+    #  become: yes
+
+    - name: Ensure RCIAM COmanage Registry API is configured
+      template:
+        src: "{{ playbook_dir }}/templates/comanage-registry-simple-membership-api/settings.js.j2"
+        dest: "{{ rciam_api.path }}/settings.js"
+        owner: "{{ rciam_api.user.name }}"
+        group: "{{ rciam_api.user.group }}"
+        mode: 0400
+        backup: yes
+      become: yes
+      notify: Restart RCIAM COmanage Registry API processes
+
+    - name: Ensure RCIAM COmanage Registry API packages are installed
+      yarn:
+        path: "{{ rciam_api.path }}"
+        production: yes
+      become: yes
+      become_user: "{{ rciam_api.user.name }}"
+
+  handlers:
+
+    - name: Delete existing RCIAM COmanage Registry API pm2 processes if running
+      command:
+        cmd: "/usr/local/lib/npm/bin/pm2 delete {{ rciam_api.name }}"
+        chdir: "{{ rciam_api.path }}"
+      ignore_errors: yes
+      become: yes
+      become_user: "{{ rciam_api.user.name }}"
+      listen: Restart RCIAM COmanage Registry API processes
+
+    - name: Ensure RCIAM COmanage Registry API pm2 processes are running
+      command:
+        cmd: "/usr/local/lib/npm/bin/pm2 start server.js -i 2 --name {{ rciam_api.name }}"
+        chdir: "{{ rciam_api.path }}"
+      become: yes
+      become_user: "{{ rciam_api.user.name }}"
+      listen: Restart RCIAM COmanage Registry API processes
+
+    - name: Ensure RCIAM COmanage Registry API init script exists
+      command:
+        cmd: "/usr/local/lib/npm/lib/node_modules/pm2/bin/pm2 startup systemd -u {{ rciam_api.user.name }} --hp {{ rciam_api.user.home }}"
+      become: yes
+      listen: Restart RCIAM COmanage Registry API processes
+  
+    - name: Ensure RCIAM COmanage Registry API process list is saved
+      command:
+        cmd: "/usr/local/lib/npm/lib/node_modules/pm2/bin/pm2 save"
+        chdir: "{{ rciam_api.path }}"
+      become: yes
+      become_user: "{{ rciam_api.user.name }}"
+      listen: Restart RCIAM COmanage Registry API processes
