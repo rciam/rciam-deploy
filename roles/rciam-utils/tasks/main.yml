@@ -1,3 +1,5 @@
+# file: tasks/main.yml
+#
 ---
 
 # Include OS-specific installation tasks
@@ -6,14 +8,17 @@
 #- include: install-RedHat.yml
 #  when: ansible_os_family == 'RedHat'
   tags:
+    - install
     - rciam_utils:install
 
 # Include OS-independent installation tasks
 - include: install-common.yml
   tags:
+    - install
     - rciam_utils:install
 
 # Include OS-independent configuration tasks
 - include: configure.yml
   tags:
+    - config
     - rciam_utils:config
