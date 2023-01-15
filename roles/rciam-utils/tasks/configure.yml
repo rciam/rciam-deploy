@@ -64,6 +64,8 @@
   when: rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
   become: yes
   become_user: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
+  tags:
+    - rciam_utils:config:ip2country:db
 
 - name: Ensure database files are copied for rciam-ip2country
   copy:
@@ -75,6 +77,8 @@
     backup: yes
   when: '(rciam_utils_ip2country.database_files_dir is defined) and (rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1)'
   become: yes
+  tags:
+    - rciam_utils:config:ip2country:files
 
 - name: Ensure util cron jobs are installed
   cron:
