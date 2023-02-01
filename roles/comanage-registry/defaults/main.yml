@@ -17,9 +17,20 @@ comanage_webroot: "/var/www/html/registry"
 comanage_temp_dir: "/var/cache/registry"
 comanage_app_base: "/registry"
 
-comanage_log_engine: "FileLog"
-comanage_log_size: "10MB"
-comanage_log_rotate: 10
+comanage_log_engine:
+  error:
+    # Allowed values for handler: "FileLog" | "SyslogLog"
+    handler: "FileLog"
+    size: "10MB"
+    rotate: 10
+  debug:
+    handler: "FileLog"
+    size: "10MB"
+    rotate: 10
+  info:
+    handler: "FileLog"
+    size: "10MB"
+    rotate: 10
 
 comanage_databases:
   - instance: "default"

@@ -121,23 +121,37 @@ Configure::write('Dispatcher.filters', array(
  * Configures default file logging options
  */
 App::uses('CakeLog', 'Log');
-CakeLog::config('debug', array(
-       'engine' => '{{ comanage_log_engine }}',
-       'types' => array('notice', 'info', 'debug'),
-{% if comanage_log_engine == 'FileLog' %}
+$debug_mode = Configure::read('debug');
+
+if($debug_mode > 0) {
+    CakeLog::config('debug', array(
+           'engine' => '{{ comanage_log_engine.debug.handler }}',
+           'types' => array('debug'),
+    {% if comanage_log_engine.debug.handler == 'FileLog' %}
+           'file' => 'debug',
+           'size' => '{{ comanage_log_engine.error.size }}',
+           'rotate' => {{ comanage_log_engine.error.rotate }},
+    {% endif %}
+    ));
+}
+
+CakeLog::config('info', array(
+       'engine' => '{{ comanage_log_engine.info.handler }}',
+       'types' => array('notice', 'info'),
+{% if comanage_log_engine.info.handler == 'FileLog' %}
        'file' => 'debug',
-       'size' => '{{ comanage_log_size }}',
-       'rotate' => {{ comanage_log_rotate }},
+       'size' => '{{ comanage_log_engine.info.size }}',
+       'rotate' => {{ comanage_log_engine.info.rotate }},
 {% endif %}
 ));
 
 CakeLog::config('error', array(
-       'engine' => '{{ comanage_log_engine }}',
+       'engine' => '{{ comanage_log_engine.error.handler }}',
        'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
-{% if comanage_log_engine == 'FileLog' %}
+{% if comanage_log_engine.error.handler == 'FileLog' %}
        'file' => 'error',
-       'size' => '{{ comanage_log_size }}',
-       'rotate' => {{ comanage_log_rotate }},
+       'size' => '{{ comanage_log_engine.error.size }}',
+       'rotate' => {{ comanage_log_engine.error.rotate }},
 {% endif %}
 ));
 
