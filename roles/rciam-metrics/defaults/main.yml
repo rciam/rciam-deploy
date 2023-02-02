@@ -1,0 +1,25 @@
+# file: group_vars/metrics/main.yml
+#
+---
+
+metrics_path: /srv/rciam-metrics-client/rciam-metrics
+metrics_repo: https://github.com/lionick/rciam-metrics-dev
+metrics_version: add_communities_datatable
+metrics_fast_api_folder_name: app
+metrics_db: metrics-dev
+metrics_db_admin: rciam
+metrics_db_password: secret
+metrics_db_hostname: db.example.com
+metrics_user:
+  name: rciam-metrics-client
+  path: /srv/rciam-metrics-client
+  group: rciam-metrics-client
+  gecos: "RCIAM Metrics Client Name"
+  shell: /bin/bash
+    # cron:
+    #   job: "/srv/rciam-ip2country-client/rciam-ip2country/.venv/bin/python /srv/rciam-ip2country-client/rciam-ip2country/ipToCountry.py"
+    #   minute: "0"
+    #   hour: "1"
+    #   day: "*"
+    #   month: "*"
+    #   weekday: "*"

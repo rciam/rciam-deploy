@@ -1,0 +1,12 @@
+# file: tasks/configure.yml
+---
+
+- name: Ensure fastapi is configured
+  template:
+    src: "fastapi/config.py.j2"
+    dest: "{{ metrics_path }}/config.py"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  become: yes

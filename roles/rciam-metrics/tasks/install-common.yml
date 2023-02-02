@@ -1,0 +1,63 @@
+# file: tasks/install-common.yml
+---
+
+- name: Ensure util groups exist
+  group:
+    name: "{{ metrics_user.group }}"
+    system: yes
+  become: yes
+
+- name: Ensure metrics user exists
+  user:
+    name: "{{ metrics_user.name }}"
+    groups: "{{ metrics_user.group }}"
+    comment: "{{ metrics_user.gecos }}" 
+    shell: "{{ metrics_user.shell }}"
+    home: "{{ metrics_user.path }}"
+    system: yes
+    create_home: yes
+    skeleton: "/empty"
+  become: yes
+
+# - name: Ensure metrics code checkouts is up-to-date
+#   git:
+#     repo: "{{ metrics_repo }}"
+#     dest: "{{ metrics_path }}"
+#     version: "{{ metrics_version }}"
+#   become: yes
+
+- name: Ensure metrics python requirements are installed in virtualenv
+  pip:
+    requirements: "{{ metrics_path }}/requirements.txt"
+    virtualenv: "{{ metrics_path }}/.venv"
+    virtualenv_command: python3 -m venv
+    state: latest
+  become: yes
+
+- name: fastapi systemd setup
+  template:
+     owner: "www-data"
+     group: "www-data"
+     mode: 0644
+     src: templates/fastapi/fastapi.service.j2
+     dest: /etc/systemd/system/fastapi.service
+     backup: yes
+  notify: fastapi.service restart
+  become: yes
+  tags:
+    - fastapi_service
+
+# - name: Run gunicorn command in virtualenv
+#   pip:
+#     virtualenv: "{{ metrics_path }}/{{ metrics_fast_api_folder_name }}/.venv"
+#     virtualenv_command: gunicorn app:app -k uvicorn.workers.UvicornWorker
+#     state: latest
+#   become: yes
+
+# - name: Run gunicorn on a virtualenv
+#   community.general.gunicorn:
+#     app: 'app.main'
+#     chdir: '{{ metrics_path }}'
+#     venv: '{{ metrics_path }}/.venv'
+
+# ansible-galaxy collection install community.general

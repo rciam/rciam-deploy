@@ -1,0 +1,5 @@
+[database_parameters]
+db = {{ metrics_db }}
+db_admin = {{ metrics_db_admin }}
+db_password = {{ metrics_db_password }}
+database_url = postgresql+psycopg2://{{ metrics_db_admin }}:{{ metrics_db_password }}@{{ metrics_db_hostname }}/{{ metrics_db }}
