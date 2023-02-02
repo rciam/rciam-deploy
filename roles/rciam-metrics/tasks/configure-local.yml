@@ -1,0 +1,13 @@
+# file: tasks/configure-local.yml
+---
+
+- name: Create react config locally
+  template:
+    src: "react/config_react.json.j2"
+    dest: "{{ inventory_dir }}/files"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  become: yes
+  delegate_to: localhost
