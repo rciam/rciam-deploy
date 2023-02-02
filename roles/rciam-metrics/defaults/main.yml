@@ -6,6 +6,7 @@ metrics_path: /srv/rciam-metrics-client/rciam-metrics
 metrics_repo: https://github.com/lionick/rciam-metrics-dev
 metrics_version: add_communities_datatable
 metrics_fast_api_folder_name: app
+metrics_api_url: http://localhost:8004/
 metrics_db: metrics-dev
 metrics_db_admin: rciam
 metrics_db_password: secret

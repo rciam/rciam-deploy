@@ -17,3 +17,8 @@
 - include: configure.yml
   tags:
     - rciam-metrics:config
+
+  # Include OS-independent configuration tasks
+- include: configure-local.yml
+  tags:
+    - rciam-metrics:config-local
