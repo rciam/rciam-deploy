@@ -4,7 +4,7 @@
 - name: Create react config locally
   template:
     src: "react/config_react.json.j2"
-    dest: "{{ inventory_dir }}/files"
+    dest: "{{ inventory_dir }}/files/config_react.json"
     mode: 0400
     backup: yes
   become: yes
