@@ -1,6 +1,15 @@
 # file: tasks/configure.yml
 ---
 
+- name: Download and unarchive latest release zip file
+  unarchive: 
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/react-github-actions-release-build.tar.gz"
+    dest: "{{ metrics_path }}"
+    remote_src: true
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.name }}"
+  become: yes
+
 - name: Ensure fastapi is configured
   template:
     src: "fastapi/config.py.j2"
@@ -10,3 +19,4 @@
     mode: 0400
     backup: yes
   become: yes
+
