@@ -7,5 +7,4 @@
     dest: "{{ inventory_dir }}/files/config_react.json"
     mode: 0400
     backup: yes
-  become: yes
   delegate_to: localhost
