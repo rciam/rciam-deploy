@@ -25,3 +25,6 @@ metrics_user:
     #   day: "*"
     #   month: "*"
     #   weekday: "*"
+#metrics_symlinks:
+#  - target: "/path/to/target"
+#    link: "/path/to/symlink"
