@@ -1,6 +1,6 @@
 # file: tasks/configure.yml
 ---
-
+# This needs the metrics_latest_release, only github actions can know or if you set it manually
 - name: Download and unarchive latest release zip file
   unarchive: 
     src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/react-github-actions-release-build.tar.gz"
@@ -19,4 +19,24 @@
     mode: 0400
     backup: yes
   become: yes
+
+- name: Restart fastapi service
+  systemd:
+    name: fastapi
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  become: yes
+
+- name: Create Symbolic links
+  file:
+    src: "{{ item.target }}"
+    dest: "{{ item.link }}"
+    force: yes
+    state: link
+    owner: root
+    group: root
+  loop: "{{ metrics_symlinks | default([]) }}"
+  become: true
+  when: metrics_symlinks is defined
 

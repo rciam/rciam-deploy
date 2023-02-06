@@ -45,18 +45,3 @@
   become: yes
   tags:
     - fastapi_service
-
-# - name: Run gunicorn command in virtualenv
-#   pip:
-#     virtualenv: "{{ metrics_path }}/{{ metrics_fast_api_folder_name }}/.venv"
-#     virtualenv_command: gunicorn app:app -k uvicorn.workers.UvicornWorker
-#     state: latest
-#   become: yes
-
-# - name: Run gunicorn on a virtualenv
-#   community.general.gunicorn:
-#     app: 'app.main'
-#     chdir: '{{ metrics_path }}'
-#     venv: '{{ metrics_path }}/.venv'
-
-# ansible-galaxy collection install community.general
