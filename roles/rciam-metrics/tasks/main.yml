@@ -3,8 +3,6 @@
 # Include OS-specific installation tasks
 - include: install-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: install-RedHat.yml
-#  when: ansible_os_family == 'RedHat'
   tags:
     - rciam-metrics:install
 

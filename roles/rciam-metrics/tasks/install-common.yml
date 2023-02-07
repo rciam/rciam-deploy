@@ -19,13 +19,6 @@
     skeleton: "/empty"
   become: yes
 
-# - name: Ensure metrics code checkouts is up-to-date
-#   git:
-#     repo: "{{ metrics_repo }}"
-#     dest: "{{ metrics_path }}"
-#     version: "{{ metrics_version }}"
-#   become: yes
-
 - name: Ensure metrics python requirements are installed in virtualenv
   pip:
     requirements: "{{ metrics_path }}/requirements.txt"
