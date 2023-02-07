@@ -42,6 +42,9 @@ keycloak_log_level:
 
 keycloak_keystores: "/srv/keycloak-keys"
 
+# If the server should expose health check endpoints. Defaults to false 
+keycloak_health_enabled: no
+
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)
 #keycloak_plugins:
