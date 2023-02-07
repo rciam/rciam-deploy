@@ -18,13 +18,6 @@ metrics_user:
   group: rciam-metrics-client
   gecos: "RCIAM Metrics Client Name"
   shell: /bin/bash
-    # cron:
-    #   job: "/srv/rciam-ip2country-client/rciam-ip2country/.venv/bin/python /srv/rciam-ip2country-client/rciam-ip2country/ipToCountry.py"
-    #   minute: "0"
-    #   hour: "1"
-    #   day: "*"
-    #   month: "*"
-    #   weekday: "*"
 #metrics_symlinks:
 #  - target: "/path/to/target"
 #    link: "/path/to/symlink"

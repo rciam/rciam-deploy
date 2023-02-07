@@ -7,7 +7,6 @@
     name:
       - git
       - python3-venv
-      #- libpq-dev #for psycopg2
       - build-essential
       - python3-dev
       - nginx
@@ -16,4 +15,3 @@
     update_cache: yes
     cache_valid_time: 86400
   become: yes
-
