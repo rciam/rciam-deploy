@@ -1,0 +1,34 @@
+# {{ ansible_managed }}
+
+[comanage_database]
+
+host = {{ groups['dbmaster'][0] }}
+database = {{ rciam_dbs.registry.name }}
+user = {{ rciam_dbs.registry.owner_username }}
+password = {{ rciam_dbs.registry.owner_password }}
+
+[proxystatistics_database]
+
+host = {{ groups['dbmaster'][0] }}
+database = {{ rciam_dbs.proxy.name }}
+user = {{ rciam_dbs.proxy.owner_username }}
+password = {{ rciam_dbs.proxy.owner_password }}
+
+[destination_database]
+
+host = {{ groups['dbmaster'][0] }}
+database = {{ rciam_dbs.proxy.name }}
+user = {{ rciam_dbs.proxy.owner_username }}
+password = {{ rciam_dbs.proxy.owner_password }}
+
+[metric_users_memberships_in_cous]
+
+name = {{ rciam_util.metrics.memberships_metric.name }}
+regex_cou_name = {{ rciam_util.metrics.memberships_metric.regex_cou_name }}
+co_id = {{ rciam_util.metrics.memberships_metric.co_id }}
+
+[logging]
+
+level = {{ rciam_util.metrics.logging.level}}
+folder = {{ rciam_util.metrics.logging.folder}}
+file = {{ rciam_util.metrics.logging.file}}
