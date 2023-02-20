@@ -1,4 +1,5 @@
 # {{ ansible_managed }}
+# WARNING: THIS IS ONLY FOR OPENAIRE.
 
 [comanage_database]
 
@@ -29,6 +30,16 @@ co_id = {{ rciam_util.metrics.memberships_metric.co_id }}
 
 [logging]
 
-level = {{ rciam_util.metrics.logging.level}}
-folder = {{ rciam_util.metrics.logging.folder}}
-file = {{ rciam_util.metrics.logging.file}}
+level = {{ rciam_util.metrics.logging.level }}
+folder = {{ rciam_util.metrics.logging.folder }}
+file = {{ rciam_util.metrics.logging.file }}
+
+[delete_logs_database]
+older_than = {{ rciam_util.metrics.delete_logs.older_than }}
+
+[endpoints]
+token = {{ rciam_util.metrics.endpoints.token }}
+authorize = {{ rciam_util.metrics.endpoints.authorize }}
+userinfo = {{ rciam_util.metrics.endpoints.userinfo }}
+devicecode = {{ rciam_util.metrics.endpoints.devicecode }}
+introspect = {{ rciam_util.metrics.endpoints.introspect }}
