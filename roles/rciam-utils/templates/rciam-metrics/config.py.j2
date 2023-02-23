@@ -1,23 +1,22 @@
 # {{ ansible_managed }}
-# WARNING: THIS IS ONLY FOR OPENAIRE.
 
 [comanage_database]
 
-host = {{ groups['dbmaster'][0] }}
+host = {{ rciam_dbs.registry.host }}
 database = {{ rciam_dbs.registry.name }}
 user = {{ rciam_dbs.registry.owner_username }}
 password = {{ rciam_dbs.registry.owner_password }}
 
 [proxystatistics_database]
 
-host = {{ groups['dbmaster'][0] }}
+host = {{ rciam_dbs.proxy.host }}
 database = {{ rciam_dbs.proxy.name }}
 user = {{ rciam_dbs.proxy.owner_username }}
 password = {{ rciam_dbs.proxy.owner_password }}
 
 [destination_database]
 
-host = {{ groups['dbmaster'][0] }}
+host = {{ rciam_dbs.proxy.name }}
 database = {{ rciam_dbs.proxy.name }}
 user = {{ rciam_dbs.proxy.owner_username }}
 password = {{ rciam_dbs.proxy.owner_password }}
