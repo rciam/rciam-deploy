@@ -14,6 +14,7 @@
     group: adm
     mode: u=rw,g=rw,o=r
   when: rsyslog_pgsql_enable_logs == true
+  become: yes
 
 - name: Ensure rsyslog for nginx logs is configured
   template:
