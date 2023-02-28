@@ -56,3 +56,8 @@ rciam_utils_sync_client_names:
   op: "mitreid"
   # For "keycloak" OP, define the name of the realm.
   # realm: "example_realm"
+
+rciam_util:
+  metrics:
+    delete_logs:
+      older_than: null
