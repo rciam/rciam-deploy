@@ -23,14 +23,17 @@ comanage_log_engine:
     handler: "FileLog"
     size: "10MB"
     rotate: 10
+    # prefix: "comanage"
   debug:
     handler: "FileLog"
     size: "10MB"
     rotate: 10
+    # prefix: "comanage"
   info:
     handler: "FileLog"
     size: "10MB"
     rotate: 10
+    # prefix: "comanage"
 
 comanage_databases:
   - instance: "default"
