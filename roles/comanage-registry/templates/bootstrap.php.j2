@@ -127,6 +127,9 @@ if($debug_mode > 0) {
     CakeLog::config('debug', array(
            'engine' => '{{ comanage_log_engine.debug.handler }}',
            'types' => array('debug'),
+{% if comanage_log_engine.debug.prefix is defined %}
+       'prefix' => '{{ comanage_log_engine.debug.prefix }}',
+{% endif %}
     {% if comanage_log_engine.debug.handler == 'FileLog' %}
            'file' => 'debug',
            'size' => '{{ comanage_log_engine.error.size }}',
@@ -138,6 +141,9 @@ if($debug_mode > 0) {
 CakeLog::config('info', array(
        'engine' => '{{ comanage_log_engine.info.handler }}',
        'types' => array('notice', 'info'),
+{% if comanage_log_engine.info.prefix is defined %}
+       'prefix' => '{{ comanage_log_engine.info.prefix }}',
+{% endif %}
 {% if comanage_log_engine.info.handler == 'FileLog' %}
        'file' => 'debug',
        'size' => '{{ comanage_log_engine.info.size }}',
@@ -148,6 +154,9 @@ CakeLog::config('info', array(
 CakeLog::config('error', array(
        'engine' => '{{ comanage_log_engine.error.handler }}',
        'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
+{% if comanage_log_engine.error.prefix is defined %}
+       'prefix' => '{{ comanage_log_engine.error.prefix }}',
+{% endif %}
 {% if comanage_log_engine.error.handler == 'FileLog' %}
        'file' => 'error',
        'size' => '{{ comanage_log_engine.error.size }}',
