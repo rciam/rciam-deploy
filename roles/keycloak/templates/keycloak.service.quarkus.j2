@@ -1,14 +1,15 @@
 [Unit]
-Description=Keycloak app
+Description=Keycloak Identity and Access Management
 After=network.target
 
 [Service]
 Type=idle
-Environment=QUARKUS_HOME={{ keycloak_home }} JAVA_OPTS={{ keycloak_java_opts }}
+Environment=QUARKUS_HOME={{ keycloak_home }} JAVA_OPTS="{{ keycloak_java_opts }}"
 EnvironmentFile=-{{ keycloak_home }}/conf/env.conf
 User={{ keycloak_service_user }}
 Group={{ keycloak_service_user }}
 ExecStart=/bin/bash -c "{{ keycloak_home }}/bin/kc.sh start --auto-build {% if keycloak_extra_run_params is defined and keycloak_extra_run_params|length > 0 %} {{ keycloak_extra_run_params }} {% endif %}"
+SyslogIdentifier={{ keycloak_syslog_identifier }}
 TimeoutStartSec=600
 TimeoutStopSec=600
 Restart=on-failure
