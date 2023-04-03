@@ -21,3 +21,11 @@ metrics_user:
 #metrics_symlinks:
 #  - target: "/path/to/target"
 #    link: "/path/to/symlink"
+
+# OIDC Client
+oidc_client_id: client-id
+oidc_client_secret: client-secret
+oidc_client_issuer: client-issuer
+oidc_client_connect_url: client-connect-url
+oidc_client_idtoken_model: client-idtoken-model
+oidc_client_redirect_uri: client-redirect-uri
