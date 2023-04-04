@@ -135,7 +135,7 @@
             loop_var: current_realm
           run_once: true
 
-  tags: "keycloak:config:realm_configuration"
+  tags: "keycloak:config:realm"
 
 ### wayf plugin configuration
 - name: Configure wayf plugin
