@@ -1,0 +1,40 @@
+# file: group_vars/metrics/main.yml
+#
+---
+
+metrics_path: /srv/rciam-metrics-client/rciam-metrics
+metrics_repo: https://github.com/rciam/rciam-metrics-dev
+metrics_latest_release: 1.0.0
+metrics_version: main
+metrics_fast_api_folder_name: app
+metrics_api_url: http://localhost:8004/
+
+metrics_db:
+  name: metrics-dev
+  host: db.example.com
+  admin: rciam
+  password: secret
+
+metrics_user:
+  name: rciam-metrics-client
+  path: /srv/rciam-metrics-client
+  group: rciam-metrics-client
+  gecos: "RCIAM Metrics Client Name"
+  shell: /bin/bash
+#metrics_symlinks:
+#  - target: "/path/to/target"
+#    link: "/path/to/symlink"
+
+# OIDC Client
+# Giati xreiazetai na exoume pollous client??
+metrics_oidc:
+  - tenant: tenant1
+    client_id: client-id
+    client_secret: client-secret
+    client_redirect_uri: https://metrics.rciam.example.org/callback
+    issuer: https://tenant1.rciam.example.org/auth/realms/rciam
+#  - tenant: tenant2
+#    client_id: client-id
+#    client_secret: client-secret
+#    client_redirect_uri: https://metrics.rciam.example.org/callback
+#    issuer: https://tenant2.rciam.example.org/auth/realms/rciam

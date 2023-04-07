@@ -1,0 +1,11 @@
+# file: tasks/configure-local.yml
+---
+# After creating react configuration, github action will move the file to the react application
+# before building
+- name: Create react configuration file locally
+  template:
+    src: "react/config_react.json.j2"
+    dest: "{{ inventory_dir }}/files/config_react.json"
+    mode: 0400
+    backup: yes
+  delegate_to: localhost
