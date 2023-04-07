@@ -1,13 +1,14 @@
 [database_parameters]
-db = {{ metrics_db }}
-db_admin = {{ metrics_db_admin }}
-db_password = {{ metrics_db_password }}
-database_url = postgresql+psycopg2://{{ metrics_db_admin }}:{{ metrics_db_password }}@{{ metrics_db_hostname }}/{{ metrics_db }}
+db = {{ metrics_db.host }}
+db_admin = {{ metrics_db.admin }}
+db_password = {{ metrics_db.password }}
+database_url = postgresql+psycopg2://{{ metrics_db.admin }}:{{ metrics_db_password }}@{{ metrics_db.host }}/{{ metrics_db.name }}
 
-[oidc_client]
-client_id = {{ oidc_client_id }}
-client_secret = {{ oidc_client_secret }}
-issuer = {{ oidc_client_issuer }}
-openid_connect_url = {{ oidc_client_connect_url }}
-idtoken_model = {{ oidc_client_idtoken_model }}
-redirect_uri = {{ oidc_client_redirect_uri }}
+{% for tenant in metrics_oidc %}
+[oidc_client_{{ tenant.tenant }}]
+client_id = {{ tenant.client_id }}
+client_secret = {{ tenant._client_secret }}
+issuer = {{ tenant.issuer }}
+redirect_uri = {{ tenant.client_redirect_uri }}
+
+{% endfor %}
