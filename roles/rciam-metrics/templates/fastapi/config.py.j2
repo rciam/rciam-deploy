@@ -5,9 +5,10 @@ db_password = {{ metrics_db.password }}
 database_url = postgresql+psycopg2://{{ metrics_db.admin }}:{{ metrics_db.password }}@{{ metrics_db.host }}/{{ metrics_db.name }}
 
 [server_config]
-protocol = {{ metrics_protocol }}
-host = {{ metrics_hostname }}
-api_path = {{ metrics_api_path }}
+protocol = {{ metrics_api.protocol }}
+host = {{ metrics_api.hostname }}
+domain = {{ metrics_api.domain }}
+api_path = {{ metrics_api.path }}
 
 {% for tenant in metrics_oidc %}
 [oidc_client_{{ tenant.tenant }}]

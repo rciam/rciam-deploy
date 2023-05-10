@@ -8,7 +8,8 @@ Group=www-data
 
 WorkingDirectory={{ metrics_path }}
 Environment="PATH={{ metrics_path }}/.venv/bin"
-ExecStart={{ metrics_path }}/.venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app
+ExecStart={{ metrics_path }}/.venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --log-syslog --log-syslog-prefix {{ metrics_api.log_identifier }}-service --bind {{ metrics_api.hostname }} --log-level {{ matrics_api.log_level }}
+
 
 [Install]
 WantedBy=multi-user.target
