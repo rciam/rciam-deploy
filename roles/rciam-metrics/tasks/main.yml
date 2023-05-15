@@ -1,0 +1,22 @@
+---
+
+# Include OS-specific installation tasks
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+  tags:
+    - rciam-metrics:install
+
+# Include OS-independent installation tasks
+- include: install-common.yml
+  tags:
+    - rciam-metrics:install
+
+# Include OS-independent configuration tasks
+- include: configure.yml
+  tags:
+    - rciam-metrics:config
+
+  # Include OS-independent configuration tasks
+- include: configure-local.yml
+  tags:
+    - rciam-metrics:config-local
