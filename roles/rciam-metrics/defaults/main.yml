@@ -11,6 +11,7 @@ metrics_fast_api_folder_name: app
 metrics_api:
   hostname: "localhost:8004"
   domain: "localhost"
+  client: "localhost:3300"
   protocol: "http"
   path: "/"
   log_level: "info"
