@@ -7,6 +7,7 @@ database_url = postgresql+psycopg2://{{ metrics_db.admin }}:{{ metrics_db.passwo
 [server_config]
 protocol = {{ metrics_api.protocol }}
 host = {{ metrics_api.hostname }}
+client = {{ metrics_api.client }}
 domain = {{ metrics_api.domain }}
 api_path = {{ metrics_api.path }}
 
