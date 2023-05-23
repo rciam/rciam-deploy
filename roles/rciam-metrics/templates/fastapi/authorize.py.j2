@@ -1,0 +1,19 @@
+[anonymous]
+{% for item in anonymous %}
+{{ item.view }}={{ item.actions }}
+{% endfor %}
+
+[authenticated]
+{% for item in authenticated %}
+{{ item.view }}={{ item.actions }}
+{% endfor %}
+
+[administrator]
+{% for item in administrator %}
+{{ item.view }}={{ item.actions }}
+{% endfor %}
+
+[entitlements]
+{% for item in entitlements %}
+{{ item.entitlement }}={{ item.roles }}
+{% endfor %}

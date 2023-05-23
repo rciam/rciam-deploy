@@ -20,6 +20,16 @@
     backup: yes
   become: yes
 
+- name: Construct authorization config file
+  template:
+    src: "fastapi/authorize.py.j2"
+    dest: "{{ metrics_path }}/authorize.py"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  become: yes
+
 - name: Restart fastapi service
   systemd:
     name: fastapi
