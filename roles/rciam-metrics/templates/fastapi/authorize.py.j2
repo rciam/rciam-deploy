@@ -1,19 +1,21 @@
+%% This is a comment
+%% authorize.py configuration files use semicolon instead of an equal sign
 [anonymous]
 {% for item in anonymous %}
-{{ item.view }}={{ item.actions }}
+{{ item.view }};{{ item.actions }}
 {% endfor %}
 
 [authenticated]
 {% for item in authenticated %}
-{{ item.view }}={{ item.actions }}
+{{ item.view }};{{ item.actions }}
 {% endfor %}
 
 [administrator]
 {% for item in administrator %}
-{{ item.view }}={{ item.actions }}
+{{ item.view }};{{ item.actions }}
 {% endfor %}
 
 [entitlements]
 {% for item in entitlements %}
-{{ item.entitlement }}={{ item.roles }}
+{{ item.entitlement }};{{ item.roles }}
 {% endfor %}
