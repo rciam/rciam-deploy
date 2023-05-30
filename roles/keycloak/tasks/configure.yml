@@ -169,3 +169,32 @@
   vars:
     wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
   tags: "keycloak:config:wayf_plugin"
+
+### advanced group management plugin
+- name: Configure advanced group management plugin
+  block:
+    - name: Acquire tokens
+      include_tasks: blocks/helpers/get_tokens.yml
+    - name: "Update member user attribute configuration of realm"
+      uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ keycloak_plugins.agm.add_to_realms.name }}/admin/member-user-attribute/configuration"
+        method: "POST"
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          "{{ body_payload }}"
+        status_code: "204"
+        with_items: "{{ keycloak_plugins.agm.add_to_realms }}"
+        run_once: true
+        vars:
+          - body_payload:
+              userAttribute: "{{ keycloak_plugins.agm.add_to_realms.member_user_attribute_configuration.userAttribute }}"
+              urnNamespace: "{{ keycloak_plugins.agm.add_to_realms.member_user_attribute_configuration.urnNamespace }}"
+              authority: "{{ keycloak_plugins.agm.add_to_realms.member_user_attribute_configuration.authority }}"
+
+      when: agm_enabled == true
+      vars:
+        wayf_enabled: "{{ keycloak_plugins.agm.enabled | default(false) }}"
+      tags: "keycloak:config:agm_plugin"
+
