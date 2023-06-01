@@ -78,17 +78,7 @@ keycloak_health_enabled: no
 #              - "eid-support@einfra.grnet.gr"
 #            privacyPolicyUrl:
 #              - "https://eid-proxy.aai-dev.grnet.gr/static/privacy-policy.pdf"
-#  group:
-#    enabled: true
-#    name: "group-management" #PLEASE, do not change this
-#    hotdeploy:
-#      jar_url: "<location of plugin jar>"
-#    add_to_realms:
-#      - name: "rciam"
-#        member_user_attribute_configuration:
-#          userAttribute: "eduPersonEntitlement"
-#          urnNamespace: "urn%3Ageant%3Aeosc-portal.eu"
-##  idp_hashedid_mapper:
+#  idp_hashedid_mapper:
 #    enabled: true
 #    name: "keycloak-idp-hashedId-mapper" #PLEASE, do not change this
 #    module:
