@@ -193,7 +193,7 @@
               urnNamespace: "{{ keycloak_plugins.group.add_to_realms.member_user_attribute_configuration.urnNamespace }}"
               authority: "{{ keycloak_plugins.group.add_to_realms.member_user_attribute_configuration.authority }}"
 
-      when: agm_enabled == true
+      when: group_enabled == true
       vars:
         group_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
       tags: "keycloak:config:plugin:group"
