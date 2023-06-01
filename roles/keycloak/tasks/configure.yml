@@ -195,6 +195,6 @@
 
       when: agm_enabled == true
       vars:
-        wayf_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
+        group_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
       tags: "keycloak:config:plugin:group"
 
