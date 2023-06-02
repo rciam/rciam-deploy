@@ -145,22 +145,6 @@
   block:
     - name: Acquire tokens
       include_tasks: blocks/helpers/get_tokens.yml
-    - name: Select wayf plugin for login UI
-      uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}"
-        method: "PUT"
-        body_format: json
-        headers:
-          Authorization: "Bearer {{ tokens.json.access_token }}"
-        body:
-          "{{ body_payload }}"
-        status_code: "204"
-      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
-      run_once: true
-      vars:
-        - body_payload:
-            loginTheme: "{{ keycloak_plugins.wayf.theme.name }}"
-            accountTheme: "{{ keycloak_plugins.wayf.theme.name }}"
     - name: "Setting additional theme stuff (config, terms of use)"
       include_tasks: blocks/configure_theme.yml
       with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
@@ -197,4 +181,28 @@
   vars:
     group_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
   tags: "keycloak:config:plugin:group"
+
+- name: Configure themes
+  block:
+    - name: Acquire tokens
+      include_tasks: blocks/helpers/get_tokens.yml
+    - name: Configure themes in different console
+        uri:
+          url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}"
+          method: "PUT"
+          body_format: json
+          headers:
+            Authorization: "Bearer {{ tokens.json.access_token }}"
+          body:
+            "{{ body_payload }}"
+          status_code: "204"
+        with_items: "{{ keycloak_config.realms | default([]) }}"
+        run_once: true
+        vars:
+          - body_payload:
+              loginTheme: "{% if {{item.theme.login }} is defined %} {{ item.theme.login }} {% else %} rciam {% endif %}"
+              accountTheme: "{% if {{item.theme.account }} is defined %} {{ item.theme.account }} {% else %} rciam {% endif %}"
+              emailTheme: "{% if {{item.theme.email }} is defined %} {{ item.theme.email }} {% else %} keycloak {% endif %}"
+
+  tags: "keycloak:config:themes"
 
