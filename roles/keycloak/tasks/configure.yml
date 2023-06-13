@@ -145,7 +145,52 @@
   block:
     - name: Acquire tokens
       include_tasks: blocks/helpers/get_tokens.yml
-    - name: Select wayf plugin for login UI
+    - name: "Configure wayf plugin"
+      include_tasks: blocks/configure_theme.yml
+      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
+
+  when: wayf_enabled == true
+  vars:
+    wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
+  tags:
+    - "keycloak:config:plugin"
+    - "keycloak:config:plugin:wayf"
+
+### advanced group management plugin
+- name: Configure advanced group management plugin
+  block:
+    - name: Acquire tokens
+      include_tasks: blocks/helpers/get_tokens.yml
+    - name: Configure user attribute configuration for advanced group management plugin
+      uri:
+        url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/agm/admin/member-user-attribute/configuration"
+        method: "POST"
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          "{{ body_payload }}"
+        status_code: "204"
+      with_items: "{{ keycloak_plugins.group.add_to_realms }}"
+      run_once: true
+      vars:
+        - body_payload:
+            userAttribute: "{{ item.member_user_attribute_configuration.userAttribute }}"
+            urnNamespace: "{{ item.member_user_attribute_configuration.urnNamespace }}"
+            authority: "{{ item.member_user_attribute_configuration.authority }}"
+
+  when: group_enabled == true
+  vars:
+    group_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
+  tags:
+    - "keycloak:config:plugin"
+    - "keycloak:config:plugin:group"
+
+- name: Configure Keycloak themes
+  block:
+    - name: Acquire tokens
+      include_tasks: blocks/helpers/get_tokens.yml
+    - name: Configure Keycloak themes
       uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}"
         method: "PUT"
@@ -155,17 +200,13 @@
         body:
           "{{ body_payload }}"
         status_code: "204"
-      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
+      with_items: "{{ keycloak_config.realms | default([]) }}"
       run_once: true
       vars:
         - body_payload:
-            loginTheme: "{{ keycloak_plugins.wayf.theme.name }}"
-            accountTheme: "{{ keycloak_plugins.wayf.theme.name }}"
-    - name: "Setting additional theme stuff (config, terms of use)"
-      include_tasks: blocks/configure_theme.yml
-      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
-
-  when: wayf_enabled == true
-  vars:
-    wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
-  tags: "keycloak:config:wayf_plugin"
+            loginTheme: "{{ item.themes.login | default(keycloak_themes.login) | default(omit) }}"
+            accountTheme: "{{ item.themes.account | default(keycloak_themes.account) | default(omit) }}"
+            emailTheme: "{{ item.themes.email | default(keycloak_themes.email) | default(omit) }}"
+  tags:
+    - "keycloak:config:realm"
+    - "keycloak:config:realm:themes"

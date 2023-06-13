@@ -7,10 +7,15 @@ metrics_repo: https://github.com/rciam/rciam-metrics-dev
 metrics_latest_release: 1.0.0
 metrics_version: main
 metrics_fast_api_folder_name: app
-metrics_api_url: http://localhost:8004/
-metrics_hostname: "metrics-dev.rciam.grnet.gr"
-metrics_protocol: "http"
-metrics_api_path: "/api/v1"
+
+metrics_api:
+  hostname: "localhost:8004"
+  domain: "localhost"
+  client: "localhost:3300"
+  protocol: "http"
+  path: "/"
+  log_level: "info"
+  log_identifier: "metrics-service"
 
 metrics_db:
   name: metrics-dev
