@@ -2,10 +2,10 @@
 ---
 # After creating react configuration, github action will move the file to the react application
 # before building
-- name: Create react configuration file locally
+- name: Create react env file locally
   template:
-    src: "react/config.json.j2"
-    dest: "{{ inventory_dir }}/files/{{ metrics_hostname | replace('.', '_') }}.json"
+    src: "react/env.j2"
+    dest: "{{ inventory_dir }}/files/.env"
     mode: 0400
     backup: yes
   delegate_to: localhost
