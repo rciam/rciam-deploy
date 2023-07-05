@@ -21,11 +21,12 @@
 - name: Ensure fastapi is configured
   template:
     src: "fastapi/config.py.j2"
-    dest: "{{ metrics_path }}/config.py"
+    dest: "{{ metrics_path }}/config.{{ item.tenant }}.py"
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.group }}"
     mode: 0400
     backup: yes
+  loop: "{{ metrics_config | default([]) }}"
   become: yes
 
 - name: Restart fastapi service
