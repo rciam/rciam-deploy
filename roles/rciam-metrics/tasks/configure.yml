@@ -10,7 +10,7 @@
     group: "{{ metrics_user.name }}"
   become: yes
 
-- name: Ensure fastapi is configured
+- name: Ensure configurations (fastapi) are configured
   template:
     src: "fastapi/config.py.j2"
     dest: "{{ metrics_path }}/config.{{ item.tenant }}.py"
