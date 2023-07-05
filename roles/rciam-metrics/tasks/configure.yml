@@ -10,19 +10,9 @@
     group: "{{ metrics_user.name }}"
   become: yes
 
-- name: Ensure global configuration (fastapi) is configured
+- name: Ensure configurations (fastapi) are configured
   template:
     src: "fastapi/config.py.j2"
-    dest: "{{ metrics_path }}/config.py"
-    owner: "{{ metrics_user.name }}"
-    group: "{{ metrics_user.group }}"
-    mode: 0400
-    backup: yes
-  become: yes
-
-- name: Ensure tenant configuration (fastapi) is configured
-  template:
-    src: "fastapi/tenant.config.py.j2"
     dest: "{{ metrics_path }}/config.{{ item.tenant }}.py"
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.group }}"

@@ -18,6 +18,17 @@ metrics_api:
   log_identifier: "metrics-service"
 
 metrics_config:
+  - tenant: "global"
+    config:
+      db:
+        name: metrics_dev
+        admin: metrics_dev_admin
+        password: "{{ vault_metrics_db_password }}"
+        host: db.rciam.noc.grnet.gr
+      log:
+        level: DEBUG
+        folder: app/logs
+        file: metrics.log
   - tenant: "rciam.devel"
     config:
       api:
