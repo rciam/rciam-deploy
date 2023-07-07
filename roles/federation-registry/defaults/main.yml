@@ -9,14 +9,14 @@ federation_registry_ams:
   authorized_users :
     - username: "ams-user"
   # Authentication key for the ams agent process
-  agent_key : "agent-authorization-key"
+  agent_key : "authentication_key_for_ams_agent"
   # Admin User token for setting the topics, subscriptions and ACL
   admin_token : "ams-admin-token"
   # Consumer/Publisher User Token
   token: "ams-users-token"
   # Base Url of the Ams
-  host: "https://msg-devel.argo.grnet.gr/v1"
-  project: "rciam-service-registry"
+  host: "ams_host"
+  project: "project"
   sub: "push-subscription"
   topic: "deployment-results-topic"
 federation_registry_pm2_conf_path: "/home/debian"
@@ -35,8 +35,8 @@ federation_registry_git:
   clone_dest: "/var/www/rciam-federation-registry"
 federation_registry_deployment_env : "dev/demo/production"
 federation_registry_key_title: "env-vm"
-federation_registry_init_script: "setup_tenant_dev.sql"
-federation_registry_admin_key: "admin-key"
+federation_registry_init_script: "setup_tenant.sql"
+federation_registry_admin_key: "authentication_for_admin_endpoints"
 federation_registry_react_base_url: "/federation"
 federation_registry_cors: "federation-registry-base-url"
 # Hostname of vm that hosts the nginx
@@ -49,6 +49,10 @@ rciam_dbs:
     host: "hostname"
     port: 5432
     script_path: /home/debian/setup_db.sql
-rciam_db_replication:
-  username: "repuser"
-  password: "password"
+federation_registry_tenant_config:
+  - name: "tenant1_name"
+    backend_uri: "https://tenant1/federation-backend/"
+  - name: "tenant2_name"
+    backend_uri: "https://tenant2/federation-backend/"
+
+
