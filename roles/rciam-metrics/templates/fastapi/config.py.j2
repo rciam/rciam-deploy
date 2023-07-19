@@ -29,3 +29,8 @@ level = {{ item.config.log.level }}
 folder = {{ item.config.log.folder }}
 file = {{ item.config.log.file }}
 {% endif %}
+
+{% if item.config.ams is defined -%}
+[ams]
+verification_hash = {{ item.config.ams.verification_hash }}
+{% endif %}
