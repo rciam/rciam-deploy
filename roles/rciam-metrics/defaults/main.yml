@@ -29,6 +29,8 @@ metrics_config:
         level: DEBUG
         folder: app/logs
         file: metrics.log
+      ams:
+        verfication_hash: verification-hash-code
   - tenant: "rciam.devel"
     config:
       api:
