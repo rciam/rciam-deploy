@@ -49,6 +49,19 @@ metrics_config:
         client_secret: client-secret
         client_redirect_uri: https://metrics.rciam.example.org/callback
         issuer: https://tenant1.rciam.example.org/auth/realms/rciam
+      frontend: |
+        "api_url": "https://metrics.rciam.example.org/metrics/api/v1",
+        "website_url": "https://www.metrics.rciam.example.org/",
+        "login_url": "https://metrics.rciam.example.org/metrics/api/v1/login",
+        "logout_url": "https://metrics.rciam.example.org/metrics/api/v1/logout",
+        "logo_url": "https://metrics.rciam.example.org/logo.svg",
+        "home_page_title": "Page Title",
+        "contact": "email@mailinator.com",
+        "footer_description" : "Footer innerHTML",
+        "theme_color": "#0A559C",
+      symlink:
+        target: "{{ metrics_path }}/{{ metrics_react_folder_name }}/<tenant_environment>/"
+        link: "/var/www/html/<tenant_environment>"
 #  - tenant: "rciam.prod"
 #    config:
 #      api:

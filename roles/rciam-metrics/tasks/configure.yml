@@ -3,7 +3,7 @@
 # This needs the metrics_latest_release, only github actions can know or if you set it manually
 - name: Download and unarchive latest release zip file
   unarchive: 
-    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/react-github-actions-release-build.tar.gz"
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/backend-release-build.tar.gz"
     dest: "{{ metrics_path }}"
     remote_src: true
     owner: "{{ metrics_user.name }}"
@@ -31,13 +31,13 @@
 
 - name: Create Symbolic links
   file:
-    src: "{{ item.target }}"
-    dest: "{{ item.link }}"
+    src: "{{ item.symlink.target }}"
+    dest: "{{ item.symlink.link }}"
     force: yes
     state: link
     owner: root
     group: root
-  loop: "{{ metrics_symlinks | default([]) }}"
+  loop: "{{ metrics_config | default([]) }}"
   become: true
-  when: metrics_symlinks is defined
+  when: item.symlink is defined
 
