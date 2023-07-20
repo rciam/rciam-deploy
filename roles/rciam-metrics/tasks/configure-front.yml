@@ -1,0 +1,15 @@
+---
+# This needs the metrics_latest_release, only github actions can know or if you set it manually
+# This needs the tenant_environment, only github actions can know or if you set it manually
+- name: Download and unarchive latest release zip file
+  unarchive:
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/frontend-{{tenant_environment}}-release-build.tar.gz"
+    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}"
+    remote_src: true
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.name }}"
+  become: yes
+
+
+
+
