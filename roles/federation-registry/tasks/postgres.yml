@@ -1,40 +1,46 @@
 ---
 - name: Make sure psycopg2 is installed
   command: pip install psycopg2==2.7.5 --ignore-installed
+  run_once: true
 
 - name: Send Create Tables SQL File
   copy:
     src: create_tables.sql
     dest: "{{rciam_dbs.federation.script_path}}"
+  run_once: true
 
 - name: Create PostgreSQL tables for Federation Registry via SQL scripts
+  run_once: true
   postgresql_query:
-    db: "{{ federation_registry_name }}"
-    login_user: "{{ federation_registry_username }}"
-    login_password: "{{ federation_registry_password }}"
+    db: "{{ rciam_dbs.federation.name }}"
+    login_user: "{{ rciam_dbs.federation.owner_username }}"
+    login_password: "{{ rciam_dbs.federation.owner_password }}"
     path_to_script: "{{ rciam_dbs.federation.script_path }}"
-    login_host: "{{ federation_registry_host }}"
+    login_host: "{{ rciam_dbs.federation.host }}"
   register: postgresql_result
   failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
-  when: "federation_registry_name is defined"
 
 - name: Send Tenant Initialization Data
+  run_once: true
   copy:
     src: private_files/{{federation_registry_init_script}}
     dest: "{{rciam_dbs.federation.script_path}}"
 
 - name: Initialise Tenant Data via SQL scripts
+  run_once: true
   postgresql_query:
-    db: "{{ federation_registry_name }}"
-    login_user: "{{ federation_registry_username }}"
-    login_password: "{{ federation_registry_password }}"
+    db: "{{ rciam_dbs.federation.name }}"
+    login_user: "{{ rciam_dbs.federation.owner_username }}"
+    login_password: "{{ rciam_dbs.federation.owner_password }}"
+    path_to_script: "{{ rciam_dbs.federation.script_path }}"
+    login_host: "{{ rciam_dbs.federation.host }}"
     path_to_script: "{{rciam_dbs.federation.script_path}}"
-    login_host: "{{ federation_registry_host }}"
+    login_host: "{{ rciam_dbs.federation.host }}"
   register: postgresql_result
   failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
-  when: "federation_registry_name is defined"
 
 - name: Delete database configuration file
+  run_once: true
   file:
     path: "{{rciam_dbs.federation.script_path}}"
     state: absent
