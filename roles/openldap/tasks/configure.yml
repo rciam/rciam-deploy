@@ -102,12 +102,14 @@
     owner: root
     group: root
     mode: 400
+  become: yes
   register: admin_pass_file
 
 - name: Copy the ldif template to set the admin password
   template: 
     src: "etc/ldap/slapd.d/modify_password.ldif.j2"
     dest: "/etc/ldap/slapd.d/adminpwd_ldif.tmpl"
+  become: yes
   when: openldap_admin_password is defined and admin_pass_file is changed
 
 - name: Create the ldif file to set the admin password

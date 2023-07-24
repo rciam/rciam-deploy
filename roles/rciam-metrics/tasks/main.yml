@@ -20,3 +20,8 @@
 - include: configure-local.yml
   tags:
     - rciam-metrics:config-local
+
+  # Include OS-independent configuration tasks
+- include: configure-front.yml
+  tags:
+    - rciam-metrics:config-front
