@@ -1,0 +1,23 @@
+%% This is a comment
+%% authorize.py configuration files use semicolon instead of an equal sign
+{% if item.config.api is defined -%}
+[anonymous]
+{% for object in item.authorize.anonymous %}
+{{ object.view }};{{ object.actions }}
+{% endfor %}
+
+[authenticated]
+{% for object in item.authorize.authenticated %}
+{{ object.view }};{{ object.actions }}
+{% endfor %}
+
+[administrator]
+{% for object in item.authorize.administrator %}
+{{ object.view }};{{ object.actions }}
+{% endfor %}
+
+[entitlements]
+{% for object in item.authorize.entitlements %}
+{{ object.entitlement }};{{ object.roles }}
+{% endfor %}
+{% endif %}

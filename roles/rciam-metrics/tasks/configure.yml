@@ -20,6 +20,21 @@
     backup: yes
   loop: "{{ metrics_config | default([]) }}"
   become: yes
+  tags:
+    - configure
+
+- name: Ensure authorizations are configured
+  template:
+    src: "fastapi/authorize.py.j2"
+    dest: "{{ metrics_path }}/authorize.{{ item.tenant }}.py"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  loop: "{{ metrics_config | default([]) }}"
+  become: yes
+  tags:
+    - authorization
 
 - name: Restart fastapi service
   systemd:
