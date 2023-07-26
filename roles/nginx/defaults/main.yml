@@ -14,6 +14,9 @@ nginx_ssl_protocols: "TLSv1.2"
 # SSL ciphers that should be enabled
 nginx_ssl_ciphers: "EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS"
 
+# Name servers used to resolve names of upstream servers into addresses
+nginx_resolver: "8.8.8.8 8.8.4.4 [2001:4860:4860::8888] [2001:4860:4860::8844]"
+
 # Name of the user that should own the file containing the SSL certificate
 nginx_ssl_certificate_file_owner: "root"
 # Name of the group that should own the file containing the SSL certificate

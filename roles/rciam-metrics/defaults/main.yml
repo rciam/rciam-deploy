@@ -32,6 +32,35 @@ metrics_config:
       ams:
         verfication_hash: verification-hash-code
   - tenant: "rciam.devel"
+    authorize:
+      anonymous:
+        - view: "dashboard"
+          actions: "view"
+        - view: "identity_providers"
+          actions: "view"
+        - view: "service_providers"
+          actions: "view"
+      authenticated:
+        - view: "dashboard"
+          actions: "view"
+        - view: "identity_providers"
+          actions: "view"
+        - view: "service_providers"
+          actions: "view"
+      administrator:
+        - view: "dashboard"
+          actions: "view,write"
+        - view: "identity_providers"
+          actions: "view,write"
+        - view: "service_providers"
+          actions: "view,write"
+        - view: "users"
+          actions: "view,write"
+        - view: "communities"
+          actions: "view,write"
+      entitlements:
+        - entitlement: "entitlement.example.org"
+          roles: "administrator"
     config:
       api:
         hostname: "localhost:8004"
