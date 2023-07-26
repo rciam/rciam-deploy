@@ -51,7 +51,7 @@ http {
         # OCSP stapling
         ssl_stapling on;
         ssl_stapling_verify on;
-        resolver 8.8.8.8 8.8.4.4 [2001:4860:4860::8888] [2001:4860:4860::8844];
+        resolver {{ nginx_resolver }};
 
 	##
 	# Logging Settings
