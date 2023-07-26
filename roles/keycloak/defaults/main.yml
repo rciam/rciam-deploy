@@ -83,6 +83,11 @@ keycloak_keystores: "/srv/keycloak-keys"
 #    name: "orcid-idp"
 #    hotdeploy:
 #      jar_url: "https://github.com/eosc-kc/keycloak-orcid/releases/download/1.0.0/keycloak-orcid-1.0.0.jar"
+#  metrics:
+#    enabled: true
+#    name: "keycloak-rciam-metrics" #PLEASE, do not change this
+#    hotdeploy:
+#      jar_url: "https://github.com/rciam/keycloak-rciam-metrics-plugin/releases/download/1.0.0/keycloak-rciam-metrics-plugin.jar"
 
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.
@@ -110,12 +115,20 @@ keycloak_keystores: "/srv/keycloak-keys"
 #          auth: "false"
 #          user: ""
 #          password: ""
+#        attributes:
+#          shortVerificationUri: "https://{{ rciam_hostname }}/device"
+#          # Needed attributes for metrics plugin
+#          amsUrl: "https://msg-devel.argo.grnet.gr/v1/projects/AAIMETRICS/topics/metrics"
+#          X-Api-Key: "xxx"
+#          tenenvId: "1"
+#          source: "Keycloak"
+#          keycloakUrl: "https://localhost:{{ keycloak_bind_port }}/auth"
 #      events_logging:
 #        eventsEnabled: true
 #        eventsExpiration: 47347200 # this is 548 days in seconds
 #        adminEventsDetailsEnabled: false
 #        adminEventsEnabled: true
-#        eventsListeners: ["jboss-logging"]  # optional. if you want you can override with the array with the desired ones
+#        eventsListeners: ["jboss-logging"]  # optional. if you want you can override with the array with the desired ones. Add "metrics-communication" for metrics plugin
 #        enabledEventTypes: ["UPDATE_CONSENT_ERROR", "SEND_RESET_PASSWORD", "GRANT_CONSENT",…] # optional. if you want you can override with the array with the desired ones
 #      client_registration_policies:
 #        create_update:
