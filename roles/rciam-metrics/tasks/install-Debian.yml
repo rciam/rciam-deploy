@@ -1,0 +1,18 @@
+# file: metrics/tasks/install-Debian.yml
+#
+---
+
+- name: Ensure metrics dependencies are installed
+  apt:
+    name:
+      - git
+      - python3-venv
+      - build-essential
+      - python3-dev
+      - python3-pip
+      - nginx
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 86400
+  become: yes

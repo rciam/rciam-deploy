@@ -1,0 +1,7 @@
+# file: metricsservers.yml
+#
+---
+
+- hosts: rciam-metrics
+  roles:
+    - { role: rciam-metrics, tags: rciam-metrics }

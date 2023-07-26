@@ -8,6 +8,7 @@ module.exports = {
   {% endif %}
   {
     name       : "express",
-    script     : "{{federation_registry_express_path}}/JavaScript/index.js"
+    script     : "{{federation_registry_express_path}}/JavaScript/index.js",
+    node_args  : "{{ federation_registry_node_args | default('--use-openssl-ca') }}"
   }]
 }

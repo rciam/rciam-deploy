@@ -158,7 +158,15 @@ $config = [
      * Example:
      *   'trusted.url.domains' => ['sp.example.com', 'app.example.com'],
      */
-    'trusted.url.domains' => [],
+{% if ssp_trusted_url_domains is not none %}
+    'trusted.url.domains' => [
+{% for domain in ssp_trusted_url_domains %}
+        '{{ domain }}',
+{% endfor %}
+    ],
+{% else %}
+    'trusted.url.domains' => null,
+{% endif %}
 
     /*
      * Enable regular expression matching of trusted.url.domains.
@@ -169,7 +177,7 @@ $config = [
      * If enabled, the start and end delimiters ('^' and '$') will be added to
      * all regular expressions in trusted.url.domains.
      */
-    'trusted.url.regex' => false,
+    'trusted.url.regex' => {{ ssp_trusted_url_regex | default(False) | string | lower }},
 
     /*
      * Enable secure POST from HTTPS to HTTP.

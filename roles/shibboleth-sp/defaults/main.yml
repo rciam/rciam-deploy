@@ -101,6 +101,13 @@ shibboleth_sp_session:
   # option can include a ":n" suffix, where n specifies the number of cookies
   # to permit before purging old ones, defaulting to 25.
   relay_state: "ss:mem"
+  # V3.2+: One of "none", "exact", "host", "allow", "exact+allow", "host+allow"
+  # Earlier: One of "none", "exact", "host", "whitelist", "exact+whitelist",
+  # "host+whitelist".
+  # "none" is the default and does no limiting
+  # N.B. Consider carefully before using this option as it can allow malicious
+  # use of your SP as an open redirect
+  #redirect_limit: "none"
 
 # SSO settings. To allow for >1 IdP, remove entity_id property and adjust
 # discovery_url to point to discovery service.
@@ -173,6 +180,7 @@ shibboleth_sp_overrides: []
 #      cookie_props: "http"
 #      cookie_lifetime:
 #      relay_state: "ss:mem"
+#      redirect_limit: "none"
 #      sso:
 #        entity_id: "https://idp.example.org"
 #        name: "SAML2"

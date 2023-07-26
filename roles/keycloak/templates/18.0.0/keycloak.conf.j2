@@ -32,3 +32,4 @@ log=file,console
 log-file={{ keycloak_logs_folder }}/server.log
 #log-level=INFO,org.infinispan:DEBUG,org.jgroups:DEBUG
 
+health-enabled={{ keycloak_health_enabled | default(False) | string | lower }}

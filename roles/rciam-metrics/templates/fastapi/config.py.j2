@@ -1,0 +1,36 @@
+{% if item.config.db is defined -%}
+[database_parameters]
+db = {{ item.config.db.host }}
+db_admin = {{ item.config.db.admin }}
+db_password = {{ item.config.db.password }}
+database_url = postgresql+psycopg2://{{ item.config.db.admin }}:{{ item.config.db.password }}@{{ item.config.db.host }}/{{ item.config.db.name }}
+{% endif %}
+
+{% if item.config.api is defined -%}
+[server_config]
+protocol = {{ item.config.api.protocol }}
+host = {{ item.config.api.hostname }}
+client = {{ item.config.api.client }}
+domain = {{ item.config.api.domain }}
+api_path = {{ item.config.api.path }}
+{% endif %}
+
+{% if item.config.oidc is defined -%}
+[oidc_client]
+client_id = {{ item.config.oidc.client_id }}
+client_secret = {{ item.config.oidc.client_secret }}
+issuer = {{ item.config.oidc.issuer }}
+redirect_uri = {{ item.config.oidc.client_redirect_uri }}
+{% endif %}
+
+{% if item.config.log is defined -%}
+[logging]
+level = {{ item.config.log.level }}
+folder = {{ item.config.log.folder }}
+file = {{ item.config.log.file }}
+{% endif %}
+
+{% if item.config.ams is defined -%}
+[ams]
+verification_hash = {{ item.config.ams.verification_hash }}
+{% endif %}

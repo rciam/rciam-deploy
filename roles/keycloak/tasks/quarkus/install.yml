@@ -114,7 +114,7 @@
     src: templates/keycloak.service.quarkus.j2
     dest: /etc/systemd/system/keycloak.service
   become: yes
-  tags: "keycloak:install:setup_sys_service"
+  tags: "keycloak:install:systemd_service"
 
 - name: "Restart keycloak"
   systemd:

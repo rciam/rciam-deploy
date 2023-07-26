@@ -1,0 +1,58 @@
+# file: tasks/configure.yml
+---
+# This needs the metrics_latest_release, only github actions can know or if you set it manually
+- name: Download and unarchive latest release zip file
+  unarchive: 
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/backend-release-build.tar.gz"
+    dest: "{{ metrics_path }}"
+    remote_src: true
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.name }}"
+  become: yes
+
+- name: Ensure configurations (fastapi) are configured
+  template:
+    src: "fastapi/config.py.j2"
+    dest: "{{ metrics_path }}/config.{{ item.tenant }}.py"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  loop: "{{ metrics_config | default([]) }}"
+  become: yes
+  tags:
+    - configure
+
+- name: Ensure authorizations are configured
+  template:
+    src: "fastapi/authorize.py.j2"
+    dest: "{{ metrics_path }}/authorize.{{ item.tenant }}.py"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  loop: "{{ metrics_config | default([]) }}"
+  become: yes
+  tags:
+    - authorization
+
+- name: Restart fastapi service
+  systemd:
+    name: fastapi
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  become: yes
+
+- name: Create Symbolic links
+  file:
+    src: "{{ item.symlink.target }}"
+    dest: "{{ item.symlink.link }}"
+    force: yes
+    state: link
+    owner: root
+    group: root
+  loop: "{{ metrics_config | default([]) }}"
+  become: true
+  when: item.symlink is defined
+

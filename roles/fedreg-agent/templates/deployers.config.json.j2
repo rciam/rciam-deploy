@@ -2,9 +2,9 @@
 {% if fedreg_agent_enable_keycloak | bool == True %}
     "keycloak": {
         "ams": {
-    {% if fedreg_agent_keycloak.name is defined %}
+{% if fedreg_agent_keycloak.name is defined %}
             "deployer_name": "{{ fedreg_agent_keycloak.name }}",
-    {% endif %}
+{% endif %}
             "host": "{{ fedreg_agent_ams.host }}",
             "project": "{{ fedreg_agent_ams.project }}",
             "pull_topic": "{{ fedreg_agent_keycloak.pull_topic }}",
@@ -15,11 +15,17 @@
         },
         "auth_server": "{{ fedreg_agent_keycloak.auth_server }}",
         "realm": "{{ fedreg_agent_keycloak.realm }}",
-    {% if fedreg_agent_keycloak.refresh_token is defined %}
+{% if fedreg_agent_keycloak.refresh_token is defined %}
         "refresh_token": "{{ fedreg_agent_keycloak.refresh_token }}",
-    {% endif %}
+{% endif %}
         "client_id": "{{ fedreg_agent_keycloak.client_id }}",
         "client_secret": "{{ fedreg_agent_keycloak.client_secret }}",
+{% if fedreg_agent_keycloak.oidc_consent is defined %}
+        "oidc_consent": {{ fedreg_agent_keycloak.oidc_consent | bool | to_json }},
+{% endif %}
+{% if fedreg_agent_keycloak.saml_consent is defined %}
+        "saml_consent": {{ fedreg_agent_keycloak.saml_consent | bool | to_json }},
+{% endif %}
         "service_account": {
             "attribute_name": "{{ fedreg_agent_keycloak.service_account.attribute_name }}",
             "candidate": "{{ fedreg_agent_keycloak.service_account.candidate }}",
@@ -30,9 +36,9 @@
 {% if fedreg_agent_enable_mitreid | bool == True %}
     "mitreid": {
         "ams": {
-    {% if fedreg_agent_mitreid.name is defined %}
+{% if fedreg_agent_mitreid.name is defined %}
             "deployer_name": "{{ fedreg_agent_mitreid.name }}",
-    {% endif %}
+{% endif %}
             "host": "{{ fedreg_agent_ams.host }}",
             "project": "{{ fedreg_agent_ams.project }}",
             "pull_topic": "{{ fedreg_agent_mitreid.pull_topic }}",
@@ -50,9 +56,9 @@
 {% if fedreg_agent_enable_ssp | bool == True %}
     "ssp": {
         "ams": {
-    {% if fedreg_agent_ssp.name is defined %}
+{% if fedreg_agent_ssp.name is defined %}
             "deployer_name": "{{ fedreg_agent_ssp.name }}",
-    {% endif %}
+{% endif %}
             "host": "{{ fedreg_agent_ams.host }}",
             "project": "{{ fedreg_agent_ams.project }}",
             "pull_topic": "{{ fedreg_agent_ssp.pull_topic }}",

@@ -190,6 +190,28 @@ ssp_language_rtl:
 
 ssp_language_default: "en"
 
+# Array of domains that are allowed when generating links or redirects
+# to URLs. SimpleSAMLphp will use this option to determine whether to
+# to consider a given URL valid or not.
+# ssp_trusted_url_domains:
+#  - "foo.org"
+#  - 'bar.org'
+#
+# Set to an empty array to disallow ALL redirects or links pointing to
+# an external URL other than your own domain. This is the default behaviour.
+# ssp_trusted_url_domains: []
+#
+# Set to NULL to disable checking of URLs.
+# ssp_trusted_url_domains: null
+ssp_trusted_url_domains: []
+
+# Enable regular expression matching of ssp_trusted_url_domains.
+# Set to true to treat the values in ssp_trusted_url_domains as regular
+# expressions. Set to false to do exact string matching.
+# If enabled, the start and end delimiters ('^' and '$') will be added to
+# all regular expressions in ssp_trusted_url_domains.
+# ssp_trusted_url_regex: no
+
 # Authentication processing filters that will be executed for all IdPs.
 # See https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
 # The filters can be specified with PHP syntax using `ssp_authproc_idp_raw` or

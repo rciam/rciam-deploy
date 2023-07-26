@@ -1,23 +1,22 @@
-DROP TABLE IF EXISTS user_edu_person_entitlement,tokens,user_info, service_petition_contacts, service_petition_oidc_grant_types,service_coc,service_petition_coc, service_petition_oidc_redirect_uris, service_petition_oidc_scopes,
-service_petition_details_oidc,service_petition_details_saml, service_petition_details, service_oidc_scopes,service_contacts,service_oidc_grant_types,service_oidc_redirect_uris,service_details_oidc,
-service_details_saml,service_details,service_state,user_roles,role_actions,role_entitlements,groups,invitations,group_subs,tenant_deployer_agents,banner_alerts,tenants,deployment_tasks,service_errors,organizations;
+DROP TABLE IF EXISTS user_edu_person_entitlement,tokens,user_info, service_petition_contacts, service_petition_oidc_grant_types,service_boolean,service_petition_boolean,service_saml_attributes,service_petition_saml_attributes, service_petition_oidc_redirect_uris,service_petition_oidc_post_logout_redirect_uris, service_petition_oidc_scopes,
+service_petition_details_oidc,service_petition_details_saml, service_petition_details, service_oidc_scopes,service_contacts,service_oidc_grant_types,service_oidc_redirect_uris,service_oidc_post_logout_redirect_uris,service_details_oidc,
+service_details_saml,service_details,service_state,user_roles,role_actions,role_entitlements,groups,invitations,group_subs,tenant_deployer_agents,banner_alerts,deployment_tasks,service_errors,organizations,service_tags,tenants;
 
 create table tokens (
-  token VARCHAR(1054),
+  token VARCHAR(2048),
+  id_token VARCHAR(2048),
   code VARCHAR(1054) PRIMARY KEY
 );
+
 
 create table tenants (
   name VARCHAR(256) PRIMARY KEY,
   client_id VARCHAR(256),
   client_secret VARCHAR(1054),
   issuer_url VARCHAR(256),
-  logo VARCHAR(256),
-  description VARCHAR(1054),
-  main_title VARCHAR(256),
-  color VARCHAR(128),
   base_url VARCHAR(256) DEFAULT NULL
 );
+
 
 create table user_info (
   id SERIAL PRIMARY KEY,
@@ -32,6 +31,7 @@ create table user_info (
   FOREIGN KEY (tenant) REFERENCES tenants(name)
 );
 
+
 create table user_roles (
   id SERIAL PRIMARY KEY,
   role_name VARCHAR(256),
@@ -39,12 +39,14 @@ create table user_roles (
   FOREIGN KEY (tenant) REFERENCES tenants(name)
 );
 
+
 create table role_actions (
   role_id bigint,
   action VARCHAR(256),
   PRIMARY KEY (role_id,action),
   FOREIGN KEY (role_id) REFERENCES user_roles(id)
 );
+
 create table role_entitlements (
   role_id bigint,
   entitlement VARCHAR(256),
@@ -52,10 +54,12 @@ create table role_entitlements (
   FOREIGN KEY (role_id) REFERENCES user_roles(id)
 );
 
+
 create table groups (
   id SERIAL PRIMARY KEY,
   group_name VARCHAR(256)
 );
+
 
 create table invitations (
   id SERIAL PRIMARY KEY,
@@ -81,13 +85,13 @@ create table group_subs (
 );
 
 
-
 create table user_edu_person_entitlement (
   user_id bigint,
   edu_person_entitlement VARCHAR(256),
   PRIMARY KEY (user_id,edu_person_entitlement),
   FOREIGN KEY (user_id) REFERENCES user_info(id)
 );
+
 
 create table organizations (
   organization_id SERIAL PRIMARY KEY,
@@ -96,6 +100,7 @@ create table organizations (
   active BOOLEAN DEFAULT NULL,
   ror_id VARCHAR(256) DEFAULT NULL
 );
+
 
 create table service_details (
   id SERIAL PRIMARY KEY,
@@ -119,8 +124,6 @@ create table service_details (
 );
 
 
-
-
 create table service_details_oidc (
   id INTEGER PRIMARY KEY,
   client_id VARCHAR(256),
@@ -137,8 +140,10 @@ create table service_details_oidc (
   token_endpoint_auth_signing_alg VARCHAR(256),
   jwks VARCHAR(2048),
   jwks_uri VARCHAR(256),
+  application_type VARCHAR(256),
   FOREIGN KEY (id) REFERENCES service_details(id) ON DELETE CASCADE
 );
+
 
 create table service_state (
   id bigint PRIMARY KEY,
@@ -150,6 +155,7 @@ create table service_state (
   FOREIGN KEY (id) REFERENCES service_details(id) ON DELETE CASCADE
 );
 
+
 create table service_errors (
   service_id bigint,
   date timestamp without time zone DEFAULT NULL,
@@ -160,12 +166,14 @@ create table service_errors (
   FOREIGN KEY (service_id) REFERENCES service_details(id) ON DELETE CASCADE
 );
 
+
 create table service_details_saml (
   id bigint PRIMARY KEY,
   entity_id VARCHAR(256),
   metadata_url VARCHAR(256),
   FOREIGN KEY (id) REFERENCES service_details(id) ON DELETE CASCADE
 );
+
 
 create table service_contacts (
   id SERIAL PRIMARY KEY,
@@ -175,12 +183,14 @@ create table service_contacts (
   FOREIGN KEY (owner_id) REFERENCES service_details(id) ON DELETE CASCADE
 );
 
+
 create table service_oidc_grant_types (
   id SERIAL PRIMARY KEY,
   owner_id bigint,
   value VARCHAR(256),
   FOREIGN KEY (owner_id) REFERENCES service_details(id) ON DELETE CASCADE
 );
+
 
 create table service_oidc_redirect_uris (
   id SERIAL PRIMARY KEY,
@@ -189,12 +199,31 @@ create table service_oidc_redirect_uris (
   FOREIGN KEY (owner_id) REFERENCES service_details(id) ON DELETE CASCADE
 );
 
+create table service_oidc_post_logout_redirect_uris (
+  id SERIAL PRIMARY KEY,
+  owner_id bigint,
+  value VARCHAR(256),
+  FOREIGN KEY (owner_id) REFERENCES service_details(id) ON DELETE CASCADE
+);
+
+
 create table service_oidc_scopes (
   id SERIAL PRIMARY KEY,
   owner_id bigint,
   value VARCHAR(256),
   FOREIGN KEY (owner_id) REFERENCES service_details(id) ON DELETE CASCADE
 );
+
+create table service_saml_attributes (
+  owner_id bigint,
+  name VARCHAR(512),
+  friendly_name VARCHAR(512),
+  required BOOLEAN DEFAULT TRUE,
+  name_format VARCHAR(512) DEFAULT 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+  FOREIGN KEY (owner_id) REFERENCES service_details(id) ON DELETE CASCADE
+);
+
+
 
 create table service_petition_details (
   id SERIAL PRIMARY KEY,
@@ -223,7 +252,8 @@ create table service_petition_details (
   FOREIGN KEY (service_id) REFERENCES service_details(id) ON DELETE SET NULL
 );
 
-create table service_coc (
+
+create table service_boolean (
   id SERIAL PRIMARY KEY,
   service_id bigint,
   name VARCHAR(256),
@@ -231,7 +261,8 @@ create table service_coc (
   FOREIGN KEY (service_id) REFERENCES service_details(id) ON DELETE CASCADE
 );
 
-create table service_petition_coc (
+
+create table service_petition_boolean (
   id SERIAL PRIMARY KEY,
   petition_id bigint,
   name VARCHAR(256),
@@ -256,6 +287,7 @@ create table service_petition_details_oidc (
   clear_access_tokens_on_refresh BOOLEAN,
   id_token_timeout_seconds bigint,
   client_secret VARCHAR(2048),
+  application_type VARCHAR(256),
   FOREIGN KEY (id) REFERENCES service_petition_details(id) ON DELETE CASCADE
 );
 
@@ -284,6 +316,14 @@ create table service_petition_oidc_grant_types (
   FOREIGN KEY (owner_id) REFERENCES service_petition_details(id) ON DELETE CASCADE
 );
 
+create table service_petition_saml_attributes (
+  owner_id bigint,
+  name VARCHAR(512),
+  friendly_name VARCHAR(512),
+  required BOOLEAN DEFAULT TRUE,
+  name_format VARCHAR(512) DEFAULT 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+  FOREIGN KEY (owner_id) REFERENCES service_petition_details(id) ON DELETE CASCADE
+);
 
 create table service_petition_oidc_redirect_uris (
   id SERIAL PRIMARY KEY,
@@ -291,6 +331,14 @@ create table service_petition_oidc_redirect_uris (
   value VARCHAR(256),
   FOREIGN KEY (owner_id) REFERENCES service_petition_details(id) ON DELETE CASCADE
 );
+
+create table service_petition_oidc_post_logout_redirect_uris (
+  id SERIAL PRIMARY KEY,
+  owner_id bigint,
+  value VARCHAR(256),
+  FOREIGN KEY (owner_id) REFERENCES service_petition_details(id) ON DELETE CASCADE
+);
+
 
 
 create table service_petition_oidc_scopes (
@@ -302,13 +350,14 @@ create table service_petition_oidc_scopes (
 
 
 create table tenant_deployer_agents (
-  id bigint PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   tenant VARCHAR(256),
   integration_environment VARCHAR(256),
   type VARCHAR(256),
   entity_type VARCHAR(256),
   hostname VARCHAR(256),
   entity_protocol VARCHAR(256),
+  deployer_name VARCHAR(256),
   FOREIGN KEY (tenant) REFERENCES tenants(name)
 );
 
@@ -327,9 +376,22 @@ create table banner_alerts (
 create  table deployment_tasks (
   agent_id INTEGER,
   service_id INTEGER,
+  deployer_name VARCHAR(256),
   error BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (agent_id,service_id),
   FOREIGN KEY (agent_id) REFERENCES tenant_deployer_agents(id),
   FOREIGN KEY (service_id) REFERENCES service_details(id)
 );
+
+
+
+create table service_tags (
+  service_id INTEGER,
+  tag VARCHAR(256),
+  tenant VARCHAR(256),
+  FOREIGN KEY (tenant) REFERENCES tenants(name) ON DELETE CASCADE,
+  PRIMARY KEY (tag,service_id)
+);
+
+
 

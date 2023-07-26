@@ -1,0 +1,108 @@
+# file: group_vars/metrics/main.yml
+
+---
+
+metrics_path: /srv/rciam-metrics-client/rciam-metrics
+metrics_repo: https://github.com/rciam/rciam-metrics-dev
+metrics_latest_release: 1.0.0
+metrics_version: main
+metrics_fast_api_folder_name: app
+
+metrics_api:
+  hostname: "localhost:8004"
+  domain: "localhost"
+  client: "localhost:3300"
+  protocol: "http"
+  path: "/"
+  log_level: "info"
+  log_identifier: "metrics-service"
+
+metrics_config:
+  - tenant: "global"
+    config:
+      db:
+        name: metrics_dev
+        admin: metrics_dev_admin
+        password: "{{ vault_metrics_db_password }}"
+        host: db.rciam.noc.grnet.gr
+      log:
+        level: DEBUG
+        folder: app/logs
+        file: metrics.log
+      ams:
+        verfication_hash: verification-hash-code
+  - tenant: "rciam.devel"
+    authorize:
+      anonymous:
+        - view: "dashboard"
+          actions: "view"
+        - view: "identity_providers"
+          actions: "view"
+        - view: "service_providers"
+          actions: "view"
+      authenticated:
+        - view: "dashboard"
+          actions: "view"
+        - view: "identity_providers"
+          actions: "view"
+        - view: "service_providers"
+          actions: "view"
+      administrator:
+        - view: "dashboard"
+          actions: "view,write"
+        - view: "identity_providers"
+          actions: "view,write"
+        - view: "service_providers"
+          actions: "view,write"
+        - view: "users"
+          actions: "view,write"
+        - view: "communities"
+          actions: "view,write"
+      entitlements:
+        - entitlement: "entitlement.example.org"
+          roles: "administrator"
+    config:
+      api:
+        hostname: "localhost:8004"
+        domain: "localhost"
+        client: "localhost:3300"
+        protocol: "http"
+        path: "/"
+        log_level: "info"
+        log_identifier: "metrics-service"
+      db:
+        name: metrics-dev
+        host: db.example.com
+        admin: rciam
+        password: secret
+      oidc:
+        client_id: client-id
+        client_secret: client-secret
+        client_redirect_uri: https://metrics.rciam.example.org/callback
+        issuer: https://tenant1.rciam.example.org/auth/realms/rciam
+      frontend: |
+        "api_url": "https://metrics.rciam.example.org/metrics/api/v1",
+        "website_url": "https://www.metrics.rciam.example.org/",
+        "login_url": "https://metrics.rciam.example.org/metrics/api/v1/login",
+        "logout_url": "https://metrics.rciam.example.org/metrics/api/v1/logout",
+        "logo_url": "https://metrics.rciam.example.org/logo.svg",
+        "home_page_title": "Page Title",
+        "contact": "email@mailinator.com",
+        "footer_description" : "Footer innerHTML",
+        "theme_color": "#0A559C",
+      symlink:
+        target: "{{ metrics_path }}/{{ metrics_react_folder_name }}/<tenant_environment>/"
+        link: "/var/www/html/<tenant_environment>"
+#  - tenant: "rciam.prod"
+#    config:
+#      api:
+
+metrics_user:
+  name: rciam-metrics-client
+  path: /srv/rciam-metrics-client
+  group: rciam-metrics-client
+  gecos: "RCIAM Metrics Client Name"
+  shell: /bin/bash
+#metrics_symlinks:
+#  - target: "/path/to/target"
+#    link: "/path/to/symlink"

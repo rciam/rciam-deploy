@@ -1,0 +1,44 @@
+# {{ ansible_managed }}
+
+[comanage_database]
+
+host = {{ rciam_dbs.registry.host }}
+database = {{ rciam_dbs.registry.name }}
+user = {{ rciam_dbs.registry.owner_username }}
+password = {{ rciam_dbs.registry.owner_password }}
+
+[proxystatistics_database]
+
+host = {{ rciam_dbs.proxy.host }}
+database = {{ rciam_dbs.proxy.name }}
+user = {{ rciam_dbs.proxy.owner_username }}
+password = {{ rciam_dbs.proxy.owner_password }}
+
+[destination_database]
+
+host = {{ rciam_dbs.proxy.host }}
+database = {{ rciam_dbs.proxy.name }}
+user = {{ rciam_dbs.proxy.owner_username }}
+password = {{ rciam_dbs.proxy.owner_password }}
+
+[metric_users_memberships_in_cous]
+
+name = {{ rciam_util.metrics.memberships_metric.name }}
+regex_cou_name = {{ rciam_util.metrics.memberships_metric.regex_cou_name }}
+co_id = {{ rciam_util.metrics.memberships_metric.co_id }}
+
+[logging]
+
+level = {{ rciam_util.metrics.logging.level }}
+folder = {{ rciam_util.metrics.logging.folder }}
+file = {{ rciam_util.metrics.logging.file }}
+
+[delete_logs_database]
+older_than = {{ rciam_util.metrics.delete_logs.older_than }}
+
+[endpoints]
+token = {{ rciam_util.metrics.endpoints.token }}
+authorize = {{ rciam_util.metrics.endpoints.authorize }}
+userinfo = {{ rciam_util.metrics.endpoints.userinfo }}
+devicecode = {{ rciam_util.metrics.endpoints.devicecode }}
+introspect = {{ rciam_util.metrics.endpoints.introspect }}

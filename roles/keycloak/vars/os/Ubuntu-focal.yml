@@ -1,0 +1,6 @@
+# file: vars/os/Ubuntu-focal.yml
+#
+---
+
+# This should match the default version of postgresql of the target machine
+keycloak_postgresql_jar_name: "postgresql-42.2.27.jar"

@@ -1,44 +1,6 @@
 # file: tasks/configure.yml
 ---
 
-- name: Ensure util groups exist
-  group:
-    name: "{{ item.user.group }}"
-    system: yes
-  loop: "{{ rciam_utils }}"
-  become: yes
-
-- name: Ensure util users exist
-  user:
-    name: "{{ item.user.name }}"
-    groups: "{{ item.user.group }}"
-    comment: "{{ item.user.gecos }}" 
-    shell: "{{ item.user.shell }}"
-    home: "{{ item.user.path }}"
-    system: yes
-    create_home: yes
-    skeleton: "/empty"
-  loop: "{{ rciam_utils }}"
-  become: yes
-
-- name: Ensure util code checkouts are up-to-date
-  git:
-    repo: "{{ item.repo }}"
-    dest: "{{ item.path }}"
-    version: "{{ item.version }}"
-  loop: "{{ rciam_utils }}"
-  become: yes
-  become_user: "{{ item.user.name }}"
-
-- name: Ensure util python requirements are installed in virtualenvs
-  pip:
-    requirements: "{{ item.path }}/requirements.txt"
-    virtualenv: "{{ item.path }}/.venv"
-    virtualenv_command: python3 -m venv
-  loop: "{{ rciam_utils }}"
-  become: yes
-  become_user: "{{ item.user.name }}"
-
 - name: Ensure utils are configured
   template:
     src: "{{ item.name }}/config.py.j2"
@@ -102,6 +64,8 @@
   when: rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
   become: yes
   become_user: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
+  tags:
+    - rciam_utils:config:ip2country:db
 
 - name: Ensure database files are copied for rciam-ip2country
   copy:
@@ -113,6 +77,8 @@
     backup: yes
   when: '(rciam_utils_ip2country.database_files_dir is defined) and (rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1)'
   become: yes
+  tags:
+    - rciam_utils:config:ip2country:files
 
 - name: Ensure util cron jobs are installed
   cron:

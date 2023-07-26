@@ -33,6 +33,9 @@ keycloak_bind_port: "8080"
 
 keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 
+# Used to identify the Keycloak service in syslog files
+keycloak_syslog_identifier: "keycloak"
+
 keycloak_logs_folder: "/var/log/keycloak"
 
 keycloak_logs_max_days: 548  # that's ~18 months
@@ -41,6 +44,17 @@ keycloak_log_level:
   saml: INFO
 
 keycloak_keystores: "/srv/keycloak-keys"
+
+# If the server should expose health check endpoints. Defaults to false 
+keycloak_health_enabled: no
+
+# Themes to apply to all realms defined under 'keycloak_config.realms'.
+# You can override theme settings for specific realms by defining
+# 'keycloak_config.realms.<REALM>.themes'
+keycloak_themes:
+  login: "rciam"
+  account: "rciam"
+  #email: "keycloak" # Uncomment and customise if necessary
 
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)
@@ -331,6 +345,11 @@ keycloak_keystores: "/srv/keycloak-keys"
 #        defaultAction: true
 #        reset_every: 165  # it goes (reset_every * reset_every_multiplier) seconds
 #        reset_every_multiplier: 3600 # use 3600 for hours, 86400 for days
+#      # Uncomment 'themes' to override default 'keycloak_themes'
+#      themes:
+#        login: "my-login-theme"
+#        account: "my-account-theme"
+#        email: "my-email-theme"
 #      client_scopes:
 #        - name: "dummy"
 #          description: "this is a dummy one"
