@@ -7,6 +7,7 @@ metrics_repo: https://github.com/rciam/rciam-metrics-dev
 metrics_latest_release: 1.0.0
 metrics_version: main
 metrics_fast_api_folder_name: app
+metrics_ip2country_dir: ip2country_directory
 
 metrics_api:
   hostname: "localhost:8004"
@@ -31,6 +32,8 @@ metrics_config:
         file: metrics.log
       ams:
         verfication_hash: verification-hash-code
+      ip_database_file:
+        db_filename: db_file.mmdb
   - tenant: "rciam.devel"
     authorize:
       anonymous:
