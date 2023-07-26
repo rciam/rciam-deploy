@@ -34,3 +34,8 @@ file = {{ item.config.log.file }}
 [ams]
 verification_hash = {{ item.config.ams.verification_hash }}
 {% endif %}
+
+{% if item.config.ip_database_file is defined -%}
+[ip_database_file]
+db_filename = {{ item.config.ip_database_file.db_filename }}
+{% endif %}
