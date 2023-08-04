@@ -33,6 +33,7 @@ file = {{ item.config.log.file }}
 {% if item.config.ams is defined -%}
 [ams]
 verification_hash = {{ item.config.ams.verification_hash }}
+auth_key = {{ item.config.ams.auth_key }}
 {% endif %}
 
 {% if item.config.ip_database_file is defined -%}
