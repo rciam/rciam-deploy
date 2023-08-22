@@ -136,7 +136,7 @@ keycloak_themes:
 #          X-Api-Key: "xxx"
 #          tenenvId: "1"
 #          source: "Keycloak"
-#          keycloakUrl: "https://localhost:{{ keycloak_bind_port }}/auth"
+#          keycloakUrl: "https://{{ rciam_hostname }}/{{keycloak_base_url_path}}"
 #      events_logging:
 #        eventsEnabled: true
 #        eventsExpiration: 47347200 # this is 548 days in seconds
