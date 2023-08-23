@@ -8,7 +8,7 @@ Group=www-data
 
 WorkingDirectory={{ metrics_path }}
 Environment="PATH={{ metrics_path }}/.venv/bin"
-ExecStart={{ metrics_path }}/.venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --log-syslog --log-syslog-prefix {{ metrics_api.log_identifier }}-service --bind {{ metrics_api.hostname }} --log-level {{ metrics_api.log_level }}
+ExecStart={{ metrics_path }}/.venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --log-syslog --log-syslog-prefix {{ metrics_api.log_identifier }}-service --bind {{ lookup('dig', inventory_hostname) }} --log-level {{ metrics_api.log_level }}
 
 
 [Install]
