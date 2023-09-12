@@ -17,6 +17,7 @@ metrics_api:
   path: "/"
   log_level: "info"
   log_identifier: "metrics-service"
+  timeout: 5
 
 metrics_config:
   - tenant: "global"
@@ -106,6 +107,14 @@ metrics_user:
   group: rciam-metrics-client
   gecos: "RCIAM Metrics Client Name"
   shell: /bin/bash
+  cron:
+    job: "cd /srv/rciam-metrics-client/rciam-metrics && source /srv/rciam-metrics-client/rciam-metrics/.venv/bin/activate && python -m app.ingester.ingestData"
+    minute: "0"
+    hour: "1"
+    day: "*"
+    month: "*"
+    weekday: "*"
+
 #metrics_symlinks:
 #  - target: "/path/to/target"
 #    link: "/path/to/symlink"
