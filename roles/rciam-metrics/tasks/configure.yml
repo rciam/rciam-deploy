@@ -1,14 +1,14 @@
 # file: tasks/configure.yml
 ---
 # This needs the metrics_latest_release, only github actions can know or if you set it manually
-- name: Download and unarchive latest release zip file
-  unarchive: 
-    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/backend-release-build.tar.gz"
-    dest: "{{ metrics_path }}"
-    remote_src: true
-    owner: "{{ metrics_user.name }}"
-    group: "{{ metrics_user.name }}"
-  become: yes
+# - name: Download and unarchive latest release zip file
+#   unarchive: 
+#     src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/backend-release-build.tar.gz"
+#     dest: "{{ metrics_path }}"
+#     remote_src: true
+#     owner: "{{ metrics_user.name }}"
+#     group: "{{ metrics_user.name }}"
+#   become: yes
 
 - name: Ensure configurations (fastapi) are configured
   template:
@@ -76,7 +76,7 @@
     hour: "{{ metrics_user.cron.hour | default(omit) }}"
     day: "{{ metrics_user.cron.day | default(omit) }}"
     month: "{{ metrics_user.cron.month | default(omit) }}"
-  when: metrics_user.cron is defined
+  when: metrics_user.cron is defined and metrics_cron_enabled
   become: yes
-  run_once: true
+
 
