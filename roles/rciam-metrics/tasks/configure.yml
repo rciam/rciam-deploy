@@ -66,3 +66,17 @@
   become: true
   when: item.symlink is defined
 
+- name: Ensure util cron jobs are installed
+  cron:
+    name: "{{ metrics_user.name }}"
+    user: "{{ metrics_user.name }}"
+    cron_file: "{{ metrics_user.name}}"
+    job: "{{ metrics_user.cron.job }}"
+    minute: "{{ metrics_user.cron.minute | default(omit) }}"
+    hour: "{{ metrics_user.cron.hour | default(omit) }}"
+    day: "{{ metrics_user.cron.day | default(omit) }}"
+    month: "{{ metrics_user.cron.month | default(omit) }}"
+  when: metrics_user.cron is defined and metrics_cron_enabled
+  become: yes
+
+
