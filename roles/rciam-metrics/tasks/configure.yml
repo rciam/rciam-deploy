@@ -1,14 +1,14 @@
 # file: tasks/configure.yml
 ---
 # This needs the metrics_latest_release, only github actions can know or if you set it manually
-- name: Download and unarchive latest release zip file
-  unarchive: 
-    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/backend-release-build.tar.gz"
-    dest: "{{ metrics_path }}"
-    remote_src: true
-    owner: "{{ metrics_user.name }}"
-    group: "{{ metrics_user.name }}"
-  become: yes
+# - name: Download and unarchive latest release zip file
+#   unarchive: 
+#     src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/backend-release-build.tar.gz"
+#     dest: "{{ metrics_path }}"
+#     remote_src: true
+#     owner: "{{ metrics_user.name }}"
+#     group: "{{ metrics_user.name }}"
+#   become: yes
 
 - name: Ensure configurations (fastapi) are configured
   template:
@@ -66,6 +66,19 @@
   become: true
   when: item.symlink is defined
 
+- name: Add ENV vars in cron.d file
+  cron:
+    name: "{{ item.name }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    env: yes
+    cron_file: "{{ item.filename }}"
+    state: present
+  loop: "{{ metrics_user.cron_env | default([]) }}"
+  become: true
+  when: metrics_user.cron_env is defined and metrics_user.cron is defined and metrics_cron_enabled
+
+
 - name: Ensure util cron jobs are installed
   cron:
     name: "{{ metrics_user.name }}"
@@ -76,6 +89,7 @@
     hour: "{{ metrics_user.cron.hour | default(omit) }}"
     day: "{{ metrics_user.cron.day | default(omit) }}"
     month: "{{ metrics_user.cron.month | default(omit) }}"
+    backup: true
   when: metrics_user.cron is defined and metrics_cron_enabled
   become: yes
 
