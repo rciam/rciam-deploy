@@ -4,8 +4,7 @@
 
 metrics_path: /srv/rciam-metrics-client/rciam-metrics
 metrics_repo: https://github.com/rciam/rciam-metrics-dev
-metrics_latest_release: 1.0.0
-metrics_version: main
+metrics_release: 1.0.0
 metrics_fast_api_folder_name: app
 metrics_ip2country_dir: ip2country_directory
 

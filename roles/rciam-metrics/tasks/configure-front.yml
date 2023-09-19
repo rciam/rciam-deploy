@@ -1,22 +1,27 @@
 ---
 - name: Ensure release directory exists
   file:
-    path: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics"
+    path: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics-{{metrics_release}}"
     state: directory
   become: yes
 
-
-# This needs the metrics_latest_release, only github actions can know or if you set it manually
+# This needs the metrics_release, only github actions can know or if you set it manually
 # This needs the tenant_environment, only github actions can know or if you set it manually
 - name: Download and unarchive latest release zip file
   unarchive:
-    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/frontend-{{tenant_environment}}-release-build.tar.gz"
-    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics"
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_release }}/frontend-{{tenant_environment}}-release-build.tar.gz"
+    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics-{{metrics_release}}"
     remote_src: true
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.name }}"
   become: yes
 
-
-
-
+- name: Ensure symbolic link to latest metrics package exists
+  file:
+    src: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics-{{metrics_release}}"
+    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics"
+    force: yes
+    state: link
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.name }}"
+  become: yes

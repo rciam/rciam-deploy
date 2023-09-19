@@ -1,9 +1,9 @@
 # file: tasks/configure.yml
 ---
-# This needs the metrics_latest_release, only github actions can know or if you set it manually
+# This needs the metrics_release, only github actions can know or if you set it manually
 - name: Download and unarchive latest release zip file
   unarchive: 
-    src: "{{ metrics_repo }}/releases/download/{{ metrics_latest_release }}/backend-release-build.tar.gz"
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_release }}/backend-release-build.tar.gz"
     dest: "{{ metrics_path }}"
     remote_src: true
     owner: "{{ metrics_user.name }}"
