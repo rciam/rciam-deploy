@@ -9,6 +9,8 @@
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.name }}"
   become: yes
+  notify:
+    - fastapi.service restart
 
 - name: Ensure configurations (fastapi) are configured
   template:
@@ -19,7 +21,10 @@
     mode: 0400
     backup: yes
   loop: "{{ metrics_config | default([]) }}"
+  no_log: yes
   become: yes
+  notify:
+    - fastapi.service restart
   tags:
     - configure
 
@@ -33,6 +38,8 @@
     backup: yes
   loop: "{{ metrics_config | default([]) }}"
   become: yes
+  notify:
+    - fastapi.service restart
   tags:
     - authorization
 
@@ -45,14 +52,8 @@
     mode: 0400
     backup: yes
   become: yes
-
-- name: Restart fastapi service
-  systemd:
-    name: fastapi
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-  become: yes
+  notify:
+    - fastapi.service restart
 
 - name: Create Symbolic links
   file:
