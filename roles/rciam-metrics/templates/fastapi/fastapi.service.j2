@@ -8,7 +8,7 @@ Group=www-data
 Restart=always
 WorkingDirectory={{ metrics_path }}
 Environment="PATH={{ metrics_path }}/.venv/bin"
-ExecStart={{ metrics_path }}/.venv/bin/gunicorn -w 9 -k uvicorn.workers.UvicornWorker app.main:app --bind {{ lookup('dig', inventory_hostname) }} --log-level {{ metrics_api.log_level }} --timeout {{ metrics_api.timeout }}
+ExecStart={{ metrics_path }}/.venv/bin/gunicorn -w 9 -k uvicorn.workers.UvicornWorker app.main:app --bind {{ metrics_api.address }}:8000 --log-level {{ metrics_api.log_level }} --timeout {{ metrics_api.timeout }}
 
 [Install]
 WantedBy=multi-user.target
