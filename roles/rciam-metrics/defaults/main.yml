@@ -12,6 +12,7 @@ metrics_ip2country_dir: ip2country_directory
 metrics_cron_enabled: yes
 
 metrics_api:
+  address: "127.0.0.1"
   hostname: "localhost:8004"
   domain: "localhost"
   client: "localhost:3300"
