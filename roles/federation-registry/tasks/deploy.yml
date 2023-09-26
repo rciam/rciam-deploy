@@ -33,7 +33,7 @@
       repo: "{{federation_registry_git.git_repo}}"
       version: "{{federation_registry_git.git_branch}}"
       dest: "{{federation_registry_git.clone_dest}}"
-      key_file: "{{ federation_registry_git.key_path }}"
+      accept_hostkey: yes
       force: yes
 
   - name: Move Federation Backend to /var/www
