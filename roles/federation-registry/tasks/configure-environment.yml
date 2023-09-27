@@ -19,17 +19,6 @@
         - nodejs
         - npm
 
-
-  - name: Debug PATH and npm location
-    debug:
-      var: ansible_env.PATH
-  - name: Debug npm location
-    shell: which npm
-    register: npm_location
-    changed_when: false
-  - debug:
-      var: npm_location.stdout
-
   - name: Install pm2
     npm:
         name: pm2
