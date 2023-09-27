@@ -87,7 +87,7 @@
 # would loop over block of tasks within install_plugin.yml, but looping on blocks is not allowed in ansible
 - name: Install other plugins
   include_tasks: "quarkus/install_plugin.yml"
-  when: not keycloak_plugins is undefined
+  when: keycloak_plugins is defined
   loop: "{{ lookup('dict', keycloak_plugins, wantlist=True) }}"
   tags: "keycloak:install:plugins"
 
