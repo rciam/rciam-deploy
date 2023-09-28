@@ -18,7 +18,7 @@
 #                       -i inventories/rciam-metrics/hosts.ini
 #                       metricsservers.yml
 #                       --ask-vault-pass
-#                       --tags "rciam-metrics:config"
+#                       --tags "rciam-metrics:deploy-backend"
 #                       --extra-vars metrics_release="metrics-api-deploy_changes-rc-deploy_changes-6335295151"
 #                       --diff
 #                       --check
