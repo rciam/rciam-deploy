@@ -12,7 +12,7 @@
   notify:
     - fastapi.service restart
   tags:
-    - deploy-backend:unarchive
+    - rciam-metrics:deploy-backend:unarchive
 
 - name: Ensure metrics python requirements are installed in virtualenv
   pip:
@@ -24,7 +24,7 @@
   notify:
     - fastapi.service restart
   tags:
-    - deploy-backend:requirements
+    - rciam-metrics:deploy-backend:requirements
 
 - name: Ensure configurations (fastapi) are configured
   template:
@@ -40,7 +40,7 @@
   notify:
     - fastapi.service restart
   tags:
-    - deploy-backend:config
+    - rciam-metrics:deploy-backend:config
 
 - name: Ensure authorizations are configured
   template:
@@ -55,7 +55,7 @@
   notify:
     - fastapi.service restart
   tags:
-    - deploy-backend:authorize
+    - rciam-metrics:deploy-backend:authorize
 
 - name: Ensure ip to country database file(s) are copied
   copy:
@@ -69,7 +69,7 @@
   notify:
     - fastapi.service restart
   tags:
-    - deploy-backend:iptocountry
+    - rciam-metrics:deploy-backend:iptocountry
 
 - name: Create Symbolic links
   file:
@@ -95,7 +95,7 @@
   become: true
   when: metrics_user.cron_env is defined and metrics_user.cron is defined and metrics_cron_enabled
   tags:
-    - deploy-backend:cron
+    - rciam-metrics:deploy-backend:cron
 
 
 - name: Ensure util cron jobs are installed
@@ -112,6 +112,6 @@
   when: metrics_user.cron is defined and metrics_cron_enabled
   become: yes
   tags:
-    - deploy-backend:cron
+    - rciam-metrics:deploy-backend:cron
 
 
