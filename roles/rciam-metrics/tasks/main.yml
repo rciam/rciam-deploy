@@ -22,9 +22,9 @@
 #                       --extra-vars metrics_release="metrics-api-deploy_changes-rc-deploy_changes-6335295151"
 #                       --diff
 #                       --check
-- include: configure.yml
+- include: deploy-backend.yml
   tags:
-    - rciam-metrics:config
+    - rciam-metrics:deploy-backend
 
   # Include OS-independent configuration tasks
   # NOTE: Runs through github actions ONLY
@@ -34,6 +34,6 @@
 
   # Include OS-independent configuration tasks
   # NOTE: Runs through github actions ONLY
-- include: configure-front.yml
+- include: deploy-frontend.yml
   tags:
-    - rciam-metrics:config-front
+    - rciam-metrics:deploy-frontend
