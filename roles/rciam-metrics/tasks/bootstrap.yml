@@ -27,14 +27,6 @@
     extra_args: --upgrade
   become: yes
 
-- name: Ensure metrics python requirements are installed in virtualenv
-  pip:
-    requirements: "{{ metrics_path }}/requirements.txt"
-    virtualenv: "{{ metrics_path }}/.venv"
-    virtualenv_command: python3 -m venv
-    state: latest
-  become: yes
-
 - name: fastapi systemd setup
   template:
      owner: "www-data"

@@ -2,7 +2,7 @@
 ---
 # This needs the metrics_release, only github actions can know or if you set it manually
 - name: Download and unarchive latest release zip file
-  unarchive: 
+  unarchive:
     src: "{{ metrics_repo }}/releases/download/{{ metrics_release }}/backend-release-build.tar.gz"
     dest: "{{ metrics_path }}"
     remote_src: true
@@ -11,6 +11,20 @@
   become: yes
   notify:
     - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:unarchive
+
+- name: Ensure metrics python requirements are installed in virtualenv
+  pip:
+    requirements: "{{ metrics_path }}/requirements.txt"
+    virtualenv: "{{ metrics_path }}/.venv"
+    virtualenv_command: python3 -m venv
+    state: present
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:requirements
 
 - name: Ensure configurations (fastapi) are configured
   template:
@@ -26,7 +40,7 @@
   notify:
     - fastapi.service restart
   tags:
-    - configure
+    - rciam-metrics:deploy-backend:config
 
 - name: Ensure authorizations are configured
   template:
@@ -41,7 +55,7 @@
   notify:
     - fastapi.service restart
   tags:
-    - authorization
+    - rciam-metrics:deploy-backend:authorize
 
 - name: Ensure ip to country database file(s) are copied
   copy:
@@ -54,6 +68,8 @@
   become: yes
   notify:
     - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:iptocountry
 
 - name: Create Symbolic links
   file:
@@ -78,6 +94,8 @@
   loop: "{{ metrics_user.cron_env | default([]) }}"
   become: true
   when: metrics_user.cron_env is defined and metrics_user.cron is defined and metrics_cron_enabled
+  tags:
+    - rciam-metrics:deploy-backend:cron
 
 
 - name: Ensure util cron jobs are installed
@@ -93,5 +111,7 @@
     backup: true
   when: metrics_user.cron is defined and metrics_cron_enabled
   become: yes
+  tags:
+    - rciam-metrics:deploy-backend:cron
 
 
