@@ -28,10 +28,8 @@ federation_registry_express_path: "{{federation_registry_project_path}}/{{federa
 federation_registry_ams_agent_folder: "federation-registry-backend-ams-agent"
 federation_registry_ams_agent_path: "{{federation_registry_project_path}}/{{federation_registry_ams_agent_folder}}"
 federation_registry_git:
-  git_repo: "git@github.com:rciam/rciam-federation-registry.git"
-  git_branch: "production"
-  github_access_token: "github-access-token"
-  key_path: "/home/debian/.ssh/id_rsa.git"
+  git_repo: "https://github.com/rciam/rciam-federation-registry.git"
+  git_branch: "devel"
   clone_dest: "/var/www/rciam-federation-registry"
 federation_registry_deployment_env : "dev/demo/production"
 federation_registry_key_title: "env-vm"

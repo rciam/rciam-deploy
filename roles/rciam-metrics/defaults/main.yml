@@ -4,11 +4,15 @@
 
 metrics_path: /srv/rciam-metrics-client/rciam-metrics
 metrics_repo: https://github.com/rciam/rciam-metrics-dev
-metrics_latest_release: 1.0.0
-metrics_version: main
+metrics_release: 1.0.0
 metrics_fast_api_folder_name: app
+metrics_ip2country_dir: ip2country_directory
+
+# Whether to install RCIAM metrics cron job; Enabled by default
+metrics_cron_enabled: yes
 
 metrics_api:
+  address: "localhost"
   hostname: "localhost:8004"
   domain: "localhost"
   client: "localhost:3300"
@@ -16,6 +20,7 @@ metrics_api:
   path: "/"
   log_level: "info"
   log_identifier: "metrics-service"
+  timeout: 5
 
 metrics_config:
   - tenant: "global"
@@ -31,6 +36,8 @@ metrics_config:
         file: metrics.log
       ams:
         verfication_hash: verification-hash-code
+      ip_database_file:
+        db_filename: db_file.mmdb
   - tenant: "rciam.devel"
     authorize:
       anonymous:
@@ -103,6 +110,14 @@ metrics_user:
   group: rciam-metrics-client
   gecos: "RCIAM Metrics Client Name"
   shell: /bin/bash
+  cron:
+    job: "cd /srv/rciam-metrics-client/rciam-metrics && source /srv/rciam-metrics-client/rciam-metrics/.venv/bin/activate && python -m app.ingester.ingestData"
+    minute: "0"
+    hour: "1"
+    day: "*"
+    month: "*"
+    weekday: "*"
+
 #metrics_symlinks:
 #  - target: "/path/to/target"
 #    link: "/path/to/symlink"

@@ -1,0 +1,117 @@
+# file: tasks/configure.yml
+---
+# This needs the metrics_release, only github actions can know or if you set it manually
+- name: Download and unarchive latest release zip file
+  unarchive:
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_release }}/backend-release-build.tar.gz"
+    dest: "{{ metrics_path }}"
+    remote_src: true
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.name }}"
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:unarchive
+
+- name: Ensure metrics python requirements are installed in virtualenv
+  pip:
+    requirements: "{{ metrics_path }}/requirements.txt"
+    virtualenv: "{{ metrics_path }}/.venv"
+    virtualenv_command: python3 -m venv
+    state: present
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:requirements
+
+- name: Ensure configurations (fastapi) are configured
+  template:
+    src: "fastapi/config.py.j2"
+    dest: "{{ metrics_path }}/config.{{ item.tenant }}.py"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  loop: "{{ metrics_config | default([]) }}"
+  no_log: yes
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:config
+
+- name: Ensure authorizations are configured
+  template:
+    src: "fastapi/authorize.py.j2"
+    dest: "{{ metrics_path }}/authorize.{{ item.tenant }}.py"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  loop: "{{ metrics_config | default([]) }}"
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:authorize
+
+- name: Ensure ip to country database file(s) are copied
+  copy:
+    src: "{{ metrics_ip2country_dir }}/"
+    dest: "{{ metrics_path }}/{{ metrics_fast_api_folder_name }}/ip_databases/"
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+    mode: 0400
+    backup: yes
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:iptocountry
+
+- name: Create Symbolic links
+  file:
+    src: "{{ item.symlink.target }}"
+    dest: "{{ item.symlink.link }}"
+    force: yes
+    state: link
+    owner: root
+    group: root
+  loop: "{{ metrics_config | default([]) }}"
+  become: true
+  when: item.symlink is defined
+
+- name: Add ENV vars in cron.d file
+  cron:
+    name: "{{ item.name }}"
+    job: "{{ item.job }}"
+    user: "{{ item.user }}"
+    env: yes
+    cron_file: "{{ item.filename }}"
+    state: present
+  loop: "{{ metrics_user.cron_env | default([]) }}"
+  become: true
+  when: metrics_user.cron_env is defined and metrics_user.cron is defined and metrics_cron_enabled
+  tags:
+    - rciam-metrics:deploy-backend:cron
+
+
+- name: Ensure util cron jobs are installed
+  cron:
+    name: "{{ metrics_user.name }}"
+    user: "{{ metrics_user.name }}"
+    cron_file: "{{ metrics_user.name}}"
+    job: "{{ metrics_user.cron.job }}"
+    minute: "{{ metrics_user.cron.minute | default(omit) }}"
+    hour: "{{ metrics_user.cron.hour | default(omit) }}"
+    day: "{{ metrics_user.cron.day | default(omit) }}"
+    month: "{{ metrics_user.cron.month | default(omit) }}"
+    backup: true
+  when: metrics_user.cron is defined and metrics_cron_enabled
+  become: yes
+  tags:
+    - rciam-metrics:deploy-backend:cron
+
+
