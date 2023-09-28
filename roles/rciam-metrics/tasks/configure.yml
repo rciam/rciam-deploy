@@ -12,6 +12,16 @@
   notify:
     - fastapi.service restart
 
+- name: Ensure metrics python requirements are installed in virtualenv
+  pip:
+    requirements: "{{ metrics_path }}/requirements.txt"
+    virtualenv: "{{ metrics_path }}/.venv"
+    virtualenv_command: python3 -m venv
+    state: present
+  become: yes
+  notify:
+    - fastapi.service restart
+
 - name: Ensure configurations (fastapi) are configured
   template:
     src: "fastapi/config.py.j2"

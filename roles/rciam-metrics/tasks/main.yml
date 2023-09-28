@@ -12,16 +12,28 @@
     - rciam-metrics:install
 
 # Include OS-independent configuration tasks
+# NOTE: The first time this task has to run manually using the --extra-var parameter
+#  of ansible cmd command
+# e.g. ansible-playbook -u debian
+#                       -i inventories/rciam-metrics/hosts.ini
+#                       metricsservers.yml
+#                       --ask-vault-pass
+#                       --tags "rciam-metrics:config"
+#                       --extra-vars metrics_release="metrics-api-deploy_changes-rc-deploy_changes-6335295151"
+#                       --diff
+#                       --check
 - include: configure.yml
   tags:
     - rciam-metrics:config
 
   # Include OS-independent configuration tasks
+  # NOTE: Runs through github actions ONLY
 - include: configure-local.yml
   tags:
     - rciam-metrics:config-local
 
   # Include OS-independent configuration tasks
+  # NOTE: Runs through github actions ONLY
 - include: configure-front.yml
   tags:
     - rciam-metrics:config-front
