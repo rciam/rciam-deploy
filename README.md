@@ -1,19 +1,16 @@
-# Ansible Playbooks for deploying AAI for Research and Collaboration
+# Ansible Playbooks for deploying Identity Access Management for Research Communities (RCIAM)
 
-A collection of playbooks for setting up a proxy-based Authentication & Authorisation Infrastracture (AAI) for Research and Collaboration. 
+A collection of Ansible playbooks and roles for deploying RCIAM to enable secure access to OpenID Connect and SAML based services. The RCIAM deployment typically comprises the following components:
 
-Currently, the master playbook (`site.yml`) supports setting up the following components:
-
-* IdP/SP proxy based on one or more instances of [SimpleSAMLphp](https://simplesamlphp.org) (see `authservers.yml` playook)
-* cluster of [memcached](https://memcached.org/) servers for caching user sessions in a distributed way to enable load-balancing and fail-over (see `cacheservers.yml` playbook)
-* reverse proxy based on [nginx](https://nginx.org/) to support HTTP request load balancing among multiple SimpleSAMLphp web front-ends that use the back-end matrix of memcached servers (see `webproxyservers.yml` playbook)
+* Identity Broker (auth proxy) based on one or more instances of Keycloak (see `keycloakservers.yml` playbook)
+* Database backend based on PostgreSQL (see `dbservers.yml` playbook for setting up a master / hot standby PostgreSQL deployment)
+* Reverse proxy based on nginx to support HTTP request load balancing among the Keycloak nodes that use the back-end Postgresql DB (see `webproxyservers.yml` playbook)
 
 ## Managed Node Requirements
 
-On the managed nodes, you need a way to communicate, normally ssh, which by default uses sftp. If this is not available you can switch to scp in `ansible.cfg`. You will also need the following packages:
+On the managed nodes, you need a way to communicate, normally ssh, which by default uses sftp. If this is not available you can switch to scp in `ansible.cfg`. You will also need:
 
-* `python` (version 2.4 or later)
-* `python-simplejson` (only if you are running less than Python 2.5)
+* Python 2 (version 2.6 or later) or Python 3 (version 3.5 or later)
 * `sudo` (unless the default ansible `become_method` is overriden)
 
 ## Control Machine Requirements
@@ -24,7 +21,6 @@ You can easily install all the prerequisites with the following two commands:
     pip install -r requirements.txt
     ansible-galaxy install ipr-cnrs.nftables
     ansible-galaxy install arillso.logrotate
-    ansible-galaxy install infopen.openjdk-jdk
     🍺
 
 **Tested Ansible version:** `2.10.7`
