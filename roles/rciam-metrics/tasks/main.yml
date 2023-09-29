@@ -7,9 +7,9 @@
     - rciam-metrics:install
 
 # Include OS-independent installation tasks
-- include: install-common.yml
+- include: bootstrap.yml
   tags:
-    - rciam-metrics:install
+    - rciam-metrics:bootstrap
 
 # Include OS-independent configuration tasks
 # NOTE: The first time this task has to run manually using the --extra-var parameter

@@ -1,4 +1,4 @@
-# file: tasks/install-common.yml
+# file: tasks/bootstrap.yml
 ---
 
 - name: Ensure util groups exist
