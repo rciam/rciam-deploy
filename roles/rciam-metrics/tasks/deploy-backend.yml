@@ -71,6 +71,30 @@
   tags:
     - rciam-metrics:deploy-backend:iptocountry
 
+- name: Ensure log path exists
+  file:
+    path: "{{ metrics_path }}/{{metrics_fast_api_folder_name}}/logs"
+    state: directory
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:logging
+
+- name: Ensure log file exists
+  file:
+    path: "{{ metrics_path }}/{{metrics_fast_api_folder_name}}/logs/metrics.log"
+    state: touch
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+  become: yes
+  notify:
+    - fastapi.service restart
+  tags:
+    - rciam-metrics:deploy-backend:logging
+
 - name: Create Symbolic links
   file:
     src: "{{ item.symlink.target }}"
@@ -96,7 +120,6 @@
   when: metrics_user.cron_env is defined and metrics_user.cron is defined and metrics_cron_enabled
   tags:
     - rciam-metrics:deploy-backend:cron
-
 
 - name: Ensure util cron jobs are installed
   cron:
