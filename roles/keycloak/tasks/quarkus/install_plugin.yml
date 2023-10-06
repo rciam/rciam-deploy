@@ -12,7 +12,7 @@
         #do not download directly to deployment folder (if it's downloaded slowly or the file is large, the deployment might be broken)
         - name: "Move into deployment folder (for plugin: {{ item.value.name }})"
           command: "mv {{download_result.dest}} {{keycloak_home}}/providers/"
-
+          notify: Clear Keycloak cache
       when: item.value.hotdeploy is defined
 
   when: not item is undefined
