@@ -4,6 +4,8 @@ db = {{ item.config.db.host }}
 db_admin = {{ item.config.db.admin }}
 db_password = {{ item.config.db.password }}
 database_url = postgresql+psycopg2://{{ item.config.db.admin }}:{{ item.config.db.password }}@{{ item.config.db.host }}/{{ item.config.db.name }}
+pool_size = {{ item.config.db.pool_size }}
+max_overflow = {{ item.config.db.max_overflow }}
 {% endif %}
 
 {% if item.config.api is defined -%}

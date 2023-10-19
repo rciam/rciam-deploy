@@ -30,6 +30,8 @@ metrics_config:
         admin: metrics_dev_admin
         password: "{{ vault_metrics_db_password }}"
         host: db.rciam.noc.grnet.gr
+        pool_size : 15
+        max_overflow: 5
       log:
         level: DEBUG
         folder: app/logs
