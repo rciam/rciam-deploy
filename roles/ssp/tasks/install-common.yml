@@ -37,7 +37,7 @@
     - ssp:install:common
 
 - name: Install/Update SimplesamlPHP
-  community.general.composer:
+  composer:
     command: update
     working_dir: "{{ ssp_path }}"
     ignore_platform_reqs: true
