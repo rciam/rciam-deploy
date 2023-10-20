@@ -6,3 +6,5 @@ ssp_default_webgroup: "apache"
 
 ssp_default_mod_cron_deps:
   - "curl"
+
+composer_install_directory: /opt/composer

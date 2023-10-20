@@ -23,6 +23,9 @@ ssp_metadatadir: "{{ ssp_path }}/metadata/"
 # ssp_version_suffix: "{{ ssp_repo_version }}"
 ssp_www_path: "{{ ssp_path }}/../simplesaml-current"
 
+# Enable the installation of the composer
+#ssp_composer_install: True
+
 # Security configuration options
 
 # Secret salt used by SimpleSAMLphp when it needs to generate a secure hash of
