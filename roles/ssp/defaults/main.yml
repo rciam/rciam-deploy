@@ -11,6 +11,7 @@ ssp_tag: "v{{ ssp_version }}"
 ssp_release_file: "{{ ssp_repo_version }}.tar.gz"
 ssp_basepath: "/srv/simplesamlphp"
 # The base path of the URLs to the content of the SimpleSAMPphp www folder.
+ssp_baseurlpath: "simplesaml"
 ssp_path: "{{ ssp_basepath }}/{{ ssp_baseurlpath }}"
 # Specify base URL path with the external scheme (protocol) and FQDN if your 
 # SimpleSAMLphp installation is hosted behind a reverse proxy.
