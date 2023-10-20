@@ -24,10 +24,24 @@
 - include_tasks: composer.yml
   when: (ssp_composer_install is defined) and (ssp_composer_install|bool == True)
 
+- name: Change ownership of simplesamlphp directory
+  file:
+    state: directory
+    owner: "{{ os_default_user }}"
+    group: "{{ os_default_user }}"
+    recurse: yes
+    path: "{{ ssp_path }}"
+  become: yes
+  when: (ssp_install is defined) and (ssp_install|bool == True)
+  tags:
+    - ssp:install:common
+
 - name: Install/Update SimplesamlPHP
   community.general.composer:
     command: update
-    working_dir: "{{ ssp_www_path }}"
+    working_dir: "{{ ssp_path }}"
+    ignore_platform_reqs: true
+    no_scripts: true
   become: true
   become_user: "{{ os_default_user }}"
   when: (ssp_install is defined) and (ssp_install|bool == True)
@@ -72,5 +86,14 @@
   tags:
     - ssp:install:common
 
-
-
+- name: Change ownership of simplesamlphp directory
+  file:
+    state: directory
+    owner: "root"
+    group: "root"
+    recurse: yes
+    path: "{{ ssp_path }}"
+  become: yes
+  when: (ssp_install is defined) and (ssp_install|bool == True)
+  tags:
+    - ssp:install:common
