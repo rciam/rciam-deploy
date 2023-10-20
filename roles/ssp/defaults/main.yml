@@ -26,6 +26,12 @@ ssp_www_path: "{{ ssp_path }}/../simplesaml-current"
 # Enable the installation of the composer
 #ssp_composer_install: True
 
+# Enable the installation/update of ssp using the composer
+#ssp_install: True
+
+# Enable the installation of nodejs and twig
+#twig_install: True
+
 # Security configuration options
 
 # Secret salt used by SimpleSAMLphp when it needs to generate a secure hash of
