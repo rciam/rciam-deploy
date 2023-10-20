@@ -1,16 +1,44 @@
 ---
 
+- name: Ensure SimplesamlPHP root directory exists
+  file:
+    path: "{{ ssp_path }}"
+    state: directory
+    owner: "{{ os_default_user }}"
+    group: "{{ os_default_user }}"
+  become: yes
+  when: ssp_release_file is defined
+  tags:
+    - ssp:install:common
+    - ssp:install:common:unarchive
+
+- name: Download and unarchive SimplesamlPHP release
+  unarchive:
+    src: "{{ ssp_git_domain }}/releases/download/{{ ssp_tag }}/{{ ssp_release_file }}"
+    dest: "{{ ssp_path }}"
+    owner: "{{ os_default_user }}"
+    group: "{{ os_default_user }}"
+    list_files: true
+    remote_src: true
+  become: yes
+  when: ssp_release_file is defined
+  tags:
+    - ssp:install:common
+    - ssp:install:common:unarchive
+
 - name: Checkout SSP source
   git:
     repo: "{{ ssp_repo_url }}"
     dest: "{{ ssp_path }}"
-    version: "{{ ssp_repo_version }}"
+    version: "{{ ssp_tag }}"
     accept_hostkey: yes
     force: no
     update: no
   become: yes
+  when: ssp_release_file is not defined
   tags:
     - ssp:install:common
+    - ssp:install:common:clone
 
 - name: Update symbolic link to SSP
   file:
@@ -23,18 +51,6 @@
 
 - include_tasks: composer.yml
   when: (ssp_composer_install is defined) and (ssp_composer_install|bool == True)
-
-- name: Change ownership of simplesamlphp directory
-  file:
-    state: directory
-    owner: "{{ os_default_user }}"
-    group: "{{ os_default_user }}"
-    recurse: yes
-    path: "{{ ssp_path }}"
-  become: yes
-  when: (ssp_install is defined) and (ssp_install|bool == True)
-  tags:
-    - ssp:install:common
 
 - name: Install/Update SimplesamlPHP
   composer:
@@ -94,6 +110,5 @@
     recurse: yes
     path: "{{ ssp_path }}"
   become: yes
-  when: (ssp_install is defined) and (ssp_install|bool == True)
   tags:
     - ssp:install:common
