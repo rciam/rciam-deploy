@@ -1,129 +1,32 @@
 ---
 
+- include_tasks: install-release.yml
+  when: ssp_release_url is defined
+  tags:
+    - ssp:install
 
-- name: Checkout SSP source
-  git:
-    repo: "{{ ssp_repo_url }}"
-    dest: "{{ ssp_path }}"
-    version: "{{ ssp_repo_version }}"
-    accept_hostkey: yes
-    force: no
-    update: no
-  become: yes
-
+- include_tasks: install-source.yml
+  when: ssp_release_url is not defined
+  tags:
+    - ssp:install
 
 - name: Update symbolic link to SSP
   file:
-    src: "{{ ssp_path }}/www/"
+    src: "{{ ssp_path }}/{{ 'public' if ssp_major_version == '2' else 'www' }}/"
     dest: "{{ ssp_www_path }}"
     state: link
   become: yes
-
-
-- name: Download Composer
-  get_url: url=https://getcomposer.org/installer dest={{ ssp_path }}/composer-installer validate_certs=no
-  become: yes
-
-- name: Install Composer
-  command: php -f {{ ssp_path }}/composer-installer -- --install-dir={{ ssp_path }}
-  args:
-    creates: "{{ ssp_path }}/composer.phar"
-  become: true
-
-
-- name: Run Composer
-  shell: php composer.phar install --ignore-platform-reqs --no-interaction --no-scripts
-  args:
-    chdir: "{{ ssp_path }}/"
-    executable: /bin/bash
-  register: composer_results
-  changed_when: composer_results is changed and "Nothing to install, update or remove" not in composer_results.stderr
-  become: true
   tags:
-    - ssp_twig_template
+    - ssp:install
 
-## Node Version Manager (nvm) | Installing and Updating
-### http://nvm.sh
-### https://github.com/nvm-sh/nvm#installing-and-updating
-### https://github.com/nvm-sh/nvm#ansible
-- name: Install Node Version Manager (nvm)
-  shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash"
-  args:
-    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
-  when: ssp_twig_template | default(False) | bool == True
-  tags:
-    - install_nvm
-    - ssp_twig_template
-
-- name: Install Node.js v14.15.1
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install v14.15.1"
-  args:
-    executable: /bin/bash
-  register: v14
-  changed_when: v14 is changed and "is already installed" not in v14.stderr
-  when: ssp_twig_template | default(False) | bool == True
-  tags:
-    - install_nvm
-    - install_node_14
-    - ssp_twig_template
-
-
-- name: npm install
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm install --unsafe-perm=true --allow-root"
-  args:
-    chdir: "{{ ssp_path }}/"
-    executable: /bin/bash
-  register: npm_install_results
-  changed_when: npm_install_results is changed and "added" in npm_install_results.stdout
-  when: ssp_twig_template | default(False) | bool == True
-  become: true
-  tags:
-    - ssp_twig_template
-
-- name: npm audit fix
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm audit fix"
-  args:
-    chdir: "{{ ssp_path }}/"
-    executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
-  become: true
-  tags:
-    - ssp_twig_template
-
-- name: npm run build (1/3)
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && node scripts/install.js"
-  args:
-    chdir: "{{ ssp_path }}/node_modules/node-sass/"
-    executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
-  become: true
-  tags:
-    - ssp_twig_template
-
-- name: npm run build (2/3)
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && node scripts/build.js"
-  args:
-    chdir: "{{ ssp_path }}/node_modules/node-sass/"
-    executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
-  become: true
-  tags:
-    - ssp_twig_template
-
-- name: npm run build (3/3)
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm run build"
-  args:
-    chdir: "{{ ssp_path }}/"
-    executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
-  become: true
-  tags:
-    - ssp_twig_template
-
+- include_tasks: twig.yml
+  when: (ssp_twig_install is defined) and (ssp_twig_install|bool == True)
 
 - name: Ensure SSP config dir exists
   file: path={{ ssp_configdir }} state=directory
   become: yes
+  tags:
+    - ssp:install
 
 - name: Ensure SSP logging dir exists
   file:
@@ -133,18 +36,24 @@
     group: "{{ ssp_webgroup }}"
     mode: "0750"
   become: yes
+  tags:
+    - ssp:install
 
 - name: Ensure SSP data dir exists
   file: path={{ ssp_datadir }} state=directory
   become: yes
+  tags:
+    - ssp:install
 
 - name: Ensure SSP metadata dir exists
   file: path={{ ssp_metadatadir }} state=directory
   become: yes
+  tags:
+    - ssp:install
 
 - name: Ensure SSP cert dir exists
   file: path={{ ssp_certdir }} state=directory
   become: yes
-
-
+  tags:
+    - ssp:install
 

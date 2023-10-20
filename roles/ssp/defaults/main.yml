@@ -2,10 +2,12 @@
 #
 ---
 
-ssp_version: "1.17"
+ssp_version: "2.1.0"
 
-ssp_repo_url: "git://github.com/simplesamlphp/simplesamlphp.git"
+ssp_repo_url: "https://github.com/simplesamlphp/simplesamlphp.git"
 ssp_repo_version: "simplesamlphp-{{ ssp_version }}"
+# Uncomment in order to install using the release
+# ssp_release_url: "https://github.com/simplesamlphp/simplesamlphp/releases/download/v{{ ssp_version }}/{{ ssp_repo_version }}-full.tar.gz"
 ssp_path: "/var/simplesamlphp"
 # The base path of the URLs to the content of the SimpleSAMPphp www folder.
 ssp_baseurlpath: "simplesaml"
@@ -22,6 +24,15 @@ ssp_metadatadir: "{{ ssp_path }}/metadata/"
 # If you want specific path ( individual for different-multiple versions )
 # ssp_version_suffix: "{{ ssp_repo_version }}"
 ssp_www_path: "{{ ssp_path }}/../simplesaml-current"
+
+# Enable the installation of the composer
+#ssp_composer_install: True
+
+ssp_composer_executable: "/usr/local/bin/composer"
+ssp_composer_install_directory: "/tmp/composer"
+
+# Enable the installation of nodejs and twig
+#ssp_twig_install: True
 
 # Security configuration options
 
@@ -464,6 +475,9 @@ ssp_idp_hosts: []
   # The entity ID should be a URI. It can also be specified as `__DYNAMIC:1__`,
   # `__DYNAMIC:2__`, ... in which case, the entity ID will be generated 
   # automatically.
+  # As of SimplesamlPHP version 2.x __DYNAMIC:.. is not supported. Thus we need to provide
+  # the entity ID ourselves, e.g. "https://rciam.example.org/saml-idp"
+  # or "urn:x-rciam:example-idp" (see https://simplesamlphp.org/docs/stable/simplesamlphp-reference-idp-hosted)
   #- entity_id: "__DYNAMIC:1__"
     # The hostname for this IdP. One of the IdPs can also have its `host` set
     #  to `__DEFAULT__`, and that IdP will be used when no other entries in the
