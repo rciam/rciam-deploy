@@ -174,7 +174,7 @@
     dest: "{{ ssp_metadatadir }}/shib13-idp-hosted.php"
     backup: yes
     force: yes
-  when: ssp_idp_shib13_enabled
+  when: ssp_idp_shib13_enabled and ssp_version_num|float < 2
   become: yes
   tags:
     - ssp:config:shib13-idp-hosted
@@ -190,11 +190,27 @@
   tags:
     - ssp:config:files
 
+- name: Register ssp version to ssp_version_num
+  set_fact:
+    ssp_version_num: "{{ssp_version.split('.')[:2] | join('.')| float}}"
+    cacheable: yes
+  become: yes
+  tags:
+    - ssp:config:mods
+
+- name: Preview ssp_version_num
+  debug:
+    msg: "{{ ssp_version_num }}"
+  tags:
+    - ssp:config:mods
+
+
 - name: Enable required SSP modules
   command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/enable"
   with_items: "{{ ssp_mods_enabled }}"
+  when: "{{ ssp_version_num|float < 2}}"
   become: yes
   tags:
     - ssp:config:mods
@@ -204,6 +220,7 @@
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/disable"
   with_items: "{{ ssp_mods_disabled }}"
+  when: "{{ ssp_version_num|float < 2}}"
   become: yes
   tags:
     - ssp:config:mods

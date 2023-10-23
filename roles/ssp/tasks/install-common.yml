@@ -15,11 +15,32 @@
 - name: Download and unarchive SimplesamlPHP release
   unarchive:
     src: "{{ ssp_git_domain }}/releases/download/{{ ssp_tag }}/{{ ssp_release_file }}"
-    dest: "{{ ssp_path }}"
+    dest: "{{ ssp_basepath }}/"
     owner: "{{ os_default_user }}"
     group: "{{ os_default_user }}"
     list_files: true
     remote_src: true
+  become: yes
+  when: ssp_release_file is defined
+  tags:
+    - ssp:install:common
+    - ssp:install:common:unarchive
+
+- name: Rename SimplesamlPHP directory
+  copy:
+    src: "{{ ssp_basepath }}/{{ ssp_repo_version }}/"
+    dest: "{{ ssp_basepath }}/{{ ssp_baseurlpath }}-{{ ssp_version_suffix }}"
+    remote_src: true
+  become: yes
+  when: ssp_release_file is defined
+  tags:
+    - ssp:install:common
+    - ssp:install:common:unarchive
+
+- name: Remove temp SimplesamlPHP directory
+  file:
+    path: "{{ ssp_basepath }}/{{ ssp_repo_version }}"
+    state: absent
   become: yes
   when: ssp_release_file is defined
   tags:
