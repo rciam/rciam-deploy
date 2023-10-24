@@ -106,6 +106,8 @@
   loop: "{{ metrics_config | default([]) }}"
   become: true
   when: item.symlink is defined
+  tags:
+    - rciam-metrics:deploy-backend:symlink
 
 - name: Add ENV vars in cron.d file
   cron:
