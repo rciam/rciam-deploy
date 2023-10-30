@@ -543,7 +543,7 @@ $config = [
      * one of the functionalities below, but in some cases you could run multiple functionalities.
      * In example when you are setting up a federation bridge.
      */
-    'enable.saml20-idp' => {{ ssp_idp_saml20_enabled }},,
+    'enable.saml20-idp' => {{ ssp_idp_saml20_enabled }},
     'enable.adfs-idp' => false,
 
 
@@ -597,7 +597,7 @@ $config = [
     /*
      * Option to override the default settings for the session cookie name
      */
-    'session.cookie.name' => '{{ ssp_session_cookie_name }}',,
+    'session.cookie.name' => '{{ ssp_session_cookie_name }}',
 
     /*
      * Expiration time for the session cookie, in seconds.
