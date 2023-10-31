@@ -73,6 +73,17 @@
 - include_tasks: composer.yml
   when: (ssp_composer_install is defined) and (ssp_composer_install|bool == True)
 
+- name: Ensure SSP extra files are copied
+  copy:
+    src: "{{ item.src_path }}"
+    dest: "{{ item.dest_path }}"
+    backup: yes
+  with_items: "{{ ssp_extra_files }}"
+  when: item.src_path is defined and item.dest_path is defined
+  become: yes
+  tags:
+    - ssp:install:common:files
+
 - name: Install/Update SimplesamlPHP
   composer:
     command: update
@@ -83,7 +94,7 @@
   become_user: "{{ os_default_user }}"
   when: (ssp_install is defined) and (ssp_install|bool == True)
   tags:
-    - ssp:install:common
+    - ssp:install:common:composer
 
 - include_tasks: twig.yml
   when: (twig_install is defined) and (twig_install|bool == True)

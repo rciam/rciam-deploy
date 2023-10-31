@@ -179,17 +179,6 @@
   tags:
     - ssp:config:shib13-idp-hosted
 
-- name: Ensure SSP extra files are copied
-  copy:
-    src: "{{ item.src_path }}"
-    dest: "{{ item.dest_path }}"
-    backup: yes
-  with_items: "{{ ssp_extra_files }}"
-  when: item.src_path is defined and item.dest_path is defined
-  become: yes
-  tags:
-    - ssp:config:files
-
 - name: Register ssp version to ssp_version_num
   set_fact:
     ssp_version_num: "{{ssp_version.split('.')[:2] | join('.')| float}}"
