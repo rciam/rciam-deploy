@@ -132,4 +132,4 @@
     path: "{{ ssp_path }}"
   become: yes
   tags:
-    - ssp:install:common
+    - ssp:install:common:ownership
