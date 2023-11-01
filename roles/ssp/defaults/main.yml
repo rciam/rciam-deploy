@@ -2,14 +2,16 @@
 #
 ---
 
-major_version: "2.1"
-patch_version: "0"
-ssp_version: "{{ major_version }}.{{ patch_version }}"
+ssp_major_version: "2"
+ssp_minor_version: "1"
+ssp_patch_version: "0"
+ssp_version: "{{ major_version }}.{{ minor_version }}"
+ssp_version_full: "{{ major_version }}.{{ minor_version }}.{{ patch_version }}"
 
 ssp_git_domain: "https://github.com/simplesamlphp/simplesamlphp"
 ssp_repo_url: "{{ ssp_git_domain }}.git"
 ssp_repo_version: "simplesamlphp-{{ ssp_version }}"
-ssp_tag: "v{{ ssp_version }}"
+ssp_tag: "v{{ ssp_version_full }}"
 ssp_release_file: "{{ ssp_repo_version }}-full.tar.gz"
 ssp_basepath: "/srv/simplesamlphp"
 # The base path of the URLs to the content of the SimpleSAMPphp www folder.

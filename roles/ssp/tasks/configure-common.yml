@@ -79,7 +79,7 @@
 
 - name: Configure SSP authN sources
   template:
-    src: "config/authsources-{{ major_version }}.php.j2"
+    src: "config/authsources-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_configdir }}/authsources.php"
     backup: yes
     force: yes
@@ -159,7 +159,7 @@
 
 - name: Configure SSP hosted SAML 2.0 IdP metadata
   template:
-    src: "metadata/saml20-idp-hosted-{{ major_version }}.php.j2"
+    src: "metadata/saml20-idp-hosted-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_metadatadir }}/saml20-idp-hosted.php"
     backup: yes
     force: yes
@@ -170,7 +170,7 @@
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
   template:
-    src: "metadata/shib13-idp-hosted-{{ major_version }}.php.j2"
+    src: "metadata/shib13-idp-hosted-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_metadatadir }}/shib13-idp-hosted.php"
     backup: yes
     force: yes
@@ -225,7 +225,7 @@
 
 - name: Configure SSP metarefresh module
   template:
-    src: "config/config-metarefresh-{{ major_version }}.php.j2"
+    src: "config/config-metarefresh-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_configdir }}/config-metarefresh.php"
     backup: yes
     force: yes
@@ -238,7 +238,7 @@
 
 - name: Configure SSP cron module
   template:
-    src: config/module_cron-{{ major_version }}.php.j2
+    src: config/module_cron-{{ ssp_version }}.php.j2
     dest: "{{ ssp_configdir }}/module_cron.php"
     backup: yes
     force: yes
@@ -291,7 +291,7 @@
 
 - name: Configure SSP discopower module
   template:
-    src: config/module_discopower-{{ major_version }}.php.j2
+    src: config/module_discopower-{{ ssp_version }}.php.j2
     dest: "{{ ssp_configdir }}/module_discopower.php"
     backup: yes
     force: yes
