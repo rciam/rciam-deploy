@@ -13,19 +13,6 @@
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.src_config_path is defined and item.dest_config_path is defined
 
-- name: Register ssp version to ssp_version_num
-  set_fact:
-    ssp_version_num: "{{ssp_version.split('.')[:2] | join('.')| float}}"
-    cacheable: yes
-  become: yes
-  tags:
-    - ssp-modules:config:enable
-
-- name: Preview ssp_version_num
-  debug:
-    msg: "{{ ssp_version_num }}"
-  tags:
-    - ssp-modules:config:enable
 
 - name: Enable SSP modules
   copy:
@@ -37,7 +24,6 @@
     mode: "0644"
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
-  when: "{{ ssp_version_num|float < 2}}"
   tags:
     - ssp-modules:config:enable
 
