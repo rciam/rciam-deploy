@@ -2,21 +2,13 @@
 #
 ---
 
-ssp_major_version: "2"
-ssp_minor_version: "1"
-ssp_patch_version: "0"
-ssp_version: "{{ major_version }}.{{ minor_version }}"
-ssp_version_full: "{{ major_version }}.{{ minor_version }}.{{ patch_version }}"
+ssp_version: "1.17"
 
-ssp_git_domain: "https://github.com/simplesamlphp/simplesamlphp"
-ssp_repo_url: "{{ ssp_git_domain }}.git"
+ssp_repo_url: "git://github.com/simplesamlphp/simplesamlphp.git"
 ssp_repo_version: "simplesamlphp-{{ ssp_version }}"
-ssp_tag: "v{{ ssp_version_full }}"
-ssp_release_file: "{{ ssp_repo_version }}-full.tar.gz"
-ssp_basepath: "/srv/simplesamlphp"
+ssp_path: "/var/simplesamlphp"
 # The base path of the URLs to the content of the SimpleSAMPphp www folder.
 ssp_baseurlpath: "simplesaml"
-ssp_path: "{{ ssp_basepath }}/{{ ssp_baseurlpath }}"
 # Specify base URL path with the external scheme (protocol) and FQDN if your 
 # SimpleSAMLphp installation is hosted behind a reverse proxy.
 #ssp_external_baseurlpath: "https://example.com/simplesaml"
@@ -30,15 +22,6 @@ ssp_metadatadir: "{{ ssp_path }}/metadata/"
 # If you want specific path ( individual for different-multiple versions )
 # ssp_version_suffix: "{{ ssp_repo_version }}"
 ssp_www_path: "{{ ssp_path }}/../simplesaml-current"
-
-# Enable the installation of the composer
-#ssp_composer_install: True
-
-# Enable the installation/update of ssp using the composer
-#ssp_install: True
-
-# Enable the installation of nodejs and twig
-#twig_install: True
 
 # Security configuration options
 

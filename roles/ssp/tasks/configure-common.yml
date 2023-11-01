@@ -5,7 +5,7 @@
 
 - name: Configure SSP
   template:
-    src: "config/config-{{ ssp_major }}.php.j2"
+    src: "config/config-{{ ssp_version }}.php.j2"
     dest: "{{ ssp_configdir }}/config.php"
     backup: yes
     force: yes
@@ -102,7 +102,7 @@
 - name: Copy IdP certificate (.crt)
   copy:
     content: '{{ item.ssl_certificate }}'
-    dest: "{{ ssp_certdir }}idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.crt"
+    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
@@ -117,7 +117,7 @@
 - name: Copy IdP certificate (.key)
   copy:
     content: '{{ item.ssl_certificate_key }}'
-    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.key"
+    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
@@ -132,7 +132,7 @@
 - name: Ensure IdP certificate keys are installed
   file:
     state: file
-    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.key"
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
@@ -146,7 +146,7 @@
 - name: Ensure IdP certificates are installed
   file:
     state: file
-    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.crt"
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
@@ -174,32 +174,27 @@
     dest: "{{ ssp_metadatadir }}/shib13-idp-hosted.php"
     backup: yes
     force: yes
-  when: ssp_idp_shib13_enabled and ssp_version_num|float < 2
+  when: ssp_idp_shib13_enabled
   become: yes
   tags:
     - ssp:config:shib13-idp-hosted
 
-- name: Register ssp version to ssp_version_num
-  set_fact:
-    ssp_version_num: "{{ssp_version.split('.')[:2] | join('.')| float}}"
-    cacheable: yes
+- name: Ensure SSP extra files are copied
+  copy:
+    src: "{{ item.src_path }}"
+    dest: "{{ item.dest_path }}"
+    backup: yes
+  with_items: "{{ ssp_extra_files }}"
+  when: item.src_path is defined and item.dest_path is defined
   become: yes
   tags:
-    - ssp:config:mods
-
-- name: Preview ssp_version_num
-  debug:
-    msg: "{{ ssp_version_num }}"
-  tags:
-    - ssp:config:mods
-
+    - ssp:config:files
 
 - name: Enable required SSP modules
   command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/enable"
   with_items: "{{ ssp_mods_enabled }}"
-  when: "{{ ssp_version_num|float < 2}}"
   become: yes
   tags:
     - ssp:config:mods
@@ -209,7 +204,6 @@
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/disable"
   with_items: "{{ ssp_mods_disabled }}"
-  when: "{{ ssp_version_num|float < 2}}"
   become: yes
   tags:
     - ssp:config:mods

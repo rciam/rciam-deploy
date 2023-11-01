@@ -6,6 +6,3 @@ ssp_default_webgroup: "www-data"
 
 ssp_default_mod_cron_deps:
   - "curl"
-
-composer_install_directory: /opt/composer
-os_default_user: "debian"
