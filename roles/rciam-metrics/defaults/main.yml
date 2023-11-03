@@ -102,6 +102,9 @@ metrics_config:
       symlink:
         target: "{{ metrics_path }}/{{ metrics_react_folder_name }}/<tenant_environment>/"
         link: "/var/www/html/<tenant_environment>"
+      # user_id_excludelist:
+      #   user_ids: ""
+
 #  - tenant: "rciam.prod"
 #    config:
 #      api:
