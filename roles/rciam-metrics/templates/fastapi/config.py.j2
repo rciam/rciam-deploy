@@ -43,7 +43,7 @@ auth_key = {{ item.config.ams.auth_key }}
 db_filename = {{ item.config.ip_database_file.db_filename }}
 {% endif %}
 
-{% if item.config.user_id_excludelist is defined -%}
-[user_id_excludelist]
-user_ids = {{ item.config.user_id_excludelist.user_ids }}
+{% if item.config.user_excludelist is defined -%}
+[user_excludelist]
+user_ids = {{ item.config.user_excludelist.user_ids }}
 {% endif %}
