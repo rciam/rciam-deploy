@@ -5,10 +5,14 @@
 
 - name: Configure SSP
   template:
-    src: "config/config-{{ ssp_version }}.php.j2"
+    src: "{{ item }}"
     dest: "{{ ssp_configdir }}/config.php"
     backup: yes
     force: yes
+  with_first_found:
+    - "config/config-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "config/config-{{ ssp_major_version }}.php.j2"
+    - "config/config.php.j2"
   become: yes
   tags:
     - ssp:config:config
@@ -79,10 +83,14 @@
 
 - name: Configure SSP authN sources
   template:
-    src: "config/authsources-{{ ssp_version }}.php.j2"
+    src: "{{ item }}"
     dest: "{{ ssp_configdir }}/authsources.php"
     backup: yes
     force: yes
+  with_first_found:
+    - "config/authsources-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "config/authsources-{{ ssp_major_version }}.php.j2"
+    - "config/authsources.php.j2"
   become: yes
   tags:
     - ssp:config:authsources
@@ -158,24 +166,14 @@
     - ssp:config:shib13-idp-hosted
 
 - name: Configure SSP hosted SAML 2.0 IdP metadata
-  template:
-    src: "metadata/saml20-idp-hosted-{{ ssp_version }}.php.j2"
-    dest: "{{ ssp_metadatadir }}/saml20-idp-hosted.php"
-    backup: yes
-    force: yes
+  include_tasks: configure-saml20-idp-hosted.yml
   when: ssp_idp_saml20_enabled
-  become: yes
   tags:
     - ssp:config:saml20-idp-hosted
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
-  template:
-    src: "metadata/shib13-idp-hosted-{{ ssp_version }}.php.j2"
-    dest: "{{ ssp_metadatadir }}/shib13-idp-hosted.php"
-    backup: yes
-    force: yes
+  include_tasks: configure-shib13-idp-hosted.yml
   when: ssp_idp_shib13_enabled
-  become: yes
   tags:
     - ssp:config:shib13-idp-hosted
 
@@ -219,10 +217,14 @@
 
 - name: Configure SSP metarefresh module
   template:
-    src: "config/config-metarefresh-{{ ssp_version }}.php.j2"
+    src: "{{ item }}"
     dest: "{{ ssp_configdir }}/config-metarefresh.php"
     backup: yes
     force: yes
+  with_first_found:
+    - "config/config-metarefresh-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "config/config-metarefresh-{{ ssp_major_version }}.php.j2"
+    - "config/config-metarefresh.php.j2"
   when: "'metarefresh' in ssp_mods_enabled"
   register: ssp_mod_metarefresh_config
   become: yes
@@ -232,10 +234,14 @@
 
 - name: Configure SSP cron module
   template:
-    src: config/module_cron-{{ ssp_version }}.php.j2
+    src: "{{ item }}"
     dest: "{{ ssp_configdir }}/module_cron.php"
     backup: yes
     force: yes
+  with_first_found:
+    - "config/module_cron-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "config/module_cron-{{ ssp_major_version }}.php.j2"
+    - "config/module_cron.php.j2"
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
@@ -285,10 +291,14 @@
 
 - name: Configure SSP discopower module
   template:
-    src: config/module_discopower-{{ ssp_version }}.php.j2
+    src: "{{ item }}"
     dest: "{{ ssp_configdir }}/module_discopower.php"
     backup: yes
     force: yes
+  with_first_found:
+    - "config/module_discopower-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "config/module_discopower-{{ ssp_major_version }}.php.j2"
+    - "config/module_discopower.php.j2"
   when: "'discopower' in ssp_mods_enabled"
   become: yes
   tags:
@@ -297,10 +307,14 @@
 
 - name: Update SSP discopower module dictionary definitions
   template:
-    src: modules/discopower/dictionaries/tabs.definition.json.j2
+    src: "{{ item }}"
     dest: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
     backup: yes
     force: yes
+  with_first_found:
+    - "modules/discopower/dictionaries/tabs.definition-{{ ssp_major_version }}.{{ ssp_minor_version }}.json.j2"
+    - "modules/discopower/dictionaries/tabs.definition-{{ ssp_major_version }}.json.j2"
+    - "modules/discopower/dictionaries/tabs.definition.json.j2"
   when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined"
   become: yes
   tags:

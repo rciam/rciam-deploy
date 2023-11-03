@@ -30,6 +30,8 @@ metrics_config:
         admin: metrics_dev_admin
         password: "{{ vault_metrics_db_password }}"
         host: db.rciam.noc.grnet.gr
+        pool_size : 15
+        max_overflow: 5
       log:
         level: DEBUG
         folder: app/logs
@@ -100,6 +102,15 @@ metrics_config:
       symlink:
         target: "{{ metrics_path }}/{{ metrics_react_folder_name }}/<tenant_environment>/"
         link: "/var/www/html/<tenant_environment>"
+      # Add user identifiers to this list to exclude specific users from
+      # metrics related to authentication, user registration, and group
+      # memberships. These excluded users will not be considered for
+      # these metrics.
+      # user_excludelist:
+      #   user_ids: |
+      #     user1@rciam.example.org
+      #     user2@rciam.example.org
+
 #  - tenant: "rciam.prod"
 #    config:
 #      api:

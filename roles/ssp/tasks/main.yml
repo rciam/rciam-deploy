@@ -9,6 +9,26 @@
   tags:
     - always
 
+- block:
+    - name: Split SSP version string into parts
+      set_fact:
+        ssp_version_parts: "{{ ssp_version.split('.') }}"
+    - name: Define SSP major version number
+      set_fact:
+        ssp_major_version: "{{ ssp_version_parts[0] }}"
+      tags:
+        - always
+    - name: Define SSP minor version number
+      set_fact:
+        ssp_minor_version: "{{ ssp_version_parts[1] }}"
+      tags:
+        - always
+    - name: Define SSP patch version number only when specified in version string
+      set_fact:
+        ssp_patch_version: "{{ ssp_version_parts[2] | default(omit) }}"
+  tags:
+    - always
+
 - name: Define SSP web server
   set_fact:
     ssp_webserver: "{{ ssp_default_webserver }}"

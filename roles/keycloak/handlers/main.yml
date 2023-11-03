@@ -24,3 +24,9 @@
     state: restarted
     daemon_reload: yes
   become: yes
+
+- name: Clear Keycloak cache
+  ansible.builtin.file:
+    path: "{{ keycloak_home }}/data/tmp/"
+    state: absent
+  become: yes
