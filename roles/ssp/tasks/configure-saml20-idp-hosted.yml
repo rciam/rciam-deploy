@@ -1,0 +1,13 @@
+---
+
+- name: Configure SSP hosted SAML 2.0 IdP metadata
+  template:
+    src: "{{ item }}"
+    dest: "{{ ssp_metadatadir }}/saml20-idp-hosted.php"
+    backup: yes
+    force: yes
+  with_first_found:
+    - "metadata/saml20-idp-hosted-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "metadata/saml20-idp-hosted-{{ ssp_major_version }}.php.j2"
+    - "metadata/saml20-idp-hosted.php.j2"
+  become: yes
