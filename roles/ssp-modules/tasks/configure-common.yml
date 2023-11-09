@@ -13,7 +13,6 @@
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.src_config_path is defined and item.dest_config_path is defined
 
-
 - name: Enable SSP modules
   copy:
     content: ""
@@ -24,6 +23,7 @@
     mode: "0644"
   become: yes
   with_items: "{{ ssp_mods_extra_enabled }}"
+  when: "{{ ssp_major_version|float < 2}}"
   tags:
     - ssp-modules:config:enable
 
