@@ -110,7 +110,7 @@
 - name: Copy IdP certificate (.crt)
   copy:
     content: '{{ item.ssl_certificate }}'
-    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.crt"
+    dest: "{{ ssp_certdir }}idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
@@ -125,7 +125,7 @@
 - name: Copy IdP certificate (.key)
   copy:
     content: '{{ item.ssl_certificate_key }}'
-    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
+    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
@@ -140,7 +140,7 @@
 - name: Ensure IdP certificate keys are installed
   file:
     state: file
-    path: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
@@ -154,7 +154,7 @@
 - name: Ensure IdP certificates are installed
   file:
     state: file
-    path: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.crt"
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
@@ -193,6 +193,7 @@
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/enable"
   with_items: "{{ ssp_mods_enabled }}"
+  when: "{{ ssp_major_version|float < 2}}"
   become: yes
   tags:
     - ssp:config:mods
@@ -202,6 +203,7 @@
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/disable"
   with_items: "{{ ssp_mods_disabled }}"
+  when: "{{ ssp_major_version|float < 2}}"
   become: yes
   tags:
     - ssp:config:mods
@@ -280,14 +282,6 @@
     - ssp:config:mods
     - ssp:config:mods:cron
     - ssp:config:mods:metarefresh
-
-#TODO- name: Refresh SSP remote SAML metadata
-#  shell: "curl -k --silent \"https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php?key={{ ssp_mod_cron_secret }}&tag={{ item }}\" > /dev/null 2>&1"
-#  with_items:
-#    - hourly
-#    - daily
-#  when: "ssp_mod_metarefresh_config | changed"
-#  become: yes
 
 - name: Configure SSP discopower module
   template:

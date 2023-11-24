@@ -11,3 +11,5 @@
     - "metadata/saml20-idp-hosted-{{ ssp_major_version }}.php.j2"
     - "metadata/saml20-idp-hosted.php.j2"
   become: yes
+  tags:
+    - ssp:config:saml20-idp-hosted

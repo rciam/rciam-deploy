@@ -22,7 +22,6 @@ api_path = {{ item.config.api.path }}
 client_id = {{ item.config.oidc.client_id }}
 client_secret = {{ item.config.oidc.client_secret }}
 issuer = {{ item.config.oidc.issuer }}
-redirect_uri = {{ item.config.oidc.client_redirect_uri }}
 {% endif %}
 
 {% if item.config.log is defined -%}
