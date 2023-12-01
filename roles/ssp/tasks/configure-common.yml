@@ -227,7 +227,28 @@
     - "config/config-metarefresh-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
     - "config/config-metarefresh-{{ ssp_major_version }}.php.j2"
     - "config/config-metarefresh.php.j2"
-  when: "'metarefresh' in ssp_mods_enabled"
+  when:
+    - "'metarefresh' in ssp_mods_enabled"
+    - ssp_major_version| int < 2
+  register: ssp_mod_metarefresh_config
+  become: yes
+  tags:
+    - ssp:config:mods
+    - ssp:config:mods:metarefresh
+
+- name: Configure SSP metarefresh module
+  template:
+    src: "{{ item }}"
+    dest: "{{ ssp_configdir }}/module_metarefresh.php"
+    backup: yes
+    force: yes
+  with_first_found:
+    - "config/module_metarefresh-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "config/module_metarefresh-{{ ssp_major_version }}.php.j2"
+    - "config/module_metarefresh.php.j2"
+  when:
+    - "'metarefresh' in ssp_mods_enabled"
+    - ssp_major_version| int > 2
   register: ssp_mod_metarefresh_config
   become: yes
   tags:

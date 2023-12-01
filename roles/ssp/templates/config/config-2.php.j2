@@ -566,11 +566,11 @@ $config = [
 
     'module.enable' => [
         // 'exampleauth' => false,
-        'core' => true,
-        'admin' => true,
-        'saml' => true,
-        'cron' => true,
-        'metarefresh' => true,
+        {% if ssp_mods_enabled is defined %}
+            {% for mod in ssp_mods_enabled %}
+        '{{ mod }}' => true,
+            {% endfor %}
+        {% endif %}
     ],
 
 

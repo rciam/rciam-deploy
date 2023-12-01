@@ -670,7 +670,8 @@ ssp_extra_files: []
 #    dest_path: "{{ ssp_path }}/cert/key.pem"
 
 # List of SSP modules to enable
-ssp_mods_enabled: []
+ssp_mods_enabled:
+  - admin
   # - adfs
   # - authcrypt
   # - authfacebook
@@ -695,6 +696,7 @@ ssp_mods_enabled: []
   # - sqlauth
 
 # List of SSP modules to disable
+# Deprecated for SSP v2.0
 ssp_mods_disabled: []
   # - admin
   # - authorize
