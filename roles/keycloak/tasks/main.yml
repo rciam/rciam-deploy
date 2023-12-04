@@ -36,8 +36,8 @@
 - name: Include keycloak-specific variables
   include_vars: "{{ item }}"
   with_first_found:
-    - "{{ keycloak_major_version }}.{{ keycloak_minor_version }}.yml"
-    - "{{ keycloak_major_version }}.yml"
+    - "keycloak-{{ keycloak_major_version }}.{{ keycloak_minor_version }}.yml"
+    - "keycloak-{{ keycloak_major_version }}.yml"
   ignore_errors: yes
   tags:
     - always
