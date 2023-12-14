@@ -1,13 +1,13 @@
 ---
 
 # Include OS-specific installation tasks
-- include: install-Debian.yml
+- include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
   tags:
     - rciam-metrics:install
 
 # Include OS-independent installation tasks
-- include: bootstrap.yml
+- import_tasks: bootstrap.yml
   tags:
     - rciam-metrics:bootstrap
 
@@ -22,18 +22,18 @@
 #                       --extra-vars metrics_release="metrics-api-deploy_changes-rc-deploy_changes-6335295151"
 #                       --diff
 #                       --check
-- include: deploy-backend.yml
+- import_tasks: deploy-backend.yml
   tags:
     - rciam-metrics:deploy-backend
 
   # Include OS-independent configuration tasks
   # NOTE: Runs through github actions ONLY
-- include: configure-local.yml
+- import_tasks: configure-local.yml
   tags:
     - rciam-metrics:config-local
 
   # Include OS-independent configuration tasks
   # NOTE: Runs through github actions ONLY
-- include: deploy-frontend.yml
+- import_tasks: deploy-frontend.yml
   tags:
     - rciam-metrics:deploy-frontend
