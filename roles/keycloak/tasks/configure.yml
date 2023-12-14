@@ -50,15 +50,15 @@
 
     - name: Configure AUP (Terms and Conditions)
       uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/authentication/required-actions/terms_and_conditions"
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/authentication/required-actions/{{ keycloak_api.terms_and_conditions.endpoint }}"
         method: PUT
         body_format: json
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
-          alias: "terms_and_conditions"
+          alias: "{{ keycloak_api.terms_and_conditions.alias }}"
           name: "Terms and Conditions"
-          providerId: "terms_and_conditions"
+          providerId: "{{ keycloak_api.terms_and_conditions.provider_id }}"
           enabled: "{{ item.aup.enabled }}"
           defaultAction: "{{ item.aup.defaultAction }}"
           priority: 20

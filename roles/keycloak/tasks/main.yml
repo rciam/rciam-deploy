@@ -9,11 +9,36 @@
     - "os/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "os/{{ ansible_distribution }}.yml"
     - "os/{{ ansible_os_family }}.yml"
+  ignore_errors: yes
+  tags:
+    - always
+
+- block:
+    - name: Split Keycloak version string into parts
+      set_fact:
+        keycloak_version_parts: "{{ keycloak_version.split('.') }}"
+    - name: Define Keycloak major version number
+      set_fact:
+        keycloak_major_version: "{{ keycloak_version_parts[0] }}"
+      tags:
+        - always
+    - name: Define Keycloak minor version number
+      set_fact:
+        keycloak_minor_version: "{{ keycloak_version_parts[1] }}"
+      tags:
+        - always
+    - name: Define Keycloak patch version number only when specified in version string
+      set_fact:
+        keycloak_patch_version: "{{ keycloak_version_parts[2] | default(omit) }}"
   tags:
     - always
 
 - name: Include keycloak-specific variables
-  include_vars: "keycloak/{{ keycloak_version }}.yml"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "keycloak-{{ keycloak_major_version }}.{{ keycloak_minor_version }}.yml"
+    - "keycloak-{{ keycloak_major_version }}.yml"
+  ignore_errors: yes
   tags:
     - always
 

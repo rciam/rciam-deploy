@@ -10,7 +10,7 @@ nginx_vhosts_filename: "vhosts.conf"
 nginx_remove_default_vhost: false
 
 # SSL protocols that should be enabled
-nginx_ssl_protocols: "TLSv1.2"
+nginx_ssl_protocols: "TLSv1.3 TLSv1.2"
 # SSL ciphers that should be enabled
 nginx_ssl_ciphers: "EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS"
 

@@ -1,0 +1,18 @@
+# file: keycloak/vars/16.yml
+#
+---
+
+namespaces:
+  domain: "urn:jboss:domain:19.0"
+  domain_server: "urn:jboss:domain:keycloak-server:1.1"
+
+keycloak_api:
+  terms_and_conditions:
+    endpoint: "terms_and_conditions"
+    alias: "terms_and_conditions"
+    provider_id: "terms_and_conditions"
+
+keycloak_federation:
+  saml:
+    api_path: "identity-provider-federation"
+    representation_entity: "identityProvidersFederations"

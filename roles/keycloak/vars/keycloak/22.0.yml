@@ -1,6 +1,0 @@
----
-
-keycloak_federation:
-  saml:
-    api_path: "saml-federations"
-    representation_entity: "samlFederations"

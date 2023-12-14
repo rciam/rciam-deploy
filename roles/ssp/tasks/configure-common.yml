@@ -220,13 +220,13 @@
 - name: Configure SSP metarefresh module
   template:
     src: "{{ item }}"
-    dest: "{{ ssp_configdir }}/config-metarefresh.php"
+    dest: "{{ ssp_configdir }}/{{ ssp_mod_metarefresh.template.dest }}"
     backup: yes
     force: yes
   with_first_found:
-    - "config/config-metarefresh-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
-    - "config/config-metarefresh-{{ ssp_major_version }}.php.j2"
-    - "config/config-metarefresh.php.j2"
+    - "{{ ssp_mod_metarefresh.template.src }}-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
+    - "{{ ssp_mod_metarefresh.template.src }}-{{ ssp_major_version }}.php.j2"
+    - "{{ ssp_mod_metarefresh.template.src }}.php.j2"
   when: "'metarefresh' in ssp_mods_enabled"
   register: ssp_mod_metarefresh_config
   become: yes

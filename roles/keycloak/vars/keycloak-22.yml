@@ -1,0 +1,14 @@
+# file: keycloak/vars/16.yml
+#
+---
+
+keycloak_api:
+  terms_and_conditions:
+    endpoint: "TERMS_AND_CONDITIONS"
+    alias: "TERMS_AND_CONDITIONS"
+    provider_id: "TERMS_AND_CONDITIONS"
+
+keycloak_federation:
+  saml:
+    api_path: "saml-federations"
+    representation_entity: "samlFederations"

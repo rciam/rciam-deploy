@@ -1,0 +1,8 @@
+# file: ssp/vars/ssp-2.yml
+#
+---
+
+ssp_mod_metarefresh:
+  template:
+    src: "config/module-metarefresh"
+    dest: "module_metarefresh.php"

@@ -29,6 +29,15 @@
   tags:
     - always
 
+- name: Include SSP-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "ssp-{{ ssp_major_version }}.{{ ssp_minor_version }}.yml"
+    - "ssp-{{ ssp_major_version }}.yml"
+  ignore_errors: yes
+  tags:
+    - always
+
 - name: Define SSP web server
   set_fact:
     ssp_webserver: "{{ ssp_default_webserver }}"
