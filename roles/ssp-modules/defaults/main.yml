@@ -160,3 +160,46 @@ ssp_mods_extra_files: []
 #   # - "xxx@example.org"
 #   # - "yyy@example.org"
 #   # - "zzz@example.org"
+
+###########################
+# SSP mod rciammetrics    #
+###########################
+
+# # One of the following modes: "PROXY", "IDP", "SP"
+# ssp_module_rciammetrics_mode: "PROXY"
+
+# # REQUIRED FOR "IDP" MODE
+# # EntityId of IdP
+# #ssp_module_rciammetrics_idp_entity_id: "https://idp.example.org"
+# # Name of IdP
+# #ssp_module_rciammetrics_idp_entity_name: "IDP NAME"
+
+# # REQUIRED FOR "SP" MODE
+# # EntityId of SP
+# #ssp_module_rciammetrics_sp_entity_id: "https://sp.example.org"
+# # Name of SP
+# #ssp_module_rciammetrics_sp_entity_name: "SP NAME"
+
+# ssp_module_rciammetrics_user_id_attribute: "null"
+
+# ssp_module_rciammetrics_oidc_issuer: "http://example.org/openidconnect/sp"
+
+# ssp_module_rciammetrics_user_id_excludelist: []
+#   # - "xxx@example.org"
+#   # - "yyy@example.org"
+#   # - "zzz@example.org"
+
+# Required
+# ssp_module_rciammetrics_ams_datasource: 'simplesamlphp'
+# Required
+# ssp_module_rciammetrics_ams_tenant_id: '1'
+# Required
+# ssp_module_rciammetrics_ams_token: '12345657890' // Authentication token used to communicate with the AMS server
+# Required
+# ssp_module_rciammetrics_ams_topic_name: 'example'
+# Required
+# ssp_module_rciammetrics_ams_project_name: 'AAIMETRICS'
+# Required
+# ssp_module_rciammetrics_ams_base_url: 'https://example.com/'
+# Optional
+# ssp_module_rciammetrics_ams_datatype: 'login|registration|membership'
