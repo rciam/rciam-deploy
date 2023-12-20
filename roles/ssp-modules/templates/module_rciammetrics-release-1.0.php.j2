@@ -1,0 +1,121 @@
+<?php
+/**
+ * Configuration of SimpleSAMLphp rciammetrics module.
+ * {{ ansible_managed }}
+ *
+ */
+
+$config = [
+
+    /*
+     * Choose one from the following modes: PROXY, IDP, SP
+     */
+    'mode' => '{{ ssp_module_rciammetrics_mode }}',
+
+{% if ssp_module_rciammetrics_idp_entity_id is defined %}
+    /*
+     * EntityId of IdP
+     * REQUIRED FOR IDP MODE
+     */
+    'idpEntityId' => '{{ ssp_module_rciammetrics_idp_entity_id }}',
+
+{% endif %}
+{% if ssp_module_rciammetrics_idp_entity_name is defined %}
+    /*
+     * Name of IdP
+     * REQUIRED FOR IDP MODE
+     */
+    'idpName' => '{{ ssp_module_rciammetrics_idp_entity_name }}',
+
+{% endif %}
+{% if ssp_module_rciammetrics_sp_entity_id is defined %}
+    /*
+     * EntityId of SP
+     * REQUIRED FOR SP MODE
+     */
+    'spEntityId' => '{{ ssp_module_rciammetrics_sp_entity_id }}',
+
+{% endif %}
+{% if ssp_module_rciammetrics_sp_entity_name is defined %}
+    /*
+     * Name of SP
+     * REQUIRED FOR SP MODE
+     */
+    'spName' => '{{ ssp_module_rciammetrics_sp_entity_name }}',
+
+{% endif %}
+
+    /**
+     * Which attribute should be used as user ID.
+     * @default uid
+     */
+{% if ssp_module_rciammetrics_user_id_attribute == None %}
+    'userIdAttribute' => null,
+{% else %}
+    'userIdAttribute' => '{{ ssp_module_rciammetrics_user_id_attribute }}',
+{% endif %}
+
+    /*
+     * Which users should be excluded
+     */
+    'userIdExcludelist' => [
+{% for user_id in ssp_module_rciammetrics_user_id_excludelist %}
+        '{{ user_id }}',
+{%endfor%}
+    ],
+
+
+{% if ssp_module_rciammetrics_oidc_issuer is defined %}
+    /*
+     * Fill the entityID of OpenID Connect Provider
+     */
+    'oidcIssuer' => '{{ ssp_module_rciammetrics_oidc_issuer }}',
+
+{% endif %}
+{% if ssp_module_rciammetrics_keycloak_sp is defined %}
+    /*
+     * The entityID of the downstream Keycloak SP Proxy
+     */
+    'keycloakSp' => '{{ ssp_module_rciammetrics_keycloak_sp }}',
+
+{% endif %}
+
+     /*
+      *  Source that provides data
+      * */
+    'amsDataSource' => '{{ ssp_module_rciammetrics_ams_datasource }}',
+
+      /*
+       * Fill the RCIAM Metrics Tenant Environment ID
+       * this is a string value
+     */
+    'amsRciamMetricsTenantId' => '{{ ssp_module_rciammetrics_ams_tenant_id }}',
+
+    /*
+     * AMS authentication token
+     * */
+    'amsToken' => '{{ ssp_module_rciammetrics_ams_token }}',
+
+     /*
+      * AMS Topic name
+      * */
+    'amsTopicName' => '{{ ssp_module_rciammetrics_ams_topic_name }}',
+
+    /*
+     * AMS Project Name
+     * */
+    'amsProjectName' => '{{ ssp_module_rciammetrics_ams_project_name }}',
+
+    /*
+     * AMS Base url
+     * */
+    'amsBaseUrl' => '{{ ssp_module_rciammetrics_ams_base_url }}',
+{% if ssp_module_rciammetrics_ams_datatype is defined %}
+    /*
+     * AMS Data type, Types supported are `login`, `registration`, `membership`
+     * default value is `login`
+     * */
+    'amsDataType' => '{{ ssp_module_rciammetrics_ams_datatype }}',
+{% endif %}
+
+];
