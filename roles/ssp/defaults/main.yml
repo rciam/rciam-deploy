@@ -68,6 +68,9 @@ ssp_theme: "default"
 # If no sources are found, you need to login as admin and check configuration.
 ssp_twig_template: false
 
+# Set this option if a custom theme controller is required by the Theme
+# ssp_theme_controller_class: ""
+
 ssp_session_cookie_name: "SimpleSAMLSessionID"
 ssp_session_cookie_secure: false
 # Set the SameSite attribute in the cookie to support RFC6265bis.
