@@ -608,6 +608,22 @@ ssp_idp_hosts: []
     # The format of the NameID supported by this IdP. Defaults to the transient
     # format if unspecified.
     #name_id_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+    # Override the default URL for the SingleSignOnService for this IdP.
+    # This is an absolute URL. The default value is:
+    # <SimpleSAMLphp-root>/module.php/saml/idp/singleSignOnService
+    # Note that this only changes the values in the generated metadata and
+    # in the messages sent to others. You must also configure your webserver
+    # to deliver this URL to the correct PHP page.
+    # Uncomment the following for backwards compatibility with SSP v1.x
+    #sso_service: "https://{{ rciam_hostname }}/{{ ssp_baseurlpath }}/saml2/idp/SSOService.php"
+    # Override the default URL for the SingleLogoutService for this IdP.
+    # This is an absolute URL. The default value is:
+    # <SimpleSAMLphp-root>/module.php/saml/idp/singleLogout
+    # Note that this only changes the values in the generated metadata and
+    # in the messages sent to others. You must also configure your webserver
+    # to deliver this URL to the correct PHP page.
+    # Uncomment the following for backwards compatibility with SSP v1.x
+    #slo_service: "https://{{ rciam_hostname }}/{{ ssp_baseurlpath }}/saml2/idp/SingleLogoutService.php"
     # Optional list of processing filters to run for this IdP. See
     # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
     # The filters can be specified with PHP syntax using `authproc_raw` or

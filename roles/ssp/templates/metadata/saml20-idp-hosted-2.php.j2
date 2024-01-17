@@ -209,6 +209,14 @@ $metadata['{{ idp.entity_id }}'] = [
 {% endfor %}
     ],
 {% endif %}
+{% if idp.sso_service is defined %}
+    // Absolute URL for the SingleSignOnService for this IdP
+    'SingleSignOnService' => '{{ idp.sso_service }}',
+{% endif %}
+{% if idp.slo_service is defined %}
+    // Absolute URL for the SingleLogoutService for this IdP
+    'SingleLogoutService' => '{{ idp.slo_service }}',
+{% endif %}
 {% if idp.authproc is defined %}
     'authproc' => [
 {% for entry in idp.authproc %}
