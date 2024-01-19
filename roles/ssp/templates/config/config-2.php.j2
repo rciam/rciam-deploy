@@ -914,7 +914,9 @@ $config = [
      * the 'theme.controller' configuration option to a class that implements the
      * \SimpleSAML\XHTML\TemplateControllerInterface interface to use it.
      */
-    //'theme.controller' => '',
+{% if ssp_theme_controller_class is defined %}
+     'theme.controller' => '{{ ssp_theme_controller_class }}',
+{% endif %}
 
     /*
      * Templating options
