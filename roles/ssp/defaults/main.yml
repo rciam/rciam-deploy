@@ -2,7 +2,7 @@
 #
 ---
 
-ssp_version: "2.1.0"
+ssp_version: "2.1.1"
 
 ssp_repo_url: "https://github.com/simplesamlphp/simplesamlphp.git"
 ssp_repo_version: "simplesamlphp-{{ ssp_version }}"
@@ -734,9 +734,30 @@ ssp_mods_disabled: []
 
 # Configuration options for automated SAML metadata management.
 # Requires `metarefresh` and `cron` modules in `ssp_mods_enabled`.  
+
 #
+# Options applicable to SSP version < 2
+#
+
 # Cron module URL
 ssp_mod_cron_url: "https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php"
+
+#
+# Options applicable to SSP version >= 2
+#
+
+# Maximum amount of memory each metarefresh cron tag may consume
+# (see http://php.net/memory-limit)
+ssp_mod_cron_job_memory_limit: "768M"
+
+#
+# Common options for all SSP versions
+#
+
+# Maximum execution time of each metarefresh cron tag, in seconds
+# (see http://php.net/max-execution-time
+ssp_mod_cron_job_max_execution_time: 90
+
 # Secret key used to restrict access to your cron.
 #ssp_mod_cron_secret: "secret"
 ssp_mod_cron_entries:
