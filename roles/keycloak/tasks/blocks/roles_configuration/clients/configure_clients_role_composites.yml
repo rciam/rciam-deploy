@@ -1,0 +1,40 @@
+---
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+- name: "Find full payload of all roles in the composite list"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/clients/{{ item[1].clientId }}/roles/{{ item[1].role.name }}"
+    method: "GET"
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: [200, 404]
+  register: search_results
+
+- set_fact:
+    current_role_not_exists: "{% if realm_role_inquiry.status == 200 %}false{% else %}true{% endif %}"
+
+- name: "Create the role {{ item[1].role.name }} in client {{ item[1].clientId }} and realm {{ item[0].name }}"
+  when: current_role_not_exists
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/clients/{{ item[1].clientId }}/roles"
+    method: "POST"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      "{{ item[1].role }}"
+    status_code: "201"
+
+- name: "Add composites of role {{ item[1].role.name }} in client {{ item[1].clientId }} and realm {{ item[0].name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/clients/{{ item[1].clientId }}/roles/{{ item[1].role.name }}/composites"
+    method: "POST"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body:
+      "{{ item[1].composites }}"
+# composites must contain List<RoleRepresentation>
+    status_code: 204
