@@ -3,11 +3,10 @@
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Configuring IdP: {{ item[1].alias }} Get current IdPs list for realm: {{ item[0].name }}"
-  include_tasks: blocks/helpers/get_realm_idps_list.yml
-
-- set_fact:
-    new_idp: "{% if item[1].alias not in idps_list %}true{% else %}false{% endif %}"
+- name: "Get current IdP with alias : {{ item[1].alias }} and realm: {{ item[0].name }}"
+  include_tasks: blocks/helpers/get_realm_idp.yml
+  vars:
+    alias: "{{ item[1].alias }}"
 
 - name: "{% if new_idp %}Add{% else %}Update{% endif %} idp: {{ item[1].alias }}"
   uri:
