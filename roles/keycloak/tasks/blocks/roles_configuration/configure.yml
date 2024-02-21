@@ -28,7 +28,7 @@
     default_role_mode: remove
   run_once: true
 
-- name: Setup composite roles
+- name: Setup realm composite roles
   include_tasks: configure_role_composites.yml
   with_subelements:
     - "{{ keycloak_config.realms | default([]) }} "
@@ -54,7 +54,7 @@
     - skip_missing: true
   run_once: true
 
-- name: Setup composite roles
+- name: Setup client composite roles
   include_tasks: blocks/roles_configuration/clients/configure_clients_role_composites.yml
   with_subelements:
     - "{{ keycloak_config.realms | default([]) }} "
