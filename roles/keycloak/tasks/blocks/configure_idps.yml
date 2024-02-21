@@ -3,11 +3,10 @@
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Get current IdPs list of realm: {{ item[0].name }}"
-  include_tasks: blocks/helpers/get_realm_idps_list.yml
-
-- set_fact:
-    new_idp: "{% if item[1].data.alias not in idps_list %}true{% else %}false{% endif %}"
+- name: "Get current IdP with alias : {{ item[1].data.alias }} and realm: {{ item[0].name }}"
+  include_tasks: blocks/helpers/get_realm_idp.yml
+  vars:
+    alias: "{{ item[1].data.alias }}"
 
 - name: "{% if new_idp %}Installing{% else %}Updating{% endif %} saml IdP: {{ item[1].data.alias }}"
   block:
@@ -20,9 +19,9 @@
           Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
           fromUrl: "{{ item[1].metadataUrl }}"
-          providerId: "saml"
+          providerId: "{{ item[1].data.providerId }}"
         status_code: 200
-      register: saml_idp_result
+      register: idp_result
 
     - name: "Setup saml IdP {{ item[1].data.alias }}"
       uri:
@@ -32,5 +31,5 @@
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
-          "{{ { 'config': saml_idp_result.json } | combine( item[1].data, recursive=True ) }}"
+          "{{ { 'config': idp_result.json } | combine( item[1].data, recursive=True ) }}"
         status_code: "{% if new_idp %}201{% else %}204{% endif %}"
