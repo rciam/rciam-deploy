@@ -86,7 +86,7 @@
       dest: "{{federation_registry_express_path}}/db-config/db-config.json"
       backup: yes
 
-  - name: Copy Tenant Configuration
+  - name: Copy Federation Configuration
     copy:
       src: "{{ inventory_dir }}/files/config.json"
       dest: "{{federation_registry_express_path}}/JavaScript/config.json"
@@ -95,6 +95,15 @@
       mode: 0664
       backup: true
 
+  - name: Copy Tenant Configuration Files
+    copy:
+      src: "{{ inventory_dir }}/files/tenant_config/"
+      dest: "{{ federation_registry_express_path }}/JavaScript/tenant_config/"
+      force: yes
+      owner: root
+      mode: 0664
+      backup: true
+      
   - name: Agent env
     template:
       src: ams-env.j2
