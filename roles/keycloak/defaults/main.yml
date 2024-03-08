@@ -86,6 +86,25 @@ keycloak_themes:
 #              - "eid-support@einfra.grnet.gr"
 #            privacyPolicyUrl:
 #              - "https://eid-proxy.aai-dev.grnet.gr/static/privacy-policy.pdf"
+#  group:
+#    enabled: true
+#    name: "group-management" #PLEASE, do not change this
+#    hotdeploy:
+#      jar_url: "https://github.com/rciam/keycloak-group-management/releases/download/0.9.3/keycloak-group-management.jar"
+#    add_to_realms:
+#      - name: "demo"
+#        member_user_attribute_configuration:
+#          userAttribute: "entitlements"
+#          urnNamespace: "urn:mace:example.org"
+#          authority: "rciam.example.org"
+#          signatureMessage: "RCIAM Check-in Support"
+#        configuration_rules:
+#           create_update:
+#             field: "membershipExpirationDays" ,
+#             type: "TOP_LEVEL" ,
+#             required: false,
+#             max: "365"
+#             defaultValue: "30"
 #  idp_hashedid_mapper:
 #    enabled: true
 #    name: "keycloak-idp-hashedId-mapper" #PLEASE, do not change this

@@ -169,23 +169,9 @@
   block:
     - name: Acquire tokens
       include_tasks: blocks/helpers/get_tokens.yml
-    - name: Configure user attribute configuration for advanced group management plugin
-      uri:
-        url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/agm/admin/member-user-attribute/configuration"
-        method: "POST"
-        body_format: json
-        headers:
-          Authorization: "Bearer {{ tokens.json.access_token }}"
-        body:
-          "{{ body_payload }}"
-        status_code: "204"
+    - name: "Configure advanced group management plugin"
+      include_tasks: blocks/configure_agm.yml
       with_items: "{{ keycloak_plugins.group.add_to_realms }}"
-      run_once: true
-      vars:
-        - body_payload:
-            userAttribute: "{{ item.member_user_attribute_configuration.userAttribute }}"
-            urnNamespace: "{{ item.member_user_attribute_configuration.urnNamespace }}"
-            authority: "{{ item.member_user_attribute_configuration.authority }}"
 
   when: group_enabled == true
   vars:

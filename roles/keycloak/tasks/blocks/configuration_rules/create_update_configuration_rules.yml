@@ -1,0 +1,18 @@
+- set_fact:
+    configuration_rules_match: "{{ found_configuration_rules | json_query(query) | first | default({}) }}"
+  vars:
+    query: '[? (field == `{{ current_configuration_rules.field }}` && type == `{{ current_configuration_rules.type }}`) ]'
+
+- set_fact:
+    configuration_rules_isfound: "{{ lookup('dict', configuration_rules_match) | length > 0 }}"
+
+- name: "{% if configuration_rules_isfound %} Update {% else %} Create {% endif %} group configuration rule {{ current_configuration_rules.field }} and {{ current_configuration_rules.type }} on realm {{ item.name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/agm/admin/configuration-rules{% if configuration_rules_isfound %}/{{ configuration_rules_match.id }}{% endif %}"
+    method: "{% if configuration_rules_isfound %}PUT{% else %}POST{% endif %}"
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: # if found a match, fuse the existing with the match and overwrite (care, need to append the provided configuration on the existing/found one... not the opposite)
+      "{%if configuration_rules_isfound %}{{ configuration_rules_match | combine(current_configuration_rules , recursive=True ) }}{% else %}{{ current_configuration_rules }}{% endif %}"
+    status_code: "204"
