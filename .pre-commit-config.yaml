@@ -9,6 +9,18 @@ repos:
     - id: check-yaml
     - id: check-added-large-files
 
+- repo: https://github.com/ansible-community/ansible-lint
+  rev: v24.2.1
+  hooks:
+    - id: ansible-lint
+      args: [
+        "--exclude", "standalone-runner/",
+        "--exclude", "examples/",
+        "--exclude", ".pre-commit-config.yaml",
+        "--exclude", "roles/"
+      ]
+
+
 - repo: https://github.com/python-jsonschema/check-jsonschema
   rev: 0.28.0
   hooks:
