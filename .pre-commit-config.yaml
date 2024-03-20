@@ -15,6 +15,7 @@ repos:
     - id: ansible-lint
       always_run: false
       files: ^.*.yml
+      exclude: .github
       additional_dependencies:
         - ansible-core>=2.16.0
       args: [
