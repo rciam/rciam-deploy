@@ -234,11 +234,11 @@ $metadata['{{ idp.entity_id }}'] = [
     ],
 {% elif idp.authproc_raw is defined %}
     'authproc' => [
-        {{ idp.authproc_raw | indent(width=8, indentfirst=False) }}
+        {{ idp.authproc_raw | indent(width=8, first=False) }}
     ],
 {% endif %}
 {% if idp.extra_parameters is defined %}
-{{ idp.extra_parameters | indent(width=4, indentfirst=True) }}
+{{ idp.extra_parameters | indent(width=4, first=True) }}
 {% endif %}
 
     /*

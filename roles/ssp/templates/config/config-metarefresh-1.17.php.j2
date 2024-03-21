@@ -89,11 +89,11 @@ $config = [
                         ],
 {% elif src.authproc_raw is defined %}
                         'authproc' => [
-                            {{ src.authproc_raw | indent(width=28, indentfirst=False) }}
+                            {{ src.authproc_raw | indent(width=28, first=False) }}
                         ],
 {% endif %}
 {% if src.extra_parameters is defined %}
-{{ src.extra_parameters | indent(width=24, indentfirst=True) }}
+{{ src.extra_parameters | indent(width=24, first=True) }}
 {% endif %}
                     ],
 {% if src.types is defined %}
