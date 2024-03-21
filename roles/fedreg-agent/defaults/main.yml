@@ -6,8 +6,10 @@ deployer_mitreid_name: deployer_mitreid_demo
 deployer_keycloak_name: deployer_keycloak_demo
 deployers_config_name: deployers_demo.config
 
+# Virtualenv command
+fedreg_agent_venv_command: "python3 -m venv"
+
 # Virtualenv path
-fedreg_agent_venv_python: "python3"
 fedreg_agent_venv_path: "/srv/fedregistryagent_{{ build_branch }}"
 fedreg_agent_conf_dir: "/etc/fedregistryagent_{{ build_branch }}"
 
