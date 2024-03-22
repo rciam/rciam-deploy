@@ -1,0 +1,10 @@
+- name: ipr-cnrs.nftables
+  version: v2.2.1
+- name: arillso.logrotate
+  version: 1.6.1
+- name: geerlingguy.nodejs
+  version: 7.0.0
+- name: Oefenweb.yarn
+  version: v1.0.52
+- name: infOpen.openjdk-jdk
+  version: 0.4.0

@@ -1,4 +1,7 @@
-ansible==2.10.7
+ansible==9.3.0
+ansible-base==2.10.17
+ansible-core==2.16.4
+ansible-lint==24.2.1
 dnspython==2.1.0
 passlib==1.7.4
 jmespath==0.10.0
