@@ -1,0 +1,10 @@
+---
+# handlers file for pyff
+
+- name: pyff.service restart
+  systemd:
+    name: pyff
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  become: yes
