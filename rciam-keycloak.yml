@@ -2,10 +2,14 @@
 # RCIAM deployment based on Keycloak
 ---
 
-- import_playbook: firewallservers.yml
+- name: Run Firewall Servers
+  ansible.builtin.import_playbook: firewallservers.yml
 
-- import_playbook: dbservers.yml
+- name: Deploy DBN Servers
+  ansible.builtin.import_playbook: dbservers.yml
 
-- import_playbook: keycloakservers.yml
+- name: Deploy Keycloak servers
+  ansible.builtin.import_playbook: keycloakservers.yml
 
-- import_playbook: webproxyservers.yml
+- name: Deploy Web Proxy Servers
+  ansible.builtin.import_playbook: webproxyservers.yml

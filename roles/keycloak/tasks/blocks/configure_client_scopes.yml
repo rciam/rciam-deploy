@@ -1,82 +1,100 @@
 ---
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Get current client scopes of realm: {{item[0].name}}"
-  include_tasks: blocks/helpers/get_client_scopes_list.yml
+- name: "Get current client scopes of realm: {{ item[0].name }}"
+  ansible.builtin.include_tasks: blocks/helpers/get_client_scopes_list.yml
 
-- set_fact:
-    client_scope_exists: "{{client_scope_matches | length > 0 }}"
+- name: Set fact
+  ansible.builtin.set_fact:
+    client_scope_exists: "{{ client_scope_matches | length > 0 }}"
 
-- set_fact:
+- name: Set fact
+  ansible.builtin.set_fact:
     additional_info:
-      id: "{{client_scope_matches[0].id}}"
+      id: "{{ client_scope_matches[0].id }}"
   when: client_scope_exists
 
-- set_fact:
-    body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
+- name: Set fact
+  ansible.builtin.set_fact:
+    body: "{{ item[1] | combine(additional_info, recursive=True) }}"
   when: client_scope_exists
 
-- set_fact:
+- name: Set fact
+  ansible.builtin.set_fact:
     body: "{{ item[1] }}"
   when: not client_scope_exists
 
-- set_fact: # remove the 'mappers' field from the body (if it exists)
-    body: '{{  body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
+- name: Remove the 'mappers' field from the body (if it exists)
+  ansible.builtin.set_fact:
+    body: '{{ body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
 
-- set_fact: # remove the 'set_as' field from the body (if it exists)
-    body: '{{  body | dict2items | rejectattr("key", "equalto", "set_as") | list | items2dict }}'
+- name: Remove the 'set_as' field from the body (if it exists)
+  ansible.builtin.set_fact:
+    body: '{{ body | dict2items | rejectattr("key", "equalto", "set_as") | list | items2dict }}'
 
-- name: "{% if client_scope_exists %}Update{% else %}Add{% endif %} client scope: {{ item[1].name }} in realm: {{item[0].name}}"
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes{% if client_scope_exists %}/{{body.id}}{% endif %}"
-    method: "{% if client_scope_exists %}PUT{% else %}POST{% endif %}"
+- name: "Update client scope: {{ item[1].name }} in realm: {{ item[0].name }}" # noqa name[template]
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes/{{ body.id }}"
+    method: "PUT"
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body:
-      "{{ body }}"
-    status_code: "{% if client_scope_exists %}204{% else %}201{% endif %}"
+    body: "{{ body }}"
+    status_code: 204
+  when: client_scope_exists | bool
 
-- name: "Get again the client_scopes if there was a newly created just before of realm: {{item[0].name}}"
-  include_tasks: blocks/helpers/get_client_scopes_list.yml
+- name: "Add client scope: {{ item[1].name }} in realm: {{ item[0].name }}" # noqa name[template]
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ body }}"
+    status_code: 201
+  when: (not client_scope_exists) | bool
+
+- name: "Get again the client_scopes if there was a newly created just before of realm: {{ item[0].name }}"
+  ansible.builtin.include_tasks: blocks/helpers/get_client_scopes_list.yml
   when: not client_scope_exists
 
 
 - name: "Clear from all the default client scopes list (if applicable)"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ client_scope_mode }}-client-scopes/{{ client_scope_matches[0].id }}"
     method: "DELETE"
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    status_code: "204"
+    status_code: 204
   with_items:
     - optional
     - default
   loop_control:
     loop_var: client_scope_mode
-  ignore_errors: yes
+  ignore_errors: true # noqa ignore-errors
 
 # set default or optional (if defined)
 - name: "Configuring default/optional client-scope as '{{ item[1].set_as }}'"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/default-{{ item[1].set_as }}-client-scopes/{{ client_scope_matches[0].id }}"
-    method: "PUT"
+    method: PUT
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
     body:
-      { realm: "{{ item[0].name }}", clientScopeId: "{{ client_scope_matches[0].id }}" }
-    status_code: "204"
+      realm: "{{ item[0].name }}"
+      clientScopeId: "{{ client_scope_matches[0].id }}"
+    status_code: 204
   when: not item[1].set_as is undefined
 
 
 # now update its mappers
-- name: "Setup mappers of the client scope {{ item[1].name }} of the realm: {{item[0].name}}"
-  include_tasks: blocks/configure_client_scope_mappers.yml
+- name: "Setup mappers of the client scope {{ item[1].name }} of the realm: {{ item[0].name }}" # noqa name[template]
+  ansible.builtin.include_tasks: blocks/configure_client_scope_mappers.yml
   with_items: "{{ item[1].mappers | default([]) }}"
   loop_control:
     loop_var: mapper
   run_once: true
-  when: "item[1].mappers | default([]) | length > 0"
+  when: item[1].mappers | default([]) | length > 0

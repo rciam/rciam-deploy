@@ -1,85 +1,92 @@
 ---
-
 ## Node Version Manager (nvm) | Installing and Updating
 ### http://nvm.sh
 ### https://github.com/nvm-sh/nvm#installing-and-updating
 ### https://github.com/nvm-sh/nvm#ansible
-- name: Install Node Version Manager (nvm)
-  shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash"
+- name: Install Node Version Manager (nvm) # noqa command-instead-of-module
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -o pipefaile
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
   args:
     creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
-  when: ssp_twig_template | default(False) | bool == True
+  when: ssp_twig_template | default(False) | bool
   tags:
     - ssp:install
     - ssp:install:install_nvm
     - ssp:install:ssp_twig_template
 
 - name: Install Node.js v14.15.1
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install v14.15.1"
+  ansible.builtin.shell: source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install v14.15.1
   args:
     executable: /bin/bash
   register: v14
   changed_when: v14 is changed and "is already installed" not in v14.stderr
-  when: ssp_twig_template | default(False) | bool == True
+  when: ssp_twig_template | default(False) | bool
   tags:
     - ssp:install
     - ssp:install:install_nvm
     - install_node_14
     - ssp:install:ssp_twig_template
 
-- name: npm install
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm install --unsafe-perm=true --allow-root"
+- name: Npm install
+  ansible.builtin.shell: source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm install --unsafe-perm=true --allow-root
   args:
     chdir: "{{ ssp_path }}/"
     executable: /bin/bash
   register: npm_install_results
   changed_when: npm_install_results is changed and "added" in npm_install_results.stdout
-  when: ssp_twig_template | default(False) | bool == True
+  when: ssp_twig_template | default(False) | bool
   become: true
   tags:
     - ssp:install
     - ssp:install:ssp_twig_template
 
-- name: npm audit fix
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm audit fix"
+- name: Npm audit fix
+  ansible.builtin.shell: source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm audit fix
   args:
     chdir: "{{ ssp_path }}/"
     executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
+  when: ssp_twig_template | default(False) | bool
   become: true
   tags:
     - ssp:install
     - ssp:install:ssp_twig_template
+  changed_when: false
 
-- name: npm run build (1/3)
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && node scripts/install.js"
+- name: Npm run build (1/3)
+  ansible.builtin.shell: source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && node scripts/install.js
   args:
     chdir: "{{ ssp_path }}/node_modules/node-sass/"
     executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
+  when: ssp_twig_template | default(False) | bool
   become: true
   tags:
     - ssp:install
     - ssp:install:ssp_twig_template
+  changed_when: false
 
-- name: npm run build (2/3)
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && node scripts/build.js"
+- name: Npm run build (2/3)
+  ansible.builtin.shell: source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && node scripts/build.js
   args:
     chdir: "{{ ssp_path }}/node_modules/node-sass/"
     executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
+  when: ssp_twig_template | default(False) | bool
   become: true
   tags:
     - ssp:install
     - ssp:install:ssp_twig_template
+  changed_when: false
 
-- name: npm run build (3/3)
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm run build"
+- name: Npm run build (3/3)
+  ansible.builtin.shell: source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm use v14.15.1 && npm run build
   args:
     chdir: "{{ ssp_path }}/"
     executable: /bin/bash
-  when: ssp_twig_template | default(False) | bool == True
+  when: ssp_twig_template | default(False) | bool
   become: true
   tags:
     - ssp:install
     - ssp:install:ssp_twig_template
+  changed_when: false

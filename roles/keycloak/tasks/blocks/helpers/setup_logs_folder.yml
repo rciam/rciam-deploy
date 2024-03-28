@@ -1,34 +1,30 @@
 ---
 
-- block:
-  ##### Setup logs directory
-  - name: "Create {{ keycloak_logs_folder }} (if it doesn't exist)"
-    file:
-      path: "{{ keycloak_logs_folder }}"
-      owner: "{{ keycloak_service_user }}"
-      group: "{{ keycloak_service_user }}"
-      mode: 0750
-      recurse: yes
-      state: directory
-    become: yes
-
-  - name: "Move existing logs in default location to new location, if needed (that's for backwards compatibility)"
-    block:
-
-    - stat:
-        path: "{{ keycloak_home }}/standalone/log"
-      register: keycloak_old_logs_folder
-
-    - name: "Copy everything from {{ keycloak_home }}/standalone/log to {{ keycloak_logs_folder }}"
-      copy:
-        src: "{{ keycloak_home }}/standalone/log/"
-        dest: "{{ keycloak_logs_folder }}"
+- name: Setup logs directory
+  ansible.builtin.block:
+    - name: "Create {{ keycloak_logs_folder }} (if it doesn't exist)"
+      ansible.builtin.file:
+        path: "{{ keycloak_logs_folder }}"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
-        remote_src: true
-        mode: 0640
-      become: yes
-      when: keycloak_old_logs_folder.stat.exists
+        mode: "0750"
+        recurse: true
+        state: directory
+      become: true
 
-  tags: "keycloak:setup_logs_folder"
-
+    - name: Move existing logs in default location to new location, if needed (that's for backwards compatibility)
+      ansible.builtin.block:
+        - ansible.builtin.stat:
+            path: "{{ keycloak_home }}/standalone/log"
+          register: keycloak_old_logs_folder
+        - name: "Copy everything from {{ keycloak_home }}/standalone/log to {{ keycloak_logs_folder }}"
+          ansible.builtin.copy:
+            src: "{{ keycloak_home }}/standalone/log/"
+            dest: "{{ keycloak_logs_folder }}"
+            owner: "{{ keycloak_service_user }}"
+            group: "{{ keycloak_service_user }}"
+            remote_src: true
+            mode: "0640"
+          become: true
+          when: keycloak_old_logs_folder.stat.exists
+  tags: keycloak:setup_logs_folder

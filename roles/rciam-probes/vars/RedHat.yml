@@ -1,6 +1,5 @@
 ---
 
-clean_cache_cmd: "yum clean all"
-apache_user: "apache"
-apache_group: "apache"
-
+clean_cache_cmd: yum clean all
+apache_user: apache
+apache_group: apache

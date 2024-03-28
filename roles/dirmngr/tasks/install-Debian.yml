@@ -1,11 +1,16 @@
 ---
 
 - name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
-  become: yes
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 86400
+  become: true
 
 - name: Ensure dirmngr is installed (Debian)
-  apt: name={{ item }} state=present install_recommends=no
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    install_recommends: false
   with_items:
     - dirmngr
-  become: yes
+  become: true

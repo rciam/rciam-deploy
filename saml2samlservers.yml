@@ -1,10 +1,10 @@
 # file: saml2samlservers.yml
 #
 ---
-
-- hosts: saml2saml
+- name: Deploy SAML2SAML servers
+  hosts: saml2saml
   roles:
     - { role: apache, tags: apache }
     - { role: php, tags: php }
     - { role: ssp, tags: ssp }
-    - { role: ssp-modules, tags: ssp-modules }
+    - { role: ssp-modules, tags: ssp-modules } # noqa role-name

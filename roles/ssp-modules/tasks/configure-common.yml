@@ -1,47 +1,47 @@
 # file: ssp-modules/tasks/configure-common.php
 #
 ---
-
-
 - name: Configure SSP modules
-  template:
+  ansible.builtin.template:
     src: "{{ item.src_config_path }}"
     dest: "{{ item.dest_config_path }}"
-    backup: yes
-    force: yes
-  become: yes
+    backup: true
+    force: true
+    mode: "0644"
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.src_config_path is defined and item.dest_config_path is defined
 
 - name: Enable SSP modules
-  copy:
+  ansible.builtin.copy:
     content: ""
     dest: "{{ item.path }}/enable"
-    force: no
+    force: false
     owner: "root"
     group: "root"
     mode: "0644"
-  become: yes
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
-  when: "{{ ssp_major_version|float < 2}}"
+  when: ssp_major_version | float < 2
   tags:
     - ssp-modules:config:enable
 
 
 - name: Ensure SSP module extra files are copied
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.src_path }}"
     dest: "{{ item.dest_path }}"
-    backup: yes
+    backup: true
+    mode: "0644"
   with_items: "{{ ssp_mods_extra_files }}"
   when: item.src_path is defined and item.dest_path is defined
-  become: yes
+  become: true
   tags:
     - ssp-modules:config:files
 
 
 - name: About Themes
-  debug:
+  ansible.builtin.debug:
     msg:
       - The role also installs Themes, but doesn't produce the CSS files.
       - To produce them, you must install `sass` and follow the installation instructions for each theme.

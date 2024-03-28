@@ -1,20 +1,21 @@
 ---
 
 - name: Include OS-specific variables
-  include_vars: "{{ ansible_os_family }}.yml"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 
-# Install OS-specific packages
-- include: install-Debian.yml
+- name: Install OS-specific packages
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: install-CentOS.yml
-#  when: ansible_os_family == 'CentOS'
 
-# Apply OS-independent configuration
-- include: configure-common.yml
+# - include: install-CentOS.yml
+#   when: ansible_os_family == 'CentOS'
+
+- name: Apply OS-independent configuration
+  ansible.builtin.include_tasks: configure-common.yml
 
 - name: Ensure nginx service is started and enabled on boot
-  service:
+  ansible.builtin.service:
     name: "{{ nginx_service }}"
     state: started
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true

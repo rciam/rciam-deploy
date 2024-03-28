@@ -1,277 +1,328 @@
 ---
 - name: Configure openLDAP file
-  template:
-    src: "etc/ldap/ldap.conf.j2"
-    dest: "/etc/ldap/ldap.conf"
+  ansible.builtin.template:
+    src: etc/ldap/ldap.conf.j2
+    dest: /etc/ldap/ldap.conf
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-  become: yes
+    mode: "0644"
+    backup: true
+  become: true
 
 - name: Enable SSL port for openLDAP
-  template:
-    src: 'etc/default/slapd/slapd.j2'
-    dest: '/etc/default/slapd'
+  ansible.builtin.template:
+    src: etc/default/slapd/slapd.j2
+    dest: /etc/default/slapd
     owner: root
     group: root
-    backup: yes
-  become: yes
+    mode: "0644"
+    backup: true
+  become: true
 
 - name: Ensure /etc/ldap/certs dir exists
-  file: 
+  ansible.builtin.file:
     path: /etc/ldap/certs
     state: directory
     owner: openldap
     group: openldap
-  become: yes
+    mode: "0755"
+  become: true
   when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
 
 - name: Copy certificates config file
-  template:
+  ansible.builtin.template:
     src: "etc/ldap/certs/certs.ldif.j2"
     dest: "/etc/ldap/slapd.d/certs.ldif"
     owner: root
     group: root
-    mode: 0640
-  become: yes
+    mode: "0640"
+  become: true
   when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
 
 - name: Ensure /etc/ldap/cacerts dir exists
-  file: 
+  ansible.builtin.file:
     path: /etc/ldap/cacerts
     state: directory
     owner: openldap
     group: openldap
-  become: yes
+    mode: "0755"
+  become: true
   when: openldap_ca_certificate is defined and openldap_ca_certificate|length > 0
 
 - name: Ensure CA certificate is copied
-  copy:
+  ansible.builtin.copy:
     dest: "/etc/ldap/cacerts/{{ openldap_ca_certificate_file }}"
     content: "{{ openldap_ca_certificate }}"
     owner: openldap
     group: openldap
     mode: '0600'
-    backup: yes
+    backup: true
   when: openldap_ca_certificate_file is defined and openldap_ca_certificate is defined
         and openldap_ca_certificate|length > 0
-  become: yes
+  become: true
 
 - name: Ensure certificate is copied
-  copy:
+  ansible.builtin.copy:
     dest: "/etc/ldap/certs/{{ openldap_certificate_file }}"
     content: "{{ openldap_certificate }}"
     owner: openldap
     group: openldap
     mode: '0600'
-    backup: yes
+    backup: true
   when: openldap_certificate_file is defined and openldap_certificate is defined
         and openldap_certificate|length > 0
-  become: yes
+  become: true
 
 - name: Ensure certificate key is copied
-  copy:
+  ansible.builtin.copy:
     dest: "/etc/ldap/certs/{{ openldap_certificate_key_file }}"
     content: "{{ openldap_certificate_key }}"
     owner: openldap
     group: openldap
-    mode: '0600'
-    backup: yes
-  when: openldap_certificate_key_file is defined and openldap_certificate_key is defined
-        and openldap_certificate_key|length > 0
-  become: yes
-  no_log: yes
+    mode: "0600"
+    backup: true
+  when: openldap_certificate_key_file is defined and openldap_certificate_key is defined and openldap_certificate_key|length > 0
+  become: true
+  no_log: true
 
-- name: Add certificate config file to OpenLDAP
-  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/certs.ldif'
-  ignore_errors: yes  #set to get around erroring out that items already exist
+- name: Add certificate config file to OpenLDAP # noqa command-instead-of-shell
+  ansible.builtin.shell: >-
+    ldapmodify \
+      -Y EXTERNAL \
+      -H ldapi:/// \
+      -f /etc/ldap/slapd.d/certs.ldif
+  ignore_errors: true  # noqa ignore-errors
   when: openldap_ca_certificate is defined
         and openldap_ca_certificate|length > 0
         and openldap_certificate is defined
         and openldap_certificate|length > 0
         and openldap_certificate_key is defined
         and openldap_certificate_key|length > 0
-  become: yes
+  become: true
+  changed_when: false # TODO define change conditions
   notify: Restart slapd
 
 - name: Copy admin_password to /etc/ldap/slapd.d/.slapdadmin
-  copy: 
-    content: "{{ openldap_admin_password | password_hash('ldap_salted_sha1', openldap_admin_password_salt) }}" 
+  ansible.builtin.copy:
+    content: "{{ openldap_admin_password | password_hash('ldap_salted_sha1', openldap_admin_password_salt) }}"
     dest: "/etc/ldap/slapd.d/.slapdadmin"
     owner: root
     group: root
-    mode: 400
-  become: yes
+    mode: "0400"
+  become: true
   register: admin_pass_file
 
 - name: Copy the ldif template to set the admin password
-  template: 
-    src: "etc/ldap/slapd.d/modify_password.ldif.j2"
-    dest: "/etc/ldap/slapd.d/adminpwd_ldif.tmpl"
-  become: yes
+  ansible.builtin.template:
+    src: etc/ldap/slapd.d/modify_password.ldif.j2
+    dest: /etc/ldap/slapd.d/adminpwd_ldif.tmpl
+    mode: "0644"
+  become: true
   when: openldap_admin_password is defined and admin_pass_file is changed
 
-- name: Create the ldif file to set the admin password
-  shell: export ADMIN_PASS=$( cat /etc/ldap/slapd.d/.slapdadmin ); sed -e "s|@ADMINPWD@|$ADMIN_PASS|" /etc/ldap/slapd.d/adminpwd_ldif.tmpl > /etc/ldap/slapd.d/adminpwd.ldif ; chmod 400 /etc/ldap/slapd.d/adminpwd.ldif
+- name: Create the ldif file to set the admin password # noqa command-instead-of-shell
+  ansible.builtin.shell: >-
+    set -o pipefail ; \
+    export ADMIN_PASS=$( cat /etc/ldap/slapd.d/.slapdadmin ); \
+    sed -e "s|@ADMINPWD@|$ADMIN_PASS|" /etc/ldap/slapd.d/adminpwd_ldif.tmpl \
+    > /etc/ldap/slapd.d/adminpwd.ldif ; \
+    chmod 400 /etc/ldap/slapd.d/adminpwd.ldif
   when: openldap_admin_password is defined and admin_pass_file is changed
-  become: yes
+  changed_when: false # TODO define changed conditions
+  become: true
 
-- name: Finally set the admin password
-  shell: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/adminpwd.ldif
+- name: Finally set the admin password # noqa command-instead-of-shell
+  ansible.builtin.shell: >-
+    ldapmodify \
+      -Q \
+      -Y EXTERNAL \
+      -H ldapi:/// \
+      -f /etc/ldap/slapd.d/adminpwd.ldif
   when: openldap_admin_password is defined and admin_pass_file is changed
-  become: yes
+  become: true
+  changed_when: false # TODO define change conditions
 
 - name: Run replicate tasks
-  when: "groups['openldap'] | length  > 1"
+  when: (groups['openldap'] | length)  > 1
   block:
     - name: Copy config_olc_server_id file
-      template:
-        src: "etc/ldap/slapd.d/config_olc_server_id.ldif.j2"
-        dest: "/etc/ldap/slapd.d/config_olc_server_id.ldif"
+      ansible.builtin.template:
+        src: etc/ldap/slapd.d/config_olc_server_id.ldif.j2
+        dest: /etc/ldap/slapd.d/config_olc_server_id.ldif
         owner: root
         group: root
-        mode: 0640
-      become: yes
+        mode: "0640"
+      become: true
       register: config_olc_server_id_file
 
     - name: Copy mod_syncprov file
-      template:
+      ansible.builtin.template:
         src: "etc/ldap/slapd.d/mod_syncprov.ldif.j2"
         dest: "/etc/ldap/slapd.d/mod_syncprov.ldif"
         owner: root
         group: root
-        mode: 0640
-      become: yes
+        mode: "0640"
+      become: true
       register: mod_syncprov_file
 
     - name: Copy replicate_configuration file
-      template:
+      ansible.builtin.template:
         src: "etc/ldap/slapd.d/replicate_configuration.ldif.j2"
         dest: "/etc/ldap/slapd.d/replicate_configuration.ldif"
         owner: root
         group: root
-        mode: 0640
-      become: yes
+        mode: "0640"
+      become: true
       register: replicate_configuration_file
 
     - name: Copy replicate_database file
-      template:
+      ansible.builtin.template:
         src: "etc/ldap/slapd.d/replicate_database.ldif.j2"
         dest: "/etc/ldap/slapd.d/replicate_database.ldif"
         owner: root
         group: root
-        mode: 0640
-      become: yes
+        mode: "0640"
+      become: true
       register: replicate_database_file
       run_once: true
 
     - name: Copy trigger_replicate file
-      template:
-        src: "etc/ldap/slapd.d/trigger_replicate.ldif.j2"
-        dest: "/etc/ldap/slapd.d/trigger_replicate.ldif"
+      ansible.builtin.template:
+        src: etc/ldap/slapd.d/trigger_replicate.ldif.j2
+        dest: /etc/ldap/slapd.d/trigger_replicate.ldif
         owner: root
         group: root
-        mode: 0640
-      become: yes
+        mode: "0640"
+      become: true
       run_once: true
 
-    - name: Add olcServerId to openLDAP
-      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/config_olc_server_id.ldif'
-      ignore_errors: yes  #set to get around erroring out that items already exist
-      become: yes
-      when: config_olc_server_id_file is changed
+    - name: Add olcServerId to openLDAP # noqa command-instead-of-shell
+      ansible.builtin.shell: >-
+        ldapadd -Y EXTERNAL \
+          -H ldapi:/// \
+          -f /etc/ldap/slapd.d/config_olc_server_id.ldif
+      ignore_errors: true  # noqa ignore-errors
+      changed_when: false
+      become: true
+      when: config_olc_server_id_file is changed # noqa no-handler
 
-    - name: Add syncprov module to openLDAP
-      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/mod_syncprov.ldif'
-      ignore_errors: yes  #set to get around erroring out that items already exist
-      become: yes
-      when: mod_syncprov_file is changed
+    - name: Add syncprov module to openLDAP # noqa command-instead-of-shell
+      ansible.builtin.shell: >-
+        ldapadd -Y EXTERNAL \
+          -H ldapi:/// \
+          -f /etc/ldap/slapd.d/mod_syncprov.ldif
+      ignore_errors: true  # noqa ignore-errors
+      become: true
+      changed_when: false
+      when: mod_syncprov_file is changed # noqa no-handler
 
-    - name: Add replicate configuration to openLDAP
-      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/replicate_configuration.ldif'
-      ignore_errors: yes  #set to get around erroring out that items already exist
-      become: yes
-      when: replicate_configuration_file is changed
+    - name: Add replicate configuration to openLDAP # noqa command-instead-of-shell
+      ansible.builtin.shell: >-
+        ldapadd -Y EXTERNAL \
+          -H ldapi:/// \
+          -f /etc/ldap/slapd.d/replicate_configuration.ldif
+      ignore_errors: true  # noqa ignore-errors
+      become: true
+      changed_when: false
+      when: replicate_configuration_file is changed # noqa no-handler
 
-    - name: Add replicate database to openLDAP
-      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/replicate_database.ldif'
-      ignore_errors: yes  #set to get around erroring out that items already exist
-      become: yes
-      when: replicate_database_file is changed
+    - name: Add replicate database to openLDAP # noqa command-instead-of-shell
+      ansible.builtin.shell: >-
+        ldapadd -Y EXTERNAL \
+          -H ldapi:/// \
+          -f /etc/ldap/slapd.d/replicate_database.ldif
+      ignore_errors: true  # noqa ignore-errors set to get around erroring out that items already exist
+      become: true
+      changed_when: false # TODO - define change criteria
+      when: replicate_database_file is changed # noqa no-handler
       run_once: true
-    
+
     - name: Restart slapd
-      systemd:
+      ansible.builtin.systemd:
         name: slapd
-        enabled: yes
-        daemon_reload: yes
+        enabled: true
+        daemon_reload: true
         state: restarted
-      become: yes
+      become: true
 
     - name: Trigger replicate to openLDAP
-      shell: 'ldapadd -c -x -H ldapi:/// -D {{ openldap_bind_id }} -w "{{ openldap_admin_password }}" -f /etc/ldap/slapd.d/trigger_replicate.ldif'
-      become: yes
+      ansible.builtin.shell: >- # noqa command-isntead-of-shell
+        ldapadd -c -x \
+          -H ldapi:/// \
+          -D {{ openldap_bind_id }} \
+          -w "{{ openldap_admin_password }}" \
+          -f /etc/ldap/slapd.d/trigger_replicate.ldif'
+      become: true
       run_once: true
 
 - name: Copy additional schemas file
-  template:
+  ansible.builtin.template:
     src: "etc/ldap/slapd.d/modify_schemas.ldif.j2"
     dest: "/etc/ldap/slapd.d/modify_schemas.ldif"
     owner: root
     group: root
-    mode: 0640
-  become: yes
+    mode: "0640"
+  become: true
   register: additional_schemas_file
   run_once: true
 
 - name: Copy ACL config file
-  template:
+  ansible.builtin.template:
     src: "etc/ldap/slapd.d/access_control_list.ldif.j2"
     dest: "/etc/ldap/slapd.d/access_control_list.ldif"
     owner: root
     group: root
-    mode: 0640
-  become: yes
+    mode: "0640"
+  become: true
   register: acl_file
   run_once: true
 
 - name: Copy Attribute Options config file
-  template:
+  ansible.builtin.template:
     src: "etc/ldap/slapd.d/olc_attribute_options.ldif.j2"
     dest: "/etc/ldap/slapd.d/olc_attribute_options.ldif"
     owner: root
     group: root
-    mode: 0640
-  become: yes
+    mode: "0640"
+  become: true
   register: olc_attribute_options_file
   run_once: true
+  notify: Enable Attribute Options to openLDAP
 
-- name: Add schemas to openLDAP
-  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/modify_schemas.ldif'
-  ignore_errors: yes  #set to get around erroring out that items already exist
-  when: >
-        openldap_schema is defined and
-        openldap_schema and
-        additional_schemas_file is changed
-  become: yes
+- name: Add schemas to openLDAP # noqa command-instead-of-shell
+  ansible.builtin.shell: >-
+    ldapadd -Y EXTERNAL \
+      -H ldapi:/// \
+      -f /etc/ldap/slapd.d/modify_schemas.ldif
+  ignore_errors: true  # noqa ignore-errors
+  changed_when: false
+  when:
+    - openldap_schema is defined
+    - openldap_schema and
+    - additional_schemas_file is changed
+  become: true
   run_once: true
 
-- name: Add ACL to openLDAP
-  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/access_control_list.ldif'
-  ignore_errors: yes  #set to get around erroring out that items already exist
+- name: Add ACL to openLDAP # noqa command-instead-of-shell
+  ansible.builtin.shell: >-
+    ldapmodify -Y EXTERNAL \
+      -H ldapi:/// \
+      -f /etc/ldap/slapd.d/access_control_list.ldif
+  ignore_errors: true  # noqa ignore-errors set to get around erroring out that items already exist
   when: >
         openldap_acl is defined and
         openldap_acl and
         acl_file is changed
-  become: yes
+  become: true
   run_once: true
+  changed_when: false
 
-- name: Enable Attribute Options to openLDAP
-  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/olc_attribute_options.ldif'
-  ignore_errors: yes  #set to get around erroring out that items already exist
-  when: olc_attribute_options_file is changed
-  become: yes
-  run_once: true
-
-
+# TODO Should do a stat - set to get around erroring out that items already exist
+# Moved to handler
+# - name: Enable Attribute Options to openLDAP
+#   ansible.builtin.shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/slapd.d/olc_attribute_options.ldif'
+#   ignore_errors: true  # noqa ignore-errors
+#   changed_when: false
+#   when: olc_attribute_options_file is changed
+#   become: true
+#   run_once: true

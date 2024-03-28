@@ -1,14 +1,14 @@
 ---
-
+# cm-role-ui/tasks/configure-common.yml
 - name: Configure cm-role-ui
-  template:
+  ansible.builtin.template:
     src: configuration.php.j2
     dest: "{{ roles_path }}/configuration.php"
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-    force: yes
-  become: yes
+    mode: "0644"
+    backup: true
+    force: true
+  become: true
   tags:
     - cm-role-ui:configure

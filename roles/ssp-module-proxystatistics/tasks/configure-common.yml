@@ -1,19 +1,20 @@
 ---
 
 - name: Configure SSP proxystatistics module
-  template:
+  ansible.builtin.template:
     src: "config/module_statisticsproxy-{{ ssp_module_proxystatistics_version }}.php.j2"
     dest: "{{ ssp_path }}/config/module_statisticsproxy.php"
-    backup: yes
-    force: yes
-  become: yes
+    backup: true
+    force: true
+    mode: "0644"
+  become: true
 
-- name: Enable SSP proxystatistics module 
-  copy:
+- name: Enable SSP proxystatistics module
+  ansible.builtin.copy:
     content: ""
     dest: "{{ ssp_module_proxystatistics_path }}/enable"
-    force: no
-    owner: "root"
-    group: "root"
+    force: false
+    owner: root
+    group: root
     mode: "0644"
-  become: yes
+  become: true

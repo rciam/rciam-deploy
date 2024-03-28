@@ -1,4 +1,4 @@
 ---
 
-ssp_adminpassword_key: auth.adminpassword 
+ssp_adminpassword_key: auth.adminpassword
 ssp_secretsalt_key: secretsalt

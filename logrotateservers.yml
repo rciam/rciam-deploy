@@ -1,7 +1,7 @@
 # file: logrotateservers.yml
 #
 ---
-
-- hosts: all
+- name: Deploy logrotate
+  hosts: all
   roles:
     - { role: arillso.logrotate, tags: logrotate }

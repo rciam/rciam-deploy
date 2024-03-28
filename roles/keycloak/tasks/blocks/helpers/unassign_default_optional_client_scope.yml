@@ -1,11 +1,12 @@
 ---
 
-- include_tasks: blocks/helpers/get_tokens.yml
+- name: Keycloak | helpers | unassign default | include get tokens
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Clear {{ current_default_optional.name }} from the default optional client scopes list"
-  uri:
+- name: "Clear {{ current_default_optional.name }} from the default optional client scopes list" # noqa name[template]
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/default-optional-client-scopes/{{ current_default_optional.id }}"
-    method: "DELETE"
+    method: DELETE
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    status_code: "204"
+    status_code: 204

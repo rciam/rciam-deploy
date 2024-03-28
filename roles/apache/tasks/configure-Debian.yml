@@ -1,78 +1,77 @@
 ---
-
 - name: Enable required Apache modules (Debian)
-  apache2_module: 
+  become: true
+  community.general.apache2_module:
     state: present
     name: "{{ item }}"
   with_items: "{{ apache_mods_enabled }}"
-  become: yes
   notify:
-    - restart apache
+    - Restart apache
 
 - name: Disable unnecessary Apache modules (Debian)
-  apache2_module: 
-    state: absent 
+  become: true
+  community.general.apache2_module:
+    state: absent
     name: "{{ item }}"
   with_items: "{{ apache_mods_disabled }}"
-  become: yes
   notify:
-    - restart apache
+    - Restart apache
 
 - name: Remove default vhost from sites-enabled (Debian)
-  file:
+  become: true
+  ansible.builtin.file:
     path: "{{ apache_conf_path }}/sites-enabled/{{ apache_default_vhost_filename }}"
     state: absent
-  become: yes
-  notify: restart apache
+  notify: Restart apache
   when: apache_remove_default_vhost
 
 - name: Configure Apache ports (Debian)
-  template:
-    src: "ports.conf.j2"
+  become: true
+  ansible.builtin.template:
+    src: ports.conf.j2
     dest: "{{ apache_conf_path }}/ports.conf"
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-  become: yes
-  notify: restart apache
+    mode: "0644"
+    backup: true
+  notify: Restart apache
 
 - name: Configure Apache security settings (Debian)
-  template:
-    src: "security.conf.j2"
+  become: true
+  ansible.builtin.template:
+    src: security.conf.j2
     dest: "{{ apache_conf_path }}/conf-available/security.conf"
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-  become: yes
-  notify: restart apache
+    mode: "0644"
+    backup: true
+  notify: Restart apache
 
 - name: Enable Apache security configuration (Debian)
-  file:
+  become: true
+  ansible.builtin.file:
     src: "{{ apache_conf_path }}/conf-available/security.conf"
     dest: "{{ apache_conf_path }}/conf-enabled/security.conf"
     state: link
-  become: yes
-  notify: restart apache
+  notify: Restart apache
 
 - name: Add Apache vhosts configuration (Debian)
-  template:
-    src: "vhosts.conf.j2"
+  become: true
+  ansible.builtin.template:
+    src: vhosts.conf.j2
     dest: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-  become: yes
-  notify: restart apache
+    mode: "0644"
+    backup: true
+  notify: Restart apache
   when: apache_create_vhosts
 
 - name: Enable Apache vhosts configuration (Debian)
-  file:
+  become: true
+  ansible.builtin.file:
     src: "{{ apache_conf_path }}/sites-available/{{ apache_vhosts_filename }}"
     dest: "{{ apache_conf_path }}/sites-enabled/{{ apache_vhosts_filename }}"
     state: link
-  become: yes
-  notify: restart apache
+  notify: Restart apache
   when: apache_create_vhosts

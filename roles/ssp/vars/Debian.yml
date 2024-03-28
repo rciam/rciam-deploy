@@ -1,9 +1,8 @@
 ---
 
-ssp_default_webserver: "apache2"
-ssp_default_webuser: "www-data"
-ssp_default_webgroup: "www-data"
+ssp_default_webserver: apache2
+ssp_default_webuser: www-data
+ssp_default_webgroup: www-data
 
 ssp_default_mod_cron_deps:
-  - "curl"
-
+  - curl

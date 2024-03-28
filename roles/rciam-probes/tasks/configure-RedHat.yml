@@ -1,11 +1,11 @@
 ---
 
 - name: Add ENV vars in cron.d file (REDHAD)
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     job: "{{ item.job }}"
     user: "{{ item.user }}"
-    env: yes
+    env: true
     cron_file: "{{ item.filename }}"
     state: present
   loop: "{{ cron_env | default([]) }}"
@@ -13,7 +13,7 @@
   when: cron_env is defined
 
 - name: Add cron jobs (RedHat)
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     minute: "{{ item.minute }}"
     job: "{{ item.job }}"
@@ -25,19 +25,19 @@
   when: cron_jobs is defined
 
 - name: Set a universal Apache policy (RedHat)
-  command: "setsebool -P httpd_unified 1"
+  ansible.builtin.command: "setsebool -P httpd_unified 1"
   become: true
   changed_when: false
 
 - name: Ensure nagios home directory has search permissions on (RedHat)
-  file:
+  ansible.builtin.file:
     path: "{{ nagios_registered.home }}"
     state: directory
     mode: "0701"
   become: true
 
 - name: Ensure html directory exists under nagios home directory (RedHat)
-  file:
+  ansible.builtin.file:
     path: "{{ nagios_registered.home }}/{{ item }}"
     state: directory
     owner: nagios
@@ -48,7 +48,7 @@
   become: true
 
 - name: Install policycoreutils-python (RedHat)
-  yum:
+  ansible.builtin.yum:
     name: "{{ item }}"
     state: present
     update_cache: true
@@ -58,17 +58,18 @@
 # semanage fcontext -a -t httpd_sys_content_t "/var/spool/nagios/html(/.*)?"
 # /etc/selinux/targeted/contexts/files/file_contexts.local
 - name: Set selinux policy for directories (RedHat)
-  sefcontext:
-   target: "{{ item.target }}(/.*)?"
-   setype: "{{ item.setype }}"
-   reload: True
-   state: present
+  community.general.sefcontext:
+    target: "{{ item.target }}(/.*)?"
+    setype: "{{ item.setype }}"
+    reload: true
+    state: present
   become: true
   with_items:
-  - { target: "{{ nagios_registered.home }}/html", setype: "httpd_sys_content_t" }
+    - { target: "{{ nagios_registered.home }}/html", setype: "httpd_sys_content_t" }
 
 - name: Apply new SELinux file context to filesystem (RedHat)
-  command: "restorecon -irv {{ item }}"
+  ansible.builtin.command: "restorecon -irv {{ item }}"
+  changed_when: false
   loop:
     - "{{ nagios_registered.home }}/html"
   become: true

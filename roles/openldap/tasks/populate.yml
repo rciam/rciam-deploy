@@ -1,21 +1,28 @@
 - name: Copy database population config file
-  template:
+  ansible.builtin.template:
     src: "etc/ldap/slapd.d/populate_content.ldif.j2"
     dest: "/etc/ldap/slapd.d/populate_content.ldif"
     owner: root
     group: root
-    mode: 0640
-  become: yes
+    mode: "0640"
+  become: true
   register: populate_content_file
   run_once: true
 
 # This operation may return "FAILED" if an entry already exists but it will continue to add non existing entries
-- name: Populate openLDAP with groups and users
-  shell: "ldapadd -c -x -H ldapi:/// -D {{ openldap_bind_id }} -w '{{ openldap_admin_password }}' -f /etc/ldap/slapd.d/populate_content.ldif"
-  ignore_errors: yes  #set to get around erroring out that items already exist
+- name: Populate openLDAP with groups and users # noqa ignore-errors
+  # Use a different module
+  ansible.builtin.shell: >- # noqa command-instead-of-shell
+    ldapadd -c -x \
+      -H ldapi:/// \
+      -D {{ openldap_bind_id }} \
+      -w '{{ openldap_admin_password }}' \
+      -f /etc/ldap/slapd.d/populate_content.ldif"
+  ignore_errors: true  # set to get around erroring out that items already exist <- this should be tested
+  changed_when: false
   when: >
         openldap_populate is defined and
         openldap_populate and
         populate_content_file is changed
-  become: yes
+  become: true
   run_once: true

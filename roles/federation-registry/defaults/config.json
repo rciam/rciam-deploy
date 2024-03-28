@@ -14,7 +14,7 @@
       "service_integration_notification": {
         "enabled": false,
         "email": "ticketing-system@mail.com",
-        "integration_environments": ["devel"], 
+        "integration_environments": ["devel"],
         "template": ""
       },
       "restricted_env": ["production"],
@@ -155,7 +155,7 @@
             "tag":"coc",
             "error": "The service must comply with this policy"
           }
-  
+
         }
       }
     },
@@ -170,4 +170,3 @@
     "deployment_fields":["service_name","service_description","client_id","allow_introspection","code_challenge_method","device_code_validity_seconds","access_token_validity_seconds","refresh_token_validity_seconds","client_secret","reuse_refresh_token","clear_access_tokens_on_refresh","id_token_timeout_seconds","entity_id","metadata_url","grant_types","scope","contacts","redirect_uris","token_endpoint_auth_method","token_endpoint_auth_signing_alg","jwks","jwks_uri","website_url","aup_uri","policy_uri","country","logo_uri","application_type","requested_attributes","post_logout_redirect_uris"],
     "multivalue_fields": ["grant_types","scope","contacts","redirect_uris","post_logout_redirect_uris"]
   }
-  

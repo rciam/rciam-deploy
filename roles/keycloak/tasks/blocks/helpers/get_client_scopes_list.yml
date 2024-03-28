@@ -1,6 +1,6 @@
 ---
 - name: "Get list of client scopes"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes"
     method: GET
     headers:
@@ -8,7 +8,8 @@
     status_code: 200
   register: "client_scopes_list"
 
-- set_fact:
+- name: Set Fact
+  ansible.builtin.set_fact:
     client_scope_matches: "{{ client_scopes_list.json | json_query(query) | default([]) }}"
   vars:
     query: '[?name == `{{ item[1].name }}` ]'

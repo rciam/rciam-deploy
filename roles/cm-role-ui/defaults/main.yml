@@ -6,13 +6,13 @@ roles_repo: "https://github.com/rciam/comanage-registry-roles-portal.git"
 roles_root_dir: "/srv"
 roles_path: "{{ roles_root_dir }}/{{ roles_src }}"
 
-#roles_api_base_url: "https://example.org/registry"
-#roles_api_username: "api_user"
-#roles_api_password: "api_pass"
+# roles_api_base_url: "https://example.org/registry"
+# roles_api_username: "api_user"
+# roles_api_password: "api_pass"
 
 roles_db_host: "localhost"
-#roles_db_username: "db_user"
-#roles_db_password: "db_pass"
+# roles_db_username: "db_user"
+# roles_db_password: "db_pass"
 roles_db_name: "registry"
 
 roles_uid_key: "eduPersonPrincipalName"
@@ -21,7 +21,7 @@ roles_username_key: "displayName"
 roles_email_host: "localhost"
 roles_email_port: 25
 # leave blank the rest of the email options if not needed
-# "", "ssl" or "tls" 
+# "", "ssl" or "tls"
 roles_email_security: ""
 roles_email_username: ""
 roles_email_password: ""

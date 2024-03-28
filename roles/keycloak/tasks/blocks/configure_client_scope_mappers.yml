@@ -2,31 +2,52 @@
 # item[0] -> whole realm config (ansible variable)
 # item[1] -> current client_scope config (loop's item of ansible realm's client_scopes[] config)
 # mapper -> the current mapper config (loop item of item[1].mappers[] above)
-# client_scope_matches -> if the current client_scope of the configuration is found in keycloak, it return a single-element array with a trimmed object client_scope.{id,name, protocolMappers} instance)
+# client_scope_matches -> if the current client_scope of the configuration is found in keycloak,
+# it return a single-element array with a trimmed object client_scope.{id,name, protocolMappers} instance)
 
-- set_fact:
+- name: Set mapper matches
+  ansible.builtin.set_fact:
     mapper_matches: "{{ client_scope_matches[0].protocolMappers | json_query(query) | default([]) }}"
   vars:
     query: '[?name == `{{ mapper.name }}` ].{id: id, name: name }'
 
-- set_fact:
-    mapper_exists: "{{mapper_matches | length > 0 }}"
+- name: Set existgs fact
+  ansible.builtin.set_fact:
+    mapper_exists: "{{ mapper_matches | length > 0 }}"
 
-- set_fact:
+- name: Set additional info fact
+  ansible.builtin.set_fact:
     additional_info:
-      id: "{{mapper_matches[0].id}}"
+      id: "{{ mapper_matches[0].id }}"
   when: mapper_exists
 
-- set_fact:
-    body: "{% if mapper_exists %}{{ mapper | combine(additional_info , recursive=True ) }}{% else %}{{ mapper }}{% endif %}"
-
-- name: "{% if mapper_exists %} Update {% else %} Create {% endif %} client scope mapper {{ mapper.name }}"
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes/{{ client_scope_matches[0].id }}/protocol-mappers/models{% if mapper_exists %}/{{body.id}}{% endif %}"
-    method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
+- name: Set body fact
+  ansible.builtin.set_fact:
+    body: |-
+      "{% if mapper_exists %}
+      {{ mapper | combine(additional_info, recursive=True) }}
+      {% else %}
+      {{ mapper }}
+      {% endif %}"
+    # body: "mapper_exists | ternary(mapper | combine(additional_info , recursive=True), mapper)"
+- name: "Update client scope mapper {{ mapper.name }}"
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes/{{ client_scope_matches[0].id }}/protocol-mappers/models/{{ body.id }}" # noqa yaml[line-length]
+    method: PUT
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body:
-      "{{ body }}"
-    status_code: "{% if mapper_exists %}204{% else %}201{% endif %}"
+    body: "{{ body }}"
+    status_code: 204
+  when: mapper_exists | bool
+
+- name: "Create client scope mapper {{ mapper.name }}"
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/client-scopes/{{ client_scope_matches[0].id }}/protocol-mappers/models" # noqa yaml[line-length]
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ body }}"
+    status_code: 201
+  when: (not mapper_exists) | bool

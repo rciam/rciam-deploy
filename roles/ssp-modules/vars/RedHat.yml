@@ -1,6 +1,4 @@
 ---
-
 ssp_default_webserver: "httpd"
 ssp_default_webuser: "apache"
 ssp_default_webgroup: "apache"
-

@@ -1,9 +1,14 @@
 ---
-
+# git/tasks/install-Debian.yml
 - name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
-  become: yes
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 86400
+  become: true
 
 - name: Ensure latest Git is installed (Debian)
-  apt: name=git state=present install_recommends=no
-  become: yes
+  ansible.builtin.apt:
+    name: git
+    state: present
+    install_recommends: false
+  become: true

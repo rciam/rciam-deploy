@@ -1,22 +1,28 @@
 # file: d4science2samlservers.yml
-# 
+#
 ---
-
-- hosts: d4science2saml
+- name: Deploy D4Science servers
+  hosts: d4science2saml
   roles:
     # - { role: apache, tags: apache }
     # - { role: php, tags: php }
     - { role: ssp, tags: ssp }
     - { role: ssp-modules, tags: ssp-modules }
   tasks:
-    - name: Install Keycloak Provicer library v2.2.2
-      shell: php composer.phar require stevenmaguire/oauth2-keycloak:v2.2.2 --ignore-platform-reqs --no-interaction --no-scripts --no-update
+      # Keycloak provider library version should be a variable.
+    - name: Install Keycloak Provider library v2.2.2
+      ansible.builtin.shell: |-
+        php composer.phar require stevenmaguire/oauth2-keycloak:v2.2.2 \
+          --ignore-platform-reqs \
+          --no-interaction \
+          --no-scripts \
+          --no-update
       args:
         chdir: "{{ ssp_path }}/"
         executable: /bin/bash
       register: composer_results
       changed_when: composer_results is changed and "Nothing to install, update or remove" not in composer_results.stderr
-      when: ssp_mods_extra_enabled | selectattr('name','equalto','authoauth2') | list | count > 0
+      when: ssp_mods_extra_enabled | selectattr('name', 'equalto', 'authoauth2') | list | count > 0
       become: true
       tags:
         - install

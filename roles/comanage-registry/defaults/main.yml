@@ -2,150 +2,150 @@
 
 # See https://spaces.internet2.edu/display/COmanage/Organizational+Identity+Pooling
 comanage_org_identity_pooling: "No"
-#comanage_admin:
-#  given_name: "Pat"
-#  family_name: "Jones Smith"
-#  username: "pat.jones.smith@university.edu"
+# comanage_admin:
+#   given_name: "Pat"
+#   family_name: "Jones Smith"
+#   username: "pat.jones.smith@university.edu"
 
 # Override comanage_version with a tag name. This will result to a new directory name comanage-registry-<tag>
 # COmanage will be checked out under {{ comanage_root_dir }}/comanage-registry-{{ comanage_version }}
-comanage_version: "rciam24-3.1.x"
-comanage_repo: "https://github.com/rciam/comanage-registry.git"
-comanage_root_dir: "/srv/comanage"
+comanage_version: rciam24-3.1.x
+comanage_repo: https://github.com/rciam/comanage-registry.git
+comanage_root_dir: /srv/comanage
 comanage_path: "{{ comanage_root_dir }}/comanage-registry-current"
-comanage_webroot: "/var/www/html/registry"
-comanage_temp_dir: "/var/cache/registry"
-comanage_app_base: "/registry"
+comanage_webroot: /var/www/html/registry
+comanage_temp_dir: /var/cache/registry
+comanage_app_base: /registry
 
 comanage_log_engine:
   error:
     # Allowed values for handler: "FileLog" | "SyslogLog"
-    handler: "FileLog"
-    size: "10MB"
+    handler: FileLog
+    size: 10MB
     rotate: 10
     # prefix: "comanage"
   debug:
-    handler: "FileLog"
-    size: "10MB"
+    handler: FileLog
+    size: 10MB
     rotate: 10
     # prefix: "comanage"
   info:
-    handler: "FileLog"
-    size: "10MB"
+    handler: FileLog
+    size: 10MB
     rotate: 10
     # prefix: "comanage"
 
 comanage_databases:
-  - instance: "default"
+  - instance: default
     # Either "Database/Postgres" or "Database/Mysql"
-    vendor: "Database/Mysql"
-    persistent: no
-    host: "localhost"
-    user: "user"
-    password: "password"
-    name: "database_name"
-    prefix: "cm_"
-    #encoding: "utf8"
-  - instance: "test"
-    vendor: "Database/Mysql"
-    persistent: no
-    host: "localhost"
-    user: "user"
-    password: "password"
-    name: "test_database_name"
-    prefix: "cm_"
-    #encoding: "utf8"
+    vendor: Database/Mysql
+    persistent: false
+    host: localhost
+    user: user
+    password: password
+    name: database_name
+    prefix: cm_
+    # encoding: "utf8"
+  - instance: test
+    vendor: Database/Mysql
+    persistent: false
+    host: localhost
+    user: user
+    password: password
+    name: test_database_name
+    prefix: cm_
+    # encoding: "utf8"
 
 comanage_mailers:
-  - instance: "default"
+  - instance: default
     # Transport configuration name
-    transport: "Mail"
+    transport: Mail
     # Email or array of sender
-    from: "you@localhost"
-    #charset: "utf-8"
-    #header_charset: "utf-8"
-  - instance: "smtp"
-    transport: "Smtp"
+    from: you@localhost
+    # charset: "utf-8"
+    # header_charset: "utf-8"
+  - instance: smtp
+    transport: Smtp
     from:
-      site@localhost: "My Site"
-    host: "localhost"
+      site@localhost: My Site
+    host: localhost
     port: 25
     timeout: 30
-    username: "user"
-    password: "secret"
-    client: null
-    log: no
-    #charset: "utf-8"
-    #header_charset: "utf-8"
-  - instance: "fast"
-    from: "you@localhost"
-    sender: null
-    to: null
-    cc: null
-    bcc: null
-    reply_to: null
+    username: user
+    password: secret
+    client:
+    log: false
+    # charset: "utf-8"
+    # header_charset: "utf-8"
+  - instance: fast
+    from: you@localhost
+    sender:
+    to:
+    cc:
+    bcc:
+    reply_to:
     # Email address(es) to receive the receipt of read
-    read_receipt: null
+    read_receipt:
     # Email address(es) to return in case of error
-    return_path: null
+    return_path:
     messageId: true
-    subject: null
-    message: null
-    headers: null
-    view_render: null
-    template: no
-    layout: no
-    view_vars: null
-    attachments: null
-    email_format: null
-    transport: "Smtp"
-    host: "localhost"
+    subject:
+    message:
+    headers:
+    view_render:
+    template: false
+    layout: false
+    view_vars:
+    attachments:
+    email_format:
+    transport: Smtp
+    host: localhost
     port: 25
     timeout: 30
-    username: "user"
-    password: "secret"
-    client: null
-    log: yes
-    #charset: "utf-8"
-    #header_charset: "utf-8"
+    username: user
+    password: secret
+    client:
+    log: true
+    # charset: "utf-8"
+    # header_charset: "utf-8"
 
 # Used in login.php and logout.php
-comanage_session_name: "CAKEPHP"
+comanage_session_name: CAKEPHP
 comanage_core_session_conf:
-  defaults: "php"
+  defaults: php
 
 # Ldap Provisioner Entitlements Configuration
 comanage_ldap_provisioner_entitlements:
   enable_vo_whitelist: false
-  vo_whitelist: '' # comma seperated list
-  vo_roles: '' # comma seperated roles
-  urn_namespace: ''
-  urn_authority: ''
-  vo_group_prefix: ''
+  vo_whitelist: "" # comma seperated list
+  vo_roles: "" # comma seperated roles
+  urn_namespace: ""
+  urn_authority: ""
+  vo_group_prefix: ""
 
 # Dis/Enable COmanage cache
-#comanage_core_cache: true
+# comanage_core_cache: true
 # Dis/Enable COmanage debug mode
-#comanage_core_debug: 1
+# comanage_core_debug: 1
 
-#comanage_logout_location: "/registry.sso/Logout?return=%2Fregistry%2Fpages%2Fpublic%2Floggedout"
+# comanage_logout_location: "/registry.sso/Logout?return=%2Fregistry%2Fpages%2Fpublic%2Floggedout"
 # Used in Controller/AppController.php, View/Layout/default.ctp, View/Layout/lightbox.ctp
-#comanage_timezone_cookie_name: "cookie_tz_auto"
+# comanage_timezone_cookie_name: "cookie_tz_auto"
 
-#comanage_memcache_hosts:
-#  - ip: '127.0.0.1'
-#    port: 11211
-#  - ip: '127.0.0.1'
-#    port: 11212
+# comanage_memcache_hosts:
+#   - ip: '127.0.0.1'
+#     port: 11211
+#   - ip: '127.0.0.1'
+#     port: 11212
 
-#comanage_memcache_options:
-#  - key: "Memcached::OPT_NO_BLOCK"
-#    value: true
-#  - key: "Memcached::OPT_DISTRIBUTION"
-#    value: true
+# comanage_memcache_options:
+#   - key: "Memcached::OPT_NO_BLOCK"
+#     value: true
+#   - key: "Memcached::OPT_DISTRIBUTION"
+#     value: true
 
 # Backup the Comanage directory
-#comanage_backup: yes
+# comanage_backup: yes
 
 # Security.cipherSeed is a random numeric string (digits only) used to encrypt/decrypt strings.
 # It is read from the file app/Config/security.seed and should be at least 29
@@ -161,7 +161,7 @@ comanage_ldap_provisioner_entitlements:
 # Salt: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1 | xargs echo -n
 # comanage_security_salt: "defaultsecretsalt"
 
-#comanage_cron_jobs:
+# comanage_cron_jobs:
 #  - name: "Action Name"
 #    minute: "0"
 #    filename: "registry"
@@ -170,4 +170,4 @@ comanage_ldap_provisioner_entitlements:
 #      cd {{ path_to_registry }}/app && Console/cake action
 
 # Whether to install COmanage cron jobs; Enabled by default
-comanage_cron_jobs_enabled: yes
+comanage_cron_jobs_enabled: true

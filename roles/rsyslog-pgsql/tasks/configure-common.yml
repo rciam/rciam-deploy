@@ -1,10 +1,10 @@
 ---
 - name: Remove pgsql.conf file if exists
-  file:
+  ansible.builtin.file:
     path: "{{ rsyslogd_path }}/pgsql.conf"
     state: absent
-  become: yes
-  when: rsyslog_pgsql_enable_logs == true
+  become: true
+  when: rsyslog_pgsql_enable_logs
 
 - name: Ensure /dev/xconsole exists
   ansible.builtin.file:
@@ -13,17 +13,17 @@
     owner: syslog
     group: adm
     mode: u=rw,g=rw,o=r
-  when: rsyslog_pgsql_enable_logs == true
-  become: yes
+  when: rsyslog_pgsql_enable_logs
+  become: true
 
 - name: Ensure rsyslog for nginx logs is configured
-  template:
+  ansible.builtin.template:
     src: rsyslogd-nginx-{{ ansible_os_family }}.conf.j2
     dest: "{{ rsyslogd_path }}/51-nginx.conf"
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-  become: yes
+    mode: "0644"
+    backup: true
+  become: true
   notify: Restart rsyslog
-  when: rsyslog_pgsql_enable_logs == true
+  when: rsyslog_pgsql_enable_logs

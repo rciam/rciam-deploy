@@ -1,25 +1,29 @@
 ---
-
 - name: Update package cache (Debian)
-  apt: update_cache=yes cache_valid_time=86400
-  become: yes
+  ansible.builtin.apt:
+    update_cache: "yes"
+    cache_valid_time: "86400"
+  become: true
 
 - name: Ensure latest CA certificates are installed (Debian)
-  apt: pkg=ca-certificates state=latest install_recommends=no
+  ansible.builtin.apt:
+    pkg: ca-certificates
+    state: present
+    install_recommends: "no"
   become: true
 
 - name: Ensure SSP cron module dependencies are installed (Debian)
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ ssp_mod_cron_deps }}"
     state: present
-    install_recommends: no
+    install_recommends: false
   when: "'cron' in ssp_mods_enabled"
   become: true
 
-#- name: Ensure memcached dependencies are installed (Debian)
-#  apt: pkg={{ item }} state=present install_recommends=no
-#  with_items: "{{ ssp_memcache_deps }}"
-#  when: "ssp_store_type is defined and ssp_store_type == 'memcache'"
-#  become: true
-#  notify:
-#    - restart webserver
+# - name: Ensure memcached dependencies are installed (Debian)
+#   apt: pkg={{ item }} state=present install_recommends=no
+#   with_items: "{{ ssp_memcache_deps }}"
+#   when: "ssp_store_type is defined and ssp_store_type == 'memcache'"
+#   become: true
+#   notify:
+#     - restart webserver

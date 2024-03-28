@@ -1,10 +1,16 @@
 ---
 
 - name: Configure Tomcat
-  template: src={{ item.src }} dest={{ item.dest }} backup=yes
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    backup: true
+    mode: "0644"
   with_items:
-    - { src: "default-{{ tomcat_version }}.j2", dest: "{{ tomcat_default_path }}/{{ tomcat_service }}" }
-    - { src: "server-{{ tomcat_version }}.xml.j2", dest: "{{ tomcat_conf_path }}/server.xml" }
-  become: yes
+    - src: "default-{{ tomcat_version }}.j2"
+      dest: "{{ tomcat_default_path }}/{{ tomcat_service }}"
+    - src: "server-{{ tomcat_version }}.xml.j2"
+      dest: "{{ tomcat_conf_path }}/server.xml"
+  become: true
   notify:
     - Restart Tomcat

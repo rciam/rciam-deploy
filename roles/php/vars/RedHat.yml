@@ -1,8 +1,8 @@
 ---
 
-php_webserver: "httpd"
+php_webserver: httpd
 
 php_default_packages:
-  - "php"
+  - php
 
-php_default_conf_scan_dir: "/etc/php.d"
+php_default_conf_scan_dir: /etc/php.d

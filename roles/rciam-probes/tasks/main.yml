@@ -3,34 +3,34 @@
 ---
 
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-    - "{{ ansible_os_family }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
   tags:
     - always
 
-# Install OS-specific packages
-- include: install-RedHat.yml
+- name: Install OS-specific packages
+  ansible.builtin.include_tasks: install-RedHat.yml
   when: ansible_os_family == 'RedHat'
-#- include: install-Debian.yml
+# - include: install-Debian.yml
 #  when: ansible_os_family == 'Debian'
 
-# Configure OS-specific packages
-- include: configure-RedHat.yml
+- name: Configure RedHat
+  ansible.builtin.include_tasks: configure-RedHat.yml
   when: ansible_os_family == 'RedHat'
-#- include: configure-Debian.yml
+# - include: configure-Debian.yml
 #  when: ansible_os_family == 'Debian'
 
 # Tasks adding/copying/replacing files
 - name: Include OS-independent Update/Copy tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: update-static.yml
     apply:
       tags:
-      - update
+        - update
   tags:
-  - update
+    - update

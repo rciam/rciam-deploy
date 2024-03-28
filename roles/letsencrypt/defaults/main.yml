@@ -1,7 +1,9 @@
 ---
 
 # this should have value either "snap" or "os_repo"
-install_from: "snap"
+letsencrypt_install_from: "snap"
 
-# Email address for important account notifications. For example, Let’s Encrypt will automatically send expiry notices to this email address when your certificate is coming up for renewal
-#letsencrypt_email: "bob.builder@example.org"
+# Email address for important account notifications.
+# For example, Let’s Encrypt will automatically send expiry notices
+# to this email address when your certificate is coming up for renewal
+# letsencrypt_email: "bob.builder@example.org"

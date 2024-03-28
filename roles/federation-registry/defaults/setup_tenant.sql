@@ -45,7 +45,7 @@ VALUES(1 , 'get_user'),
 
 
 INSERT INTO tenant_deployer_agents (tenant,integration_environment,type,entity_type,hostname,entity_protocol,deployer_name)
-VALUES 
+VALUES
   ('tenant_name', 'production', 'keycloak', 'service', 'test_deployer','oidc',null ),
   ('tenant_name', 'demo', 'keycloak', 'service', 'test_deployer','oidc',null ),
   ('tenant_name', 'development', 'keycloak', 'service', 'test_deployer','oidc',null ),
@@ -54,4 +54,3 @@ VALUES
   ('tenant_name', 'demo', 'ssp', 'service', 'test_deployer','saml','1' ),
   ('tenant_name', 'demo', 'ssp', 'service', 'test_deployer','saml','2'),
   ('tenant_name', 'development', 'ssp', 'service', 'test_deployer','saml',null );
-

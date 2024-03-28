@@ -1,16 +1,17 @@
 ---
+# cm-role-ui/tasks/main.yml
 
-#- name: Include OS-specific variables
-#  include_vars: "{{ item }}"
-#  with_first_found:
-#    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-#    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-#    - "{{ ansible_distribution }}.yml"
-#    - "{{ ansible_os_family }}.yml"
+# - name: Include OS-specific variables
+#   include_vars: "{{ item }}"
+#   with_first_found:
+#     - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
+#     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+#     - "{{ ansible_distribution }}.yml"
+#     - "{{ ansible_os_family }}.yml"
 
 # Run OS-independent installation tasks
 - name: Include Installation tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: install-common.yml
     apply:
       tags:
@@ -20,7 +21,7 @@
 
 # Apply OS-independent configuration
 - name: Include Configure tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: configure-common.yml
     apply:
       tags:

@@ -1,8 +1,8 @@
 # file: deep2samlservers.yml
-# 
+#
 ---
-
-- hosts: deep2saml
+- name: Provision Deep2saml servers
+  hosts: deep2saml
   roles:
     # - { role: apache, tags: apache }
     # - { role: php, tags: php }
@@ -10,13 +10,19 @@
     - { role: ssp-modules, tags: ssp-modules }
   tasks:
     - name: Install SSP mod authoauth2 v3.1.0
-      shell: php composer.phar require cirrusidentity/simplesamlphp-module-authoauth2:v3.1.0 --ignore-platform-reqs --no-interaction --no-scripts
+      ansible.builtin.shell: >
+        set -o pipefail
+        php composer.phar \
+          require cirrusidentity/simplesamlphp-module-authoauth2:v3.1.0 \
+          --ignore-platform-reqs \
+          --no-interaction \
+          --no-scripts
       args:
         chdir: "{{ ssp_path }}/"
         executable: /bin/bash
       register: composer_results
       changed_when: composer_results is changed and "Nothing to install, update or remove" not in composer_results.stderr
-      when: ssp_mods_extra_enabled | selectattr('name','equalto','authoauth2') | list | count > 0
+      when: ssp_mods_extra_enabled | selectattr('name', 'equalto', 'authoauth2') | list | count > 0
       become: true
       tags:
         - install

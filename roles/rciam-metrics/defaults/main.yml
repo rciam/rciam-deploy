@@ -1,7 +1,5 @@
 # file: group_vars/metrics/main.yml
-
 ---
-
 metrics_path: /srv/rciam-metrics-client/rciam-metrics
 metrics_repo: https://github.com/rciam/rciam-metrics-dev
 metrics_release: 1.0.0
@@ -9,7 +7,7 @@ metrics_fast_api_folder_name: app
 metrics_ip2country_dir: ip2country_directory
 
 # Whether to install RCIAM metrics cron job; Enabled by default
-metrics_cron_enabled: yes
+metrics_cron_enabled: true
 
 metrics_api:
   address: "localhost"
@@ -30,7 +28,7 @@ metrics_config:
         admin: metrics_dev_admin
         password: "{{ vault_metrics_db_password }}"
         host: db.rciam.noc.grnet.gr
-        pool_size : 15
+        pool_size: 15
         max_overflow: 5
       log:
         level: DEBUG
@@ -129,6 +127,6 @@ metrics_user:
     month: "*"
     weekday: "*"
 
-#metrics_symlinks:
+# metrics_symlinks:
 #  - target: "/path/to/target"
 #    link: "/path/to/symlink"

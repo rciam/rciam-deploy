@@ -3,46 +3,48 @@
 ---
 
 - name: Create RCIAM OIDC Client temp directory
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.item.name }}"
     state: directory
-  become: yes
+    mode: "0755"
+  become: true
 
 - name: Download & unarchive RCIAM OIDC Client to temp directory
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ item.item.release }}"
     dest: "/tmp/{{ item.item.name }}"
-    remote_src: yes
-    list_files: yes
+    remote_src: true
+    list_files: true
   register: rciam_oidc_client_unarchive
-  become: yes
+  become: true
 
 - name: Setting RCIAM OIDC Client temp directory
-  set_fact:
+  ansible.builtin.set_fact:
     rciam_oidc_client_tmp_dir: "/tmp/{{ item.item.name }}/{{ rciam_oidc_client_unarchive.files[0].split('/')[0] }}"
 
 - name: Backup old version of RCIAM OIDC Client
-  command:
+  ansible.builtin.command:
     cmd: "mv {{ item.item.path }} {{ item.item.path }}.{{ ansible_date_time.iso8601 }}"
     removes: "{{ item.item.path }}"
-  become: yes
+  become: true
 
 - name: Move RCIAM OIDC Client from temp directory to target path
-  command: "mv {{ rciam_oidc_client_tmp_dir }} {{ item.item.path }}"
-  become: yes
+  ansible.builtin.command: "mv {{ rciam_oidc_client_tmp_dir }} {{ item.item.path }}"
+  changed_when: false
+  become: true
 
 - name: Create a file with the version of the RCIAM OIDC Client
-  copy:
+  ansible.builtin.copy:
     content: ""
     dest: "{{ item.item.path }}/{{ item.item.version }}"
-    force: no
-    owner: "root"
-    group: "root"
+    force: false
+    owner: root
+    group: root
     mode: "0644"
-  become: yes
+  become: true
 
 - name: Ensure RCIAM OIDC Client temp directory is absent
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.item.name }}"
     state: absent
-  become: yes
+  become: true

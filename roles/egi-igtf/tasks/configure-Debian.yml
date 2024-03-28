@@ -1,21 +1,25 @@
 ---
-
+# egi-igtf/tasks/configure-Debian.yml
 - name: Ensure dir for EGI Trust Anchor symlinks exists  (Debian)
-  file: path="/usr/local/share/ca-certificates/egi-igtf" state=directory
-  become: yes
+  ansible.builtin.file:
+    path: /usr/local/share/ca-certificates/egi-igtf
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+  become: true
 
 - name: Register EGI Trust Anchors to symlink (Debian)
-  shell: "ls /etc/grid-security/certificates/*.0"
+  ansible.builtin.shell: "ls /etc/grid-security/certificates/*.0" # noqa
   register: egi_igtf_certs
   changed_when: false
 
 - name: Ensure symlinks to EGI Trust Anchors exist (Debian)
-  file: path="/usr/local/share/ca-certificates/egi-igtf/{{ item | basename}}.crt" src="{{ item }}" state=link
+  ansible.builtin.file:
+    path: "/usr/local/share/ca-certificates/egi-igtf/{{ item | basename }}.crt"
+    src: "{{ item }}"
+    state: link
   with_items: "{{ egi_igtf_certs.stdout_lines }}"
   register: egi_igtf_cert_symlinks
-  become: yes
-
-- name: Update /etc/ssl/certs and certificates.crt with EGI Trust Anchors (Debian)
-  command: "/usr/sbin/update-ca-certificates -f"
-  when: egi_igtf_cert_symlinks is changed
-  become: yes
+  become: true
+  notify: Update certs

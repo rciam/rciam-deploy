@@ -2,6 +2,6 @@
 #
 ---
 
-namespaces:
+namespaces: # noqa var-naming[no-role-prefix]
   domain: "urn:jboss:domain:16.0"
   domain_server: "urn:jboss:domain:keycloak-server:1.1"

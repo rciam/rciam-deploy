@@ -2,18 +2,18 @@
 #
 ---
 
-ssp_version: "2.1.1"
+ssp_version: 2.1.1
 
-ssp_repo_url: "https://github.com/simplesamlphp/simplesamlphp.git"
-ssp_repo_version: "simplesamlphp-{{ ssp_version }}"
+ssp_repo_url: https://github.com/simplesamlphp/simplesamlphp.git
+ssp_repo_version: simplesamlphp-{{ ssp_version }}
 # Uncomment in order to install using the release
 # ssp_release_url: "https://github.com/simplesamlphp/simplesamlphp/releases/download/v{{ ssp_version }}/{{ ssp_repo_version }}-full.tar.gz"
-ssp_path: "/var/simplesamlphp"
+ssp_path: /var/simplesamlphp
 # The base path of the URLs to the content of the SimpleSAMPphp www folder.
-ssp_baseurlpath: "simplesaml"
-# Specify base URL path with the external scheme (protocol) and FQDN if your 
+ssp_baseurlpath: simplesaml
+# Specify base URL path with the external scheme (protocol) and FQDN if your
 # SimpleSAMLphp installation is hosted behind a reverse proxy.
-#ssp_external_baseurlpath: "https://example.com/simplesaml"
+# ssp_external_baseurlpath: "https://example.com/simplesaml"
 
 ssp_configdir: "{{ ssp_path }}/config/"
 ssp_certdir: "{{ ssp_path }}/cert/"
@@ -26,13 +26,13 @@ ssp_metadatadir: "{{ ssp_path }}/metadata/"
 ssp_www_path: "{{ ssp_path }}/../simplesaml-current"
 
 # Enable the installation of the composer
-#ssp_composer_install: True
+# ssp_composer_install: True
 
-ssp_composer_executable: "/usr/local/bin/composer"
-ssp_composer_install_directory: "/tmp/composer"
+ssp_composer_executable: /usr/local/bin/composer
+ssp_composer_install_directory: /tmp/composer
 
 # Enable the installation of nodejs and twig
-#ssp_twig_install: True
+# ssp_twig_install: True
 
 # Security configuration options
 
@@ -41,12 +41,12 @@ ssp_composer_install_directory: "/tmp/composer"
 # The value can be any valid string of any length.
 # A possible way to generate a random salt is by running the following command:
 # LC_CTYPE=C tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
-#ssp_secretsalt: "defaultsecretsalt"
+# ssp_secretsalt: "defaultsecretsalt"
 
 # Password giving access to the installation page of SimpleSAMLphp with
 # metadata listing and diagnostics pages.
 # This password must be kept secret, and modified from the default value 123.
-#ssp_adminpassword: "123"
+# ssp_adminpassword: "123"
 
 # Secret salt used to generate a secure hash of the ssp_adminpassword.
 # A possible way to generate a random salt is by running the following command:
@@ -55,13 +55,12 @@ ssp_composer_install_directory: "/tmp/composer"
 # ssp_adminpassword_salt: "defaultsecretsalt"
 
 # Whether to require administrator password to access the web interface
-ssp_admin_protectindexpage: no
+ssp_admin_protectindexpage: false
 
 # Whether to require administrator password to access the metadata pages
-ssp_admin_protectmetadata: no
+ssp_admin_protectmetadata: false
 
-
-ssp_theme: "default"
+ssp_theme: default
 # Set this option to true to activate the new UI based on Twig templates.
 # When this option is activated the index file redirects to the login page
 # where the a list of authentication sources (excluded admin) is displayed.
@@ -71,58 +70,57 @@ ssp_twig_template: false
 # Set this option if a custom theme controller is required by the Theme
 # ssp_theme_controller_class: ""
 
-ssp_session_cookie_name: "SimpleSAMLSessionID"
+ssp_session_cookie_name: SimpleSAMLSessionID
 ssp_session_cookie_secure: false
 # Set the SameSite attribute in the cookie to support RFC6265bis.
 # You can set this to 'None', 'Lax', or 'Strict'.
 # If set to null, no SameSite attribute will be sent.
-ssp_session_cookie_samesite: null
-ssp_authtoken_cookiename: "SimpleSAMLAuthToken"
+ssp_session_cookie_samesite:
+ssp_authtoken_cookiename: SimpleSAMLAuthToken
 
-ssp_tempdir: "/tmp/simplesaml"
+ssp_tempdir: /tmp/simplesaml
 
 # Select where to store session information:
 # `phpsession` Uses the built-in session management in PHP (default).
-# `memcache`   Uses memcached to cache sessions in memory. 
+# `memcache`   Uses memcached to cache sessions in memory.
 #              Sessions can be distributed and replicated among several
 #              memcached servers, enabling both load-balancing and fail-over.
 # `sql`        Stores session information in a SQL database (WIP).
-#ssp_store_type: "phpsession"
+# ssp_store_type: "phpsession"
 
 # One or more memcached server groups for storing session information when
 # ssp_store_type is set to `memcache`. Every session data item will be mirrored
 # in every server group. Each server group is a list of servers. The data items
 # will be load-balanced between all servers in each server group.
-#ssp_memcache_store_servers:
-#  - # Group A
-#    - "memcached1.acme.com"
-#    - "memcached2.acme.com"
-#  - # Group B
-#    - "memcached3.acme.com"
-#    - "memcached4.acme.com"
+# ssp_memcache_store_servers:
+#   - # Group A
+#     - "memcached1.acme.com"
+#     - "memcached2.acme.com"
+#   - # Group B
+#     - "memcached3.acme.com"
+#     - "memcached4.acme.com"
 ssp_memcache_store_servers:
-  -
-    - "localhost"
+  - - localhost
 # Alternatively, define ssp_memcache_store_servers_group to dynamically build
 # the memcache server group configuration from the host group
 # See templates/config/config-x.y.php.j2
-#ssp_memcache_store_servers_group: "cache"
+# ssp_memcache_store_servers_group: "cache"
 
 ssp_memcache_store_prefix: ""
 
 # Database configuration is optional. If you are not using core functionality
 # or modules that require a database, you can skip this configuration
 ssp_database:
-  dsn: "mysql:host=localhost;dbname=saml"
-  username: "simplesamlphp"
-  password: "secret"
+  dsn: mysql:host=localhost;dbname=saml
+  username: simplesamlphp
+  password: secret
   prefix: ""
-  persistent: no
+  persistent: false
 
 ssp_database_slaves: []
 #  - dsn: "mysql:host=myslave;dbname=saml"
 #    username: "simplesamlphp"
-#    password: "secret" 
+#    password: "secret"
 #    persistent: no
 
 ssp_debug_saml: false
@@ -137,14 +135,14 @@ ssp_showerrors: false
 ssp_errorreporting: true
 
 # Let SSP figure out timezone based on the host machine
-ssp_timezone: 'null'
+ssp_timezone: "null"
 # otherwise set it explicitly, e.g.:
-#ssp_timezone: "'Europe/Athens'"
+# ssp_timezone: "'Europe/Athens'"
 
 # The process name that should be used when logging to syslog
-ssp_logging_processname: "simplesamlphp"
+ssp_logging_processname: simplesamlphp
 # The name of the logfile when using the file handler for logging
-ssp_logging_logfile: "simplesamlphp.log"
+ssp_logging_logfile: simplesamlphp.log
 # Available log levels are:
 # ERR          No statistics, only errors
 # WARNING      No statistics, only warnings/errors
@@ -156,53 +154,53 @@ ssp_logging_level: NOTICE
 ssp_logging_handler: syslog
 
 ssp_language_available:
-  - "en"
+  - en
   - "no"
-  - "nn"
-  - "se"
-  - "da"
-  - "de"
-  - "sv"
-  - "fi"
-  - "es"
-  - "ca"
-  - "fr"
-  - "it"
-  - "nl"
-  - "lb"
-  - "cs"
-  - "sl"
-  - "lt"
-  - "hr"
-  - "hu"
-  - "pl"
-  - "pt"
-  - "pt-br"
-  - "tr"
-  - "ja"
-  - "zh"
-  - "zh-tw"
-  - "ru"
-  - "et"
-  - "he"
-  - "id"
-  - "sr"
-  - "lv"
-  - "ro"
-  - "eu"
-  - "el"
-  - "af"
-  - "zu"
-  - "xh"
+  - nn
+  - se
+  - da
+  - de
+  - sv
+  - fi
+  - es
+  - ca
+  - fr
+  - it
+  - nl
+  - lb
+  - cs
+  - sl
+  - lt
+  - hr
+  - hu
+  - pl
+  - pt
+  - pt-br
+  - tr
+  - ja
+  - zh
+  - zh-tw
+  - ru
+  - et
+  - he
+  - id
+  - sr
+  - lv
+  - ro
+  - eu
+  - el
+  - af
+  - zu
+  - xh
 
 ssp_language_rtl:
-  - "ar"
-  - "dv"
-  - "fa"
-  - "ur"
-  - "he"
+  - ar
+  - dv
+  - fa
+  - ur
+  - he
 
-ssp_language_default: "en"
+ssp_language_default: en
 
 # Array of domains that are allowed when generating links or redirects
 # to URLs. SimpleSAMLphp will use this option to determine whether to
@@ -218,7 +216,6 @@ ssp_language_default: "en"
 # Set to NULL to disable checking of URLs.
 # ssp_trusted_url_domains: null
 ssp_trusted_url_domains: []
-
 # Enable regular expression matching of ssp_trusted_url_domains.
 # Set to true to treat the values in ssp_trusted_url_domains as regular
 # expressions. Set to false to do exact string matching.
@@ -233,31 +230,31 @@ ssp_trusted_url_domains: []
 ssp_authproc_idp:
   - "30":
       # Adopts language from attribute to use in UI
-      class: "core:LanguageAdaptor"
+      class: core:LanguageAdaptor
   - "45":
       # Add a realm attribute from edupersonprincipalname
-      class: "core:StatisticsWithAttribute"
-      attributename: "realm"
-      type: "saml20-idp-SSO"
+      class: core:StatisticsWithAttribute
+      attributename: realm
+      type: saml20-idp-SSO
   - "50":
-       # Filter attributes by checking the 'attributes' parameter in metadata
-       # on IdP hosted and SP remote.
-       class: "core:AttributeLimit"
+      # Filter attributes by checking the 'attributes' parameter in metadata
+      # on IdP hosted and SP remote.
+      class: core:AttributeLimit
   - "99":
-       # If language is set in Consent module it will be added as an attribute.
-       class: "core:LanguageAdaptor"
+      # If language is set in Consent module it will be added as an attribute.
+      class: core:LanguageAdaptor
 
 # Authentication processing filters that will be executed for all SPs.
 # See https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
 # The filters can be specified with PHP syntax using `ssp_authproc_sp_raw` or
 # alternatively, with YAML syntax using `ssp_authproc_sp`.
-ssp_authproc_sp: 
+ssp_authproc_sp:
   - "90":
       # Adopts language from attribute to use in UI
-      class: "core:LanguageAdaptor"
+      class: core:LanguageAdaptor
 
 # This will be added before the config[] in SimpleSAMLphp authentication sources
-#ssp_authsources_preamble: |
+# ssp_authsources_preamble: |
 #   function foo() {
 #     // Do something
 #   }
@@ -273,341 +270,339 @@ ssp_authsources_saml:
     # this SP should contact. When NULL the user will be shown a list of
     # available IdPs.
     # idp_function: "findIdP()"
-    #disco_url: "/{{ ssp_alias }}/module.php/discopower/disco.php"
+    # disco_url: "/{{ ssp_alias }}/module.php/discopower/disco.php"
     # Set to true to generate self-signed SSL certificate for signing requests/
     # response received from/sent to the IdP, as well as for receiving encrypted
     # responses.
-    ssl_certificate_generate: yes
+    ssl_certificate_generate: true
     # SSL certificate options (ignored when `ssl_certificate_generate` is set
     # to false):
     # SSL certificate Common Name (CN)
-    #ssl_certificate_cn: sp.example.com
+    # ssl_certificate_cn: sp.example.com
     # Alternatively, you can generate the certificate as follows:
     # openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN=sp.example.com" -nodes -out sp-default-sp.crt -keyout sp-default-sp.key
     # SSL certificate
-    #ssl_certificate: |
-    #  -----BEGIN CERTIFICATE-----
-    #  ...
-    #  -----END CERTIFICATE-----
+    # ssl_certificate: |
+    #   -----BEGIN CERTIFICATE-----
+    #   ...
+    #   -----END CERTIFICATE-----
     # SSL certificate private key
-    #ssl_certificate_key: |
-    #  -----BEGIN PRIVATE KEY-----
-    #  ...
-    #  -----END PRIVATE KEY-----
+    # ssl_certificate_key: |
+    #   -----BEGIN PRIVATE KEY-----
+    #   ...
+    #   -----END PRIVATE KEY-----
     # Algorithm to use when signing any message generated by this SP:
     # - http://www.w3.org/2000/09/xmldsig#rsa-sha1 (default)
     # - http://www.w3.org/2001/04/xmldsig-more#rsa-sha256
     # - http://www.w3.org/2001/04/xmldsig-more#rsa-sha384
     # - http://www.w3.org/2001/04/xmldsig-more#rsa-sha512
     # Note: the use of SHA1 is deprecated and will be disallowed in the future.
-    #sign_algorithm: "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+    # sign_algorithm: "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
     # Whether authentication requests, logout requests and logout responses
     # sent from this SP should be signed. Default is false.
-    #redirect_sign: true
+    # redirect_sign: true
     # Whether logout requests and logout responses received received by
     # this SP should be validated. Default is false.
-    #redirect_validate: true
-    # Whether to sign authentication requests sent from this SP. Default is 
+    # redirect_validate: true
+    # Whether to sign authentication requests sent from this SP. Default is
     # false.
-    #sign_authnrequest: true
+    # sign_authnrequest: true
     # Whether to sign logout messages sent from this SP. Default is false.
-    #sign_logout: true
+    # sign_logout: true
     # SAML V2.0 Metadata Extensions for Login and Discovery
     # UIInfo Items
     # Localised list of names for this entity
-    #display_name:
-    #  en: Example SP
+    # display_name:
+    #   en: Example SP
     # Localised list of descriptions for this entity
-    #description:
-    #  en: This is an SP used as an example
+    # description:
+    #   en: This is an SP used as an example
     # Optional list of logos for this SP
     # - use a transparent background where appropriate
     # - use PNG or GIF (less preferred) images
     # - use HTTPS URLs in order to avoid mixed-content warnings within browsersk
-    #logos:
-      #- url: "https://example.com/logo-80x60.png"
-        # The rendered height of the logo measured in pixels.
-        #height: 60
-        # The rendered width of the logo measured in pixels.
-        #width: 80
-        # Optional language code for localised logos.
-        #lang: en
-      #- url: "https://example.com/logo-50x50.png"
-        # The rendered height of the logo measured in pixels.
-        #height: 50
-        # The rendered width of the logo measured in pixels.
-        #width: 50
-        # Optional language code for localised logos.
-        #lang: en
+    # logos:
+    #   - url: "https://example.com/logo-80x60.png"
+    # The rendered height of the logo measured in pixels.
+    #     height: 60
+    # The rendered width of the logo measured in pixels.
+    #     width: 80
+    # Optional language code for localised logos.
+    #     lang: en
+    #  - url: "https://example.com/logo-50x50.png"
+    #    height: 50
+    #    width: 50
+    #    lang: en
     # Localised list of URLs where more information about the entity is located
-    #information_url:
+    # information_url:
     #  en: "http://sp.example.com/info/en"
     # Localised list of URLs where the entity's privacy statement is located
-    #privacy_statement_url:
+    #  privacy_statement_url:
     #  en: "http://sp.example.com/privacy/en"
-    #entity_attributes:
-      #- attribute_name: "http://macedir.org/entity-category"
-      #  attribute_values:
-      #    - "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
-    # Optional list of contacts in addition to the technical contact configured 
+    # entity_attributes:
+    #   - attribute_name: "http://macedir.org/entity-category"
+    #     attribute_values:
+    #       - "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    # Optional list of contacts in addition to the technical contact configured
     # through config/config.php
-    #contacts:
-      # The type of contact. The possible values are `technical`, `support`,
-      # `administrative`, `billing`, and `other`.
-      #- contact_type: "technical"
-        # Optional name of the company for the contact person.
-        #company: "ACME"
-        # Optional given (first) name of the contact person.
-        #given_name: "Jane"
-        # Optional surname of the contact person.
-        #sur_name: "Doe"
-        # Optional `mailto:` URI representing e-mail address of contact person.
-        #email_address: "mailto:jane.doe@acme.example.com"
-        # Optional telephone number of the contact person.
-        #telephone_numbers: "+31(0)12345678"
-      # To support a trust framework that requires extra attributes on the
-      # contact person element in your metadata (e.g. SIRTFI), you can specify
-      # an array of attributes on a contact
-      #- contact_type: "other"
-        # Optional given (first) name of the contact person.
-        #given_name: "Security Response Team"
-        # Optional `mailto:` URI representing e-mail address of contact person.
-        #email_address: "mailto:security@example.com"
-        #attributes:
-        #  "xmlns:remd": "http://refeds.org/metadata"
-        #  "remd:contactType": "http://refeds.org/metadata/contactType/security"
+    # contacts:
+    # The type of contact. The possible values are `technical`, `support`,
+    # `administrative`, `billing`, and `other`.
+    #   - contact_type: "technical"
+    # Optional name of the company for the contact person.
+    #     company: "ACME"
+    # Optional given (first) name of the contact person.
+    #     given_name: "Jane"
+    # Optional surname of the contact person.
+    #     sur_name: "Doe"
+    # Optional `mailto:` URI representing e-mail address of contact person.
+    #     email_address: "mailto:jane.doe@acme.example.com"
+    # Optional telephone number of the contact person.
+    #     telephone_numbers: "+31(0)12345678"
+    # To support a trust framework that requires extra attributes on the
+    # contact person element in your metadata (e.g. SIRTFI), you can specify
+    # an array of attributes on a contact
+    #   - contact_type: "other"
+    # Optional given (first) name of the contact person.
+    #       given_name: "Security Response Team"
+    # Optional `mailto:` URI representing e-mail address of contact person.
+    #       email_address: "mailto:security@example.com"
+    #       attributes:
+    #         "xmlns:remd": "http://refeds.org/metadata"
+    #         "remd:contactType": "http://refeds.org/metadata/contactType/security"
     # Localised names of the organisation responsible for this SP.
-    #organization_name: 
-    #  en: ACME 
+    # organization_name:
+    #   en: ACME
     # Localised user-friendly names of the organisation responsible for this
     # SP.
-    #organization_display_name: 
+    # organization_display_name:
     #  en: ACME
     # Localised URLs of the organisation responsible for this SP.
-    #organization_url: 
-    #  en: "https://www.acme.example.com/en"
+    # organization_url:
+    #   en: "https://www.acme.example.com/en"
     # List of attributes this SP requests from the IdP. This list will be added
     # to the generated metadata.
-    # The attributes will be added without a `NameFormat` by default. Use the 
+    # The attributes will be added without a `NameFormat` by default. Use the
     # name_format option to specify the `NameFormat` for the attributes.
-    #attributes:
-      #name_format: "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
-      #required:
-      #  uid: "urn:oid:0.9.2342.19200300.100.1.1"
-      #optional:
-      #  eduPersonPrincipalName: "urn:oid:1.3.6.1.4.1.5923.1.1.1.6"
-      #  eduPersonTargetedID: "urn:oid:1.3.6.1.4.1.5923.1.1.1.10"
-      #  commonName: "urn:oid:2.5.4.3"
-      #  givenName: "urn:oid:2.5.4.42"
-      #  sn: "urn:oid:2.5.4.4"
-      #  displayName: "urn:oid:2.16.840.1.113730.3.1.241"
-      #  mail: "urn:oid:0.9.2342.19200300.100.1.3"
-    # The format of the NameID we request from the IdP. Defaults to the 
+    # attributes:
+    #   name_format: "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+    # required:
+    #   uid: "urn:oid:0.9.2342.19200300.100.1.1"
+    # optional:
+    #   eduPersonPrincipalName: "urn:oid:1.3.6.1.4.1.5923.1.1.1.6"
+    #   eduPersonTargetedID: "urn:oid:1.3.6.1.4.1.5923.1.1.1.10"
+    #   commonName: "urn:oid:2.5.4.3"
+    #   givenName: "urn:oid:2.5.4.42"
+    #   sn: "urn:oid:2.5.4.4"
+    #   displayName: "urn:oid:2.16.840.1.113730.3.1.241"
+    #   mail: "urn:oid:0.9.2342.19200300.100.1.3"
+    # The format of the NameID we request from the IdP. Defaults to the
     # transient format if unspecified.
-    #name_id_policy: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+    # name_id_policy: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
     # List of supported ACS bindings. If unspecified, all will be added.
     # Possible values:
     # - urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
     # - urn:oasis:names:tc:SAML:1.0:profiles:browser-post
     # - urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact
     # - urn:oasis:names:tc:SAML:1.0:profiles:artifact-01
-    # - urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser 
-    #acs_bindings:
+    # - urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser
+    # acs_bindings:
     # Optional list of processing filters to run after SP authentication. See
     # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
     # The filters can be specified with PHP syntax using `authproc_raw` or
     # alternatively, with YAML syntax using `authproc`. See examples below:
-    #authproc_raw: |-
+    # authproc_raw: |-
     #  // Add the persistent NameID to the eduPersonTargetedID attribute
     #  60 => [
     #      'class' => 'saml:PersistentNameID2TargetedID',
     #      'attribute' => 'eduPersonTargetedID', // The default
     #      'nameId' => true, // The default
     #  ],
-    #authproc:
-    #  - "60":
-    #      class: "saml:PersistentNameID2TargetedID"
-    #      attribute: "eduPersonTargetedID"
-    #      nameId: no
+    # authproc:
+    #   - "60":
+    #       class: "saml:PersistentNameID2TargetedID"
+    #       attribute: "eduPersonTargetedID"
+    #       nameId: no
 
-# Requires `authfacebook` module in `ssp_mods_enabled`.
-#ssp_authsources_facebook:
-# - name: facebook
-   # Register your Facebook application at http://www.facebook.com/developers
-   # App ID or API key (requests with App ID should be faster; https://github.com/facebook/php-sdk/issues/214)
-   #api_key: "123456789012345"
-   #secret: "1ab23456cdef78g90123h4ij56k789l0"
-   # Optional list of additional permissions to request from user.
-   # See https://developers.facebook.com/docs/facebook-login/permissions
-   #req_perms: "email"
-   # Optional list of user profile fields to request.
-   # When empty, only the app-specific user id and name will be returned
-   # See https://developers.facebook.com/docs/graph-api/reference/v2.6/user for the full list
-   #user_fields: "email,birthday,third_party_id,name,first_name,last_name"
+    # Requires `authfacebook` module in `ssp_mods_enabled`.
+    # ssp_authsources_facebook:
+    #   - name: facebook
+    # Register your Facebook application at http://www.facebook.com/developers
+    # App ID or API key (requests with App ID should be faster; https://github.com/facebook/php-sdk/issues/214)
+    # api_key: "123456789012345"
+    # secret: "1ab23456cdef78g90123h4ij56k789l0"
+    # Optional list of additional permissions to request from user.
+    # See https://developers.facebook.com/docs/facebook-login/permissions
+    # req_perms: "email"
+    # Optional list of user profile fields to request.
+    # When empty, only the app-specific user id and name will be returned
+    # See https://developers.facebook.com/docs/graph-api/reference/v2.6/user
+    # for the full list
+    # user_fields: "email,birthday,third_party_id,name,first_name,last_name"
 
-# Requires `authlinkedin` and `oauth` modules in `ssp_mods_enabled`.
-#ssp_authsources_linkedin:
-# - name: "linkedin"
-   #key: "xxxxxxxxxxxxxx"
-   #secret: "xxxxxxxxxxxxxxxx"
-   # See https://developer.linkedin.com/docs/fields/basic-profile for the full list
-   #user_fields: "id,formatted-name,first-name,last-name,email-address"
+    # Requires `authlinkedin` and `oauth` modules in `ssp_mods_enabled`.
+    # ssp_authsources_linkedin:
+    #   - name: "linkedin"
+    #     key: "xxxxxxxxxxxxxx"
+    #     secret: "xxxxxxxxxxxxxxxx"
+    # See https://developer.linkedin.com/docs/fields/basic-profile for the full list
+    # user_fields: "id,formatted-name,first-name,last-name,email-address"
 
-# Requires `authlinkedin` and `oauth` module in `ssp_mods_enabled`.
-#ssp_authsources_facebook:
-# - name: facebook
-   # Register your Facebook application at http://www.facebook.com/developers
-   # App ID or API key (requests with App ID should be faster; https://github.com/facebook/php-sdk/issues/214)
-   #api_key: "123456789012345"
-   #secret: "1ab23456cdef78g90123h4ij56k789l0"
-   # Optional list of additional permissions to request from user.
-   # See https://developers.facebook.com/docs/facebook-login/permissions
-   #req_perms: "email"
-   # Optional list of user profile fields to request.
-   # When empty, only the app-specific user id and name will be returned
-   # See https://developers.facebook.com/docs/graph-api/reference/v2.6/user for the full list
-   #user_fields: "email,birthday,third_party_id,name,first_name,last_name"
+    # Requires `authlinkedin` and `oauth` module in `ssp_mods_enabled`.
+    # ssp_authsources_facebook:
+    #   - name: facebook
+    # Register your Facebook application at http://www.facebook.com/developers
+    # App ID or API key (requests with App ID should be faster; https://github.com/facebook/php-sdk/issues/214)
+    # api_key: "123456789012345"
+    # secret: "1ab23456cdef78g90123h4ij56k789l0"
+    # Optional list of additional permissions to request from user.
+    # See https://developers.facebook.com/docs/facebook-login/permissions
+    # req_perms: "email"
+    # Optional list of user profile fields to request.
+    # When empty, only the app-specific user id and name will be returned
+    # See https://developers.facebook.com/docs/graph-api/reference/v2.6/user for the full list
+    # user_fields: "email,birthday,third_party_id,name,first_name,last_name"
 
-# IdP configuration
-# Enable SAML 2.0 IdP functionality
-ssp_idp_saml20_enabled: false
-# Enable Shibboleth 1.3 IdP (SAML 1.1) functionality
-ssp_idp_shib13_enabled: false
-# Hosted IdP metadata
-ssp_idp_hosts: []
-  # The entity ID should be a URI. It can also be specified as `__DYNAMIC:1__`,
-  # `__DYNAMIC:2__`, ... in which case, the entity ID will be generated 
-  # automatically.
-  # As of SimplesamlPHP version 2.x __DYNAMIC:.. is not supported. Thus we need to provide
-  # the entity ID ourselves, e.g. "https://rciam.example.org/saml-idp"
-  # or "urn:x-rciam:example-idp" (see https://simplesamlphp.org/docs/stable/simplesamlphp-reference-idp-hosted)
-  #- entity_id: "__DYNAMIC:1__"
+    # IdP configuration
+    # Enable SAML 2.0 IdP functionality
+    ssp_idp_saml20_enabled: false
+    # Enable Shibboleth 1.3 IdP (SAML 1.1) functionality
+    ssp_idp_shib13_enabled: false
+    # Hosted IdP metadata
+    ssp_idp_hosts: []
+    # The entity ID should be a URI. It can also be specified as `__DYNAMIC:1__`,
+    # `__DYNAMIC:2__`, ... in which case, the entity ID will be generated
+    # automatically.
+    # As of SimplesamlPHP version 2.x __DYNAMIC:.. is not supported. Thus we need to provide
+    # the entity ID ourselves, e.g. "https://rciam.example.org/saml-idp"
+    # or "urn:x-rciam:example-idp" (see https://simplesamlphp.org/docs/stable/simplesamlphp-reference-idp-hosted)
+    # - entity_id: "__DYNAMIC:1__"
     # The hostname for this IdP. One of the IdPs can also have its `host` set
     #  to `__DEFAULT__`, and that IdP will be used when no other entries in the
     # metadata matches.
-    #host: "__DEFAULT__"
+    # host: "__DEFAULT__"
     # Set to true to generate self-signed SSL certificate which  should be
     # used by this IdP, in PEM format
-    #ssl_certificate_generate: yes
+    # ssl_certificate_generate: yes
     # SSL certificate options (ignored when `ssl_certificate_generate` is set
     # to false):
     # SSL certificate Common Name (CN)
-    #ssl_certificate_cn: idp.example.com
+    # ssl_certificate_cn: idp.example.com
     # Alternatively, you can generate the certificate as follows:
     # openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN=idp.example.com" -nodes -out idp-__DYNAMIC:1__.crt -keyout idp-__DYNAMIC:1__.key
     # SSL certificate
-    #ssl_certificate: |
-    #  -----BEGIN CERTIFICATE-----
-    #  ...
-    #  -----END CERTIFICATE-----
+    # ssl_certificate: |
+    #   -----BEGIN CERTIFICATE-----
+    #   ...
+    #   -----END CERTIFICATE-----
     # SSL certificate private key
-    #ssl_certificate_key: |
-    #  -----BEGIN PRIVATE KEY-----
-    #  ...
-    #  -----END PRIVATE KEY-----
+    # ssl_certificate_key: |
+    #   -----BEGIN PRIVATE KEY-----
+    #   ...
+    #   -----END PRIVATE KEY-----
     # Algorithm to use when signing any message generated by this IdP:
     # - http://www.w3.org/2000/09/xmldsig#rsa-sha1 (default)
     # - http://www.w3.org/2001/04/xmldsig-more#rsa-sha256
     # - http://www.w3.org/2001/04/xmldsig-more#rsa-sha384
     # - http://www.w3.org/2001/04/xmldsig-more#rsa-sha512
     # Note: the use of SHA1 is deprecated and will be disallowed in the future.
-    #sign_algorithm: "http://www.w3.org/2000/09/xmldsig#rsa-sha256"
+    # sign_algorithm: "http://www.w3.org/2000/09/xmldsig#rsa-sha256"
     # Whether logout requests and logout responses sent from this IdP should be
     # signed. Default is false.
-    #redirect_sign: true
+    # redirect_sign: true
     # Whether authentication requests, logout requests and logout responses
     # received/sent from this IdP should be validated. Default is false.
-    #redirect_validate: true
+    # redirect_validate: true
     # The authentication source to be used to authenticate users on this IdP.
-    #auth: default-sp 
-    #contacts:
-      # The type of contact. The possible values are `technical`, `support`,
-      # `administrative`, `billing`, and `other`.
-      #- contact_type: "technical"
-        # Optional name of the company for the contact person.
-        #company: "ACME"
-        # Optional given (first) name of the contact person.
-        #given_name: "Jane"
-        # Optional surname of the contact person.
-        #sur_name: "Doe"
-        # Optional `mailto:` URI representing e-mail address of contact person.
-        #email_address: "mailto:jane.doe@acme.example.com"
-        # Optional telephone number of the contact person.
-        #telephone_numbers: "+31(0)12345678"
-    # A list with scopes for this IdP. The scopes will be added to the 
+    # auth: default-sp
+    # contacts:
+    # The type of contact. The possible values are `technical`, `support`,
+    # `administrative`, `billing`, and `other`.
+    # - contact_type: "technical"
+    # Optional name of the company for the contact person.
+    # company: "ACME"
+    # Optional given (first) name of the contact person.
+    # given_name: "Jane"
+    # Optional surname of the contact person.
+    # sur_name: "Doe"
+    # Optional `mailto:` URI representing e-mail address of contact person.
+    # email_address: "mailto:jane.doe@acme.example.com"
+    # Optional telephone number of the contact person.
+    # telephone_numbers: "+31(0)12345678"
+    # A list with scopes for this IdP. The scopes will be added to the
     # generated XML metadata. A scope can either be a domain name or a regular
     # expression matching a number of domains.
-    #scopes:
-    #  - domain1.example.com  
-    #  - domain2.example.com  
+    # scopes:
+    #   - domain1.example.com
+    #   - domain2.example.com
     # Localised names of the organisation responsible for this IdP.
-    #organization_name: 
-    #  en: ACME 
+    # organization_name:
+    #   en: ACME
     # Localised user-friendly names of the organisation responsible for this
     # IdP.
-    #organization_display_name: 
-    #  en: ACME
+    # organization_display_name:
+    #   en: ACME
     # Localised URLs of the organisation responsible for this IdP.
-    #organization_url: 
-    #  en: "https://www.acme.example.com/en"
+    # organization_url:
+    #   en: "https://www.acme.example.com/en"
     # SAML V2.0 Metadata Extensions for Login and Discovery
     # UIInfo Items
     # Localised list of names for this entity
-    #display_name:
-    #  en: Example IdP
+    # display_name:
+    #   en: Example IdP
     # Localised list of descriptions for this entity
-    #description:
-    #  en: This is an IdP used as an example
+    # description:
+    #   en: This is an IdP used as an example
     # Localised list of URLs where more information about the entity is located
     # Optional list of logos for this IdP
     # - use a transparent background where appropriate
     # - use PNG or GIF (less preferred) images
     # - use HTTPS URLs in order to avoid mixed-content warnings within browsers
-    #logos:
-      #- url: "https://example.com/logo-80x60.png"
-        # The rendered height of the logo measured in pixels.
-        #height: 60
-        # The rendered width of the logo measured in pixels.
-        #width: 80
-        # Optional language code for localised logos.
-        #lang: en
-      #- url: "https://example.com/logo-50x50.png"
-        # The rendered height of the logo measured in pixels.
-        #height: 50
-        # The rendered width of the logo measured in pixels.
-        #width: 50
-        # Optional language code for localised logos.
-        #lang: en
-    #information_url:
-    #  en: "https://idp1.example.com/info/en"
+    # logos:
+    #   - url: "https://example.com/logo-80x60.png"
+    # The rendered height of the logo measured in pixels.
+    #     height: 60
+    # The rendered width of the logo measured in pixels.
+    #     width: 80
+    # Optional language code for localised logos.
+    #     lang: en
+    #   - url: "https://example.com/logo-50x50.png"
+    # The rendered height of the logo measured in pixels.
+    #     height: 50
+    # The rendered width of the logo measured in pixels.
+    #     width: 50
+    # Optional language code for localised logos.
+    #     lang: en
+    # information_url:
+    #   en: "https://idp1.example.com/info/en"
     # Localised list of URLs where the entity's privacy statement is located
-    #privacy_statement_url:
-    #  en: "https://idp1.example.com/privacy/en"
+    # privacy_statement_url:
+    #   en: "https://idp1.example.com/privacy/en"
     # DiscoHints items
-    # List of IPv4 and IPv6 addresses in CIDR notation serviced by or 
+    # List of IPv4 and IPv6 addresses in CIDR notation serviced by or
     # associated with this IdP.
-    #ip_hints:
-    #  - "130.59.0.0/16"
-    #  - "2001:620::0/96"
+    # ip_hints:
+    #   - "130.59.0.0/16"
+    #   - "2001:620::0/96"
     # List of domain names serviced by or associated with this IdP.
-    #domain_hints:
-    #  - "example.com"
-    #  - "www.example.com"
+    # domain_hints:
+    #   - "example.com"
+    #   - "www.example.com"
     # List of geographic coordinates serviced by or associated with this IdP.
     # Coordinates are given in the geo URI scheme (RFC5870).
-    #geolocation_hints:
-    #  - "geo:47.37328,8.531126"
-    #  - "geo:19.34343,12.342514"
-    #entity_attributes:
-      #- attribute_name: "http://macedir.org/entity-category"
-      #  attribute_values:
-      #    - "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
+    # geolocation_hints:
+    #   - "geo:47.37328,8.531126"
+    #   - "geo:19.34343,12.342514"
+    # entity_attributes:
+    #   - attribute_name: "http://macedir.org/entity-category"
+    #     attribute_values:
+    #       - "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
     # SAML2-specific options
     # The value to set in the Format field of attribute statements.
-    #attributes_name_format: "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+    # attributes_name_format: "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
     # The format of the NameID supported by this IdP. Defaults to the transient
     # format if unspecified.
-    #name_id_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+    # name_id_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
     # Override the default URL for the SingleSignOnService for this IdP.
     # This is an absolute URL. The default value is:
     # <SimpleSAMLphp-root>/module.php/saml/idp/singleSignOnService
@@ -615,7 +610,7 @@ ssp_idp_hosts: []
     # in the messages sent to others. You must also configure your webserver
     # to deliver this URL to the correct PHP page.
     # Uncomment the following for backwards compatibility with SSP v1.x
-    #sso_service: "https://{{ rciam_hostname }}/{{ ssp_baseurlpath }}/saml2/idp/SSOService.php"
+    # sso_service: "https://{{ rciam_hostname }}/{{ ssp_baseurlpath }}/saml2/idp/SSOService.php"
     # Override the default URL for the SingleLogoutService for this IdP.
     # This is an absolute URL. The default value is:
     # <SimpleSAMLphp-root>/module.php/saml/idp/singleLogout
@@ -623,12 +618,12 @@ ssp_idp_hosts: []
     # in the messages sent to others. You must also configure your webserver
     # to deliver this URL to the correct PHP page.
     # Uncomment the following for backwards compatibility with SSP v1.x
-    #slo_service: "https://{{ rciam_hostname }}/{{ ssp_baseurlpath }}/saml2/idp/SingleLogoutService.php"
+    # slo_service: "https://{{ rciam_hostname }}/{{ ssp_baseurlpath }}/saml2/idp/SingleLogoutService.php"
     # Optional list of processing filters to run for this IdP. See
     # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
     # The filters can be specified with PHP syntax using `authproc_raw` or
     # alternatively, with YAML syntax using `authproc`. See examples below:
-    #authproc_raw: |-
+    # authproc_raw: |-
     #  80 => array(
     #      // Maps attribute OIDs to names.
     #      // Usually combined with SAML:2.0:attrname-format:uri
@@ -645,36 +640,36 @@ ssp_idp_hosts: []
     #      'hiddenAttributes' => array(
     #      ),
     #  ),
-    #authproc:
-    #  - "80":
-          # Maps attribute OIDs to names.
-          # Usually combined with SAML:2.0:attrname-format:uri
-          #class: "core:AttributeMap"
-          #oid2name:
-    #  - "90":
-          # Requires `consent` in `ssp_mods_enabled`.
-          #class: "consent:Consent"
-          # The Consent storage backend. Currently only `consent:Cookie` is 
-          # supported. This option is optional. If omitted, the user is still
-          # asked to consent, but the decision is not saved.
-          #store: "consent:Cookie"
-          # Optional flag that indicates whether the values of the attributes
-          # should be used in calculating the unique hashes that identify the
-          # consent. If includeValues is set and the value of an attribute 
-          # changes, then the consent becomes invalid. Defaults to false.
-          #includeValues: false
-          # Optional flag that indicates whether the "Remember" consent 
-          # checkbox is checkd by default. Defaults to false.
-          #checked: false
-          # Indicates whether the "Yes" or "No" button is in fucus by default.
-          # This option is optional and can take the value 'yes' or 'no'. 
-          # If omitted, neither will recive focus.
-          #focus: "yes" | "no"
-          # Optional list of attributes whose values should be hidden.
-          # Default behaviour is that all attribute values are shown.
-          #hiddenAttributes:
-  #- entity_id: "__DYNAMIC:2__"
-  #    host: "idp2.example.com"
+    # authproc:
+    #   - "80":
+    # Maps attribute OIDs to names.
+    # Usually combined with SAML:2.0:attrname-format:uri
+    # class: "core:AttributeMap"
+    # oid2name:
+    #   - "90":
+    # Requires `consent` in `ssp_mods_enabled`.
+    # class: "consent:Consent"
+    # The Consent storage backend. Currently only `consent:Cookie` is
+    # supported. This option is optional. If omitted, the user is still
+    # asked to consent, but the decision is not saved.
+    # store: "consent:Cookie"
+    # Optional flag that indicates whether the values of the attributes
+    # should be used in calculating the unique hashes that identify the
+    # consent. If includeValues is set and the value of an attribute
+    # changes, then the consent becomes invalid. Defaults to false.
+    # includeValues: false
+    # Optional flag that indicates whether the "Remember" consent
+    # checkbox is checkd by default. Defaults to false.
+    # checked: false
+    # Indicates whether the "Yes" or "No" button is in fucus by default.
+    # This option is optional and can take the value 'yes' or 'no'.
+    # If omitted, neither will recive focus.
+    # focus: "yes" | "no"
+    # Optional list of attributes whose values should be hidden.
+    # Default behaviour is that all attribute values are shown.
+    # hiddenAttributes:
+    #   - entity_id: "__DYNAMIC:2__"
+    #     host: "idp2.example.com"
 
 ## Extra SSP files to copy, e.g. dictionaries, attribute maps, certificates, etc
 ssp_extra_files: []
@@ -717,30 +712,28 @@ ssp_mods_enabled:
 # List of SSP modules to disable
 # Deprecated for SSP v2.0
 ssp_mods_disabled: []
-  # - admin
-  # - authorize
-  # - consent
-  # - core
-  # - discopower
-  # - exampleattributeserver
-  # - expirycheck
-  # - ldap
-  # - memcookie
-  # - multiauth
-  # - portal
-  # - saml
-  # - sanitycheck
-
-
+# - admin
+# - authorize
+# - consent
+# - core
+# - discopower
+# - exampleattributeserver
+# - expirycheck
+# - ldap
+# - memcookie
+# - multiauth
+# - portal
+# - saml
+# - sanitycheck
 # Configuration options for automated SAML metadata management.
-# Requires `metarefresh` and `cron` modules in `ssp_mods_enabled`.  
+# Requires `metarefresh` and `cron` modules in `ssp_mods_enabled`.
 
 #
 # Options applicable to SSP version < 2
 #
 
 # Cron module URL
-ssp_mod_cron_url: "https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php"
+ssp_mod_cron_url: https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.php
 
 #
 # Options applicable to SSP version >= 2
@@ -748,7 +741,7 @@ ssp_mod_cron_url: "https://localhost/{{ ssp_baseurlpath }}/module.php/cron/cron.
 
 # Maximum amount of memory each metarefresh cron tag may consume
 # (see http://php.net/memory-limit)
-ssp_mod_cron_job_memory_limit: "768M"
+ssp_mod_cron_job_memory_limit: 768M
 
 #
 # Common options for all SSP versions
@@ -759,91 +752,89 @@ ssp_mod_cron_job_memory_limit: "768M"
 ssp_mod_cron_job_max_execution_time: 90
 
 # Secret key used to restrict access to your cron.
-#ssp_mod_cron_secret: "secret"
+# ssp_mod_cron_secret: "secret"
 ssp_mod_cron_entries:
-  - name: "SSP metarefresh [daily]"
-    tag: "daily"
-    file: "simplesamlphp"
+  - name: SSP metarefresh [daily]
+    tag: daily
+    file: simplesamlphp
     user: "{{ ssp_webuser }}"
     minute: "30"
     hour: "3"
-  - name: "SSP metarefresh [hourly]"
-    tag: "hourly"
-    file: "simplesamlphp"
+  - name: SSP metarefresh [hourly]
+    tag: hourly
+    file: simplesamlphp
     user: "{{ ssp_webuser }}"
     minute: "15"
 # Cron job variables
 ssp_mod_cron_vars:
-  - name: "MAILTO"
-    value: "na@example.org"
-    file: "simplesamlphp"
-
+  - name: MAILTO
+    value: na@example.org
+    file: simplesamlphp
 
 # Global blacklist: Optional list of entityIDs that should be excluded from ALL
 # metadata sets.
-#ssp_mod_metarefresh_blacklist: 
-#  - "https://my.own.domain.com/ssp/saml2/idp/metadata.php"
+# ssp_mod_metarefresh_blacklist:
+#   - "https://my.own.domain.com/ssp/saml2/idp/metadata.php"
 #
-#ssp_mod_metarefresh_sets: 
-  #- name: reep
+# ssp_mod_metarefresh_sets:
+#   - name: reep
     # Can be `hourly` or `daily`
-    #cron: hourly
+    # cron: hourly
     # A list of one or more sources that will be included in this metadata set.
     # The filters can be specified with PHP syntax using `sources_raw` or
     # alternatively, with YAML syntax using `sources`. See examples below:
-    #sources_raw: include 'path-to-file.php'
-    #sources:
-      # The source URL where the metadata will be fetched from.
-      #- url: "https://reep.refeds.org/entity/69/latest_metadata/"
-        # The fingerprint of the certificate used to sign the metadata. 
+    # sources_raw: include 'path-to-file.php'
+    # sources:
+    # The source URL where the metadata will be fetched from.
+      # - url: "https://reep.refeds.org/entity/69/latest_metadata/"
+        # The fingerprint of the certificate used to sign the metadata.
         # You can omit this option if you don't want to validate the signature
         # on the metadata.
-        #validate_fingerprint: "59:1D:4B:46:70:46:3E:ED:A9:1F:CC:81:6D:C0:AF:2A:09:2A:A8:01"
+        # validate_fingerprint: "59:1D:4B:46:70:46:3E:ED:A9:1F:CC:81:6D:C0:AF:2A:09:2A:A8:01"
         # Optional list of tags/labels for the entities in the metadata.
-        #tags:
+        # tags:
         #  - tag1
         #  - tag2
         # Optional list of processing filters to run for this entity. See
         # https://simplesamlphp.org/docs/stable/simplesamlphp-authproc
         # The filters can be specified with PHP syntax using `authproc_raw` or
         # alternatively, with YAML syntax using `authproc`. See examples below:
-        #authproc_raw: |-
+        # authproc_raw: |-
         #  50 => [
         #      'class' => 'core:ExampleFilter',
         #  ],
-        #authproc:
+        # authproc:
         #  - "50":
         #      class: "core:ExampleFilter"
-        #extra_parameters: |-
+        # extra_parameters: |-
         #  'foo' => 'bar',
         # Optional list of entityIDs that should be excluded from this src.
-        #blacklist:
+        # blacklist:
         #  - "https://black.example.com/idp"
         #  - "https://black.example.com/sp"
         # Optional list of entityIDs that should be included from this src.
-        #whitelist:
+        # whitelist:
         #  - "https://white.example.com/idp"
         #  - "https://white.example.com/sp"
     # Maximum cache time in days
-    #expire_after: 7
+    # expire_after: 7
     # Output directory is relative to {{ ssp_path }}/metadata/
-    #output_dir: metarefresh-aarc
+    # output_dir: metarefresh-aarc
     # Can be `flatfile` or `serialize`
-    #output_format: serialize
-
+    # output_format: serialize
 
 # Configuration options for the discopower module that provides a more
 # user-friendly IdP discovery service compared to the default.
 # Requires `discopower` module in `ssp_mods_enabled`.
 #
 # List of tags (mapped to tabs) that should be listed in a specific order.
-#ssp_mod_discopower_taborder:
+# ssp_mod_discopower_taborder:
 #  - tag1
 #  - tag2
 # Filter list of IdPs by matching the beginning of search keywords
-#ssp_mod_discopower_suggest: false
+# ssp_mod_discopower_suggest: false
 # List of tab/tag translations to add
-#ssp_mod_discopower_dictionaries:
+# ssp_mod_discopower_dictionaries:
 #  - tag1:
 #      en: "Tab One"
 #  - tag2:

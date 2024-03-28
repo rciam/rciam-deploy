@@ -1,8 +1,19 @@
 ---
 # handlers file for ansible-openldap
 - name: Restart slapd
-  service:
+  ansible.builtin.service:
     name: slapd
     state: restarted
-  become: yes
+  become: true
 
+- name: Enable Attribute Options to openLDAP # noqa command-instead-of-shell
+  ansible.builtin.shell: >-
+    ldapmodify \
+      -Y EXTERNAL \
+      -H ldapi:/// \
+      -f /etc/ldap/slapd.d/olc_attribute_options.ldif
+  ignore_errors: true  # noqa ignore-errors
+  changed_when: false
+  when: olc_attribute_options_file is changed # noqa no-handler
+  become: true
+  run_once: true

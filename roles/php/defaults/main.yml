@@ -1,18 +1,17 @@
 ---
 
 # Whether to install PHP packages from alternative repository
-php_alt_repo: no
+php_alt_repo: false
 
 # Override default list of PHP packages to install.
 # See php_default_packages in php/vars/
-#php_packages:
+# php_packages:
 
 # List of PHP extensions to install
 php_extensions: []
-
 # Override default PHP configuration scan directory.
 # See php_default_conf_scan_dir in php/vars/
-#php_conf_scan_dir:
+# php_conf_scan_dir:
 
 # List of PHP configuration files to load
 php_conf_files: []

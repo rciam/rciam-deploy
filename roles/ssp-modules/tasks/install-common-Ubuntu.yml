@@ -1,17 +1,16 @@
 ---
-
 - name: Define PostgreSQL python module version (Ubuntu)
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_psycopg2_package: "{{ postgresql_default_psycopg2_package }}"
   when: postgresql_psycopg2_package is not defined
   tags:
     - always
 
 - name: Ensure PostgreSQL python module is installed (Ubuntu)
-  apt:
+  ansible.builtin.apt:
     name: "{{ postgresql_psycopg2_package }}"
     state: present
-    install_recommends: no
-    update_cache: yes
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true

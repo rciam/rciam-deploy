@@ -4,27 +4,50 @@
 # current_cli_reg_pol = the current client registration policy (loop item) of the config
 # found_cli_reg_pols = all the found client registration policies found on the server for the current_realm
 
-- set_fact:
+- name: Set reg pool match fact
+  ansible.builtin.set_fact:
     cli_reg_pol_match: "{{ found_cli_reg_pols | json_query(query) | first | default({}) }}"
   vars:
-    query: '[? (name == `{{ current_cli_reg_pol.name }}` && providerId == `{{ current_cli_reg_pol.providerId }}` && subType == `{{ current_cli_reg_pol.subType }}`) ]'
+    query: >-
+      '[? (name == `{{ current_cli_reg_pol.name }}` &&
+        providerId == `{{ current_cli_reg_pol.providerId }}` &&
+        subType == `{{ current_cli_reg_pol.subType }}`)
+      ]'
 
-- set_fact:
+- name: Set reg pool found fact
+  ansible.builtin.set_fact:
     cli_reg_pol_isfound: "{{ lookup('dict', cli_reg_pol_match) | length > 0 }}"
 
-- name: "{% if cli_reg_pol_isfound %} Update {% else %} Create {% endif %}client registration policy {{ current_cli_reg_pol.name }} on realm {{ current_realm.name }}"
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/components{% if cli_reg_pol_isfound %}/{{ cli_reg_pol_match.id }}{% endif %}"
-    method: "{% if cli_reg_pol_isfound %}PUT{% else %}POST{% endif %}"
+# This task is very difficult to understand and maintain.
+# Propose specific tasks based on the cli_reg_pol_isfound variable
+- name: "Update client registration policy {{ current_cli_reg_pol.name }} on realm {{ current_realm.name }}" # noqa name[template]
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/components/{{ cli_reg_pol_match.id }}"
+    method: PUT
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body: # if found a match, fuse the existing with the match and overwrite (care, need to append the provided configuration on the existing/found one... not the opposite)
-      "{%if cli_reg_pol_isfound %}{{ cli_reg_pol_match | combine(current_cli_reg_pol , recursive=True ) }}{% else %}{{ current_cli_reg_pol | combine(realm_parentId , recursive=True ) }}{% endif %}"
-    status_code: "{% if cli_reg_pol_isfound %}204{% else %}201{% endif %}"
+    # if found a match, fuse the existing with the match and overwrite
+    # (care, need to append the provided configuration on the existing/found one... not the opposite)
+    body: "{{ cli_reg_pol_match | combine(current_cli_reg_pol, recursive=True) }}"
+    status_code: 204
   vars:
-    realm_parentId:
-      parentId: "{{ current_realm.name }}"
+    realm_parentId: # noqa var-naming[pattern]
+      parentId: "{{ current_realm.name }}" # noqa var-naming[pattern]
+  when: cli_reg_pol_isfound
 
-
-
+- name: "Create client registration policy {{ current_cli_reg_pol.name }} on realm {{ current_realm.name }}" # noqa name[template]
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/components"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    # if found a match, fuse the existing with the match and overwrite
+    # (care, need to append the provided configuration on the existing/found one... not the opposite)
+    body: "{{ current_cli_reg_pol | combine(realm_parentId, recursive=True) }}"
+    status_code: 201
+  vars:
+    realm_parentId: # noqa var-naming[pattern]
+      parentId: "{{ current_realm.name }}" # noqa var-naming[pattern]
+  when: not cli_reg_pol_isfound

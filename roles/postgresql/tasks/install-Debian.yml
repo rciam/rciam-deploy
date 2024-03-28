@@ -1,25 +1,24 @@
 # file: postgresql/tasks/install-Debian.yml
 #
 ---
-
 - name: Ensure PostgreSQL is installed (Debian)
-  apt:
+  ansible.builtin.apt:
     name: "postgresql-{{ postgresql_version }}"
     state: present
-    install_recommends: no
-    update_cache: yes
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true
 
-# The postgresql_user module requires psycopg2, a Python PostgreSQL database 
+# The postgresql_user module requires psycopg2, a Python PostgreSQL database
 # adapter. We must ensure that psycopg2 is installed on the remote host before
 # using this module.
 - name: Ensure PostgreSQL python module is installed (Debian)
-  apt:
+  ansible.builtin.apt:
     name: "{{ postgresql_psycopg2_package }}"
     state: present
-    install_recommends: no
-    update_cache: yes
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
   when: postgresql_users | length  > 0
-  become: yes
+  become: true

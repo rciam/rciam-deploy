@@ -1,7 +1,7 @@
 ---
 
 - name: "Get list of idps"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances"
     method: GET
     headers:
@@ -9,5 +9,6 @@
     status_code: 200
   register: "idps_result"
 
-- set_fact:
+- name: Set fact
+  ansible.builtin.set_fact:
     idps_list: "{{ idps_result.json | json_query('[].alias') }}"

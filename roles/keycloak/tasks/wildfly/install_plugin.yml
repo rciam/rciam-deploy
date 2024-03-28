@@ -1,26 +1,32 @@
 ---
-
-- block:
-    - name: "Installing plugin {{ item.value.name }} as a module"
-      block:
-
+# keycloak/tasks/widlfly/install-plugin.yml
+- name: Install widlfly plugin
+  when: not item is undefined
+  become: true
+  tags: "keycloak:install:plugins"
+  ansible.builtin.block:
+    - name: "Installing plugin as a module: {{ item.value.name }}"
+      ansible.builtin.block:
         - name: "Create plugin dir with parent directories (for plugin: {{ item.value.name }})"
-          file:
+          ansible.builtin.file:
             path: "{{ keycloak_home }}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main"
             state: directory
+            mode: "0755"
 
         - name: "Download plugin jar (of plugin: {{ item.value.name }})"
-          get_url:
+          ansible.builtin.get_url:
             url: "{{ item.value.module.jar_url }}"
             dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+            mode: "0644"
 
         - name: "Install module.xml (for plugin: {{ item.value.name }})"
-          get_url:
+          ansible.builtin.get_url:
             url: "{{ item.value.module.modulexml_url }}"
             dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/keycloak/{{ item.value.name }}/main/"
+            mode: "0644"
 
         - name: "Setup keycloak xml providers (for plugin: {{ item.value.name }})"
-          xml:
+          community.general.xml:
             path: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
             xpath: /srv:server/srv:profile/sub:subsystem/sub:providers
             input_type: xml
@@ -31,7 +37,7 @@
               sub: "{{ namespaces.domain_server }}"
 
         - name: "Setup keycloak xml theme modules (for plugin: {{ item.value.name }})"
-          xml:
+          community.general.xml:
             path: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
             xpath: /srv:server/srv:profile/sub:subsystem/sub:theme
             input_type: xml
@@ -41,22 +47,17 @@
               srv: "{{ namespaces.domain }}"
               sub: "{{ namespaces.domain_server }}"
           when: item.value.theme is defined
-
       when: item.value.module is defined
 
-    - name: "Installing plugin {{ item.value.name }} with hot deploy"
+    - name: "Installing plugin with hot deploy: {{ item.value.name }}"
       block:
         - name: "Download plugin jar into folder /tmp (for plugin: {{ item.value.name }})"
-          get_url:
+          ansible.builtin.get_url:
             url: "{{ item.value.hotdeploy.jar_url }}"
             dest: "/tmp/"
           register: download_result
-        #do not download directly to deployment folder (if it's downloaded slowly or the file is large, the deployment might be broken)
+        # do not download directly to deployment folder (if it's downloaded slowly or the file is large, the deployment might be broken)
         - name: "Move into deployment folder (for plugin: {{ item.value.name }})"
-          command: "mv {{download_result.dest}} {{keycloak_home}}/standalone/deployments/"
+          ansible.builtin.command: "mv {{ download_result.dest }} {{ keycloak_home }}/standalone/deployments/"
 
       when: item.value.hotdeploy is defined
-
-  when: not item is undefined
-  become: yes
-  tags: "keycloak:install:plugins"

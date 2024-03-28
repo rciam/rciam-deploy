@@ -1,16 +1,16 @@
 ---
 
-- name: "Search federation {{ item[1].alias }} in keycloak"
-  uri:
+- name: "Search federation in keycloak - {{ item[1].alias }}"
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}"
     method: GET
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 200
-  register: "realm_result"
+  register: realm_result
 
-- set_fact:
+- name: Set real federation matches
+  ansible.builtin.set_fact:
     realm_federation_matches: "{{ realm_result.json[keycloak_federation.saml.representation_entity] | json_query(query) | default([]) }}"
   vars:
     query: '[?alias == `{{ item[1].alias }}` ].{alias: alias, internalId: internalId }'
-

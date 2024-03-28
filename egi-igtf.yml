@@ -1,5 +1,6 @@
 ---
-
-- hosts: all
+# egi-igtf.yml
+- name: Provision EGI-IGTF certs
+  hosts: all
   roles:
-  - egi-igtf
+    - egi-igtf

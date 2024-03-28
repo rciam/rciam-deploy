@@ -1,94 +1,96 @@
 ---
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
   tags:
     - always
 
-- block:
+- name: Set SSP facts
+  tags:
+    - always
+  block:
     - name: Split SSP version string into parts
-      set_fact:
+      ansible.builtin.set_fact:
         ssp_version_parts: "{{ ssp_version.split('.') }}"
     - name: Define SSP major version number
-      set_fact:
+      ansible.builtin.set_fact:
         ssp_major_version: "{{ ssp_version_parts[0] }}"
       tags:
         - always
     - name: Define SSP minor version number
-      set_fact:
+      ansible.builtin.set_fact:
         ssp_minor_version: "{{ ssp_version_parts[1] }}"
       tags:
         - always
     - name: Define SSP patch version number only when specified in version string
-      set_fact:
+      ansible.builtin.set_fact:
         ssp_patch_version: "{{ ssp_version_parts[2] | default(omit) }}"
-  tags:
-    - always
 
 - name: Include SSP-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "ssp-{{ ssp_major_version }}.{{ ssp_minor_version }}.yml"
-    - "ssp-{{ ssp_major_version }}.yml"
-  ignore_errors: yes
+    - ssp-{{ ssp_major_version }}.{{ ssp_minor_version }}.yml
+    - ssp-{{ ssp_major_version }}.yml
+  failed_when: false # noqa ignore-errors
   tags:
     - always
 
 - name: Define SSP web server
-  set_fact:
+  ansible.builtin.set_fact:
     ssp_webserver: "{{ ssp_default_webserver }}"
   when: ssp_webserver is not defined
   tags:
     - always
 
 - name: Define SSP web user
-  set_fact:
+  ansible.builtin.set_fact:
     ssp_webuser: "{{ ssp_default_webuser }}"
   when: ssp_webuser is not defined
   tags:
     - always
 
 - name: Define SSP web group
-  set_fact:
+  ansible.builtin.set_fact:
     ssp_webgroup: "{{ ssp_default_webgroup }}"
   when: ssp_webgroup is not defined
   tags:
     - always
 
 - name: Define SSP cron module dependencies
-  set_fact:
+  ansible.builtin.set_fact:
     ssp_mod_cron_deps: "{{ ssp_default_mod_cron_deps | list }}"
   when: ssp_mod_cron_deps is not defined
   tags:
     - always
 
-
 - name: Define SSP path
-  set_fact:
+  ansible.builtin.set_fact:
     ssp_path: "{{ ssp_path }}-{{ ssp_version_suffix }}"
   when: ssp_version_suffix is defined and ssp_version_suffix != ""
   tags:
     - always
 
 
-# Install OS-specific packages
-- include: install-Debian.yml
+- name: Install Debian packages
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-- include: install-RedHat.yml
+
+- name: Install Redhat packages
+  ansible.builtin.include_tasks: install-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
-# Run OS-independent installation tasks
-- include: install-common.yml
+- name: Run OS-independent installation tasks
+  ansible.builtin.include_tasks: install-common.yml
   tags:
     - install
     - ssp:install
 
-# Apply OS-independent configuration
-- include: configure-common.yml
+- name: Apply OS-independent configuration
+  ansible.builtin.include_tasks: configure-common.yml
   tags:
     - config
     - ssp:config

@@ -1,70 +1,73 @@
 ---
 # tasks file for fedreg-agent
-
 - name: Download only the requirements.txt from rciam-federation-registry-agent repository
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ fedreg_agent_registry_requirements_url }}"
     dest: /tmp/requirements_{{ build_branch }}.txt
-  become: yes
+    mode: "0644"
+  become: true
   tags:
     - agent
     - python
     - requirements
 
 - name: Install python requirements
-  pip: 
+  ansible.builtin.pip:
     requirements: /tmp/requirements_{{ build_branch }}.txt
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_python: "{{ fedreg_agent_venv_python }}"
-  become: yes
+  become: true
   tags:
     - agent
     - python
     - requirements
 
+# This should be packaged as a release instead of a branch
 - name: Install rciam-federation-registry-agent (test.pypi.org)
   when: build_branch == "devel"
-  pip:
+  ansible.builtin.pip:
     name: rciam-federation-registry-agent
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_python: "{{ fedreg_agent_venv_python }}"
     extra_args: -i https://test.pypi.org/simple/
-    state: latest
-  become: yes
+    state: present
+  become: true
   tags:
     - agent
     - python
     - requirements
 
+# This should be packaged as a release instead of a branch
 - name: Install rciam-federation-registry-agent
   when: build_branch == "master"
-  pip:
+  ansible.builtin.pip:
     name: rciam-federation-registry-agent
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_python: "{{ fedreg_agent_venv_python }}"
-    state: latest
-  become: yes
+    state: present
+  become: true
   tags:
-   - agent
-   - python
-   - requirements
+    - agent
+    - python
+    - requirements
 
-
-- name: "Ensure {{ fedreg_agent_conf_dir }} dir exists"
-  file:
+- name: "Ensure dir exists: {{ fedreg_agent_conf_dir }}"
+  ansible.builtin.file:
     path: "{{ fedreg_agent_conf_dir }}"
     state: directory
-  become: yes
+    mode: "0755"
+  become: true
   tags:
     - agent
     - config
 
 - name: Copy logger.conf file
-  copy:
+  ansible.builtin.copy:
     src: logger.conf
     dest: "{{ fedreg_agent_conf_dir }}/logger.conf"
-    force: no
-  become: yes
+    force: false
+    mode: "0644"
+  become: true
   tags:
     - agent
     - config

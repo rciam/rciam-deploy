@@ -1,8 +1,8 @@
 ---
 
-php_webserver: "apache2"
+php_webserver: apache2
 
 php_default_packages:
-  - "libapache2-mod-php5"
+  - libapache2-mod-php5
 
-php_default_conf_scan_dir: "/etc/php5/apache2/conf.d"
+php_default_conf_scan_dir: /etc/php5/apache2/conf.d

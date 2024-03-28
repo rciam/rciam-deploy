@@ -1,31 +1,40 @@
 ---
 - name: Clear cache of COmanage
-  command: su {{ comanage_registry_plugins_webuser }} -s /bin/sh -c ./Console/clearcache
+  ansible.builtin.command: su {{ comanage_registry_plugins_webuser }} -s /bin/sh -c ./Console/clearcache
   args:
     chdir: "{{ comanage_path }}/app"
-  become: yes
+  changed_when: false
+  become: true
+  become_user: "{{ comanage_registry_plugins_webuser }}"
 
 - name: Ensure COmanage Registry local/Plugins directory exists
-  file: 
+  ansible.builtin.file:
     path: "{{ comanage_path }}/local/Plugin"
     state: directory
     owner: root
     group: root
-  become: yes
+    mode: "0644"
+  become: true
 
-- name: Ensure {{ item.name }} is cloned under local/Plugins directory
-  git:
+- name: "Ensure is cloned under local/Plugins directory - {{ item.name }}"
+  ansible.builtin.git:
     repo: "{{ item.repository }}"
     dest: "{{ comanage_path }}/local/Plugin/{{ item.name }}"
     version: "{{ item.version }}"
-    accept_hostkey: yes
-  become: yes
+    accept_hostkey: true
+  become: true
 
 - name: Create COmanage Registry Plugins schemata
-  shell: | 
-      ./Console/cake schema create --file schema.php --path "{{ comanage_path }}/local/Plugin/{{ item.name }}/Config/Schema" -y 
+  ansible.builtin.shell: |
+    set -o pipefail
+    ./Console/cake \
+      schema create \
+      --file schema.php \
+      --path "{{ comanage_path }}/local/Plugin/{{ item.name }}/Config/Schema" \
+      -y
   args:
     chdir: "{{ comanage_path }}/app"
     executable: /bin/sh
   when: item.status is defined and item.status == "init"
-  become: yes
+  changed_when: false # TODO Define change conditions
+  become: true

@@ -1,24 +1,23 @@
 ---
-
 - name: Ensure latest CA certificates are installed (RedHat)
-  yum:
+  ansible.builtin.yum:
     name: ca-certificates
-    state: latest
+    state: present
   become: true
 
 - name: Ensure SSP cron module dependencies are installed (RedHat)
-  yum:
+  ansible.builtin.yum:
     name: "{{ ssp_mod_cron_deps }}"
     state: present
   when: "'cron' in ssp_mods_enabled"
   become: true
 
-#- name: Ensure memcached dependencies are installed (RedHat)
-#  yum:
-#    name: "{{ item }}"
-#    state: present
-#  with_items: "{{ ssp_memcache_deps }}"
-#  when: "ssp_store_type is defined and ssp_store_type == 'memcache'"
-#  become: true
-#  notify:
-#    - restart webserver
+# - name: Ensure memcached dependencies are installed (RedHat)
+#   yum:
+#     name: "{{ item }}"
+#     state: present
+#   with_items: "{{ ssp_memcache_deps }}"
+#   when: "ssp_store_type is defined and ssp_store_type == 'memcache'"
+#   become: true
+#   notify:
+#     - restart webserver

@@ -1,6 +1,6 @@
 ---
 - name: "Get list of keys of realm: {{ item[0].name }}"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/components?parent={{ item[0].name }}&type=org.keycloak.keys.KeyProvider"
     method: GET
     headers:
@@ -8,8 +8,9 @@
     status_code: 200
   register: "keys_result"
 
-- set_fact:
-    keys_provideridName2id: "{{ keys_provideridName2id | default({}) | combine( { current_key.providerId + ':' + current_key.name : current_key.id } ) }}"
+- name: Set Fact
+  ansible.builtin.set_fact:
+    keys_providerid_name_2_id: "{{ keys_providerid_name_2_id | default({}) | combine({current_key.providerId + ':' + current_key.name: current_key.id}) }}"
   loop_control:
     loop_var: current_key
   with_items:

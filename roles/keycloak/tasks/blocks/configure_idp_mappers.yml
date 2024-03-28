@@ -1,44 +1,49 @@
 ---
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
 - name: "Get current mappers of idp: {{ item[0].name }}"
-  include_tasks: blocks/helpers/get_idp_mappers_list.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_idp_mappers_list.yml
 
-- set_fact:
+- name: Set Fact
+  ansible.builtin.set_fact:
     mapper_exists: "{{ idp_mapper_match | length > 0 }}"
 
-- set_fact:
+- name: Set Fact
+  ansible.builtin.set_fact:
     additional_info:
       id: "{{ idp_mapper_match[0].id }}"
-  when: mapper_exists
+  when: mapper_exists | bool
 
-- set_fact:
-    body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
-  when: mapper_exists
+- name: Set Fact
+  ansible.builtin.set_fact:
+    body: "{{ item[1] | combine(additional_info, recursive=True) }}"
+  when: mapper_exists | bool
 
-- set_fact:
+- name: Set Fact
+  ansible.builtin.set_fact:
     body: "{{ item[1] }}"
-  when: not mapper_exists
+  when: not (mapper_exists | bool)
 
-- name: "{% if mapper_exists %}Update{% else %}Add{% endif %} idp mapper: {{ item[1].name }} for idp: {{ item[1].identityProviderAlias }}"
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ body.identityProviderAlias }}/mappers{% if mapper_exists %}/{{ body.id }}{% endif %}"
-    method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
+- name: "Update idp mapper: {{ item[1].name }} for idp: {{ item[1].identityProviderAlias }}" # noqa name[template]
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ body.identityProviderAlias }}/mappers/{{ body.id }}"
+    method: PUT
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body:
-      "{{ body }}"
-    status_code: "{% if mapper_exists %}204{% else %}201{% endif %}"
+    body: "{{ body }}"
+    status_code: 204
+  when: mapper_exists | bool
 
-
-
-
-
-
-
-
-
-
+- name: "Add idp mapper: {{ item[1].name }} for idp: {{ item[1].identityProviderAlias }}" # noqa name[template]
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ body.identityProviderAlias }}/mappers"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ body }}"
+    status_code: 201
+  when: not (mapper_exists | bool)

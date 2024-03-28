@@ -1,7 +1,8 @@
 # file: firewallservers.yml
 #
 ---
-
-- hosts: all
+- name: Deploy Firewall
+  hosts: all
   roles:
-    - { role: ipr-cnrs.nftables, become: yes }
+    - role: ipr-cnrs.nftables
+      become: true

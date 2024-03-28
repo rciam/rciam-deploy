@@ -1,19 +1,16 @@
 ---
-
 - name: Ensure Apache HTTP server is installed (Debian)
-  apt: 
+  ansible.builtin.apt:
     name: apache2
-    state:  present 
-    install_recommends: no
-    update_cache: yes
+    state: present
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true
 
 - name: Install Modules for Apache
-  apt: 
+  ansible.builtin.apt:
     name: "{{ apache_mods_installed }}"
-    state:  present
-  become: yes
-  notify:
-    - restart apache
-    
+    state: present
+  become: true
+  notify: Restart apache

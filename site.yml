@@ -1,7 +1,9 @@
 ---
+- name: Deploy Cache Servers
+  ansible.builtin.import_playbook: cacheservers.yml
 
-- import_playbook: cacheservers.yml
+- name: Deploy Auth Servers
+  ansible.builtin.import_playbook: authservers.yml
 
-- import_playbook: authservers.yml
-
-- import_playbook: webproxyservers.yml
+- name: Deploy Web Proxy servers
+  ansible.builtin.import_playbook: webproxyservers.yml

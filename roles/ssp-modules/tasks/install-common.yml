@@ -1,22 +1,21 @@
 ---
-
-
+# ssp-modules/tasks/install-common.yml
 - name: Install unzip
-  package:
+  ansible.builtin.package:
     name: unzip
-    state: latest
-  become: yes
+    state: present
+  become: true
 
 
 - name: Checkout SSP modules source
-  git:
+  ansible.builtin.git:
     repo: "{{ item.repo_url }}"
     dest: "{{ item.path }}"
     version: "{{ item.version }}"
-    accept_hostkey: yes
-    force: no
-    update: yes
-  become: yes
+    accept_hostkey: true
+    force: false
+    update: true
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.repo_url is defined
   tags:
@@ -24,43 +23,45 @@
 
 
 - name: Download & unarchive to /tmp/ ( zip only )
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ item.zip_url }}"
     dest: "/tmp/"
     creates: "{{ item.path }}/{{ item.version }}"
-    remote_src: yes
-  become: yes
+    remote_src: true
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.zip_url is defined
   register: zip_downloaded
   tags:
     - ssp-modules:install:zip
 
+# This is a series of very sus actions.
 # We need to create the directory if it does not exists
 - name: Ensure Theme Directory exists ( zip only ) [1/5]
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     owner: root
     group: root
-  become: yes
+    mode: "0750"
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: item.zip_url is defined
   register: directory_created
   tags:
     - ssp-modules:install:zip
 
-- name: Backup old version (zip only) [2/5]
-  command: "mv {{ item.path }} {{ item.path }}.{{ ansible_date_time.iso8601 }}"
-  become: yes
+- name: Backup old version (zip only) [2/5] # noqa no-changed-when
+  ansible.builtin.command: "mv {{ item.path }} {{ item.path }}.{{ ansible_date_time.iso8601 }}"
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when: zip_downloaded.changed and item.zip_url is defined and item.fullname is defined
   tags:
     - ssp-modules:install:zip
 
-- name: Move unarchived module files from /tmp/ to module directory (zip only) [3/5]
-  command: "mv /tmp/{{ item.fullname }} {{ item.path }}"
-  become: yes
+- name: Move unarchived module files from /tmp/ to module directory (zip only) [3/5] # noqa no-changed-when
+  ansible.builtin.command: "mv /tmp/{{ item.fullname }} {{ item.path }}"
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when:
     - zip_downloaded.changed or directory_created.changed
@@ -70,14 +71,14 @@
     - ssp-modules:install:zip
 
 - name: Set a version file in module directory (zip only) [4/5]
-  copy:
+  ansible.builtin.copy:
     content: ""
     dest: "{{ item.path }}/{{ item.version }}"
-    force: no
+    force: false
     owner: "root"
     group: "root"
     mode: "0644"
-  become: yes
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when:
     - zip_downloaded.changed or directory_created.changed
@@ -87,10 +88,11 @@
     - ssp-modules:install:zip
 
 - name: Remove unused directories from /tmp/ (zip only) [5/5]
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.fullname }}"
     state: absent
-  become: yes
+    mode: "0644"
+  become: true
   with_items: "{{ ssp_mods_extra_enabled }}"
   when:
     - zip_downloaded.changed or directory_created.changed

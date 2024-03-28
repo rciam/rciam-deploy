@@ -1,55 +1,54 @@
 ---
-
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
   tags:
-  - always
+    - always
 
 # Check if COmanage current is available
 - name: Check if COmanage Current directory is present
-  stat:
+  ansible.builtin.stat:
     path: "{{ comanage_path }}"
   register: comanage_current_dir
   tags:
     - always
 
 - name: COmanage Current directory exists?
-  debug:
-    msg: "COmanage Current Exists: {{comanage_current_dir.stat.exists}}"
+  ansible.builtin.debug:
+    msg: "COmanage Current Exists: {{ comanage_current_dir.stat.exists }}"
   tags:
     - always
 
-#Create a task to take backup of the directory first
+# Create a task to take backup of the directory first
 - name: Backup comanage directory
-  copy:
+  ansible.builtin.copy:
     src: "{{ comanage_current_dir.stat.lnk_target }}"
     dest: "{{ comanage_current_dir.stat.lnk_target }}.{{ ansible_date_time.iso8601 }}"
-    remote_src: yes
-    force: yes
+    remote_src: true
+    force: true
     owner: root
     mode: preserve
     backup: true
-  become: yes
+  become: true
   when:
     - comanage_backup is defined
     - comanage_backup|bool
     - comanage_current_dir.stat.exists
   tags:
-  - always
+    - always
 
-- name: COmanage clear cache
-  shell: Console/clearcache
+- name: COmanage clear cache # noqa no-changed-when
+  ansible.builtin.shell: Console/clearcache
   args:
     executable: /bin/bash
     chdir: "{{ comanage_path }}/app"
-  become: yes
+  become: true
   become_user: "{{ comanage_webserver_user }}"
-  ignore_errors: yes
+  ignore_errors: true # noqa ignore-errors
   when:
     - comanage_current_dir.stat.exists
   tags:
@@ -57,17 +56,17 @@
 
 # Tasks deploying COmanage framework. There is none conditional task.
 - name: Include OS-independent installation tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: install.yml
     apply:
       tags:
-      - comanage-registry:install
+        - comanage-registry:install
   tags:
-  - comanage-registry:install
+    - comanage-registry:install
 
-  # Tasks required for basic Framework functionality
+# Tasks required for basic Framework functionality
 - name: Include OS-independent initialize tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: initialize.yml
     apply:
       tags:
@@ -77,10 +76,10 @@
 
 # Tasks that are Deployment Specific
 - name: Include OS-independent configuration tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: configure.yml
     apply:
       tags:
-      - comanage-registry:config
+        - comanage-registry:config
   tags:
-  - comanage-registry:config
+    - comanage-registry:config

@@ -1,5 +1,5 @@
 ---
-##in format X.Y.Z
+## in format X.Y.Z
 ## make sure the corresponding templates/X.Y.Z folder and vars/keycloak/X.Y.Z.yml exist
 keycloak_version: "18.0.0"
 
@@ -8,11 +8,12 @@ keycloak_archive_url: "https://github.com/keycloak/keycloak/releases/download/{{
 
 keycloak_service_user: "keycloak"
 
-# Extra run params used in the keycloak systemd service. Multiple `-D` params can be specified.  E.g. uncomment the following to enable technology preview features
-#keycloak_extra_run_params: "-Dkeycloak.profile=preview"
+# Extra run params used in the keycloak systemd service.
+# Multiple `-D` params can be specified.
+# E.g. uncomment the following to enable technology preview features
+# keycloak_extra_run_params: "-Dkeycloak.profile=preview"
 
 keycloak_base_url_path: "auth" # The base URL path for frontend and backend requests. Note that this cannot be empty.
-
 
 keycloak_admin:
   user: "<SET AN ADMIN USER>"
@@ -38,15 +39,15 @@ keycloak_syslog_identifier: "keycloak"
 
 keycloak_logs_folder: "/var/log/keycloak"
 
-keycloak_logs_max_days: 548  # that's ~18 months
+keycloak_logs_max_days: 548 # that's ~18 months
 
 keycloak_log_level:
   saml: INFO
 
 keycloak_keystores: "/srv/keycloak-keys"
 
-# If the server should expose health check endpoints. Defaults to false 
-keycloak_health_enabled: no
+# If the server should expose health check endpoints. Defaults to false
+keycloak_health_enabled: false
 
 # Themes to apply to all realms defined under 'keycloak_config.realms'.
 # You can override theme settings for specific realms by defining
@@ -54,11 +55,10 @@ keycloak_health_enabled: no
 keycloak_themes:
   login: "rciam"
   account: "rciam"
-  #email: "keycloak" # Uncomment and customise if necessary
-
+  # email: "keycloak" # Uncomment and customise if necessary
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)
-#keycloak_plugins:
+# keycloak_plugins:
 #  wayf:
 #    enabled: true
 #    name: "keycloak-theme-vanilla" #PLEASE, do not change this
@@ -106,7 +106,7 @@ keycloak_themes:
 ### Remaining configuration (enc keys, social IdPs, AUP config, SMTP config, etc)
 ### you can have more than one realms configured here (if it doesn't exist, it will be created). just copy the format of the master and add it in the list.
 ### also, you can just comment out any of the {key, aup, smtp} sub trees and let the remaining get configured
-#keycloak_config:
+# keycloak_config:
 #  realms:
 #    - name: master
 #      defaultIdPAlias: "" #setting this to an IdP's name, will skip the WAYF and redirect to that IdP
@@ -142,8 +142,11 @@ keycloak_themes:
 #        eventsExpiration: 47347200 # this is 548 days in seconds
 #        adminEventsDetailsEnabled: false
 #        adminEventsEnabled: true
-#        eventsListeners: ["jboss-logging"]  # optional. if you want you can override with the array with the desired ones. Add "metrics-communication" for metrics plugin
-#        enabledEventTypes: ["UPDATE_CONSENT_ERROR", "SEND_RESET_PASSWORD", "GRANT_CONSENT",…] # optional. if you want you can override with the array with the desired ones
+#        eventsListeners: ["jboss-logging"]
+# optional. if you want you can override with the array with the desired ones.
+# Add "metrics-communication" for metrics plugin
+#        enabledEventTypes: ["UPDATE_CONSENT_ERROR", "SEND_RESET_PASSWORD", "GRANT_CONSENT",…]
+# optional. if you want you can override with the array with the desired ones
 #      client_registration_policies:
 #        create_update:
 #          - name: "Allowed Client Scopes"
@@ -189,11 +192,17 @@ keycloak_themes:
 #              - "manage-account-2fa"
 #            remove:
 #              - "view-profile"
-#     # For key rotation: whenever you need to rotate keys, this should normally be done as follows:
-#     # Step 1: You need to add new keypairs, so you need to have both the new and the previous keys (4 keypairs) active in the realm. So you rename the placeholders "current" keys (in vault and in this file) as "previous", and you add two new keypairs (sig and enc) which will get the "current" linking in the vault.
-#     # Step 2: Transition period is over, so you just mark the "previous" keys as (enabled: false) and (active: false). This means that the keys exist in the realm, but they are never used.
-#     # Step 3: Rotation day has come, so you need to add new keys, thus, perform step 1.
-#      keys:    ### if the (providerId,name) entry already exists in the realm, ansible updates it. If not, it creates the key. So, in any subsequent run, it updates all the config parameters of the key.
+# For key rotation: whenever you need to rotate keys, this should normally be done as follows:
+# Step 1: You need to add new keypairs, so you need to have both the new and the previous keys (4 keypairs) active in the realm.
+# So you rename the placeholders "current" keys (in vault and in this file) as "previous",
+# and you add two new keypairs (sig and enc) which will get the "current" linking in the vault.
+# Step 2: Transition period is over, so you just mark the "previous" keys as (enabled: false) and (active: false).
+# This means that the keys exist in the realm, but they are never used.
+# Step 3: Rotation day has come, so you need to add new keys, thus, perform step 1.
+#      keys:
+### if the (providerId,name) entry already exists in the realm, ansible updates it.
+# If not, it creates the key.
+# So, in any subsequent run, it updates all the config parameters of the key.
 #        - name: "rsa-sig"
 #          providerId: "rsa" #DO NOT CHANGE THIS
 #          config:
@@ -722,7 +731,8 @@ keycloak_themes:
 #            disableUserInfo: ""  #boolean
 #            hideOnLoginPage: ""  #boolean
 #            promotedLoginbutton: ""   #boolean
-#     #Each entry of idp_mappers list is a IdentityProviderMapperRepresentation, see here: https://www.keycloak.org/docs-api/15.0/rest-api/index.html#_identityprovidermapperrepresentation
+# Each entry of idp_mappers list is a IdentityProviderMapperRepresentation,
+# see here: https://www.keycloak.org/docs-api/15.0/rest-api/index.html#_identityprovidermapperrepresentation
 #      idp_mappers:
 #        - name: <MAPPER_UNIQUE_NAME>
 #          identityProviderAlias: <IDP_ALIAS>

@@ -1,9 +1,8 @@
 ---
-
 - name: Ensure Shibboleth SP Apache module is installed (Debian)
-  apt:
+  ansible.builtin.apt:
     name: libapache2-mod-shib2
     state: present
-    update_cache: yes
-    install_recommends: no
-  become: yes
+    update_cache: true
+    install_recommends: false
+  become: true

@@ -1,16 +1,16 @@
 ---
 
 - name: Register static files to be copied
-  find:
+  ansible.builtin.find:
     paths: "{{ inventory_dir }}/files/monservers"
     file_type: file
-    recurse: yes
+    recurse: true
   register: static_files
-  ignore_errors: yes
+  ignore_errors: true
   delegate_to: 127.0.0.1
 
 - name: Display files to be copied
-  debug:
+  ansible.builtin.debug:
     msg: "/{{ item.path | regex_replace('(.*)[/]files[/]monservers[/](.*)', '\\2') }}"
     verbosity: 1
   loop: "{{ static_files.files }}"
@@ -19,16 +19,16 @@
   when: static_files is defined
 
 - name: Copy static files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.path }}"
     dest: "/{{ item.path | regex_replace('(.*)[/]files[/]monservers[/](.*)', '\\2') }}"
-    force: yes
+    force: true
     owner: root
-    mode: 0664
+    mode: "0664"
     backup: true
   loop: "{{ static_files.files }}"
   loop_control:
     label: "Added file /{{ item.path | regex_replace('(.*)[/]files[/]monservers[/](.*)', '\\2') }}"
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true # noqa ignore-errors
   when: static_files is defined

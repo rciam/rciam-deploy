@@ -1,13 +1,12 @@
 ---
-
 - name: Acquire tokens
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/realms/master/protocol/openid-connect/token"
     method: POST
     body_format: form-urlencoded
     body:
-      client_id: "admin-cli"
-      username: "{{keycloak_admin.user}}"
-      password: "{{keycloak_admin.pass}}"
-      grant_type: "password"
-  register: "tokens"    # token is in "tokens.json.access_token"
+      client_id: admin-cli
+      username: "{{ keycloak_admin.user }}"
+      password: "{{ keycloak_admin.pass }}"
+      grant_type: password
+  register: tokens # token is in "tokens.json.access_token"

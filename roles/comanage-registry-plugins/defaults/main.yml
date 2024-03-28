@@ -1,14 +1,14 @@
 ---
 
 comanage_registry_plugins: []
-#comanage_registry_plugins:
+# comanage_registry_plugins:
 #  - name: ExamplePluginFolderName
 #    version: master
 #    repository: "https://github.com/project/examplePluginName"
 #    status: init
 
 
-#comanage_plugins_cron_jobs:
+# comanage_plugins_cron_jobs:
 #  - name: "Action Name"
 #    minute: "0"
 #    filename: "PluginName"
@@ -16,9 +16,9 @@ comanage_registry_plugins: []
 #    job: |
 #      cd {{ path_to_registry }}/app && Console/cake PluginName.action
 
-#comanage_symlinks:
+# comanage_symlinks:
 #  - target: "/path/to/target"
 #    link: "/path/to/symlink"
 
 # Whether to install COmanage plugins cron jobs; Enabled by default
-comanage_plugins_cron_jobs_enabled: yes
+comanage_plugins_cron_jobs_enabled: true

@@ -1,15 +1,15 @@
 ---
 
-php_webserver: "apache2"
+php_webserver: apache2
 
 php_default_packages:
-  - "libapache2-mod-php7.4"
+  - libapache2-mod-php7.4
 
-php_default_conf_scan_dir: "/etc/php/7.4/apache2/conf.d"
+php_default_conf_scan_dir: /etc/php/7.4/apache2/conf.d
 
 # Only when php_alt_repo is set to true
 php_apt_repositories:
-  - "ppa:ondrej/php"
+  - ppa:ondrej/php
 
 php_apt_packages:
-  - "software-properties-common"
+  - software-properties-common

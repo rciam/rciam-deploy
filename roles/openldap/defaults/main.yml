@@ -1,26 +1,26 @@
 ---
 # defaults file for ansible-openldap
-openldap_init: false #when enabled it will initialise the LDAP directory. If already installed, the LDAP directory contents will be backed up
-#openldap_admin_password: 'secret'
-#openldap_admin_password_salt: 'defaultsecretsalt'
+openldap_init: false # when enabled it will initialise the LDAP directory. If already installed, the LDAP directory contents will be backed up
+# openldap_admin_password: 'secret'
+# openldap_admin_password_salt: 'defaultsecretsalt'
 openldap_admin_user: 'admin'
 openldap_org: 'example.test'
 openldap_tld: 'org'
 openldap_base: 'dc=example,dc=test,dc={{ openldap_tld }}'
 openldap_uri: 'ldap://example.test.org'
 openldap_bind_id: 'cn={{ openldap_admin_user }},{{ openldap_base }}'
-openldap_organizationalunits:  #defines OU's to populate
+openldap_organizationalunits:  # defines OU's to populate
   - people
   - groups
-openldap_populate: false  #defines if openldap DB should be populated with openldap_organizationalunits, openldap_posixgroups
-openldap_schema: false #defines if additional schemas should be added
+openldap_populate: false  # defines if openldap DB should be populated with openldap_organizationalunits, openldap_posixgroups
+openldap_schema: false # defines if additional schemas should be added
 openldap_acl: false
-openldap_posixgroups:  #defines groups to create within OU's
+openldap_posixgroups:  # defines groups to create within OU's
   - name: admin-CO:COU:example.org:members
     ou: roles
-    gidNum: 500  #start group numbers at 500 and up
+    gidNum: 500  # start group numbers at 500 and up
 
-openldap_adminusers: #defines admin users
+openldap_adminusers: # defines admin users
   - cn: client-example
     sn: Example
     displayName: 'Client Example'
@@ -37,4 +37,4 @@ openldap_certificate: []
 openldap_certificate_key_file: 'cert_key.key'
 openldap_certificate_key: []
 openldap_slapd_services: "ldap://127.0.0.1:389/ ldaps:/// ldapi:///"
-pri_domain_name: '{{ openldap_org }}.{{ openldap_tld }}'
+openldap_pri_domain_name: '{{ openldap_org }}.{{ openldap_tld }}'

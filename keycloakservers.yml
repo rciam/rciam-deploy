@@ -1,7 +1,7 @@
 # file: keycloakservers.yml
 #
 ---
-
-- hosts: keycloak
+- name: Provision keycloak
+  hosts: keycloak
   roles:
     - keycloak

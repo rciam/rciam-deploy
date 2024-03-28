@@ -1,9 +1,11 @@
+# filename: attrauthservers.yml
+# Deploys attribute authority servers
 ---
-
-- hosts: attrauth
+- name: Deploy Attribute Authority Servers
+  hosts: attrauth
   roles:
     - apache
     - php
     - shibboleth-sp
     - comanage-registry
-    #- cm-role-ui
+    # - cm-role-ui

@@ -1,18 +1,19 @@
 ---
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
 - name: "Get current IdPs list of realm: {{ item[0].name }}"
-  include_tasks: blocks/helpers/get_realm_idps_list.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_realm_idps_list.yml
 
-- set_fact:
-    new_idp: "{% if item[1].data.alias not in idps_list %}true{% else %}false{% endif %}"
+- name: Set fact
+  ansible.builtin.set_fact:
+    new_idp: "({% if item[1].data.alias not in idps_list %}true{% else %}false{% endif %}) | bool"
 
 - name: "{% if new_idp %}Installing{% else %}Updating{% endif %} saml IdP: {{ item[1].data.alias }}"
   block:
     - name: "Get config from url: {{ item[1].metadataUrl }}"
-      uri:
+      ansible.builtin.uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/import-config"
         method: POST
         body_format: json
@@ -24,13 +25,24 @@
         status_code: 200
       register: saml_idp_result
 
-    - name: "Setup saml IdP {{ item[1].data.alias }}"
-      uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{ item[1].data.alias }}{% endif %}"
-        method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
+    - name: "Create saml IdP {{ item[1].data.alias }}"
+      ansible.builtin.uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances"
+        method: POST
         body_format: json
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
-        body:
-          "{{ { 'config': saml_idp_result.json } | combine( item[1].data, recursive=True ) }}"
-        status_code: "{% if new_idp %}201{% else %}204{% endif %}"
+        body: "{{ {'config': saml_idp_result.json} | combine(item[1].data, recursive=True) }}"
+        status_code: 201
+      when: new_idp
+
+    - name: "Update saml IdP {{ item[1].data.alias }}"
+      ansible.builtin.uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ item[1].data.alias }}"
+        method: PUT
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body: "{{ {'config': saml_idp_result.json} | combine(item[1].data, recursive=True) }}"
+        status_code: 204
+      when: not new_idp

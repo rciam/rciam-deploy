@@ -1,8 +1,7 @@
 ---
-
 - name: Ensure Shibboleth SP SSL certificate is copied
-  copy:
-    content: '{{ item.content }}'
+  ansible.builtin.copy:
+    content: "{{ item.content }}"
     dest: "{{ item.dest }}"
     owner: "{{ shibboleth_sp_user }}"
     group: "{{ shibboleth_sp_group }}"
@@ -14,24 +13,29 @@
     - content: "{{ shibboleth_sp_ssl_cert_key }}"
       dest: "{{ shibboleth_sp_conf_path }}/cert/sp-key.pem"
       mode: "0600"
-  when: shibboleth_sp_ssl_cert_generate|bool == False
-  become: yes
-  no_log: yes
+  when: not (shibboleth_sp_ssl_cert_generate|bool)
+  become: true
+  no_log: true
   notify:
     - Restart Shibboleth SP
 
 - name: Ensure Shibboleth SP self-signed certificate is generated
-  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "{{ shibboleth_sp_ssl_cert_subj }}" -nodes -out sp-crt.pem -keyout sp-key.pem
+  # This should probably use one of the modules from community.crypto
+  ansible.builtin.command: |-
+    openssl req \
+      -newkey rsa:2048 -new -x509 -days 3652 \
+      -subj "{{ shibboleth_sp_ssl_cert_subj }}" \
+      -nodes -out sp-crt.pem -keyout sp-key.pem
   args:
     chdir: "{{ shibboleth_sp_conf_path }}/cert"
     creates: "{{ shibboleth_sp_conf_path }}/cert/sp-key.pem"
-  when: shibboleth_sp_ssl_cert_generate|bool == True
-  become: yes
+  when: shibboleth_sp_ssl_cert_generate|bool
+  become: true
   notify:
     - Restart Shibboleth SP
 
 - name: Ensure Shibboleth SP certificate is installed
-  file:
+  ansible.builtin.file:
     state: file
     path: "{{ item.path }}"
     owner: "{{ shibboleth_sp_user }}"
@@ -42,42 +46,42 @@
       mode: "0644"
     - path: "{{ shibboleth_sp_conf_path }}/cert/sp-key.pem"
       mode: "0600"
-  become: yes
+  become: true
 
 - name: Configure Shibboleth SP main settings
-  template:
-    src: "shibboleth2.xml.j2"
+  ansible.builtin.template:
+    src: shibboleth2.xml.j2
     dest: "{{ shibboleth_sp_conf_path }}/shibboleth2.xml"
-    owner: "root"
-    group: "root"
-    mode: 0644
-    backup: yes
-  become: yes
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  become: true
   notify:
     - Restart Shibboleth SP
 
 - name: Configure Shibboleth SP attribute mappings
-  copy:
+  ansible.builtin.copy:
     src: "{{ shibboleth_sp_attribute_map_file }}"
     dest: "{{ shibboleth_sp_conf_path }}/attribute-map.xml"
-    owner: "root"
-    group: "root"
-    mode: 0644
-    backup: yes
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
   when: shibboleth_sp_attribute_map_file is defined
-  become: yes
+  become: true
   notify:
     - Restart Shibboleth SP
 
 - name: Configure Shibboleth SP attribute policies
-  copy:
+  ansible.builtin.copy:
     src: "{{ shibboleth_sp_attribute_policy_file }}"
     dest: "{{ shibboleth_sp_conf_path }}/attribute-policy.xml"
-    owner: "root"
-    group: "root"
-    mode: 0644
-    backup: yes
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
   when: shibboleth_sp_attribute_policy_file is defined
-  become: yes
+  become: true
   notify:
     - Restart Shibboleth SP

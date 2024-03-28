@@ -1,47 +1,47 @@
 ---
-
 - name: Check if SSP path exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ ssp_path }}"
   register: release_downloaded
   tags:
     - ssp:install:release
 
-- block:
-
+- name: SSP Install
+  when: not release_downloaded.stat.exists
+  become: true
+  tags:
+    - ssp:install:release
+  block:
     - name: Create temp SSP installation directory
-      tempfile:
+      ansible.builtin.tempfile:
         state: directory
       register: ssp_basepath
 
     - name: Download and unarchive SSP release into temp installation directory
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ ssp_release_url }}"
         dest: "{{ ssp_basepath.path }}/"
-        owner: "root"
-        group: "root"
+        owner: root
+        group: root
         list_files: true
         remote_src: true
 
     - name: Ensure SSP path exists
-      file:
+      ansible.builtin.file:
         path: "{{ ssp_path }}"
         state: directory
-        owner: "root"
-        group: "root"
+        owner: root
+        group: root
+        mode: "0750"
 
     - name: Copy release to SSP path
-      copy:
+      ansible.builtin.copy:
         src: "{{ ssp_basepath.path }}/{{ ssp_repo_version }}/"
         dest: "{{ ssp_path }}"
         remote_src: true
+        mode: "0600"
 
     - name: Remove temp SSP installation directory
-      file:
+      ansible.builtin.file:
         path: "{{ ssp_basepath.path }}"
         state: absent
-
-  when: release_downloaded.stat.exists == False
-  become: yes
-  tags:
-    - ssp:install:release

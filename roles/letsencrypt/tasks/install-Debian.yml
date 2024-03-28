@@ -1,43 +1,56 @@
 ---
-
 - name: Install certbot from snap
+  become: true
+  when: letsencrypt_install_from == "snap"
   block:
-    - name: "Required packages"
-      apt:
+    - name: Required packages
+      ansible.builtin.apt:
         name:
           - snapd
           - python-simplejson
         state: present
 
     - name: Ensure versions of certbot from apt are not present
-      apt:
+      ansible.builtin.apt:
         name:
           - certbot
         state: absent
 
-    - name: snap install core
-      snap:
+    - name: Snap install core
+      community.general.snapsnap:
         name: core
 
-    - name: snap install certbot
-      snap:
+    - name: Snap install certbot
+      community.general.snap:
         name: certbot
-        classic: yes
+        classic: true
 
     - name: Prepare certbot folders
-      shell: "ln -sf /snap/bin/certbot /usr/bin/certbot"
-  when: {{ install_from }} == "snap"
+      ansible.builtin.file:
+        src: /snap/bin/certbot
+        dest: /usr/bin/certbot
+        owner: root
+        group: root
+        state: link
 
 - name: Install certbot from debian repo
+  become: true
+  when: letsencrypt_install_from == "os_repo"
   block:
-  - name: "Installing certbot from apt"
-    apt:
-      name:
-        - certbot
-      state: present
-  when: {{ install_from }} == "os_repo"
+    - name: "Installing certbot from apt"
+      ansible.builtin.apt:
+        name:
+          - certbot
+        state: present
 
-
-
-- name: Run certbot script and create certificates
-  shell: "certbot certonly --standalone --email {{ letsencrypt_email }} --agree-tos -d {{ inventory_hostname }} --non-interactive"
+- name: Run certbot script and create certificates # noqa command-instead-of-shell
+  become: true
+  ansible.builtin.shell: >-
+    certbot
+    certonly
+    --standalone
+    --email "{{ letsencrypt_email }}"
+    --agree-tos
+    -d "{{ inventory_hostname }}"
+    --non-interactive
+  changed_when: false

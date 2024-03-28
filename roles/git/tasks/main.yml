@@ -1,7 +1,7 @@
 ---
-
-# Install OS-specific packages
-- include: install-Debian.yml
+# git/tasks/main.yml
+- name: Install OS-specific packages
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: install-CentOS.yml
-#  when: ansible_os_family == 'CentOS'
+# - include: install-CentOS.yml
+#   when: ansible_os_family == 'CentOS'

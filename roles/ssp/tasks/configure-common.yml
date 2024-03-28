@@ -1,258 +1,279 @@
 # file: ssp/tasks/configure-common.php
 #
 ---
-
-
 - name: Configure SSP
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ ssp_configdir }}/config.php"
-    backup: yes
-    force: yes
+    backup: true
+    force: true
+    mode: "0644"
   with_first_found:
-    - "config/config-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
-    - "config/config-{{ ssp_major_version }}.php.j2"
-    - "config/config.php.j2"
-  become: yes
+    - config/config-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2
+    - config/config-{{ ssp_major_version }}.php.j2
+    - config/config.php.j2
+  become: true
   tags:
     - ssp:config:config
 
 - name: Generate self-signed SP certificates
-  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out sp-{{ item.name }}.crt -keyout sp-{{ item.name }}.key
+  ansible.builtin.command: |-
+    openssl req -newkey rsa:2048 \
+      -new -x509 \
+      -days 3652 \
+      -subj "/CN={{ item.ssl_certificate_cn }}" \
+      -nodes -out sp-{{ item.name }}.crt \
+      -keyout sp-{{ item.name }}.key
   args:
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.ssl_certificate_generate | default(True) | bool == True
-  become: yes
+  when: item.ssl_certificate_generate | default(True) | bool
+  become: true
   tags:
     - ssp:config:authsources
 
 - name: Copy SP SSL certificate (.crt)
-  copy:
-    content: '{{ item.ssl_certificate }}'
+  ansible.builtin.copy:
+    content: "{{ item.ssl_certificate }}"
     dest: "{{ ssp_certdir }}/sp-{{ item.name }}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.ssl_certificate_generate | default(True) | bool == False
-  become: yes
+  when: not (item.ssl_certificate_generate | default(True) | bool)
+  become: true
   tags:
     - ssp:config:authsources
 
 - name: Copy SP SSL certificate (.key)
-  copy:
-    content: '{{ item.ssl_certificate_key }}'
+  ansible.builtin.copy:
+    content: "{{ item.ssl_certificate_key }}"
     dest: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.ssl_certificate_generate | default(True) | bool == False
-  become: yes
-  no_log: yes
+  when: not (item.ssl_certificate_generate | default(True) | bool)
+  become: true
+  no_log: true
   tags:
     - ssp:config:authsources
 
 - name: Ensure SP certificate keys are installed
-  file:
+  ansible.builtin.file:
     state: file
     path: "{{ ssp_certdir }}/sp-{{ item.name }}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate_key is defined
-  become: yes
+  when: not (item.ssl_certificate_generate | default(True) | bool) or item.ssl_certificate_key is defined
+  become: true
   tags:
     - ssp:config:authsources
 
 - name: Ensure SP certificates are installed
-  file:
+  ansible.builtin.file:
     state: file
     path: "{{ ssp_certdir }}/sp-{{ item.name }}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_authsources_saml }}"
-  when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate is defined
-  become: yes
+  when: not (item.ssl_certificate_generate | default(True) | bool) or item.ssl_certificate is defined
+  become: true
   tags:
     - ssp:config:authsources
 
 - name: Configure SSP authN sources
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ ssp_configdir }}/authsources.php"
-    backup: yes
-    force: yes
+    backup: true
+    force: true
+    mode: "0600"
   with_first_found:
-    - "config/authsources-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
-    - "config/authsources-{{ ssp_major_version }}.php.j2"
-    - "config/authsources.php.j2"
-  become: yes
+    - config/authsources-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2
+    - config/authsources-{{ ssp_major_version }}.php.j2
+    - config/authsources.php.j2
+  become: true
   tags:
     - ssp:config:authsources
 
+# Use community.crypto modules here
 - name: Generate self-signed IdP certificates
-  command: openssl req -newkey rsa:2048 -new -x509 -days 3652 -subj "/CN={{ item.ssl_certificate_cn }}" -nodes -out idp-{{ item.entity_id }}.crt -keyout idp-{{ item.entity_id }}.key
+  ansible.builtin.command: |-
+    openssl req -newkey rsa:2048 \
+    -new -x509 -days 3652 \
+    -subj "/CN={{ item.ssl_certificate_cn }}" \
+    -nodes -out idp-{{ item.entity_id }}.crt \
+    -keyout idp-{{ item.entity_id }}.key
   args:
     chdir: "{{ ssp_certdir }}"
     creates: "{{ ssp_certdir }}/idp-{{ item.entity_id }}.key"
   with_items: "{{ ssp_idp_hosts }}"
   when: (ssp_idp_saml20_enabled or ssp_idp_shib13_enabled) and item.ssl_certificate_generate | default(True)
-  become: yes
+  become: true
   tags:
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
 - name: Copy IdP certificate (.crt)
-  copy:
-    content: '{{ item.ssl_certificate }}'
-    dest: "{{ ssp_certdir }}idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.crt"
+  ansible.builtin.copy:
+    content: "{{ item.ssl_certificate }}"
+    dest: "{{ ssp_certdir }}idp-{{ item.entity_id | replace('https://', '') | replace('/', '_') | replace('.', '_') }}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_idp_hosts }}"
-  when: item.ssl_certificate_generate | default(True) | bool == False and item.ssl_certificate is defined
-  become: yes
-  no_log: yes
+  when: not (item.ssl_certificate_generate | default(True) | bool) and item.ssl_certificate is defined
+  become: true
+  no_log: true
   tags:
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
 - name: Copy IdP certificate (.key)
-  copy:
-    content: '{{ item.ssl_certificate_key }}'
-    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.key"
+  ansible.builtin.copy:
+    content: "{{ item.ssl_certificate_key }}"
+    dest: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://', '') | replace('/', '_') | replace('.', '_') }}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_idp_hosts }}"
-  when: item.ssl_certificate_generate | default(True) | bool == False and item.ssl_certificate_key is defined
-  become: yes
-  no_log: yes
+  when: not (item.ssl_certificate_generate | default(True) | bool) and item.ssl_certificate_key is defined
+  become: true
+  no_log: true
   tags:
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
 - name: Ensure IdP certificate keys are installed
-  file:
+  ansible.builtin.file:
     state: file
-    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.key"
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://', '') | replace('/', '_') | replace('.', '_') }}.key"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0600"
   with_items: "{{ ssp_idp_hosts }}"
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
-  become: yes
+  become: true
   tags:
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
 - name: Ensure IdP certificates are installed
-  file:
+  ansible.builtin.file:
     state: file
-    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://','') | replace('/','_') | replace('.','_')}}.crt"
+    path: "{{ ssp_certdir }}/idp-{{ item.entity_id | replace('https://', '') | replace('/', '_') | replace('.', '_') }}.crt"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0644"
   with_items: "{{ ssp_idp_hosts }}"
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
-  become: yes
+  become: true
   tags:
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
 - name: Configure SSP hosted SAML 2.0 IdP metadata
-  include_tasks: configure-saml20-idp-hosted.yml
+  ansible.builtin.include_tasks: configure-saml20-idp-hosted.yml
   when: ssp_idp_saml20_enabled
   tags:
     - ssp:config:saml20-idp-hosted
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
-  include_tasks: configure-shib13-idp-hosted.yml
+  ansible.builtin.include_tasks: configure-shib13-idp-hosted.yml
   when: ssp_idp_shib13_enabled
   tags:
     - ssp:config:shib13-idp-hosted
 
 - name: Ensure SSP extra files are copied
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.src_path }}"
     dest: "{{ item.dest_path }}"
-    backup: yes
+    backup: true
+    mode: "0600"
   with_items: "{{ ssp_extra_files }}"
   when: item.src_path is defined and item.dest_path is defined
-  become: yes
+  become: true
   tags:
     - ssp:config:files
 
+# No command - should be empty file with file module
 - name: Enable required SSP modules
-  command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
+  ansible.builtin.command: touch "{{ ssp_path }}/modules/{{ item }}/enable"
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/enable"
   with_items: "{{ ssp_mods_enabled }}"
-  when: "{{ ssp_major_version|float < 2}}"
-  become: yes
+  when: ssp_major_version | float < 2
+  become: true
   tags:
     - ssp:config:mods
 
 - name: Disable unnecessary SSP modules
-  command: touch "{{ ssp_path }}/modules/{{ item }}/disable"
+  ansible.builtin.command: touch "{{ ssp_path }}/modules/{{ item }}/disable"
   args:
     creates: "{{ ssp_path }}/modules/{{ item }}/disable"
   with_items: "{{ ssp_mods_disabled }}"
-  when: "{{ ssp_major_version|float < 2}}"
-  become: yes
+  when: ssp_major_version | float < 2
+  become: true
   tags:
     - ssp:config:mods
 
 - name: Ensure required SSP metarefresh module dirs exist
-  file: path={{ ssp_metadatadir }}/{{ item.output_dir }} state=directory owner={{ssp_webuser }} group={{ ssp_webgroup }}
+  ansible.builtin.file:
+    path: "{{ ssp_metadatadir }}"
+    state: directory
+    owner: "{{ ssp_webuser }}"
+    group: "{{ ssp_webgroup }}"
+    mode: "0755"
   with_items: "{{ ssp_mod_metarefresh_sets }}"
   when: "'metarefresh' in ssp_mods_enabled"
-  become: yes
+  become: true
   tags:
     - ssp:config:mods
     - ssp:config:mods:metarefresh
 
 - name: Configure SSP metarefresh module
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ ssp_configdir }}/{{ ssp_mod_metarefresh.template.dest }}"
-    backup: yes
-    force: yes
+    backup: true
+    force: true
+    mode: "0644"
   with_first_found:
     - "{{ ssp_mod_metarefresh.template.src }}-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
     - "{{ ssp_mod_metarefresh.template.src }}-{{ ssp_major_version }}.php.j2"
     - "{{ ssp_mod_metarefresh.template.src }}.php.j2"
   when: "'metarefresh' in ssp_mods_enabled"
   register: ssp_mod_metarefresh_config
-  become: yes
+  become: true
   tags:
     - ssp:config:mods
     - ssp:config:mods:metarefresh
 
 - name: Configure SSP cron module
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ ssp_configdir }}/module_cron.php"
-    backup: yes
-    force: yes
+    backup: true
+    force: true
+    mode: "0644"
   with_first_found:
-    - "config/module_cron-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
-    - "config/module_cron-{{ ssp_major_version }}.php.j2"
-    - "config/module_cron.php.j2"
+    - config/module_cron-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2
+    - config/module_cron-{{ ssp_major_version }}.php.j2
+    - config/module_cron.php.j2
   when: "'cron' in ssp_mods_enabled"
-  become: yes
+  become: true
   tags:
     - ssp:config:mods
     - ssp:config:mods:cron
     - ssp:config:mods:metarefresh
 
 - name: Configure SSP cron jobs
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     user: "{{ item.user | default('root') }}"
     cron_file: "{{ item.file }}"
@@ -260,9 +281,14 @@
     job: >
       {% if ssp_major_version | int < 2 %}
         # Set maximum time for preventing curl job from hanging
-        curl -k --silent -m {{ ssp_mod_cron_job_max_execution_time }} {{ ssp_mod_cron_url }}?key={{ ssp_mod_cron_secret }}&tag={{ item.tag }}
+        curl -k --silent -m {{ ssp_mod_cron_job_max_execution_time }} \
+        {{ ssp_mod_cron_url }}?key={{ ssp_mod_cron_secret }}&\
+        tag={{ item.tag }}
       {% else %}
-        php -d max_execution_time={{ ssp_mod_cron_job_max_execution_time }} -d memory_limit={{ ssp_mod_cron_job_memory_limit }} {{ ssp_path }}/modules/cron/bin/cron.php -t {{ item.tag }}
+        php -d max_execution_time={{ ssp_mod_cron_job_max_execution_time }} \
+        -d memory_limit={{ ssp_mod_cron_job_memory_limit }} \
+        {{ ssp_path }}/modules/cron/bin/cron.php \
+      -t {{ item.tag }}
       {% endif %}
     minute: "{{ item.minute | default(omit) }}"
     hour: "{{ item.hour | default(omit) }}"
@@ -270,55 +296,55 @@
     month: "{{ item.month | default(omit) }}"
   with_items: "{{ ssp_mod_cron_entries }}"
   when: "'cron' in ssp_mods_enabled"
-  become: yes
+  become: true
   tags:
     - ssp:config:mods
     - ssp:config:mods:cron
     - ssp:config:mods:metarefresh
 
 - name: Configure SSP cron job variables
-  cronvar:
+  community.general.cronvar:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     cron_file: "{{ item.file }}"
   with_items: "{{ ssp_mod_cron_vars }}"
   when: "'cron' in ssp_mods_enabled"
-  become: yes
+  become: true
   tags:
     - ssp:config:mods
     - ssp:config:mods:cron
     - ssp:config:mods:metarefresh
 
 - name: Configure SSP discopower module
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ ssp_configdir }}/module_discopower.php"
-    backup: yes
-    force: yes
+    backup: true
+    force: true
+    mode: "0644"
   with_first_found:
-    - "config/module_discopower-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
-    - "config/module_discopower-{{ ssp_major_version }}.php.j2"
-    - "config/module_discopower.php.j2"
+    - config/module_discopower-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2
+    - config/module_discopower-{{ ssp_major_version }}.php.j2
+    - config/module_discopower.php.j2
   when: "'discopower' in ssp_mods_enabled"
-  become: yes
+  become: true
   tags:
     - ssp:config:mods
     - ssp:config:mods:discopower
 
 - name: Update SSP discopower module dictionary definitions
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ ssp_path }}/modules/discopower/dictionaries/tabs.definition.json"
-    backup: yes
-    force: yes
+    backup: true
+    force: true
+    mode: "0644"
   with_first_found:
-    - "modules/discopower/dictionaries/tabs.definition-{{ ssp_major_version }}.{{ ssp_minor_version }}.json.j2"
-    - "modules/discopower/dictionaries/tabs.definition-{{ ssp_major_version }}.json.j2"
-    - "modules/discopower/dictionaries/tabs.definition.json.j2"
+    - modules/discopower/dictionaries/tabs.definition-{{ ssp_major_version }}.{{ ssp_minor_version }}.json.j2
+    - modules/discopower/dictionaries/tabs.definition-{{ ssp_major_version }}.json.j2
+    - modules/discopower/dictionaries/tabs.definition.json.j2
   when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined"
-  become: yes
+  become: true
   tags:
     - ssp:config:mods
     - ssp:config:mods:discopower
-
-

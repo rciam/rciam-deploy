@@ -2,86 +2,89 @@
 ---
 
 - name: Ensure utils are configured
-  template:
+  ansible.builtin.template:
     src: "{{ item.name }}/config.py.j2"
     dest: "{{ item.path }}/config.py"
     owner: "{{ item.user.name }}"
     group: "{{ item.user.group }}"
-    mode: 0400
-    backup: yes
+    mode: "0400"
+    backup: true
   loop: "{{ rciam_utils }}"
-  become: yes
+  become: true
 
 - name: Ensure util SSL certificate directories exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.ssl.cert.path | dirname }}"
     owner: "{{ item.ssl.cert.owner }}"
     group: "{{ item.ssl.cert.group }}"
     state: directory
+    mode: "0750"
   loop: "{{ rciam_utils }}"
   when: item.ssl is defined
-  become: yes
+  become: true
 
 - name: Ensure util SSL certificates are copied
-  copy:
+  ansible.builtin.copy:
     dest: "{{ item.ssl.cert.path }}"
     content: "{{ item.ssl.cert.content }}"
     owner: "{{ item.ssl.cert.owner }}"
     group: "{{ item.ssl.cert.group }}"
     mode: "{{ item.ssl.cert.mode }}"
-    backup: yes
+    backup: true
   loop: "{{ rciam_utils }}"
   when: item.ssl is defined
-  become: yes
+  become: true
 
 - name: Ensure util SSL certificate key directories exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.ssl.cert_key.path | dirname }}"
     owner: "{{ item.ssl.cert_key.owner }}"
     group: "{{ item.ssl.cert_key.group }}"
     state: directory
+    mode: "0750"
   loop: "{{ rciam_utils }}"
   when: item.ssl is defined
-  become: yes
+  become: true
 
 - name: Ensure util SSL certificate keys are copied
-  copy:
+  ansible.builtin.copy:
     dest: "{{ item.ssl.cert_key.path }}"
     content: "{{ item.ssl.cert_key.content }}"
     owner: "{{ item.ssl.cert_key.owner }}"
     group: "{{ item.ssl.cert_key.group }}"
     mode: "{{ item.ssl.cert_key.mode }}"
-    backup: yes
+    backup: true
   loop: "{{ rciam_utils }}"
   when: item.ssl is defined
-  become: yes
-  no_log: yes
+  become: true
+  no_log: true
 
-- name: Ensure tables have been created for rciam-ip2country
-  shell: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/.venv/bin/python -m Utils.install"
+- name: Ensure tables have been created for rciam-ip2country # noqa command-instead-of-shell
+  ansible.builtin.shell: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/.venv/bin/python -m Utils.install" # noqa yaml[line-length]
   args:
     chdir: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}"
   when: rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
-  become: yes
+  become: true
   become_user: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
+  changed_when: false
   tags:
     - rciam_utils:config:ip2country:db
 
 - name: Ensure database files are copied for rciam-ip2country
-  copy:
+  ansible.builtin.copy:
     src: "{{ rciam_utils_ip2country.database_files_dir }}/{{ rciam_utils_ip2country.db_file_extension }}/"
     dest: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='path') | list)[0] }}/databases/"
     owner: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.name') | list)[0] }}"
     group: "{{ (rciam_utils | selectattr(\"name\", \"equalto\", \"rciam-ip2country\") | map(attribute='user.group') | list)[0] }}"
-    mode: 0400
-    backup: yes
+    mode: "0400"
+    backup: true
   when: '(rciam_utils_ip2country.database_files_dir is defined) and (rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1)'
-  become: yes
+  become: true
   tags:
     - rciam_utils:config:ip2country:files
 
 - name: Ensure util cron jobs are installed
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     user: "{{ item.user.name | default('root') }}"
     cron_file: "{{ item.name }}"
@@ -92,4 +95,4 @@
     month: "{{ item.cron.month | default(omit) }}"
   loop: "{{ rciam_utils }}"
   when: item.cron is defined and rciam_utils_cron_enabled
-  become: yes
+  become: true

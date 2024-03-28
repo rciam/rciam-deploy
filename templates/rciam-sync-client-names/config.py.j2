@@ -1,13 +1,13 @@
 # {{ ansible_managed }}
 
-mitreid_config = { 
+mitreid_config = {
     "dbname": "{{ rciam_dbs.oidc.name }}",
     "user": "{{ rciam_dbs.oidc.owner_username }}",
     "host": "{{ lookup('dig', groups['dbmaster'][0]) }}",
     "password": "{{ rciam_dbs.oidc.owner_password }}"
 }
 
-proxystats_config = { 
+proxystats_config = {
     "dbname": "{{ rciam_dbs.proxy.name }}",
     "user": "{{ rciam_dbs.proxy.owner_username }}",
     "host": "{{ rciam_dbs.proxy.host | default(lookup('dig', groups['dbmaster'][0])) }}",

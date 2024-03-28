@@ -1,0 +1,9 @@
+exclude_paths:
+  - .pre-commit-config.yaml
+  - icingaagents.yml
+  - roles/common/handlers/main.yml
+  - authzkeys.yml
+  - inventories
+offline: false
+skip_list:
+  - role-name

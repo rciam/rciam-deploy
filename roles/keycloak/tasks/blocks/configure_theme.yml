@@ -1,15 +1,16 @@
 ---
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
 ## we should issue the configuration calls from all host machines locally (and not through the proxy),
 ## because we want to be absolutely sure that all calls have been executed on all keycloak nodes at least once.
-- ansible.builtin.set_fact:
+- name: Ensure local host fact
+  ansible.builtin.set_fact:
     keycloak_local_host: "http://{{ keycloak_local_address }}:{{ keycloak_bind_port }}/{{ keycloak_base_url_path }}"
 
-- name: "Add {{keycloak_plugins.wayf.theme.name}} theme's terms of use for the realm {{ item.name }}"
-  uri:
+- name: "Add {{ keycloak_plugins.wayf.theme.name }} theme's terms of use for the realm {{ item.name }}" # noqa name[template]
+  ansible.builtin.uri:
     url: "{{ keycloak_local_host }}/realms/{{ item.name }}/theme-info/terms-of-use"
     method: POST
     body_format: raw
@@ -20,8 +21,8 @@
     status_code: 201
   when: not item.terms is undefined
 
-- name: "Add {{keycloak_plugins.wayf.theme.name}} theme's configuration for the realm {{ item.name }}"
-  uri:
+- name: "Add {{ keycloak_plugins.wayf.theme.name }} theme's configuration for the realm {{ item.name }}" # noqa name[template]
+  ansible.builtin.uri:
     url: "{{ keycloak_local_host }}/realms/{{ item.name }}/theme-info/theme-config"
     method: POST
     body_format: json
@@ -32,7 +33,7 @@
   when: not item.config is undefined
 
 - name: "Add resource files"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_local_host }}/realms/{{ item.name }}/theme-info/resource/{{ theme_realm_resource.filename }}"
     method: POST
     headers:
@@ -46,5 +47,3 @@
   loop_control:
     loop_var: theme_realm_resource
   with_items: "{{ item.resources | default([]) }}"
-
-

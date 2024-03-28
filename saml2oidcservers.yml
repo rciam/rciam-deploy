@@ -2,9 +2,10 @@
 #
 ---
 
-- hosts: saml2oidc
+- name: Deploy SAML 2 OIDC
+  hosts: saml2oidc
   roles:
     - { role: jq, tags: jq }
-    #- { role: ansiblebit.oracle-java, tags: java }
-    - { role: infopen.openjdk-jdk, tags: java }
+    # - { role: ansiblebit.oracle-java, tags: java }
+    - { role: infOpen.openjdk-jdk, tags: java }
     - { role: tomcat, tags: tomcat }

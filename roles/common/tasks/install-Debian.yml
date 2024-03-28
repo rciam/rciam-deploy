@@ -1,17 +1,16 @@
 ---
-
 - name: Update package cache (Debian)
-  apt: 
-    update_cache: yes 
+  ansible.builtin.apt:
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true
 
 - name: Ensure common packages are installed (Debian)
-  apt:
+  ansible.builtin.apt:
     pkg:
       - aptitude
       - ca-certificates
       - vim-nox
     state: present
-    install_recommends: no
+    install_recommends: false
   become: true

@@ -1,7 +1,6 @@
 ---
-
-- name: "Get list of idp's mappers"
-  uri:
+- name: Get list of idp's mappers
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ item[1].identityProviderAlias }}/mappers"
     method: GET
     headers:
@@ -9,7 +8,8 @@
     status_code: 200
   register: "idp_mappers_result"
 
-- set_fact:
+- name: Set Fact
+  ansible.builtin.set_fact:
     idp_mapper_match: "{{ idp_mappers_result.json | json_query(query) | default([]) }}"
   vars:
     query: '[?name == `{{ item[1].name }}` ].{name: name, id: id }'

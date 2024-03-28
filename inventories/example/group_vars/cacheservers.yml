@@ -3,12 +3,12 @@
 #
 # See memcached default values in roles/memcached/defaults/main.yml
 #
-# Log verbosity levels: 
+# Log verbosity levels:
 # `""`   Don't log anything (Default)
 # `-v`   Be verbose during the event loop; print out errors and warnings.
 # `-vv`  Be even more verbose; same as -v but also print client commands and
 #        responses.
-# `-vvv` Be  extremely verbose; same as -vv but also print internal state 
+# `-vvv` Be  extremely verbose; same as -vv but also print internal state
 #        transitions.
 #memcached_log_verbosity: ""
 

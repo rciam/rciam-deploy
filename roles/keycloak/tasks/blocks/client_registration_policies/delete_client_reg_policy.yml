@@ -3,23 +3,27 @@
 # current_realm = the current realm (loop item) of the config
 # del_cli_reg_policy = the current client registration policy (loop item) of the config
 # found_cli_reg_pols = all the found client registration policies found on the server for the current_realm
-
-
-- set_fact:
+- name: Set cli_reg_pol_match fact
+  ansible.builtin.set_fact:
     cli_reg_pol_match: "{{ found_cli_reg_pols | json_query(query) | first | default({}) }}"
   vars:
-    query: '[? (name == `{{ del_cli_reg_policy.name }}` && providerId == `{{ del_cli_reg_policy.providerId }}` && subType == `{{ del_cli_reg_policy.subType }}`) ]'
+    query: >-
+      '[?
+        (name == `{{ del_cli_reg_policy.name }}` &&
+          providerId == `{{ del_cli_reg_policy.providerId }}` &&
+          subType == `{{ del_cli_reg_policy.subType }}`) ]'
 
-- set_fact:
+- name: Set cli_reg_pol_isfound fact
+  ansible.builtin.set_fact:
     cli_reg_pol_isfound: "{{ lookup('dict', cli_reg_pol_match) | length > 0 }}"
 
-- name: "Delete client registration policy {{ del_cli_reg_policy.name }} with type {{ del_cli_reg_policy.subtype }} of realm {{ current_realm.name }}"
-  uri:
+- name: Delete client registration policy
+  # {{ del_cli_reg_policy.name }} with type {{ del_cli_reg_policy.subtype }} of realm {{ current_realm.name }}"
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/components/{{ cli_reg_pol_match.id }}"
-    method: "DELETE"
+    method: DELETE
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    status_code: "204"
+    status_code: 204
   when: cli_reg_pol_isfound
-

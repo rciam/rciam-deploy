@@ -1,12 +1,11 @@
 # file: tomcat/tasks/install-Debian.yml
 #
 ---
-
 - name: Ensure Tomcat is installed (Debian)
-  apt:
+  ansible.builtin.apt:
     name: "{{ tomcat_package }}"
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 86400
-    install_recommends: no
-  become: yes
+    install_recommends: false
+  become: true

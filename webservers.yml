@@ -2,21 +2,22 @@
 #
 ---
 
-- hosts: web
+- name: Deploy Web Servers
+  hosts: web
   roles:
     - { role: apache, tags: apache }
     - { role: php, tags: php }
   tasks:
     - name: Ensure static files for each Virtual Host are copied
-      copy:
+      ansible.builtin.copy:
         src: "{{ inventory_dir }}/files/web/vhosts/{{ item.servername | urlsplit('hostname') }}/"
         dest: "{{ item.documentroot }}/"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
       loop: "{{ apache_vhosts | default([]) }}"
       loop_control:
         label: "Copying static files for Virtual Host {{ item.servername | urlsplit('hostname') }}"
-      ignore_errors: yes
-      become: yes
+      ignore_errors: true # noqa ignore-errors
+      become: true
       tags: web:static

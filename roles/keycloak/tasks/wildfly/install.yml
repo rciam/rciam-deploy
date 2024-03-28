@@ -1,84 +1,90 @@
 ---
 
 ######## Create postgresql plugin
-- name: "Task block: Create postgresql plugin"
-  block:
-  - name: create postresql plugin dir with parent directories
-    file:
-      path: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main"
-      state: directory
-  - name: Download postgresql JDBC driver
-    get_url:
-      url: "https://jdbc.postgresql.org/download/{{ keycloak_postgresql_jar_name }}"
-      dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main"
-  - name: Installing postgresql plugin
-    template:
-      src: templates/module.xml.j2
-      dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
-  become: yes
+- name: Task block | Create postgresql plugin
+  become: true
   tags: "keycloak:install:postgresql_plugin"
+  block:
+    - name: Ceate postresql plugin dir with parent directories
+      ansible.builtin.file:
+        path: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main"
+        state: directory
+        mode: "0755"
+    - name: Download postgresql JDBC driver
+      ansible.builtin.get_url:
+        url: "https://jdbc.postgresql.org/download/{{ keycloak_postgresql_jar_name }}"
+        dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main"
+        mode: "0644"
+    - name: Installing postgresql plugin
+      ansible.builtin.template:
+        src: templates/module.xml.j2
+        dest: "{{ keycloak_home }}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
+        mode: "0600"
+
 
 ######## Install template standalone-ha.xml
-
 - name: Installing keycloak configuration (standalone-ha.xml)
-  template:
-    mode: 0600
+  ansible.builtin.template:
+    mode: "0600"
     src: "templates/{{ keycloak_version }}/standalone-ha.xml.j2"
     dest: "{{ keycloak_home }}/standalone/configuration/standalone-ha.xml"
-  become: yes
+  become: true
   tags: "keycloak:install:standaloneha"
 
 ##### Set keycloak working dir and logs writable for service user
-- name: "Setting standalone folder writable for user: {{ keycloak_service_user }} - where it's internal temporary files are created"
-  file:
+- name: "Setting standalone folder writable for user: where it's internal temporary files are created: {{ keycloak_service_user }}"
+  ansible.builtin.file:
     dest: "{{ keycloak_home }}/standalone"
     owner: "{{ keycloak_service_user }}"
     group: "{{ keycloak_service_user }}"
-    recurse: yes
-  become: yes
+    recurse: true
+  become: true
   tags: "keycloak:install:setup_file_permissions"
 
 ############### Setup admin user
-- name: "Task block: Setup admin user"
-  block:
-  - name: Remove file (delete file if exists)
-    file:
-      path: "{{ keycloak_home }}/standalone/configuration/keycloak-add-user.json"
-      state: absent
-  - name: Create admin user
-    shell: "{{ keycloak_home }}/bin/add-user-keycloak.sh -u {{ keycloak_admin.user }} -p {{ keycloak_admin.pass }}"
-    args:
-      executable: /bin/bash
-  become: yes
+- name: Task block | Setup admin user"
+  become: true
   tags: "keycloak:install:setup_admin"
+  block:
+    - name: Remove file (delete file if exists)
+      ansible.builtin.file:
+        path: "{{ keycloak_home }}/standalone/configuration/keycloak-add-user.json"
+        state: absent
+    - name: Create admin user
+      ansible.builtin.shell: >-
+        "{{ keycloak_home }}/bin/add-user-keycloak.sh \
+        -u {{ keycloak_admin.user }} \
+        -p {{ keycloak_admin.pass }}"
+      args:
+        executable: /bin/bash
+      changed_when: false
 
 #### Setup logcleaner script
 - name: "Task block: Setup logcleaner script"
+  become: true
+  tags: "keycloak:install:setup_logcleaner"
   block:
     - name: "Install the logcleaner script template"
-      template:
+      ansible.builtin.template:
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
-        mode: 0640
+        mode: "0640"
         src: templates/logcleaner.sh.j2
         dest: "{{ keycloak_home }}/logcleaner.sh"
     - name: "Create the cronjob"
-      cron:
+      ansible.builtin.cron:
         name: keycloak logcleaner
         day: "*"
         hour: "0"
         minute: "0"
         user: "{{ keycloak_service_user }}"
         job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_logs_folder }} {{ keycloak_logs_max_days }}"
-  become: yes
-  tags: "keycloak:install:setup_logcleaner"
-
 
 ### install other plugins
 
 # would loop over block of tasks within install_plugin.yml, but looping on blocks is not allowed in ansible
 - name: Install other plugins
-  include_tasks: "wildfly/install_plugin.yml"
+  ansible.builtin.include_tasks: "wildfly/install_plugin.yml"
   when: not keycloak_plugins is undefined
   loop: "{{ lookup('dict', keycloak_plugins, wantlist=True) }}"
   tags: "keycloak:install:plugins"
@@ -87,24 +93,20 @@
 ############### Setup keycloak as a service
 
 - name: "Setup keycloak as a service"
-  template:
+  ansible.builtin.template:
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
     src: templates/keycloak.service.wildfly.j2
     dest: /etc/systemd/system/keycloak.service
-  become: yes
+  become: true
   tags: "keycloak:install:setup_sys_service"
 
 - name: "Restart keycloak"
-  systemd:
+  ansible.builtin.systemd:
     name: keycloak
     state: restarted
-    daemon_reload: yes
-    enabled: yes
-  become: yes
+    daemon_reload: true
+    enabled: true
+  become: true
   tags: "keycloak:install:restart_sys_service"
-
-
-
-

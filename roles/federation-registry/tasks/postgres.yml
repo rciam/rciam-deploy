@@ -1,46 +1,49 @@
 ---
 - name: Make sure psycopg2 is installed
-  command: pip install psycopg2==2.7.5 --ignore-installed
+  ansible.builtin.pip:
+    name: psycopg2
+    version: 2.7.5
   run_once: true
 
 - name: Send Create Tables SQL File
-  copy:
+  ansible.builtin.copy:
     src: create_tables.sql
-    dest: "{{rciam_dbs.federation.script_path}}"
+    dest: "{{ rciam_dbs.federation.script_path }}"
+    mode: "0644"
   run_once: true
 
 - name: Create PostgreSQL tables for Federation Registry via SQL scripts
   run_once: true
-  postgresql_query:
+  community.postgresql.postgresql_script:
     db: "{{ rciam_dbs.federation.name }}"
     login_user: "{{ rciam_dbs.federation.owner_username }}"
     login_password: "{{ rciam_dbs.federation.owner_password }}"
-    path_to_script: "{{ rciam_dbs.federation.script_path }}"
+    path: "{{ rciam_dbs.federation.script_path }}"
     login_host: "{{ rciam_dbs.federation.host }}"
   register: postgresql_result
   failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
 
 - name: Send Tenant Initialization Data
   run_once: true
-  copy:
-    src: private_files/{{federation_registry_init_script}}
-    dest: "{{rciam_dbs.federation.script_path}}"
+  ansible.builtin.copy:
+    src: private_files/{{ federation_registry_init_script }}
+    dest: "{{ rciam_dbs.federation.script_path }}"
+    mode: "0644"
 
 - name: Initialise Tenant Data via SQL scripts
   run_once: true
-  postgresql_query:
+  community.postgresql.postgresql_script:
     db: "{{ rciam_dbs.federation.name }}"
     login_user: "{{ rciam_dbs.federation.owner_username }}"
     login_password: "{{ rciam_dbs.federation.owner_password }}"
-    path_to_script: "{{ rciam_dbs.federation.script_path }}"
     login_host: "{{ rciam_dbs.federation.host }}"
-    path_to_script: "{{rciam_dbs.federation.script_path}}"
-    login_host: "{{ rciam_dbs.federation.host }}"
+    path: "{{ rciam_dbs.federation.script_path }}"
   register: postgresql_result
   failed_when: "postgresql_result is failed and 'already exists' not in postgresql_result.msg"
 
 - name: Delete database configuration file
   run_once: true
-  file:
-    path: "{{rciam_dbs.federation.script_path}}"
+  ansible.builtin.file:
+    path: "{{ rciam_dbs.federation.script_path }}"
     state: absent
+    mode: "0644"

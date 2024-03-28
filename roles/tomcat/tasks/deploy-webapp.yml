@@ -2,80 +2,102 @@
 #
 ---
 - name: Get GitHub asset ID of WAR file
-  script: "{{ inventory_dir }}/files/get_gh_asset_id.sh {{ webapp_github_repo }} {{ webapp_github_repo_token }} {{ webapp_github_release_version }} {{ webapp_github_release_file }}"
+  ansible.builtin.script: >-
+    "{{ inventory_dir }}/files/get_gh_asset_id.sh \
+      {{ webapp_github_repo }} \
+      {{ webapp_github_repo_token }} \
+      {{ webapp_github_release_version }} \
+      {{ webapp_github_release_file }}"
   register: github_asset_id
 
-- name: Ensure WAR file is downloaded
-  command: wget -q --auth-no-challenge --header="Accept:application/octet-stream" "https://{{ webapp_github_repo_token }}:@api.github.com/repos/{{ webapp_github_repo }}/releases/assets/{{ github_asset_id.stdout }}" -O "{{ webapp_file }}_{{ webapp_github_release_version }}"
-  args:
-    chdir: "{{ webapp_download_path }}/"
-    creates: "{{ webapp_file }}_{{ webapp_github_release_version }}"
+# Replaced by get_url below
+# - name: Ensure WAR file is downloaded
+#   ansible.builtin.command: wget \
+    # -q --auth-no-challenge \
+    # --header="Accept:application/octet-stream" \
+    # "https://{{ webapp_github_repo_token }}:@api.github.com/repos/{{ webapp_github_repo }}/releases/assets/{{ github_asset_id.stdout }}" \
+    # -O "{{ webapp_file }}_{{ webapp_github_release_version }}"
+#   args:
+#     chdir: "{{ webapp_download_path }}/"
+#     creates: "{{ webapp_file }}_{{ webapp_github_release_version }}"
+#   become: true
+
+- name: Ensure WAR file
+  ansible.builtin.get_url:
+    url: "https://api.github.com/repos/{{ webapp_github_repo }}/releases/assets/{{ github_asset_id.stdout }}"
+    dest: "{{ webapp_download_path }}/{{ webapp_file }}_{{ webapp_github_release_version }}"
+    headers:
+      Accept: application/octet-stream
+      Authorization: "Bearer {{ webapp_github_repo_token }}"
+    mode: "0644"
   become: true
 
 - name: Check that WAR file has been deployed
-  stat:
+  ansible.builtin.stat:
     path: "{{ webapp_path }}/{{ webapp_file }}"
   register: webapp_file_status
   become: true
 
 - name: Deploy WAR file when WAR file has not been deployed
-  copy:
+  ansible.builtin.copy:
     src: "{{ webapp_download_path }}/{{ webapp_file }}_{{ webapp_github_release_version }}"
     dest: "{{ webapp_path }}/{{ webapp_file }}"
     remote_src: true
-  when: webapp_file_status.stat.exists == False
+    mode: "0644"
+  when: not webapp_file_status.stat.exists
   become: true
 
 - name: Calculate checksum of deployed WAR file
-  stat:
+  ansible.builtin.stat:
     path: "{{ webapp_path }}/{{ webapp_file }}"
     checksum_algorithm: sha256
     get_checksum: true
   register: webapp_file_checksum_old
-  when: webapp_file_status.stat.exists == True
+  when: webapp_file_status.stat.exists
   become: true
 
 - name: Calculate checksum of downloaded WAR file
-  stat:
+  ansible.builtin.stat:
     path: "{{ webapp_download_path }}/{{ webapp_file }}_{{ webapp_github_release_version }}"
     checksum_algorithm: sha256
     get_checksum: true
   register: webapp_file_checksum_new
-  when: webapp_file_status.stat.exists == True
+  when: webapp_file_status.stat.exists
   become: true
 
 - name: Ensure Tomcat is stopped
-  service:
+  ansible.builtin.service:
     name: "{{ tomcat_service }}"
-    state: "stopped"
-  when: webapp_file_status.stat.exists == True and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
+    state: stopped
+  when: webapp_file_status.stat.exists and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
   become: true
 
 - name: Ensure previous WAR file is deleted
-  file:
+  ansible.builtin.file:
     path: "{{ webapp_path }}/{{ webapp_file }}"
     state: absent
-  when: webapp_file_status.stat.exists == True and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
+  when: webapp_file_status.stat.exists and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
   become: true
 
 - name: Ensure previous WAR directory is deleted
-  file:
+  ansible.builtin.file:
     path: "{{ webapp_path }}/{{ webapp_context_path }}"
     state: absent
-  when: webapp_file_status.stat.exists == True and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
+  when: webapp_file_status.stat.exists and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
   become: true
 
 - name: Deploy new version of WAR file
-  copy:
+  ansible.builtin.copy:
     src: "{{ webapp_download_path }}/{{ webapp_file }}_{{ webapp_github_release_version }}"
     dest: "{{ webapp_path }}/{{ webapp_file }}"
+    mode: "0644"
     remote_src: true
-  when: webapp_file_status.stat.exists == True and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
+  when: webapp_file_status.stat.exists and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
   become: true
 
 - name: Ensure Tomcat is started
-  service:
+  ansible.builtin.service:
     name: "{{ tomcat_service }}"
     state: "started"
-  when: webapp_file_status.stat.exists == True and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
+  when: webapp_file_status.stat.exists and webapp_file_checksum_old.stat.checksum != webapp_file_checksum_new.stat.checksum
   become: true

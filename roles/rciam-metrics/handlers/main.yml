@@ -1,10 +1,10 @@
 ---
 # handlers file for rciam-metrics
 
-- name: fastapi.service restart
-  systemd:
+- name: Fastapi.service restart
+  ansible.builtin.systemd:
     name: fastapi
     state: restarted
-    enabled: yes
-    daemon_reload: yes
-  become: yes
+    enabled: true
+    daemon_reload: true
+  become: true

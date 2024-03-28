@@ -4,38 +4,40 @@
 # realm_and_client_roles[1] : the current element of the client_default_roles list
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
 - name: "Find client {{ realm_and_client_roles[1].name }}"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ realm_and_client_roles[0].name }}/clients?clientId={{ realm_and_client_roles[1].name }}&max=20&search=true"
-    method: "GET"
+    method: GET
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 200
   register: found_clients
 
-- set_fact:
+- name: Keycloak | roles | clients | set found_client fact
+  ansible.builtin.set_fact:
     found_client: "{{ found_clients.json[0] | default() }}"
 
 - name: "Find roles of client {{ found_client.clientId }}"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ realm_and_client_roles[0].name }}/clients/{{ found_client.id }}/roles"
-    method: "GET"
+    method: GET
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 200
   register: client_roles
 
-- set_fact:
-    client_roles: "{{ client_roles.json| default([]) }}"
+- name: Keycloak | roles | clients | set client_roles fact
+  ansible.builtin.set_fact:
+    client_roles: "{{ client_roles.json | default([]) }}"
 
-- name: "Call default client roles updater (mode 'add')"
-  include_tasks: blocks/roles_configuration/clients/add_remove_client_default_roles.yml
+- name: Call default client roles updater (mode 'add')
+  ansible.builtin.include_tasks: blocks/roles_configuration/clients/add_remove_client_default_roles.yml
   vars:
     client_default_role_mode: add
 
-- name: "Call default client roles updater (mode 'remove')"
-  include_tasks: blocks/roles_configuration/clients/add_remove_client_default_roles.yml
+- name: Call default client roles updater (mode 'remove')
+  ansible.builtin.include_tasks: blocks/roles_configuration/clients/add_remove_client_default_roles.yml
   vars:
     client_default_role_mode: remove

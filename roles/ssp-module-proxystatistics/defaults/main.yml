@@ -12,15 +12,15 @@ ssp_module_proxystatistics_mode: "PROXY"
 
 # REQUIRED FOR "IDP" MODE
 # EntityId of IdP
-#ssp_module_proxystatistics_idp_entity_id: "https://idp.example.org"
+# ssp_module_proxystatistics_idp_entity_id: "https://idp.example.org"
 # Name of IdP
-#ssp_module_proxystatistics_idp_entity_name: "IDP NAME"
+# ssp_module_proxystatistics_idp_entity_name: "IDP NAME"
 
 # REQUIRED FOR "SP" MODE
 # EntityId of SP
-#ssp_module_proxystatistics_sp_entity_id: "https://sp.example.org"
+# ssp_module_proxystatistics_sp_entity_id: "https://sp.example.org"
 # Name of SP
-#ssp_module_proxystatistics_sp_entity_name: "SP NAME"
+# ssp_module_proxystatistics_sp_entity_name: "SP NAME"
 
 ssp_module_proxystatistics_db:
   name: "STATS"
@@ -28,9 +28,9 @@ ssp_module_proxystatistics_db:
   username: "stats"
   password: "stats"
   prefix: ""
-  persistent: no
-  #slaves:
-  #  - dsn: "mysql:host=slavedbhost;port=3306;dbname=STATS;charset=utf8" 
+  persistent: false
+  # slaves:
+  #  - dsn: "mysql:host=slavedbhost;port=3306;dbname=STATS;charset=utf8"
   #    username: "stats"
   #    password: "stats"
   #    persistent: no
@@ -48,5 +48,5 @@ ssp_module_proxystatistics_table_name:
 ssp_module_proxystatistics_oidc_issuer: "http://example.org/openidconnect/sp"
 
 # Ignore from statistics calculations the list of identifiers below.
-#ssp_module_proxystatistics_user_id_blacklist:
+# ssp_module_proxystatistics_user_id_blacklist:
 #  - xxxxxx@example.org

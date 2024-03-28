@@ -1,87 +1,88 @@
 ---
-  - name: Create deployment_response topic
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}"
-      method: PUT
-      return_content: yes
-      headers: 
-        x-api-key: "{{ federation_registry_ams.admin_token }}"
-    register: response
-    run_once: true
-    failed_when: response.status != 409 and response.status != 200
+- name: Create deployment_response topic
+  ansible.builtin.uri:
+    url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}"
+    method: PUT
+    return_content: true
+    headers:
+      x-api-key: "{{ federation_registry_ams.admin_token }}"
+  register: response
+  run_once: true
+  failed_when: response.status != 409 and response.status != 200
 
-  - name: Modify acl for topic
-    run_once: true
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}:modifyAcl"
-      body: "{{lookup('template','ams_authorized_users.j2')}}"
-      method: POST
-      return_content: yes
-      headers:
-        Content-Type: "application/json"
-        x-api-key: "{{ federation_registry_ams.admin_token }}"
-      body_format: json
+- name: Modify acl for topic
+  run_once: true
+  ansible.builtin.uri:
+    url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/topics/{{ federation_registry_ams.topic }}:modifyAcl"
+    body: "{{ lookup('template', 'ams_authorized_users.j2') }}"
+    method: POST
+    return_content: true
+    headers:
+      Content-Type: "application/json"
+      x-api-key: "{{ federation_registry_ams.admin_token }}"
+    body_format: json
 
-  - name: Delete express push subscription
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}"
-      method: DELETE
-      return_content: yes
-      headers: 
-        x-api-key: "{{ federation_registry_ams.admin_token }}"
-    register: response
-    run_once: true
-    failed_when: response.status != 409 and response.status != 200 and response.status != 404
+- name: Delete express push subscription
+  ansible.builtin.uri:
+    url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}"
+    method: DELETE
+    return_content: true
+    headers:
+      x-api-key: "{{ federation_registry_ams.admin_token }}"
+  register: response
+  run_once: true
+  failed_when: response.status != 409 and response.status != 200 and response.status != 404
 
-  - name: Create express push subscription
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}"
-      method: PUT
-      body: "{{lookup('template','ams_push_body.j2')}}"
-      headers:
-        Content-Type: "application/json"
-        x-api-key: "{{ federation_registry_ams.admin_token }}"
-      body_format: json
-      return_content: yes
-    run_once: true
-    register: post_ams_push_config_response
+- name: Create express push subscription
+  ansible.builtin.uri:
+    url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}"
+    method: PUT
+    body: "{{ lookup('template', 'ams_push_body.j2') }}"
+    headers:
+      Content-Type: "application/json"
+      x-api-key: "{{ federation_registry_ams.admin_token }}"
+    body_format: json
+    return_content: true
+  run_once: true
+  register: post_ams_push_config_response
 
-  - name: Get express push subscription
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}"
-      method: GET
-      return_content: yes
-      headers: 
-        x-api-key: "{{ federation_registry_ams.admin_token }}"
-    register: get_ams_push_response
-    ignore_errors: yes
-    run_once: true
-    when: "post_ams_push_config_response is defined"
+- name: Get express push subscription
+  ansible.builtin.uri:
+    url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}"
+    method: GET
+    return_content: true
+    headers:
+      x-api-key: "{{ federation_registry_ams.admin_token }}"
+  register: get_ams_push_response
+  ignore_errors: true
+  run_once: true
+  when: "post_ams_push_config_response is defined"
 
-  - name: Modify Acl for Push Subscription
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:modifyAcl"
-      body: "{{lookup('template','ams_authorized_users.j2')}}"
-      method: POST
-      headers:
-        Content-Type: "application/json"
-        x-api-key: "{{ federation_registry_ams.admin_token }}"
-      body_format: json
-    run_once: true
+- name: Modify Acl for Push Subscription
+  ansible.builtin.uri:
+    url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:modifyAcl"
+    body: "{{ lookup('template', 'ams_authorized_users.j2') }}"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      x-api-key: "{{ federation_registry_ams.admin_token }}"
+    body_format: json
+  run_once: true
 
-  - name: Save Ams Facts
-    run_once: true
-    set_fact:
-      ams_auth_key: "{{get_ams_push_response.json.pushConfig.authorizationHeader.value}}"
-      ams_verif_hash: "{{get_ams_push_response.json.pushConfig.verificationHash}}"
-    when:
-      - "get_ams_push_response.json.pushConfig.authorizationHeader.value is defined"
-      - "get_ams_push_response.json.pushConfig.verificationHash is defined"
-  
-  - debug:
-      var: ams_verif_hash
-  - name: Save Ams verified
-    run_once: true
-    set_fact:
-      ams_is_verif: "{{get_ams_push_response.json.pushConfig.verified}}"
-    when: "get_ams_push_response.json.pushConfig.verified is defined"
+- name: Save Ams Facts
+  run_once: true
+  ansible.builtin.set_fact:
+    ams_auth_key: "{{ get_ams_push_response.json.pushConfig.authorizationHeader.value }}"
+    ams_verif_hash: "{{ get_ams_push_response.json.pushConfig.verificationHash }}"
+  when:
+    - "get_ams_push_response.json.pushConfig.authorizationHeader.value is defined"
+    - "get_ams_push_response.json.pushConfig.verificationHash is defined"
+
+- name: Debug
+  ansible.builtin.debug:
+    var: ams_verif_hash
+- name: Save Ams verified
+  run_once: true
+  ansible.builtin.set_fact:
+    ams_is_verif: "{{ get_ams_push_response.json.pushConfig.verified }}"
+  when: "get_ams_push_response.json.pushConfig.verified is defined"

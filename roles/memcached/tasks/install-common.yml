@@ -1,7 +1,6 @@
 ---
-
 - name: Ensure memcached server is installed
-  package: 
-    name: memcached 
+  ansible.builtin.package:
+    name: memcached
     state: present
-  become: yes
+  become: true

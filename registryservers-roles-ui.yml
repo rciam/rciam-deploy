@@ -2,9 +2,18 @@
 #
 ---
 
-- hosts: registry
+- name: Deploy Regitry Server UI
+  hosts: registry
   roles:
     - { role: cm-role-ui, tags: cm-role-ui }
 
 # Deploy CM Roles simple UI
-# ansible-playbook -v -u user --ask-become-pass -i inventories/openaire-dev/hosts.ini registryservers-roles-ui.yml --tags "cm-role-ui:configure" --ask-vault-pass --diff --extra-vars "git_user=<username> git_pass=<git token or password>"
+# ansible-playbook \
+# -v -u user \
+# --ask-become-pass \
+# -i inventories/openaire-dev/hosts.ini \
+# registryservers-roles-ui.yml \
+# --tags "cm-role-ui:configure" \
+# --ask-vault-pass \
+# --diff \
+# --extra-vars "git_user=<username> git_pass=<git token or password>"

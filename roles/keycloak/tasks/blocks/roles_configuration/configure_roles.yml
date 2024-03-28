@@ -1,10 +1,9 @@
 ---
-
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Get the role {{ item[1].name }} from realm {{ item[0].name }}"
-  uri:
+- name: "Get the role {{ item[1].name }} from realm {{ item[0].name }}" # noqa name[template]
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/{{ item[1].name }}"
     method: "GET"
     headers:
@@ -12,16 +11,29 @@
     status_code: [200, 404]
   register: realm_role_inquiry
 
-- set_fact:
+- name: Keycloak | Roles configuration | set role exists
+  ansible.builtin.set_fact:
     current_role_exists: "{% if realm_role_inquiry.status == 200 %}true{% else %}false{% endif %}"
 
-- name: "{% if current_role_exists %}Update{% else %}Update{% endif %} the role {{ item[1].name }} in realm {{ item[0].name }}"
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles{% if current_role_exists %}/{{ item[1].name }}{% endif %}"
-    method: "{% if current_role_exists %}PUT{% else %}POST{% endif %}"
+# Probably better to define separate tasks and skip based on the fact
+- name: Update the role in realm
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles"
+    method: PUT
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body:
-      "{{ item[1] }}"
-    status_code: "{% if current_role_exists %}204{% else %}201{% endif %}"
+    body: "{{ item[1] }}"
+    status_code: 204
+  when: (current_role_exists | bool)
+
+- name: Create role in realm
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/{{ item[1].name }}"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ item[1] }}"
+    status_code: 201
+  when: not (current_role_exists | bool)

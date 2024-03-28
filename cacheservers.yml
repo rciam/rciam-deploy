@@ -1,5 +1,6 @@
 ---
-
-- hosts: cache
+# cacheservers.yml
+- name: Provision Cache Servers
+  hosts: cache
   roles:
     - memcached

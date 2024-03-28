@@ -4,36 +4,36 @@
 
 # Override default tomcat version
 # See tomcat_default_version defined in tomcat/vars/
-#tomcat_version: "9"
+# tomcat_version: "9"
 
 # Override default tomcat service name
 # See tomcat_default_service defined in tomcat/vars/
-#tomcat_service: "tomcat{{ tomcat_version }}"
+# tomcat_service: "tomcat{{ tomcat_version }}"
 
 # Override default tomcat configuration path
 # See tomcat_default_conf_path defined in tomcat/vars/
-#tomcat_conf_path: "/etc/tomcat{{ tomcat_version }}"
+# tomcat_conf_path: "/etc/tomcat{{ tomcat_version }}"
 
 # Override default tomcat JAVA_HOME
 # See tomcat_default_java_home defined in tomcat/vars/
-#tomcat_java_home: "/usr/lib/jvm/java-11-openjdk"
+# tomcat_java_home: "/usr/lib/jvm/java-11-openjdk"
 
 tomcat_java_opts: "-Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC"
 
 tomcat_connectors:
-  - port: "8080"
+  - port: 8080
     protocol: "HTTP/1.1"
-    connection_timeout: "20000"
-    #executor: "tomcatThreadPool"
-    #proxy_port: "443"
-    redirect_port: "8443"
-    #scheme: "https"
-    uri_encoding: "UTF-8"
+    connection_timeout: 20000
+    # executor: "tomcatThreadPool"
+    # proxy_port: "443"
+    redirect_port: 8443
+    # scheme: "https"
+    uri_encoding: UTF-8
 
-tomcat_cluster_mode: no
+tomcat_cluster_mode: false
 
-# Uncomment to configure tomcat cluster parameters when tomcat_cluster_mode is set to yes
-#tomcat_cluster:
+# Uncomment to configure tomcat cluster parameters when tomcat_cluster_mode is set to true
+# tomcat_cluster:
 #  channel_send_options: "8"
 #  channel_start_options: "3"
 #  expire_sessions_on_shutdown: "false"

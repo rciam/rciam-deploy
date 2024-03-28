@@ -1,46 +1,45 @@
 ---
-
 - name: Install apt packages required for alternative PHP repo (Debian)
-  apt:
+  ansible.builtin.apt:
     name: "{{ php_apt_packages }}"
     state: present
-    update_cache: yes
+    update_cache: true
   when: php_alt_repo and php_apt_packages is defined and php_apt_packages|length
-  become: yes
+  become: true
 
 - name: Install apt key for PHP repo (Debian)
-  apt_key:
-    url: '{{ php_apt_key }}'
+  ansible.builtin.apt_key:
+    url: "{{ php_apt_key }}"
     state: present
   when: php_alt_repo and php_apt_key is defined
-  become: yes
+  become: true
 
 - name: Add alternative PHP repo (Debian)
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ item }}"
     state: present
-    update_cache: yes
-    filename: "php"
+    update_cache: true
+    filename: php
   loop: "{{ php_apt_repositories }}"
   when: php_alt_repo and php_apt_repositories is defined and php_apt_repositories|length
-  become: yes
+  become: true
 
 - name: Ensure PHP packages are installed (Debian)
-  apt:
+  ansible.builtin.apt:
     name: "{{ php_packages }}"
     state: present
-    update_cache: yes
-    install_recommends: no
-  become: yes
+    update_cache: true
+    install_recommends: false
+  become: true
   notify:
     - restart webserver
 
 - name: Ensure PHP extensions are installed (Debian)
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ php_extensions }}"
     state: present
-    update_cache: yes
-    install_recommends: no
-  become: yes
+    update_cache: true
+    install_recommends: false
+  become: true
   notify:
     - restart webserver

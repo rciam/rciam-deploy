@@ -1,7 +1,7 @@
 ---
 
 - name: Setup roles
-  include_tasks: configure_roles.yml
+  ansible.builtin.include_tasks: configure_roles.yml
   with_subelements:
     - "{{ keycloak_config.realms | default([]) }} "
     - "role_management.roles"
@@ -9,7 +9,7 @@
   run_once: true
 
 - name: Setup default roles (add)
-  include_tasks: configure_default_roles.yml
+  ansible.builtin.include_tasks: configure_default_roles.yml
   with_subelements:
     - "{{ keycloak_config.realms | default([]) }} "
     - "role_management.default_roles.add"
@@ -19,7 +19,7 @@
   run_once: true
 
 - name: Setup default roles (remove)
-  include_tasks: configure_default_roles.yml
+  ansible.builtin.include_tasks: configure_default_roles.yml
   with_subelements:
     - "{{ keycloak_config.realms | default([]) }} "
     - "role_management.default_roles.remove"
@@ -29,7 +29,7 @@
   run_once: true
 
 - name: Setup composite roles
-  include_tasks: configure_role_composites.yml
+  ansible.builtin.include_tasks: configure_role_composites.yml
   with_subelements:
     - "{{ keycloak_config.realms | default([]) }} "
     - "role_management.composite_roles"
@@ -37,7 +37,7 @@
   run_once: true
 
 - name: Setup client default roles
-  include_tasks: blocks/roles_configuration/clients/configure_client_default_roles.yml
+  ansible.builtin.include_tasks: blocks/roles_configuration/clients/configure_client_default_roles.yml
   with_subelements:
     - "{{ keycloak_config.realms | default([]) }} "
     - "role_management.client_default_roles"

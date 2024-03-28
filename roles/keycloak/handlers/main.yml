@@ -1,32 +1,31 @@
 ---
-
 - name: Start keycloak
-  systemd:
+  ansible.builtin.systemd:
     name: keycloak
     state: started
-  become: yes
+  become: true
 
 - name: Stop keycloak
-  systemd:
+  ansible.builtin.systemd:
     name: keycloak
     state: stopped
-  become: yes
+  become: true
 
 - name: Restart keycloak
-  systemd:
+  ansible.builtin.systemd:
     name: keycloak
     state: restarted
-  become: yes
+  become: true
 
 - name: Reload keycloak
-  systemd:
+  ansible.builtin.systemd:
     name: keycloak
     state: restarted
-    daemon_reload: yes
-  become: yes
+    daemon_reload: true
+  become: true
 
 - name: Clear Keycloak cache
   ansible.builtin.file:
     path: "{{ keycloak_home }}/data/tmp/"
     state: absent
-  become: yes
+  become: true

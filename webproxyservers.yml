@@ -2,42 +2,43 @@
 #
 ---
 
-- hosts: webproxy
+- name: Deploy Web Proxy
+  hosts: webproxy
   roles:
     - { role: rsyslog-pgsql, tags: [rsyslog-pgsql, nginx] }
     - { role: nginx, tags: nginx }
   tasks:
     - name: Set Maintenance Locations
-      set_fact:
+      ansible.builtin.set_fact:
         maintenance_locations: "['roles','registry','oidc','proxy']"
       tags:
         - nginx:maintenance_on
         - nginx:maintenance_off
         - never
     - name: Enter Maintenance Mode
-      copy:
+      ansible.builtin.copy:
         content: ""
         dest: "/var/www/html/{{ item }}.maintenance.enable"
-        force: no
+        force: false
         owner: root
-        mode: 0644
+        mode: "0644"
       loop: "{{ maintenance | default(maintenance_locations) | default([]) }}"
       loop_control:
         label: "Add control file for Maintenance Mode {{ item }}"
-      become: yes
-      ignore_errors: yes
+      become: true
+      ignore_errors: true # noqa ignore-errors
       tags:
         - nginx:maintenance_on
         - never
     - name: Exit Maintenance Mode
-      file:
+      ansible.builtin.file:
         path: "/var/www/html/{{ item }}.maintenance.enable"
         state: absent
       loop: "{{ maintenance_locations | default([]) }}"
       loop_control:
         label: "Removing control file for Maintenance Mode {{ item }}"
-      become: yes
-      ignore_errors: yes
+      become: true
+      ignore_errors: true # noqa ignore-errors
       tags:
         - nginx:maintenance_off
         - never

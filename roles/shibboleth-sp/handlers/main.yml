@@ -1,6 +1,6 @@
 ---
 - name: Restart Shibboleth SP
-  service:
+  ansible.builtin.service:
     name: "{{ shibboleth_sp_service }}"
-    state: "restarted"
-  become: yes
+    state: restarted
+  become: true

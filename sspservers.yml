@@ -2,7 +2,8 @@
 #
 ---
 
-- hosts: ssp
+- name: Deploy SSP
+  hosts: ssp
   roles:
     - { role: apache, tags: apache }
     - { role: php, tags: php }

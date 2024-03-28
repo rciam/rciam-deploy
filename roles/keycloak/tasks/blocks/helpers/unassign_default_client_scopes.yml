@@ -1,9 +1,10 @@
 ---
-
-- include_tasks: blocks/helpers/get_tokens.yml
+# this is included below - not idempotent should be a handler with flush
+- name: Include get tokens tasks
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
 - name: "Get all default optional client-scopes list"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/default-optional-client-scopes"
     method: "GET"
     headers:
@@ -12,26 +13,25 @@
   register: "default_optional_list"
 
 - name: "Clear all from the default optional client scopes list"
-  include_tasks: blocks/helpers/unassign_default_optional_client_scope.yml
+  ansible.builtin.include_tasks: blocks/helpers/unassign_default_optional_client_scope.yml
   with_items: "{{ default_optional_list.json | default([]) }}"
   loop_control:
     loop_var: current_default_optional
 
+- name: Include get_tokens
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- include_tasks: blocks/helpers/get_tokens.yml
-
-- name: "Get all default default client-scopes list"
-  uri:
+- name: Get all default default client-scopes list
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/default-default-client-scopes"
     method: "GET"
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    status_code: "200"
+    status_code: 200
   register: "default_default_list"
 
-
-- name: "Clear all from the default default client scopes list"
-  include_tasks: blocks/helpers/unassign_default_default_client_scope.yml
+- name: Clear all from the default default client scopes list
+  ansible.builtin.include_tasks: blocks/helpers/unassign_default_default_client_scope.yml
   with_items: "{{ default_default_list.json | default([]) }}"
   loop_control:
     loop_var: current_default_default

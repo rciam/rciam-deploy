@@ -1,3 +1,2 @@
 ---
-
 postgresql_default_psycopg2_package: "python3-psycopg2"

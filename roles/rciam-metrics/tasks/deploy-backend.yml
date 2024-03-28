@@ -2,104 +2,106 @@
 ---
 # This needs the metrics_release, only github actions can know or if you set it manually
 - name: Download and unarchive latest release zip file
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ metrics_repo }}/releases/download/{{ metrics_release }}/backend-release-build.tar.gz"
     dest: "{{ metrics_path }}"
     remote_src: true
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.name }}"
-  become: yes
+  become: true
   notify:
     - fastapi.service restart
   tags:
     - rciam-metrics:deploy-backend:unarchive
 
 - name: Ensure metrics python requirements are installed in virtualenv
-  pip:
+  ansible.builtin.pip:
     requirements: "{{ metrics_path }}/requirements.txt"
     virtualenv: "{{ metrics_path }}/.venv"
     virtualenv_command: python3 -m venv
     state: present
-  become: yes
+  become: true
   notify:
     - fastapi.service restart
   tags:
     - rciam-metrics:deploy-backend:requirements
 
 - name: Ensure configurations (fastapi) are configured
-  template:
+  ansible.builtin.template:
     src: "fastapi/config.py.j2"
     dest: "{{ metrics_path }}/config.{{ item.tenant }}.py"
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.group }}"
-    mode: 0400
-    backup: yes
+    mode: "0400"
+    backup: true
   loop: "{{ metrics_config | default([]) }}"
-  no_log: yes
-  become: yes
+  no_log: true
+  become: true
   notify:
     - fastapi.service restart
   tags:
     - rciam-metrics:deploy-backend:config
 
 - name: Ensure authorizations are configured
-  template:
+  ansible.builtin.template:
     src: "fastapi/authorize.py.j2"
     dest: "{{ metrics_path }}/authorize.{{ item.tenant }}.py"
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.group }}"
-    mode: 0400
-    backup: yes
+    mode: "0400"
+    backup: true
   loop: "{{ metrics_config | default([]) }}"
-  become: yes
+  become: true
   notify:
     - fastapi.service restart
   tags:
     - rciam-metrics:deploy-backend:authorize
 
 - name: Ensure ip to country database file(s) are copied
-  copy:
+  become: true
+  ansible.builtin.copy:
     src: "{{ metrics_ip2country_dir }}/"
     dest: "{{ metrics_path }}/{{ metrics_fast_api_folder_name }}/ip_databases/"
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.group }}"
-    mode: 0400
-    backup: yes
-  become: yes
+    mode: "0400"
+    backup: true
   notify:
     - fastapi.service restart
   tags:
     - rciam-metrics:deploy-backend:iptocountry
 
 - name: Ensure log path exists
-  file:
-    path: "{{ metrics_path }}/{{metrics_fast_api_folder_name}}/logs"
+  ansible.builtin.file:
+    path: "{{ metrics_path }}/{{ metrics_fast_api_folder_name }}/logs"
     state: directory
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.group }}"
-  become: yes
+    mode: "0755"
+  become: true
   notify:
     - fastapi.service restart
   tags:
     - rciam-metrics:deploy-backend:logging
 
 - name: Ensure log file exists
-  file:
-    path: "{{ metrics_path }}/{{metrics_fast_api_folder_name}}/logs/metrics.log"
+  ansible.builtin.file:
+    path: "{{ metrics_path }}/{{ metrics_fast_api_folder_name }}/logs/metrics.log"
     state: touch
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.group }}"
-  become: yes
+    mode: "0644"
+  become: true
   notify:
     - fastapi.service restart
   tags:
     - rciam-metrics:deploy-backend:logging
 
 - name: Create Symbolic links
-  file:
+  ansible.builtin.file:
     src: "{{ item.symlink.target }}"
     dest: "{{ item.symlink.link }}"
-    force: yes
+    force: true
     state: link
     owner: root
     group: root
@@ -110,11 +112,11 @@
     - rciam-metrics:deploy-backend:symlink
 
 - name: Add ENV vars in cron.d file
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     job: "{{ item.job }}"
     user: "{{ item.user }}"
-    env: yes
+    env: true
     cron_file: "{{ item.filename }}"
     state: present
   loop: "{{ metrics_user.cron_env | default([]) }}"
@@ -124,10 +126,10 @@
     - rciam-metrics:deploy-backend:cron
 
 - name: Ensure util cron jobs are installed
-  cron:
+  ansible.builtin.cron:
     name: "{{ metrics_user.name }}"
     user: "{{ metrics_user.name }}"
-    cron_file: "{{ metrics_user.name}}"
+    cron_file: "{{ metrics_user.name }}"
     job: "{{ metrics_user.cron.job }}"
     minute: "{{ metrics_user.cron.minute | default(omit) }}"
     hour: "{{ metrics_user.cron.hour | default(omit) }}"
@@ -135,8 +137,6 @@
     month: "{{ metrics_user.cron.month | default(omit) }}"
     backup: true
   when: metrics_user.cron is defined and metrics_cron_enabled
-  become: yes
+  become: true
   tags:
     - rciam-metrics:deploy-backend:cron
-
-

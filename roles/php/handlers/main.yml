@@ -1,7 +1,6 @@
 ---
-
-- name: restart webserver
-  service:
+- name: Restart webserver
+  ansible.builtin.service:
     name: "{{ php_webserver }}"
     state: restarted
-  become: yes
+  become: true

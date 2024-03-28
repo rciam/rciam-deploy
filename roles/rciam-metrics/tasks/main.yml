@@ -1,17 +1,15 @@
 ---
-
-# Include OS-specific installation tasks
-- include_tasks: install-Debian.yml
+- name: Include OS-specific installation tasks
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
   tags:
     - rciam-metrics:install
 
-# Include OS-independent installation tasks
-- import_tasks: bootstrap.yml
+- name: Include OS-independent installation tasks
+  ansible.builtin.import_tasks: bootstrap.yml
   tags:
     - rciam-metrics:bootstrap
 
-# Include OS-independent configuration tasks
 # NOTE: The first time this task has to run manually using the --extra-var parameter
 #  of ansible cmd command
 # e.g. ansible-playbook -u debian
@@ -22,18 +20,19 @@
 #                       --extra-vars metrics_release="metrics-api-deploy_changes-rc-deploy_changes-6335295151"
 #                       --diff
 #                       --check
-- import_tasks: deploy-backend.yml
+- name: Include OS-independent configuration tasks
+  ansible.builtin.import_tasks: deploy-backend.yml
   tags:
     - rciam-metrics:deploy-backend
 
-  # Include OS-independent configuration tasks
   # NOTE: Runs through github actions ONLY
-- import_tasks: configure-local.yml
+- name: Include OS-independent configuration tasks
+  ansible.builtin.import_tasks: configure-local.yml
   tags:
     - rciam-metrics:config-local
 
-  # Include OS-independent configuration tasks
   # NOTE: Runs through github actions ONLY
-- import_tasks: deploy-frontend.yml
+- name: Include OS-independent configuration tasks
+  ansible.builtin.import_tasks: deploy-frontend.yml
   tags:
     - rciam-metrics:deploy-frontend

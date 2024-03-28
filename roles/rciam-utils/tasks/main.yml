@@ -1,24 +1,23 @@
 # file: tasks/main.yml
 #
 ---
-
-# Include OS-specific installation tasks
-- include: install-Debian.yml
+- name: Include OS-specific installation tasks
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: install-RedHat.yml
+# - include: install-RedHat.yml
 #  when: ansible_os_family == 'RedHat'
   tags:
     - install
     - rciam_utils:install
 
-# Include OS-independent installation tasks
-- include: install-common.yml
+- name: Include OS-independent installation tasks
+  ansible.builtin.include_tasks: install-common.yml
   tags:
     - install
     - rciam_utils:install
 
-# Include OS-independent configuration tasks
-- include: configure.yml
+- name: Include OS-independent configuration tasks
+  ansible.builtin.include_tasks: configure.yml
   tags:
     - config
     - rciam_utils:config

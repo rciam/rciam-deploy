@@ -1,8 +1,14 @@
 ---
-- hosts: federation-registry
-  become: yes
+- name: Provision Federation Registry
+  hosts: federation-registry
+  become: true
   roles:
-    - {role: federation-registry, task: configure-environment}
-    - {role: federation-registry, task: postgres,tags: ['never','postgres']}
-    - {role: federation-registry, task: configure-ams}
-    - {role: federation-registry, task: deploy}
+    - role: federation-registry
+      task: configure-environment
+    - role: federation-registry
+      task: postgres
+      tags: ['never', 'postgres']
+    - role: federation-registry
+      task: configure-ams
+    - role: federation-registry
+      task: deploy

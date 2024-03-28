@@ -1,169 +1,210 @@
 ---
-  - name: Check if project exists
-    stat:
-      path: "{{ federation_registry_git.clone_dest }}"
-    register: project_stat
+- name: Check if project exists
+  ansible.builtin.stat:
+    path: "{{ federation_registry_git.clone_dest }}"
+  register: project_stat
 
-  - name: Clean clone directory
-    file:
-      state: absent
-      path: "{{ federation_registry_git.clone_dest }}"
-    when: project_stat.stat.exists
+- name: Clean clone directory
+  ansible.builtin.file:
+    state: absent
+    path: "{{ federation_registry_git.clone_dest }}"
+  when: project_stat.stat.exists
 
-  - name: Clean Frontend Folder
-    file:
-      state: absent
-      path: "{{federation_registry_project_path}}/{{federation_registry_react_folder}}"
-    ignore_errors: true
+- name: Clean Frontend Folder
+  ansible.builtin.file:
+    state: absent
+    path: "{{ federation_registry_project_path }}/{{ federation_registry_react_folder }}"
+  ignore_errors: false
 
-  - name: Clean Backend Folder
-    file:
-      state: absent
-      path: "{{federation_registry_project_path}}/{{federation_registry_express_folder}}"
-    ignore_errors: true
+- name: Clean Backend Folder
+  ansible.builtin.file:
+    state: absent
+    path: "{{ federation_registry_project_path }}/{{ federation_registry_express_folder }}"
+  ignore_errors: false
 
-  - name: Clean Ams Agent Folder
-    file:
-      state: absent
-      path: "{{federation_registry_project_path}}/{{federation_registry_ams_agent_folder}}"
-    ignore_errors: true
+- name: Clean Ams Agent Folder
+  ansible.builtin.file:
+    state: absent
+    path: "{{ federation_registry_project_path }}/{{ federation_registry_ams_agent_folder }}"
+  ignore_errors: false
 
-  - name: Clone the repository
-    git:
-      repo: "{{federation_registry_git.git_repo}}"
-      version: "{{federation_registry_git.git_branch}}"
-      dest: "{{federation_registry_git.clone_dest}}"
-      force: yes
+- name: Clone the repository
+  ansible.builtin.git:
+    repo: "{{ federation_registry_git.git_repo }}"
+    version: "{{ federation_registry_git.git_branch }}"
+    dest: "{{ federation_registry_git.clone_dest }}"
+    force: true
 
-  - name: Move Federation Backend to /var/www
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_express_folder}} {{federation_registry_project_path}} 
+- name: Move things to /var/www
+  ansible.builtin.shell: |-
+    "mv {{ federation_registry_git.clone_dest }}/{{ item }} \
+      {{ federation_registry_project_path }}"
+  loop:
+    - "{{ federation_registry_express_folder }}"
+    - "{{ federation_registry_ams_agent_folder }}"
+    - swagger.json
 
-  - name: Move Ams Agent to /var/www
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_ams_agent_folder}} {{federation_registry_project_path}} 
-  
-  - name: Move Swagger File to /var/www
-    shell: mv {{federation_registry_git.clone_dest}}/swagger.json {{federation_registry_project_path}}
+# Refactored by task above
+# - name: Move Federation Backend to /var/www # noqa command-instead-of-shell no-changed-when
+#   ansible.builtin.shell: "mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_express_folder }} {{ federation_registry_project_path }}"
+#   changed_when: false
 
-  - name: Create React Folder
-    shell: mkdir {{federation_registry_project_path}}/{{federation_registry_react_folder}} 
-    ignore_errors: True
+# - name: Move Ams Agent to /var/www # noqa command-instead-of-shell no-changed-when
+#   ansible.builtin.shell: "mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_ams_agent_folder }} {{ federation_registry_project_path }}"
+#   changed_when: false
 
-  - name: Load package.json contents to package variable
-    slurp:
-      src: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/package.json"
-    register: imported_var
+# - name: Move Swagger File to /var/www # noqa command-instead-of-shell no-changed-when
+#   ansible.builtin.shell: "mv {{ federation_registry_git.clone_dest }}/swagger.json {{ federation_registry_project_path }}"
 
-  - name: Append homepage value to package variable
-    set_fact:
-      imported_var: "{{ imported_var.content|b64decode|from_json | default([]) | combine({ 'homepage': federation_registry_react_base_url}) }}"
+- name: Create React Folder
+  ansible.bultin.file:
+    dest: "{{ federation_registry_project_path }}/{{ federation_registry_react_folder }}"
+    state: directory
+    mode: "0755"
 
-  - name: Write package variable to package.json
-    copy: 
-      content: "{{ imported_var | to_nice_json }}" 
-      dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/package.json"
-     
-  - name: Install node modules for react
-    npm:
-      path: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}"
+- name: Load package.json contents to package variable
+  ansible.builtin.slurp:
+    src: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/package.json"
+  register: imported_var
 
-  - name: Install node modules for express
-    npm:
-      path: "{{federation_registry_express_path}}"
+- name: Append homepage value to package variable
+  ansible.builtin.set_fact:
+    imported_var: "{{ imported_var.content | b64decode | from_json | default([]) | combine({'homepage': federation_registry_react_base_url}) }}"
 
-  - name: Install node modules for ams-agent
-    npm:
-      path: "{{federation_registry_ams_agent_path}}"
+- name: Write package variable to package.json
+  ansible.builtin.copy:
+    content: "{{ imported_var | to_nice_json }}"
+    dest: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/package.json"
+    mode: "0644"
 
-  - name: React config
-    template:
-      src: react-config.j2
-      dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/src/config.json"
-      backup: yes
+- name: Install node modules for react
+  community.general.npm:
+    path: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}"
 
-  - name: Configure express db_config
-    template:
-      src: db_config.j2
-      dest: "{{federation_registry_express_path}}/db-config/db-config.json"
-      backup: yes
+- name: Install node modules for express
+  community.general.npm:
+    path: "{{ federation_registry_express_path }}"
 
-  - name: Copy Tenant Configuration
-    copy:
-      src: "{{ inventory_dir }}/files/config.json"
-      dest: "{{federation_registry_express_path}}/JavaScript/config.json"
-      force: yes
-      owner: root
-      mode: 0664
-      backup: true
+- name: Install node modules for ams-agent
+  community.general.npm:
+    path: "{{ federation_registry_ams_agent_path }}"
 
-  - name: Agent env
-    template:
-      src: ams-env.j2
-      dest: "{{federation_registry_ams_agent_path}}/.env"
-      backup: yes
+- name: React config
+  ansible.builtin.template:
+    src: react-config.j2
+    dest: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/src/config.json"
+    backup: true
+    mode: "0644"
 
-  - name: Agent config
-    template:
-      src: ams_authorized_users.j2
-      dest: "{{federation_registry_ams_agent_path}}/config.json"
-      backup: yes
+- name: Configure express db_config
+  ansible.builtin.template:
+    src: db_config.j2
+    dest: "{{ federation_registry_express_path }}/db-config/db-config.json"
+    backup: true
+    mode: "0644"
 
-  - name: delete existing pm2 processes if running
-    command: "pm2 delete all"
-    ignore_errors: True
+- name: Copy Tenant Configuration
+  ansible.builtin.copy:
+    src: "{{ inventory_dir }}/files/config.json"
+    dest: "{{ federation_registry_express_path }}/JavaScript/config.json"
+    force: true
+    owner: root
+    mode: "0664"
+    backup: true
 
-  - name: Create pm2 ecosystem
-    template:
-     src: pm2_config.j2
-     dest: "{{federation_registry_pm2_conf_path}}/ecosystem.config.js"
-     backup: yes
-  
-  - name: react build
-    shell: "npm run build"
-    args:
-      chdir: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}"
-      executable: /bin/bash
+- name: Agent env
+  ansible.builtin.template:
+    src: ams-env.j2
+    dest: "{{ federation_registry_ams_agent_path }}/.env"
+    backup: true
+    mode: "0600"
 
-  - name: Creates federation directory
-    file:
-      path: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}}"
-      state: directory
-    when: federation_registry_react_base_url != "/"
+- name: Agent config
+  ansible.builtin.template:
+    src: ams_authorized_users.j2
+    dest: "{{ federation_registry_ams_agent_path }}/config.json"
+    backup: true
+    mode: "0644"
 
-  - name: Move files from build folder to base folder
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/build/* {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}}
-    when: federation_registry_react_base_url != "/" 
+- name: Delete existing pm2 processes if running
+  ansible.builtin.command: "pm2 delete all"
+  changed_when: false
 
-  - name: Move base folder inside build folder
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}} {{federation_registry_project_path}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}} 
-    when: federation_registry_react_base_url != "/"
+- name: Create pm2 ecosystem
+  ansible.builtin.template:
+    src: pm2_config.j2
+    dest: "{{ federation_registry_pm2_conf_path }}/ecosystem.config.js"
+    backup: true
+    mode: "0644"
 
-  - name: Move base folder inside build folder
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/build/* {{federation_registry_project_path}}/{{federation_registry_react_folder}} 
-    when: federation_registry_react_base_url == "/" 
+- name: React build
+  ansible.builtin.shell: "npm run build"
+  args:
+    chdir: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}"
+    executable: /bin/bash
+  changed_when: false
 
-  - name: Express env
-    template:
-      src: express-env.j2
-      dest: "{{federation_registry_express_path}}/JavaScript/.env"
-      backup: yes
+- name: Creates federation directory
+  ansible.builtin.file:
+    path: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}{{ federation_registry_react_base_url }}"
+    state: directory
+    mode: "0644"
+  when: federation_registry_react_base_url != "/"
 
-  - name: start Pm2 processes
-    command: "pm2 start ecosystem.config.js"
+# this should be a loop
+- name: Move files from build folder to base folder
+  ansible.builtin.shell: >-
+    mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/build/*
+    {{ federation_registry_git.clone_dest }}/
+    {{ federation_registry_react_folder }}{{ federation_registry_react_base_url }}
+  when: federation_registry_react_base_url != "/"
+  changed_when: false
 
-  - name: restart Pm2 processes
-    command: "pm2 restart all"
+- name: Move base folder inside build folder # noqa command-instead-of-shell
+  ansible.builtin.shell: >-
+    mv {{ federation_registry_git.clone_dest }}/
+    {{ federation_registry_react_folder }}{{ federation_registry_react_base_url }}
+    {{ federation_registry_project_path }}/\
+    {{ federation_registry_react_folder }}{{ federation_registry_react_base_url }}
+  when: federation_registry_react_base_url != "/"
+  changed_when: false
 
-  - debug:
-      msg: ams_is_verif
+- name: Move base folder inside build folder
+  ansible.builtin.shell: >-
+    mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/build/*
+    {{ federation_registry_project_path }}/{{ federation_registry_react_folder }}
+  when: federation_registry_react_base_url == "/"
+  changed_when: false
 
-  - name: Verify push endpoint if not verified
-    run_once: true
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:verifyPushEndpoint?key={{ federation_registry_ams.admin_token }}"
-      method: POST
-      return_content: yes
-      headers:
-        Content-Type: "application/json"
-      body_format: json
-    when:
-      - "not ams_is_verif"
+- name: Template Express env
+  ansible.builtin.template:
+    src: express-env.j2
+    dest: "{{ federation_registry_express_path }}/JavaScript/.env"
+    backup: true
+    mode: "0644"
+
+- name: Start Pm2 processes
+  ansible.builtin.command: "pm2 start ecosystem.config.js"
+  changed_when: false
+
+- name: Restart Pm2 processes
+  ansible.builtin.command: "pm2 restart all"
+  changed_when: false
+
+- name: Debug
+  ansible.builtin.debug:
+    msg: ams_is_verif
+
+- name: Verify push endpoint if not verified
+  run_once: true
+  ansible.builtin.uri:
+    url: >-
+      "{{ federation_registry_ams.host }}/projects/
+      {{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:verifyPushEndpoint?key={{ federation_registry_ams.admin_token }}"
+    method: POST
+    return_content: true
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+  when:
+    - "not ams_is_verif"

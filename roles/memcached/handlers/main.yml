@@ -1,7 +1,6 @@
 ---
-
 - name: Restart memcached
-  service: 
-    name: memcached 
+  ansible.builtin.service:
+    name: memcached
     state: restarted
-  become: yes
+  become: true

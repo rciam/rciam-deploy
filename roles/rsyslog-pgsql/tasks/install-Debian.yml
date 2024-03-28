@@ -1,8 +1,11 @@
 ---
 - name: Ensure rsyslog & rsyslog-pgsql is installed (Debian)
-  apt: name={{item}} state=present install_recommends=no
-  loop:
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    install_recommends: false
+  loop: # TODO - define in defaults
     - rsyslog
     - rsyslog-pgsql
-  become: yes
-  when: rsyslog_pgsql_enable_logs == true
+  become: true
+  when: rsyslog_pgsql_enable_logs

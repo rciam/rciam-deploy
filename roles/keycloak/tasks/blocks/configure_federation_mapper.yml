@@ -2,45 +2,61 @@
 # item[0] -> whole realm config (ansible variable)
 # item[1] -> current federation config (loop's item of ansible realm's federation config)
 # federation_exists -> boolean flag (it's always true in this file)
-# realm_federation_matches -> it's always a single element array (since federation_exists==true) with:  [{"alias": "federation_alias", "internalId": "federation_internalId" }]
+# realm_federation_matches -> it's always a single element array
+# (since federation_exists==true) with:  [{"alias": "federation_alias", "internalId": "federation_internalId" }]
 # existing_mappers_name_id -> contains the current federation mappers id,name pairs i.e. [{id:"mapper_id", name:"mapper_name"}, ...]
-# mapper -> contains the new mapper json (from ansible config vars) i.e. {"config":{},"identityProviderMapper":"hardcoded-attribute-idp-mapper","name":"test_mapper2"}
+# mapper -> contains the new mapper json (from ansible config vars)
+# i.e. {"config":{},"identityProviderMapper":"hardcoded-attribute-idp-mapper","name":"test_mapper2"}
 
-- set_fact:
+- name: Set mapper matches fact
+  ansible.builtin.set_fact:
     mapper_matches: "{{ existing_mappers_name_id | json_query(query) | default([]) }}"
   vars:
-    query: '[?name == `{{ mapper.name }}` ].{id: id, name: name }'
+    query: '[?name == `{{ mapper.name }}`].{id: id, name: name}'
 
+- name: Set mapper exists fact
+  ansible.builtin.set_fact:
+    mapper_exists: "{{ mapper_matches | length > 0 | bool }}"
 
-- set_fact:
-    mapper_exists: "{{ mapper_matches | length > 0 }}"
-
-- set_fact:
+- name: Set additional info fact
+  ansible.builtin.set_fact:
     additional_info:
       id: "{{ mapper_matches[0].id }}"
   when: mapper_exists
 
-- set_fact:
-    body: "{% if mapper_exists %}{{ mapper | combine(additional_info , recursive=True ) }}{% else %}{{ mapper }}{% endif %}"
+# Merge this set fact with the previous one.
+- name: Set body fact
+  ansible.builtin.set_fact:
+    body: "{% if mapper_exists %}{{ mapper | combine(additional_info, recursive=True) }}{% else %}{{ mapper }}{% endif %}"
 
-
-- name: "{% if mapper_exists %} Update {% else %} Create {% endif %} federation mapper {{ mapper.name }}"
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers{% if mapper_exists %}/{{ body.id }}{% endif %}"
-    method: "{% if mapper_exists %}PUT{% else %}POST{% endif %}"
+- name: "Updatefederation mapper {{ mapper.name }}"
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}" # noqa yaml[line-length]
+    method: PUT
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body:
-      "{{ body }}"
-    status_code: "{% if mapper_exists %}204{% else %}201{% endif %}"
+    body: "{{ body }}"
+    status_code: 204
+  when: mapper_exists | bool
+
+- name: "Create federation mapper {{ mapper.name }}"
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers" # noqa yaml[line-length]
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ body }}"
+    status_code: 201
+  when: not (mapper_exists | bool)
 
 
 # this is meant to run after a successful first deployment of the federations and the mappers (that's why the "when: mapper_exists")
 # You should execute it only when you are sure that the federation(s) are fully populated
 - name: Apply mappers (propagate) to federation IdP(s)
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}/idp/add"
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers/{{ body.id }}/idp/add" # noqa yaml[line-length]
     method: POST
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"

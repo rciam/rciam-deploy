@@ -1,5 +1,5 @@
 ---
-
-- name: Update timezone
-  command: "{{ common_set_tz_cmd }}"
-  become: yes
+- name: Update timezone # noqa syntax-check[unknown-module]
+  community.general.timezone: # noqa syntax-check[unknown-module]
+    name: "{{ common_tz }}"
+  become: true

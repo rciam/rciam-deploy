@@ -4,5 +4,5 @@
 
 ssp_mod_metarefresh:
   template:
-    src: "config/module_metarefresh"
-    dest: "module_metarefresh.php"
+    src: config/module_metarefresh
+    dest: module_metarefresh.php

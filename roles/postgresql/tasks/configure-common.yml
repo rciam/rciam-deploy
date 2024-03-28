@@ -1,25 +1,24 @@
 # file: postgresql/tasks/configure-common.yml
 #
 ---
-
 - name: Configure PostgreSQL client authentication
-  template: 
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ postgresql_user }}"
     group: "{{ postgresql_group }}"
-    mode: 0640 
-    backup: yes
+    mode: "0640"
+    backup: true
   with_items:
     - { src: "pg_hba.conf.j2", dest: "{{ postgresql_conf_path }}/main/pg_hba.conf" }
-  become: yes
+  become: true
   notify:
     - Reload PostgreSQL
   tags:
-  - postgresql:pg_hba
+    - postgresql:pg_hba
 
 - name: Create PostgreSQL databases
-  postgresql_db:
+  community.postgresql.postgresql_db:
     state: present
     name: "{{ item.name }}"
     encoding: "{{ item.encoding | default(omit) }}"
@@ -27,31 +26,33 @@
     lc_ctype: "{{ item.lc_ctype | default(omit) }}"
     template: "{{ item.template | default(omit) }}"
   with_items: "{{ postgresql_databases }}"
-  become: yes
+  become: true
   become_user: "{{ postgresql_user }}"
 
 - name: Configure PostgreSQL users
-  postgresql_user:
+  community.postgresql.postgresql_user:
     state: present
     name: "{{ item.name }}"
-    encrypted: "{{ item.encrypted | default(omit) }}" 
+    encrypted: "{{ item.encrypted | default(omit) }}"
     password: "{{ item.password | default(omit) }}"
-    db: "{{ item.db | default(omit) }}" 
+    db: "{{ item.db | default(omit) }}"
     priv: "{{ item.priv | default(omit) }}"
     role_attr_flags: "{{ item.role_attr_flags | default(omit) }}"
+    conn_limit: "{{ item.connection_limit }}" # Should force a default here
   with_items: "{{ postgresql_users }}"
-  become: yes
+  become: true
   become_user: "{{ postgresql_user }}"
 
-- name: Configure connection limit of PostgreSQL users
-  command: psql -U {{ postgresql_user }} -c 'ALTER ROLE {{ item.name }} WITH CONNECTION LIMIT {{ item.connection_limit }}'
-  with_items: "{{ postgresql_users }}"
-  when: "item.connection_limit is defined"
-  become: yes
-  become_user: "{{ postgresql_user }}"
+# This task deprecated by conn_limit arg in previous task.
+# - name: Configure connection limit of PostgreSQL users
+#   ansible.builtin.command: psql -U {{ postgresql_user }} -c 'ALTER ROLE {{ item.name }} WITH CONNECTION LIMIT {{ item.connection_limit }}'
+#   with_items: "{{ postgresql_users }}"
+#   when: "item.connection_limit is defined"
+#   become: true
+#   become_user: "{{ postgresql_user }}"
 
 - name: Configure privileges of PostgreSQL users
-  postgresql_privs:
+  community.postgresql.postgresql_privs:
     state: present
     database: "{{ item.database }}"
     roles: "{{ item.roles }}"
@@ -61,20 +62,27 @@
     privs: "{{ item.privs | default(omit) }}"
     schema: "{{ item.schema | default(omit) }}"
   with_items: "{{ postgresql_privs }}"
-  when: item.target is not defined 
-  become: yes
+  when: item.target is not defined
+  become: true
   become_user: "{{ postgresql_user }}"
 
 # See https://github.com/ansible/ansible-modules-core/issues/4493
-- name: Configure default privileges of PostgreSQL users
-  command: psql -U {{ postgresql_user }} -c 'ALTER DEFAULT PRIVILEGES FOR USER {{ item.target }} IN SCHEMA {{ item.schema | default("public") }} GRANT {{ item.privs }} ON {{ item.type }} TO {{ item.roles }};'
-  with_items: "{{ postgresql_privs }}"
-  when: item.target is defined
-  become: yes
-  become_user: "{{ postgresql_user }}"
+# The above repo is deprecated, this task is probably obsolete
+# - name: Configure default privileges of PostgreSQL users
+#   ansible.builtin.command: |-
+      # psql -U {{ postgresql_user }} \
+      #      -c 'ALTER DEFAULT PRIVILEGES FOR USER {{ item.target }} \
+      #          IN SCHEMA {{ item.schema | default("public") }} \
+      #          GRANT {{ item.privs }} \
+      #          ON {{ item.type }} \
+      #          TO {{ item.roles }};'
+#   with_items: "{{ postgresql_privs }}"
+#   when: item.target is defined
+#   become: true
+#   become_user: "{{ postgresql_user }}"
 
 - name: Configure PostgreSQL databases
-  postgresql_db:
+  community.postgresql.postgresql_db:
     state: present
     name: "{{ item.name }}"
     owner: "{{ item.owner | default(omit) }}"
@@ -83,44 +91,48 @@
     lc_ctype: "{{ item.lc_ctype | default(omit) }}"
     template: "{{ item.template | default(omit) }}"
   with_items: "{{ postgresql_databases }}"
-  become: yes
+  become: true
   become_user: "{{ postgresql_user }}"
 
 - name: Configure number of huge memory pages to be allocated
-  sysctl:
+  ansible.posix.sysctl:
     name: vm.nr_hugepages
     value: "{{ postgresql_huge_pages_number }}"
     state: present
   when: postgresql_huge_pages_number is defined
-  become: yes
+  become: true
 
 - name: Configure PostgreSQL
-  template: 
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}" 
-    owner: "{{ postgresql_user }}" 
+  ansible.builtin.template:
+    src: "postgresql-{{ postgresql_version }}.conf.j2"
+    dest: "{{ postgresql_conf_path }}/main/postgresql.conf"
+    owner: "{{ postgresql_user }}"
     group: "{{ postgresql_group }}"
-    mode: 0644
-    backup: yes
-  with_items:
-    - { src: "postgresql-{{ postgresql_version }}.conf.j2", dest: "{{ postgresql_conf_path }}/main/postgresql.conf" }
-  become: yes
+    mode: "0644"
+    backup: true
+  # unnecessary loop - disabled
+  # with_items:
+  #   - src: "postgresql-{{ postgresql_version }}.conf.j2"
+  #     dest: "{{ postgresql_conf_path }}/main/postgresql.conf"
+  become: true
   notify:
     - Restart PostgreSQL
 
-- name: Check if PostreSQL standby server is in recovery 
-  command: psql -U {{ postgresql_user }} -c 'SELECT pg_is_in_recovery();'
+# This should be done with an assertion on an output
+- name: Check if PostreSQL standby server is in recovery
+  ansible.builtin.command: psql -U {{ postgresql_user }} -c 'SELECT pg_is_in_recovery();'
   when: "'dbstandby' in group_names"
   register: postgresql_is_in_recovery_status
-  ignore_errors: yes
-  changed_when: no
-  become: yes
+  ignore_errors: true
+  changed_when: false
+  become: true
   become_user: "{{ postgresql_user }}"
 
 - name: Register PostgreSQL standby server recovery status
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_is_in_recovery: "{{ postgresql_is_in_recovery_status is success and postgresql_is_in_recovery_status.stdout_lines[2].find('t') == 1 }}"
   when: "'dbstandby' in group_names"
 
-- include: init-standby-common.yml
+- name: Init Standby
+  ansible.builtin.include_tasks: init-standby-common.yml
   when: "'dbstandby' in group_names and not postgresql_is_in_recovery"

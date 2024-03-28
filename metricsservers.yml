@@ -2,6 +2,7 @@
 #
 ---
 
-- hosts: rciam-metrics
+- name: Deploy Metrics Servers
+  hosts: rciam-metrics
   roles:
     - { role: rciam-metrics, tags: rciam-metrics }

@@ -1,162 +1,172 @@
 ---
-
 ## start the installation of keycloak
 
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - "os/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
     - "os/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "os/{{ ansible_distribution }}.yml"
     - "os/{{ ansible_os_family }}.yml"
-  ignore_errors: yes
+  ignore_errors: true # noqa ignore-errors
   tags:
     - always
 
-- block:
+- name: Keycloak | Set vars
+  tags:
+    - always
+  block:
     - name: Split Keycloak version string into parts
-      set_fact:
+      ansible.builtin.set_fact:
         keycloak_version_parts: "{{ keycloak_version.split('.') }}"
     - name: Define Keycloak major version number
-      set_fact:
+      ansible.builtin.set_fact:
         keycloak_major_version: "{{ keycloak_version_parts[0] }}"
       tags:
         - always
     - name: Define Keycloak minor version number
-      set_fact:
+      ansible.builtin.set_fact:
         keycloak_minor_version: "{{ keycloak_version_parts[1] }}"
       tags:
         - always
     - name: Define Keycloak patch version number only when specified in version string
-      set_fact:
+      ansible.builtin.set_fact:
         keycloak_patch_version: "{{ keycloak_version_parts[2] | default(omit) }}"
-  tags:
-    - always
 
 - name: Include keycloak-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - "keycloak-{{ keycloak_major_version }}.{{ keycloak_minor_version }}.yml"
     - "keycloak-{{ keycloak_major_version }}.yml"
-  ignore_errors: yes
+  ignore_errors: true # noqa ignore-errors
   tags:
     - always
 
-### Install Java with OS-specific packages
-- include: "java/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+- name: Install Java with OS-specific packages
+  ansible.builtin.include_tasks: "java/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
   tags:
     - always
 
 - name: Find local keycloak address
-  set_fact:
-    keycloak_local_address: "{% if ansible_facts.default_ipv4.address is defined %}{{ ansible_facts.default_ipv4.address }}{% elif ansible_facts.default_ipv6.address is defined %}{{ ansible_facts.default_ipv6.address }}{% else %}localhost{% endif %}"
+  ansible.builtin.set_fact:
+    keycloak_local_address: >-
+      {% if ansible_facts.default_ipv4.address is defined %}
+      {{ ansible_facts.default_ipv4.address }}
+      {% elif ansible_facts.default_ipv6.address is defined %}
+      {{ ansible_facts.default_ipv6.address }}
+      {% else %}
+      localhost
+      {% endif %}
   tags:
     - always
 
 ### create keycloak_service_user
 - name: Create Keycloak service user/group
-  user:
+  ansible.builtin.user:
     name: "{{ keycloak_service_user }}"
     home: /nonexistent
     shell: /usr/sbin/nologin
-    system: yes
-    create_home: no
-  become: yes
+    system: true
+    create_home: false
+  become: true
   tags:
     - always
 
 ### setup the logs folder (also do some actions to preserve backwards compatibility)
-- name: "Setup logs folder"
-  include_tasks: "blocks/helpers/setup_logs_folder.yml"
+- name: Setup logs folder
+  ansible.builtin.include_tasks: "blocks/helpers/setup_logs_folder.yml"
   tags: "keycloak:install:setup_logs_folder"
 
-#### Extract keycloak from archive
-- block:
+- name: Extract keycloak from archive
+  block:
     - name: "Task block: Download keycloak"
+      become: true
       block:
         - name: Create keycloak temp directory
-          file:
+          ansible.builtin.file:
             path: "/tmp/keycloak-tmp"
             state: directory
+            mode: "0755"
         - name: Download keycloak archive file
-          get_url:
+          ansible.builtin.get_url:
             url: "{{ keycloak_archive_url }}"
-            dest: "/tmp/keycloak_archive"
+            dest: /tmp/keycloak_archive
             timeout: 30
+            mode: "0644"
         - name: Compute sha1 hash of archive
-          stat:
+          ansible.builtin.stat:
             path: "/tmp/keycloak_archive"
             checksum_algorithm: sha1
           register: keycloak_sha1
         - name: Create keycloak_home if not exists
-          file:
+          ansible.builtin.file:
             path: "{{ keycloak_home }}"
             state: directory
-        - name: create empty file if not exists
+            mode: "0755"
+        - name: Create empty file if not exists
           ansible.builtin.copy:
             dest: "{{ keycloak_home }}/sha1"
             content: ""
-            force: no
-        - name: Previous sha1
-          shell: "cat {{ keycloak_home }}/sha1"
+            force: false
+            mode: "0644"
+        - name: Previous sha1 # noqa command-instead-of-shell
+          ansible.builtin.shell: "cat {{ keycloak_home }}/sha1"
+          changed_when: false
           register: previous_sha1
-        - name: "Compare sha1"
-          set_fact:
+        - name: Compare sha1
+          ansible.builtin.set_fact:
             is_same_archive: "{{ true if keycloak_sha1.stat.checksum == previous_sha1.stdout else false }}"
-      become: yes
 
     - name: "Task block: Extract keycloak"
+      become: true
+      when: not is_same_archive
       block:
-        - name: unpack keycloak
-          unarchive:
-            src: "/tmp/keycloak_archive"
-            dest: "/tmp/keycloak-tmp"
+        - name: Unpack keycloak
+          ansible.builtin.unarchive:
+            src: /tmp/keycloak_archive
+            dest: /tmp/keycloak-tmp
             owner: "{{ keycloak_service_user }}"
             group: "{{ keycloak_service_user }}"
-            remote_src: yes
-            extra_opts: "--no-same-owner" #since it's run with elevated priviledges, to avoid preserving ownership from the archive
+            remote_src: true
+            extra_opts: "--no-same-owner" # since it's run with elevated priviledges, to avoid preserving ownership from the archive
         - name: Find keycloak extracted folder name
-          find:
+          ansible.builtin.find:
             paths: /tmp/keycloak-tmp
-            patterns: 'keycloak*'
+            patterns: "keycloak*"
             file_type: directory
-            recurse: no
+            recurse: false
           register: find_result
         - name: Remove any previous installation
           ansible.builtin.file:
             path: "{{ keycloak_home }}"
             state: absent
         - name: Move extracted keycloak to final keycloak folder
-          command: "mv {{ find_result.files[0].path }} {{ keycloak_home }}"
+          ansible.builtin.command: "mv {{ find_result.files[0].path }} {{ keycloak_home }}"
           args:
             removes: "{{ find_result.files[0].path }}"
             creates: "{{ keycloak_home }}"
 
         - name: Store previous sha1
-          copy:
+          ansible.builtin.copy:
             dest: "{{ keycloak_home }}/sha1"
             content: "{{ keycloak_sha1.stat.checksum }}"
-      become: yes
-      when: not is_same_archive
-
+            mode: "0644"
   always:
     - name: Delete downloaded archive
       ansible.builtin.file:
-        path: "/tmp/keycloak_archive"
+        path: /tmp/keycloak_archive
         state: absent
-  become: yes
-  tags: "keycloak:install:download_extract"
 
-
-- import_tasks: "quarkus/install.yml"
+- name: Keycloak | import quarkus install tasks
+  ansible.builtin.import_tasks: "quarkus/install.yml"
   when: keycloak_version.split('.')[0] | int >= 18
 
-- import_tasks: "wildfly/install.yml"
+- name: Keycloak | import wildfly install
+  ansible.builtin.import_tasks: wildfly/install.yml
   when: keycloak_version.split('.')[0] | int < 18
-
 
 ##### configure keycloak
 
 - name: Configure various keycloak aspects
-  import_tasks: "configure.yml"
+  ansible.builtin.import_tasks: "configure.yml"
   tags: "keycloak:config"

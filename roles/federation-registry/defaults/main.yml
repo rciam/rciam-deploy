@@ -6,12 +6,12 @@ federation_registry_known_hosts_path: "~/.ssh/known_hosts"
 # Ams Configuration
 federation_registry_ams:
   # Consumer/Publisher for deployment tasks and deployment results topics
-  authorized_users :
+  authorized_users:
     - username: "ams-user"
   # Authentication key for the ams agent process
-  agent_key : "authentication_key_for_ams_agent"
+  agent_key: "authentication_key_for_ams_agent"
   # Admin User token for setting the topics, subscriptions and ACL
-  admin_token : "ams-admin-token"
+  admin_token: "ams-admin-token"
   # Consumer/Publisher User Token
   token: "ams-users-token"
   # Base Url of the Ams
@@ -22,16 +22,16 @@ federation_registry_ams:
 federation_registry_pm2_conf_path: "/home/debian"
 federation_registry_react_folder: "federation-registry-frontend"
 federation_registry_project_path: "/var/www/rciam-federation-registry"
-federation_registry_react_path: "{{federation_registry_project_path}}/{{federation_registry_react_folder}}"
+federation_registry_react_path: "{{ federation_registry_project_path }}/{{ federation_registry_react_folder }}"
 federation_registry_express_folder: "federation-registry-backend-api"
-federation_registry_express_path: "{{federation_registry_project_path}}/{{federation_registry_express_folder}}"
+federation_registry_express_path: "{{ federation_registry_project_path }}/{{ federation_registry_express_folder }}"
 federation_registry_ams_agent_folder: "federation-registry-backend-ams-agent"
-federation_registry_ams_agent_path: "{{federation_registry_project_path}}/{{federation_registry_ams_agent_folder}}"
+federation_registry_ams_agent_path: "{{ federation_registry_project_path }}/{{ federation_registry_ams_agent_folder }}"
 federation_registry_git:
   git_repo: "https://github.com/rciam/rciam-federation-registry.git"
   git_branch: "devel"
   clone_dest: "/var/www/rciam-federation-registry"
-federation_registry_deployment_env : "dev/demo/production"
+federation_registry_deployment_env: "dev/demo/production"
 federation_registry_key_title: "env-vm"
 federation_registry_init_script: "setup_tenant.sql"
 federation_registry_admin_key: "authentication_for_admin_endpoints"
@@ -52,5 +52,3 @@ federation_registry_tenant_config:
     backend_uri: "https://tenant1/federation-backend/"
   - name: "tenant2_name"
     backend_uri: "https://tenant2/federation-backend/"
-
-

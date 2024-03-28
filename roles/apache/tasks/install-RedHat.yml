@@ -1,20 +1,17 @@
 ---
-
 - name: Ensure Apache HTTP server is installed (Redhat)
-  yum: 
+  ansible.builtin.yum:
     name: httpd
     state: present
-    update_cache: yes
-  become: yes
-  notify:
-    - restart apache
+    update_cache: true
+  become: true
+  notify: Restart apache
 
 - name: Ensure Apache ssl module is installed (Redhat)
-  yum:
+  ansible.builtin.yum:
     name: mod_ssl
     state: present
-    update_cache: yes
-  become: yes
+    update_cache: true
+  become: true
   when: apache_vhosts_ssl is defined and apache_vhosts_ssl|length > 0
-  notify:
-    - restart apache
+  notify: Restart apache

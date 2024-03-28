@@ -1,55 +1,52 @@
 ---
-
 # this is an important block! Do not remove
 - name: Wait for keycloak to initialize
   block:
-  - name: Ensure Keycloak service is running
-    systemd:
-      name: "keycloak"
-      state: "started"
-    become: yes
-  #wait for port to open
-  - name: Waiting for service port to be opened...
-    wait_for:
-      host: "{{ keycloak_local_address }}"
-      port: 8080
-      delay: 10
-      timeout: 180
-  #wait for service to respond
-  - name: Waiting for service to be up and running...
-    uri:
-      url: "http://{{ keycloak_local_address }}:8080/{{ keycloak_base_url_path }}"
-      status_code: "200"
-      timeout: 600
-
+    - name: Ensure Keycloak service is running
+      ansible.builtin.systemd:
+        name: keycloak
+        state: started
+      become: true
+    - name: Waiting for service port to be opened...
+      ansible.builtin.wait_for:
+        host: "{{ keycloak_local_address }}"
+        port: 8080
+        delay: 10
+        timeout: 180
+    - name: Waiting for service to be up and running...
+      ansible.builtin.uri:
+        url: "http://{{ keycloak_local_address }}:8080/{{ keycloak_base_url_path }}"
+        status_code: 200
+        timeout: 600
 
 # configure AUP, realm keys, etc
 - name: Configure the keycloak (AUP, realm keys, etc)
+  tags:
+    - keycloak:config:realm
   block:
-
     - name: Apply realm.config parameters
-      include_tasks: blocks/configure_basic_realm.yml
+      ansible.builtin.include_tasks: blocks/configure_basic_realm.yml
       with_items: "{{ keycloak_config.realms | default([]) }}"
       loop_control:
         loop_var: current_realm_item
       run_once: true
 
     - name: Configure keys
-      include_tasks: blocks/keys/configure_keys.yml
+      ansible.builtin.include_tasks: blocks/keys/configure_keys.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
-        - "keys"
-        - skip_missing: True
+        - keys
+        - skip_missing: true
 
     - name: Configure events logging
-      include_tasks: blocks/configure_event_logging.yml
+      ansible.builtin.include_tasks: blocks/configure_event_logging.yml
       with_items: "{{ keycloak_config.realms | default([]) }}"
       loop_control:
         loop_var: current_realm_item
       run_once: true
 
     - name: Configure AUP (Terms and Conditions)
-      uri:
+      ansible.builtin.uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/authentication/required-actions/{{ keycloak_api.terms_and_conditions.endpoint }}"
         method: PUT
         body_format: json
@@ -71,66 +68,66 @@
       run_once: true
 
     - name: Setup roles
-      include_tasks: blocks/roles_configuration/configure.yml
+      ansible.builtin.include_tasks: blocks/roles_configuration/configure.yml
 
     - name: Setup federations
-      include_tasks: blocks/configure_federations.yml
+      ansible.builtin.include_tasks: blocks/configure_federations.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "federations"
-        - skip_missing: True
+        - skip_missing: true
       run_once: true
 
     - name: Setup social IdPs
-      include_tasks: blocks/configure_social_idps.yml
+      ansible.builtin.include_tasks: blocks/configure_social_idps.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "social_idps"
-        - skip_missing: True
+        - skip_missing: true
       run_once: true
 
     - name: Setup saml IdPs
-      include_tasks: blocks/configure_saml_idps.yml
+      ansible.builtin.include_tasks: blocks/configure_saml_idps.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
-        - "saml_idps"
-        - skip_missing: True
+        - saml_idps
+        - skip_missing: true
       run_once: true
 
     - name: Setup IdP mappers
-      include_tasks: blocks/configure_idp_mappers.yml
+      ansible.builtin.include_tasks: blocks/configure_idp_mappers.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
-        - "idp_mappers"
-        - skip_missing: True
+        - idp_mappers
+        - skip_missing: true
       run_once: true
 
     - name: "Check if there is any default IdP (will skip the WAYF and redirect to that one) defined"
-      include_tasks: blocks/configure_default_idp.yml
+      ansible.builtin.include_tasks: blocks/configure_default_idp.yml
       with_items: "{{ keycloak_config.realms | default([]) }}"
       loop_control:
         loop_var: current_realm
 
     - name: "Configure client scopes (block)"
+      tags:
+        - "keycloak:config:realm:client_scopes"
       block:
         - name: "Clear all assigned default and optional client scopes"
-          include_tasks: blocks/helpers/unassign_default_client_scopes.yml
+          ansible.builtin.include_tasks: blocks/helpers/unassign_default_client_scopes.yml
           with_items: "{{ keycloak_config.realms | default([]) }}"
           loop_control:
             loop_var: current_realm
           run_once: true
         - name: "Add new / update existing client scopes"
-          include_tasks: blocks/configure_client_scopes.yml
+          ansible.builtin.include_tasks: blocks/configure_client_scopes.yml
           with_subelements:
-            - "{{keycloak_config.realms | default([])}} "
+            - "{{ keycloak_config.realms | default([]) }} "
             - "client_scopes"
-            - skip_missing: True
+            - skip_missing: true
           run_once: true
-      tags:
-        - "keycloak:config:realm:client_scopes"
 
     - name: "Configure client registration policies"
-      include_tasks: blocks/configure_client_reg_policies.yml
+      ansible.builtin.include_tasks: blocks/configure_client_reg_policies.yml
       with_items: "{{ keycloak_config.realms | default([]) }}"
       loop_control:
         loop_var: current_realm
@@ -138,33 +135,36 @@
       tags:
         - "keycloak:config:realm:client_reg_policies"
 
-  tags: "keycloak:config:realm"
-
 ### wayf plugin configuration
 - name: Configure wayf plugin
-  block:
-    - name: Acquire tokens
-      include_tasks: blocks/helpers/get_tokens.yml
-    - name: "Configure wayf plugin"
-      include_tasks: blocks/configure_theme.yml
-      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
-
-  when: wayf_enabled == true
+  when: wayf_enabled | bool
   vars:
     wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
   tags:
     - "keycloak:config:plugin"
     - "keycloak:config:plugin:wayf"
+  block:
+    - name: Acquire tokens
+      ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
+    - name: "Configure wayf plugin"
+      ansible.builtin.include_tasks: blocks/configure_theme.yml
+      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
 
 ### advanced group management plugin
 - name: Configure advanced group management plugin
+  when: group_enabled | bool
+  vars:
+    group_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
+  tags:
+    - keycloak:config:plugin
+    - keycloak:config:plugin:group
   block:
     - name: Acquire tokens
-      include_tasks: blocks/helpers/get_tokens.yml
+      ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
     - name: Configure user attribute configuration for advanced group management plugin
-      uri:
+      ansible.builtin.uri:
         url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/agm/admin/member-user-attribute/configuration"
-        method: "POST"
+        method: POST
         body_format: json
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
@@ -174,26 +174,22 @@
       with_items: "{{ keycloak_plugins.group.add_to_realms }}"
       run_once: true
       vars:
-        - body_payload:
-            userAttribute: "{{ item.member_user_attribute_configuration.userAttribute }}"
-            urnNamespace: "{{ item.member_user_attribute_configuration.urnNamespace }}"
-            authority: "{{ item.member_user_attribute_configuration.authority }}"
-
-  when: group_enabled == true
-  vars:
-    group_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
-  tags:
-    - "keycloak:config:plugin"
-    - "keycloak:config:plugin:group"
+        body_payload:
+          userAttribute: "{{ item.member_user_attribute_configuration.userAttribute }}"
+          urnNamespace: "{{ item.member_user_attribute_configuration.urnNamespace }}"
+          authority: "{{ item.member_user_attribute_configuration.authority }}"
 
 - name: Configure Keycloak themes
+  tags:
+    - keycloak:config:realm
+    - keycloak:config:realm:themes
   block:
     - name: Acquire tokens
-      include_tasks: blocks/helpers/get_tokens.yml
+      ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
     - name: Configure Keycloak themes
-      uri:
+      ansible.builtin.uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}"
-        method: "PUT"
+        method: PUT
         body_format: json
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
@@ -203,10 +199,7 @@
       with_items: "{{ keycloak_config.realms | default([]) }}"
       run_once: true
       vars:
-        - body_payload:
-            loginTheme: "{{ item.themes.login | default(keycloak_themes.login) | default(omit) }}"
-            accountTheme: "{{ item.themes.account | default(keycloak_themes.account) | default(omit) }}"
-            emailTheme: "{{ item.themes.email | default(keycloak_themes.email) | default(omit) }}"
-  tags:
-    - "keycloak:config:realm"
-    - "keycloak:config:realm:themes"
+        body_payload:
+          loginTheme: "{{ item.themes.login | default(keycloak_themes.login) | default(omit) }}"
+          accountTheme: "{{ item.themes.account | default(keycloak_themes.account) | default(omit) }}"
+          emailTheme: "{{ item.themes.email | default(keycloak_themes.email) | default(omit) }}"

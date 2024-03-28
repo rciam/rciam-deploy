@@ -1,14 +1,14 @@
 ---
 - name: "Gather the package facts"
-  package_facts:
+  ansible.builtin.package_facts:
     manager: "auto"
 
 - name: "Run Initialise tasks"
-  when: ('slapd' not in ansible_facts.packages or 'ldap-utils' not in ansible_facts.packages) or openldap_init == true
+  when: ('slapd' not in ansible_facts.packages or 'ldap-utils' not in ansible_facts.packages) or openldap_init
   block:
       # run these tasks only when initialise variable is true or slapd/ldap-utils are not installed
     - name: Define slapd installation settings
-      debconf:
+      ansible.builtin.debconf:
         name: "slapd"
         question: "{{ item.question }}"
         value: "{{ item.value }}"
@@ -27,52 +27,57 @@
           value: 'true'
           vtype: 'boolean'
         - question: "slapd/domain"
-          value: "{{ pri_domain_name }}"
+          value: "{{ openbldap_pri_domain_name }}"
           vtype: 'string'
         - question: "shared/organization"
           value: "{{ openldap_org }}"
           vtype: 'string'
-      become: yes
+      become: true
 
     - name: Install required packages
-      apt:
+      ansible.builtin.apt:
         name: "{{ openldap_debian_packages }}"
         state: present
-        install_recommends: no
-        update_cache: yes
+        install_recommends: false
+        update_cache: true
         cache_valid_time: 86400
-      become: yes
+      become: true
 
     - name: Find /var/backups ending with .ldapdb or matching with slapd-*+*
-      find:
+      ansible.builtin.find:
         paths: /var/backups
         patterns: "*.ldapdb,slapd-*+*"
         file_type: directory
-      become: yes
+      become: true
       register: backup_files
 
     - name: Ensure /var/backups/openldap dir exists
-      file:
+      ansible.builtin.file:
         path: /var/backups/openldap
         state: directory
         owner: openldap
         group: openldap
-      become: yes
+        mode: "0755"
+      become: true
 
     - name: Move Backup Files to another folder
-      command: mv {{ item.path }} /var/backups/openldap/{{ item.path | replace("/var/backups/","") }}.{{ ansible_date_time.epoch }}
+      ansible.builtin.command: >-
+        mv {{ item.path }} \
+          /var/backups/openldap/{{ item.path | replace("/var/backups/", "") }}.{{ ansible_date_time.epoch }}
       with_items: "{{ backup_files.files }}"
-      ignore_errors: true
-      become: yes
+      ignore_errors: true # noqa ignore-errors
+      changed_when: false
+      become: true
 
-    - name: Reconfigure slapd
-      command: dpkg-reconfigure -f noninteractive slapd
-      become: yes
+    - name: Reconfigure slapd # TODO - should be a handler
+      ansible.builtin.command: dpkg-reconfigure -f noninteractive slapd
+      changed_when: false
+      become: true
 
-    - name: Restart slapd
-      systemd:
+    - name: Restart slapd # TODO - should be a handler
+      ansible.builtin.systemd:
         name: slapd
-        enabled: yes
-        daemon_reload: yes
+        enabled: true
+        daemon_reload: true
         state: restarted
-      become: yes
+      become: true

@@ -16,7 +16,7 @@
         <Rule xsi:type="AttributeValueString" value="employee"/>
         <Rule xsi:type="AttributeValueString" value="library-walk-in"/>
     </afp:PermitValueRule>
-    
+
     <!--
     Shared rule for all "scoped" attributes, but you'll have to manually apply it inside
     an AttributeRule for each attribute you want to check.
@@ -45,7 +45,7 @@
         <afp:AttributeRule attributeID="primary-affiliation">
             <afp:PermitValueRuleReference ref="eduPersonAffiliationValues"/>
         </afp:AttributeRule>
-        
+
         <afp:AttributeRule attributeID="eppn">
             <afp:PermitValueRuleReference ref="ScopingRules"/>
         </afp:AttributeRule>
@@ -63,7 +63,7 @@
         <afp:AttributeRule attributeID="*">
             <afp:PermitValueRule xsi:type="ANY"/>
         </afp:AttributeRule>
-        
+
     </afp:AttributeFilterPolicy>
 
 </afp:AttributeFilterPolicyGroup>

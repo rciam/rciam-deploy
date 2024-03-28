@@ -22,7 +22,7 @@ rciam_utils: []
 #      #month:
 
 # Configuration for https://github.com/rciam/rciam-sync-voms.git
-#rciam_utils_sync_voms:
+# rciam_utils_sync_voms:
 #  vomses_file:
 #    url: "https://{{ rciam_hostname }}/static/diracVOs.json"
 #    # Uncomment the following line to use the specified CA_BUNDLE file or
@@ -49,7 +49,7 @@ rciam_utils: []
 #    level: "DEBUG"
 
 # Whether to install RCIAM util cron jobs; Enabled by default
-rciam_utils_cron_enabled: yes
+rciam_utils_cron_enabled: true
 
 rciam_utils_sync_client_names:
   # Type of OP: "mitreid" or "keycloak". Defaults to "mitreid".

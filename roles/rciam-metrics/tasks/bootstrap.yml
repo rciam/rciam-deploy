@@ -1,40 +1,39 @@
 # file: tasks/bootstrap.yml
 ---
-
 - name: Ensure util groups exist
-  group:
+  ansible.builtin.group:
     name: "{{ metrics_user.group }}"
-    system: yes
-  become: yes
+    system: true
+  become: true
 
 - name: Ensure metrics user exists
-  user:
+  ansible.builtin.user:
     name: "{{ metrics_user.name }}"
     groups: "{{ metrics_user.group }}"
-    comment: "{{ metrics_user.gecos }}" 
+    comment: "{{ metrics_user.gecos }}"
     shell: "{{ metrics_user.shell }}"
     home: "{{ metrics_user.path }}"
-    system: yes
-    create_home: yes
+    system: true
+    create_home: true
     skeleton: "/empty"
-  become: yes
+  become: true
 
 - name: Upgrade pip3
-  pip:
+  ansible.builtin.pip:
     name: pip
-    state: latest
+    state: present
     virtualenv: "{{ metrics_path }}/.venv"
     extra_args: --upgrade
-  become: yes
+  become: true
 
-- name: fastapi systemd setup
-  template:
-     owner: "www-data"
-     group: "www-data"
-     mode: 0644
-     src: templates/fastapi/fastapi.service.j2
-     dest: /etc/systemd/system/fastapi.service
+- name: Fastapi systemd setup
+  ansible.builtin.template:
+    owner: "www-data"
+    group: "www-data"
+    mode: "0644"
+    src: templates/fastapi/fastapi.service.j2
+    dest: /etc/systemd/system/fastapi.service
   notify: fastapi.service restart
-  become: yes
+  become: true
   tags:
     - fastapi_service

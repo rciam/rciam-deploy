@@ -12,7 +12,7 @@ nginx_remove_default_vhost: false
 # SSL protocols that should be enabled
 nginx_ssl_protocols: "TLSv1.3 TLSv1.2"
 # SSL ciphers that should be enabled
-nginx_ssl_ciphers: "EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS"
+nginx_ssl_ciphers: "EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA512:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:ECDH+AESGCM:ECDH+AES256:DH+AESGCM:DH+AES256:RSA+AESGCM:!aNULL:!eNULL:!LOW:!RC4:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS" # noqa yaml[line-length]
 
 # Name servers used to resolve names of upstream servers into addresses
 nginx_resolver: "8.8.8.8 8.8.4.4 [2001:4860:4860::8888] [2001:4860:4860::8844]"
@@ -32,21 +32,21 @@ nginx_ssl_certificate_key_file_group: "root"
 nginx_ssl_certificate_key_file_mode: "0600"
 
 # Uncomment to generate file with custom DH parameters for DHE ciphers
-#nginx_dhparam_file: "dhparam.pem"
+# nginx_dhparam_file: "dhparam.pem"
 # Number of bits used for generating DH parameter set
 nginx_dhparam_size: 2048
 
 nginx_enable_rsyslog_pgsql_logs: false
 
-#nginx_upstream_groups: 
+# nginx_upstream_groups:
 #  - name: "web_backend"
 #    servers:
-#      - address: "192.168.0.1"      
+#      - address: "192.168.0.1"
 #        weight: 1
-#      - address: "192.168.0.2"      
+#      - address: "192.168.0.2"
 #        weight: 1
 
-#nginx_vhosts:
+# nginx_vhosts:
 #  - server_name: "www.example.org"
 #    listen:
 #      - "443 ssl default_server"

@@ -2,5 +2,5 @@
 
 apache_service: httpd
 apache_conf_path: /etc/httpd
-apache_user: "apache"
-apache_group: "apache"
+apache_user: apache
+apache_group: apache

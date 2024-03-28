@@ -1,13 +1,12 @@
 ---
-
 - name: Ensure PHP configuration files exist
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ php_conf_scan_dir }}/"
-    owner: "root"
-    group: "root"
-    mode: 0644
-  with_items: "{{ php_conf_files }}" 
-  become: yes
+    owner: root
+    group: root
+    mode: "0644"
+  with_items: "{{ php_conf_files }}"
+  become: true
   notify:
     - restart webserver

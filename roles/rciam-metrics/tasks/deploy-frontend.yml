@@ -1,27 +1,28 @@
 ---
 - name: Ensure release directory exists
-  file:
-    path: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics-{{metrics_release}}"
+  ansible.builtin.file:
+    path: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{ tenant_environment | replace('.', '_') }}/metrics-{{ metrics_release }}"
     state: directory
-  become: yes
+    mode: "0755"
+  become: true
 
 # This needs the metrics_release, only github actions can know or if you set it manually
 # This needs the tenant_environment, only github actions can know or if you set it manually
 - name: Download and unarchive latest release zip file
-  unarchive:
-    src: "{{ metrics_repo }}/releases/download/{{ metrics_release }}/frontend-{{tenant_environment}}-release-build.tar.gz"
-    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics-{{metrics_release}}"
+  ansible.builtin.unarchive:
+    src: "{{ metrics_repo }}/releases/download/{{ metrics_release }}/frontend-{{ tenant_environment }}-release-build.tar.gz"
+    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{ tenant_environment | replace('.', '_') }}/metrics-{{ metrics_release }}"
     remote_src: true
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.name }}"
-  become: yes
+  become: true
 
 - name: Ensure symbolic link to latest metrics package exists
-  file:
-    src: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics-{{metrics_release}}"
-    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{tenant_environment | replace('.','_')}}/metrics"
-    force: yes
+  ansible.builtin.file:
+    src: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{ tenant_environment | replace('.', '_') }}/metrics-{{ metrics_release }}"
+    dest: "{{ metrics_path }}/{{ metrics_react_folder_name }}/{{ tenant_environment | replace('.', '_') }}/metrics"
+    force: true
     state: link
     owner: "{{ metrics_user.name }}"
     group: "{{ metrics_user.name }}"
-  become: yes
+  become: true

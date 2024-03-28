@@ -1,10 +1,9 @@
 # file: metrics/tasks/install-Debian.yml
 #
 ---
-
 - name: Ensure metrics dependencies are installed
-  apt:
-    name:
+  ansible.builtin.apt:
+    name: # Should be declared in defaults
       - git
       - python3-venv
       - build-essential
@@ -14,7 +13,7 @@
       - python3-virtualenv
       - libpq-dev
     state: present
-    install_recommends: no
-    update_cache: yes
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true

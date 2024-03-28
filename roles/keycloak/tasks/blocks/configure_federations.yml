@@ -1,63 +1,64 @@
 ---
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Initiating federation search in keycloak"
-  include_tasks: blocks/helpers/search_realm_federations.yml
+- name: Initiating federation search in keycloak
+  ansible.builtin.include_tasks: blocks/helpers/search_realm_federations.yml
 
-- set_fact:
+- name: Check if federation exists
+  ansible.builtin.set_fact:
     federation_exists: "{{ realm_federation_matches | length > 0 }}"
 
-- set_fact:
+- name: Set additional info
+  ansible.builtin.set_fact:
     additional_info:
       internalId: "{{ realm_federation_matches[0].internalId }}"
   when: federation_exists
 
-- set_fact:
-    body: "{% if federation_exists %}{{ item[1] | combine(additional_info , recursive=True ) }}{% else %}{{ item[1] }}{% endif %}"
-
-- set_fact: # remove the 'mappers' field from the body (if it exists)
+- name: Set body fact
+  ansible.builtin.set_fact:
+    # body: "{% if federation_exists %}{{ item[1] | combine(additional_info, recursive=True) }}{% else %}{{ item[1] }}{% endif %}"
+    body: "{{ federation_exists | ternary((item[1] | combine(additional_info, recursive=True)), item[1]) }}"
+- name: Remove the 'mappers' field from the body (if it exists)
+  ansible.builtin.set_fact:
     body: '{{  body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
 
 - name: "Configuring federation {{ item[1].alias }}"
-  uri:
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances"
     method: POST
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body:
-      "{{ body }}"
+    body: "{{ body }}"
     status_code: 201
 
-  #get once more the federation_matches. now federation_matches should contain exactly one object in the list with the internalId and alias of the current federation
-- name: "Initiating federation search in keycloak"
-  include_tasks: blocks/helpers/search_realm_federations.yml
+# get once more the federation_matches.
+# now federation_matches should contain exactly one object in the list with the internalId and alias of the current federation
+- name: Initiating federation search in keycloak
+  ansible.builtin.include_tasks: blocks/helpers/search_realm_federations.yml
 
-- name: "Configuring mappers of the federation {{ item[1].alias }} of the realm: {{ item[0].name }}"
+- name: "Configuring mappers of the federation {{ item[1].alias }} of the realm: {{ item[0].name }}" # noqa name[template]
+  when: (realm_federation_matches | length) > 0
   block:
-
-    - name: "Get list of federation {{ item[1].alias }} mappers"
-      uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers"
+    - name: "Get list of federation {{ item[1].alias }} mappers" # noqa name[template]
+      ansible.builtin.uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/{{ keycloak_federation.saml.api_path }}/instances/{{ realm_federation_matches[0].internalId }}/mappers" # noqa yaml[line-length]
         method: GET
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
         status_code: 200
       register: existing_mappers
 
-    - set_fact:
+    - name: Set fact
+      ansible.builtin.set_fact:
         existing_mappers_name_id: "{{ existing_mappers.json | json_query(query) | default([]) }}"
       vars:
         query: '[].{name: name, id: id }'
-
     - name: Setup federation mapper
-      include_tasks: blocks/configure_federation_mapper.yml
+      ansible.builtin.include_tasks: blocks/configure_federation_mapper.yml
       with_items: "{{ item[1].mappers | default([]) }}"
       loop_control:
         loop_var: mapper
       run_once: true
-
-  when: "realm_federation_matches | length > 0"
-

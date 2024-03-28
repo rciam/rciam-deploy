@@ -1,36 +1,37 @@
 ---
-
-- block:
-
+- name: Tasks
+  when: (current_realm.defaultIdPAlias is defined) and (current_realm.defaultIdPAlias | length > 0)
+  block:
     - name: Acquire tokens
-      include_tasks: blocks/helpers/get_tokens.yml
-
-    - name: "Get all executions of the 'browser' authentication flow of the realm {{ current_realm.name }}"
+      ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
+    - ansible.builtin.name: "Get all executions of the 'browser' authentication flow of the realm {{ current_realm.name }}"
       uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/authentication/flows/browser/executions"
         method: GET
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
         status_code: 200
-      register: "current_realm_browser_executions"
+      register: current_realm_browser_executions
 
-    - set_fact:
+    - name: Set Fact
+      ansible.builtin.set_fact:
         idp_redirector_matches: "{{ current_realm_browser_executions.json | json_query(query) | default([]) }}"
       vars:
         query: '[?providerId == `identity-provider-redirector` ]'
 
-    - set_fact:
+    - name: Set fact
+      ansible.builtin.set_fact:
         idp_redirector_id: "{{ idp_redirector_matches[0].id }}"
       when: idp_redirector_matches | length > 0
 
-    - set_fact:
+    - name: Set Fact
+      ansible.builtin.set_fact:
         idp_redirector_config_id: "{{ idp_redirector_matches[0].authenticationConfig }}"
       when: idp_redirector_id is defined and idp_redirector_matches[0].authenticationConfig is defined
 
-
     # if idp_redirector_config_id is defined, it's an update, else it is a new one
-    - name: "Updating default IdP redirector for the realm {{ current_realm.name }} to the IdP {{ current_realm.defaultIdPAlias }}"
-      uri:
+    - name: "Updating default IdP redirector for the realm {{ current_realm.name }} to the IdP {{ current_realm.defaultIdPAlias }}" # noqa name[template]
+      ansible.builtin.uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/authentication/config/{{ idp_redirector_config_id }}"
         method: PUT
         body_format: json
@@ -38,24 +39,22 @@
           Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
           id: "{{ idp_redirector_config_id }}"
-          alias: "idp-redirector"
+          alias: idp-redirector
           config:
             defaultProvider: "{{ current_realm.defaultIdPAlias }}"
         status_code: 204
       when: idp_redirector_id is defined and idp_redirector_config_id is defined
 
-    - name: "Setting the IdP {{ current_realm.defaultIdPAlias }} as default IdP redirector for the realm {{ current_realm.name }}"
-      uri:
+    - name: "Setting the IdP {{ current_realm.defaultIdPAlias }} as default IdP redirector for the realm {{ current_realm.name }}" # noqa name[template]
+      ansible.builtin.uri:
         url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/authentication/executions/{{ idp_redirector_id }}/config"
         method: POST
         body_format: json
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
-          alias: "idp-redirector"
+          alias: idp-redirector
           config:
             defaultProvider: "{{ current_realm.defaultIdPAlias }}"
         status_code: 201
       when: idp_redirector_id is defined and idp_redirector_config_id is undefined
-
-  when: (current_realm.defaultIdPAlias is defined) and (current_realm.defaultIdPAlias | length > 0)

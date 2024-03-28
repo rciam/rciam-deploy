@@ -1,6 +1,7 @@
 # file: rciam-oidc-client.yml
 #
 ---
-- hosts: web
+- name: Deploy OIDC client
+  hosts: web
   roles:
     - { role: rciam-oidc-client, tags: rciam-oidc-client }

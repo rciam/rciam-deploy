@@ -1,12 +1,12 @@
 # file: rciam-oidc-client/tasks/main.yml
 #
 ---
-# Include OS-specific installation tasks
-- include: install-common.yml
+- name: Include OS-specific installation tasks
+  ansible.builtin.include_tasks: install-common.yml
   tags:
     - install
 
-# Include OS-independent configuration tasks
-- include: configure-common.yml
+- name: Include OS-independent configuration tasks
+  ansible.builtin.include_tasks: configure-common.yml
   tags:
     - config

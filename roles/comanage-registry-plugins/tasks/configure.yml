@@ -1,11 +1,10 @@
 ---
-
 - name: Add ENV vars in cron.d file
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     job: "{{ item.job }}"
     user: "{{ item.user }}"
-    env: yes
+    env: true
     cron_file: "{{ item.filename }}"
     state: present
   loop: "{{ comanage_plugins_cron_env | default([]) }}"
@@ -13,7 +12,7 @@
   when: comanage_plugins_cron_env is defined and comanage_plugins_cron_jobs is defined and comanage_plugins_cron_jobs_enabled
 
 - name: Ensure COmanage Registry Plugins cron jobs are installed
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     minute: "{{ item.minute | default(omit) }}"
     hour: "{{ item.hour | default(omit) }}"
@@ -29,10 +28,10 @@
   when: comanage_plugins_cron_jobs is defined and comanage_plugins_cron_jobs_enabled
 
 - name: Create Symbolic links
-  file:
+  ansible.builtin.file:
     src: "{{ item.target }}"
     dest: "{{ item.link }}"
-    force: yes
+    force: true
     state: link
     owner: root
     group: root

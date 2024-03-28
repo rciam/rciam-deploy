@@ -1,23 +1,23 @@
 ---
-
 - name: Checkout SSP source
-  git:
+  ansible.builtin.git:
     repo: "{{ ssp_repo_url }}"
     dest: "{{ ssp_path }}"
     version: "{{ ssp_repo_version }}"
-    accept_hostkey: yes
-    force: no
-    update: no
-  become: yes
+    accept_hostkey: true
+    force: false
+    update: false
+  become: true
   when: ssp_release_file is not defined
   tags:
     - ssp:install:source
 
-- include_tasks: composer.yml
-  when: (ssp_composer_install is defined) and (ssp_composer_install|bool == True)
+- name: Include composer tasks
+  ansible.builtin.include_tasks: composer.yml
+  when: (ssp_composer_install is defined) and (ssp_composer_install | bool)
 
 - name: Install/Update SimplesamlPHP
-  composer:
+  community.general.composer:
     command: update
     working_dir: "{{ ssp_path }}"
     composer_executable: "{{ ssp_composer_executable }}"

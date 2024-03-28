@@ -1,28 +1,32 @@
 ---
-
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
 
 - name: Define PHP packages
-  set_fact:
+  ansible.builtin.set_fact:
     php_packages: "{{ php_default_packages | list }}"
   when: php_packages is not defined
 
 - name: Define PHP configuration scan dir
-  set_fact:
+  ansible.builtin.set_fact:
     php_conf_scan_dir: "{{ php_default_conf_scan_dir }}"
   when: php_conf_scan_dir is not defined
 
 # Include OS-specific installation tasks
-- include: install-Debian.yml
+- name: Include Debian Install Tasks
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-- include: install-RedHat.yml
+- name: Include RedHat Install Tasks
+  ansible.builtin.include_tasks: install-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
+# Could be refactored
+
 # Include OS-independent configuration tasks
-- include: configure.yml
+- name: Include Configure Tasks
+  ansible.builtin.include_tasks: configure.yml

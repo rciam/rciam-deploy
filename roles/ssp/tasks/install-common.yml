@@ -1,59 +1,72 @@
 ---
-
-- include_tasks: install-release.yml
+- name: Include Release Tasks
+  ansible.builtin.include_tasks: install-release.yml
   when: ssp_release_url is defined
   tags:
     - ssp:install
 
-- include_tasks: install-source.yml
+- name: Include source install tasks
+  ansible.builtin.include_tasks: install-source.yml
   when: ssp_release_url is not defined
   tags:
     - ssp:install
 
 - name: Update symbolic link to SSP
-  file:
+  ansible.builtin.file:
     src: "{{ ssp_path }}/{{ 'public' if ssp_major_version == '2' else 'www' }}/"
     dest: "{{ ssp_www_path }}"
     state: link
-  become: yes
+  become: true
   tags:
     - ssp:install
 
-- include_tasks: twig.yml
-  when: (ssp_twig_install is defined) and (ssp_twig_install|bool == True)
+- name: Include Twig tasks
+  ansible.builtin.include_tasks: twig.yml
+  when: (ssp_twig_install is defined) and (ssp_twig_install | bool)
 
 - name: Ensure SSP config dir exists
-  file: path={{ ssp_configdir }} state=directory
-  become: yes
+  ansible.builtin.file:
+    path: "{{ ssp_configdir }}"
+    state: directory
+    mode: "0750"
+  become: true
   tags:
     - ssp:install
 
 - name: Ensure SSP logging dir exists
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ ssp_loggingdir }}"
     owner: "{{ ssp_webuser }}"
     group: "{{ ssp_webgroup }}"
     mode: "0750"
-  become: yes
+  become: true
   tags:
     - ssp:install
 
 - name: Ensure SSP data dir exists
-  file: path={{ ssp_datadir }} state=directory
-  become: yes
+  ansible.builtin.file:
+    path: "{{ ssp_datadir }}"
+    state: directory
+    mode: "0750"
+  become: true
   tags:
     - ssp:install
 
 - name: Ensure SSP metadata dir exists
-  file: path={{ ssp_metadatadir }} state=directory
-  become: yes
+  ansible.builtin.file:
+    path: "{{ ssp_metadatadir }}"
+    state: directory
+    mode: "0750"
+  become: true
   tags:
     - ssp:install
 
 - name: Ensure SSP cert dir exists
-  file: path={{ ssp_certdir }} state=directory
-  become: yes
+  ansible.builtin.file:
+    path: "{{ ssp_certdir }}"
+    state: directory
+    mode: "0750"
+  become: true
   tags:
     - ssp:install
-

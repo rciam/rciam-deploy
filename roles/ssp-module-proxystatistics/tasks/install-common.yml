@@ -1,16 +1,16 @@
 ---
 
 - name: Checkout SSP proxystatistics module source
-  git:
+  ansible.builtin.git:
     repo: "{{ ssp_module_proxystatistics_repo_url }}"
     dest: "{{ ssp_module_proxystatistics_path }}"
     version: "{{ ssp_module_proxystatistics_repo_version }}"
-    accept_hostkey: yes
-    force: no
-    update: yes
-  become: yes
+    accept_hostkey: true
+    force: false
+    update: true
+  become: true
 
-#- name: Create SSP proxystatistics statistics table
+# - name: Create SSP proxystatistics statistics table
 #  postgresql_table:
 #    db: "ssp_module_proxystatistics_db.name"
 #    name: "{{ ssp_module_proxystatistics_table_name.statistics }}"

@@ -1,7 +1,7 @@
 {
 "authorized_users": [
       {% for user in federation_registry_ams.authorized_users %}
-          "{{ user.username }}" {% if federation_registry_ams.authorized_users|length != loop.index %} , {% endif %} 
+          "{{ user.username }}" {% if federation_registry_ams.authorized_users|length != loop.index %} , {% endif %}
       {% endfor %}
   ]
 }

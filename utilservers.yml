@@ -2,6 +2,7 @@
 #
 ---
 
-- hosts: util
+- name: Configure Util machines
+  hosts: util
   roles:
     - { role: rciam-utils }

@@ -1,34 +1,36 @@
 ---
-
+# cm-role-ui
 - name: Ensure Roles root directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ roles_root_dir }}"
     state: directory
     owner: root
     group: root
-  become: yes
+    mode: "0644"
+  become: true
   tags:
     - cm-role-ui:install
 
 - name: Ensure Roles source is cloned under root directory
-  git:
+  ansible.builtin.git:
     repo: "{{ roles_repo }}"
     dest: "{{ roles_root_dir }}/{{ roles_src }}-{{ roles_version }}"
     version: "{{ roles_version }}"
-    accept_hostkey: yes
-  ignore_errors: yes
-  become: yes
+    accept_hostkey: true
+  # ignore_errors: true
+  failed_when: false # noqa ignore-errors
+  become: true
   tags:
     - cm-role-ui:install
 
 - name: Ensure symbolic link to current Roles installation exists
-  file:
+  ansible.builtin.file:
     src: "{{ roles_root_dir }}/{{ roles_src }}-{{ roles_version }}"
     dest: "{{ roles_path }}"
-    force: yes
+    force: true
     state: link
     owner: root
     group: root
-  become: yes
+  become: true
   tags:
     - cm-role-ui:install

@@ -1,9 +1,8 @@
 # file: postgresql/tasks/main.yml
 #
 ---
-
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
@@ -13,66 +12,67 @@
     - always
 
 - name: Define PostgreSQL version
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_version: "{{ postgresql_default_version }}"
   when: postgresql_version is not defined
   tags:
     - always
 
 - name: Define PostgreSQL configuration path
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_conf_path: "{{ postgresql_default_conf_path }}"
   when: postgresql_conf_path is not defined
   tags:
     - always
 
 - name: Define PostgreSQL data path
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_data_path: "{{ postgresql_default_data_path }}"
   when: postgresql_data_path is not defined
   tags:
     - always
 
 - name: Define PostgreSQL service name
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_service: "{{ postgresql_default_service }}"
   when: postgresql_service is not defined
   tags:
     - always
 
 - name: Define PostgreSQL user
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_user: "{{ postgresql_default_user }}"
   when: postgresql_user is not defined
   tags:
     - always
 
 - name: Define PostgreSQL group
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_group: "{{ postgresql_default_group }}"
   when: postgresql_group is not defined
   tags:
     - always
 
 - name: Define PostgreSQL python module version
-  set_fact:
+  ansible.builtin.set_fact:
     postgresql_psycopg2_package: "{{ postgresql_default_psycopg2_package }}"
   when: postgresql_psycopg2_package is not defined
   tags:
     - always
 
-# Install OS-specific packages
-- include: install-Debian.yml
+- name: Install OS-specific packages
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: install-CentOS.yml
+# - include: install-CentOS.yml
 #  when: ansible_os_family == 'CentOS
 
-# Apply OS-independent configuration
-- include: configure-common.yml
+#
+- name: Apply OS-independent configuration
+  ansible.builtin.include_tasks: configure-common.yml
 
 - name: Ensure PostgreSQL service is started and enabled on boot
-  service:
+  ansible.builtin.service:
     name: "{{ postgresql_service }}"
     state: "started"
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true

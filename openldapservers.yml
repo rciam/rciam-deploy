@@ -1,3 +1,5 @@
-- hosts: openldap
+---
+- name: Deploy openldap
+  hosts: openldap
   roles:
     - { role: openldap }

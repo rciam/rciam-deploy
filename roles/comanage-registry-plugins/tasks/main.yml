@@ -1,36 +1,35 @@
 ---
-
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
   tags:
-  - always
+    - always
 
 - name: Define COmanage Registry Plugins web user
-  set_fact:
-   comanage_registry_plugins_webuser: "{{ comanage_registry_plugins_default_webuser }}"
+  ansible.builtin.set_fact:
+    comanage_registry_plugins_webuser: "{{ comanage_registry_plugins_default_webuser }}"
   when: comanage_registry_plugins_webserver is not defined
   tags:
-   - always
+    - always
 
 # Include installation tasks
 - name: Include Installation tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: install.yml
     apply:
       tags:
         - comanage-registry-plugins:install
-  loop: "{{ comanage_registry_plugins|flatten(levels=1) }}"
+  loop: "{{ comanage_registry_plugins | flatten(levels=1) }}"
   tags:
-  - comanage-registry-plugins:install
+    - comanage-registry-plugins:install
 
 # Include configuration tasks
 - name: Include Configure tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: configure.yml
     apply:
       tags:

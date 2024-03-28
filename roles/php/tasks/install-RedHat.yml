@@ -1,7 +1,6 @@
 ---
-
 - name: Ensure Repositories are installed (RedHat)
-  yum:
+  ansible.builtin.yum:
     name: "{{ item }}"
     state: present
   loop: "{{ php_yum_repositories }}"
@@ -9,7 +8,7 @@
   become: true
 
 - name: Import remi GPG key.
-  rpm_key:
+  ansible.builtin.rpm_key:
     key: "{{ item }}"
     state: present
   loop: "{{ php_yum_keys }}"
@@ -17,11 +16,11 @@
   become: true
 
 - name: Ensure PHP packages are installed (RedHat)
-  yum:
-    enablerepo: "remi,remi-safe,remi-php{{ php_version }}"
+  ansible.builtin.yum:
+    enablerepo: remi,remi-safe,remi-php{{ php_version }}
     name: "{{ item }}"
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
   loop: "{{ php_packages }}"
   when: php_alt_repo and php_yum_repositories is defined and php_yum_repositories|length
@@ -29,10 +28,10 @@
     - restart webserver
 
 - name: Ensure PHP packages are installed (default repo) (RedHat)
-  yum:
+  ansible.builtin.yum:
     name: "{{ item }}"
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
   loop: "{{ php_packages }}"
   when: not php_alt_repo and php_yum_repositories is not defined
@@ -40,11 +39,11 @@
     - restart webserver
 
 - name: Ensure PHP extensions are installed (RedHat)
-  yum:
-    enablerepo: "remi,remi-safe,remi-php{{ php_version }}"
+  ansible.builtin.yum:
+    enablerepo: remi,remi-safe,remi-php{{ php_version }}
     name: "{{ php_extensions }}"
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
   loop: "{{ php_extensions | default([]) }}"
   when: php_alt_repo and php_yum_repositories is defined and php_yum_repositories|length
@@ -52,10 +51,10 @@
     - restart webserver
 
 - name: Ensure PHP extensions are installed (default repo) (RedHat)
-  yum:
+  ansible.builtin.yum:
     name: "{{ php_extensions }}"
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
   loop: "{{ php_extensions | default([]) }}"
   when: not php_alt_repo and php_yum_repositories is not defined

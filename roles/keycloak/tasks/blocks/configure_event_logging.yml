@@ -1,32 +1,32 @@
 ---
 # current_realm_item: is the current realm of the looping of the realms in the configuration
-- block:
-
-  - name: Acquire tokens
-    include_tasks: blocks/helpers/get_tokens.yml
-
-  - name: "Get current event logging configuration of realm: {{ current_realm_item.name }}"
-    uri:
-      url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm_item.name }}/events/config"
-      method: "GET"
-      headers:
-        Authorization: "Bearer {{ tokens.json.access_token }}"
-      status_code: "200"
-    register: current_events_logging
-
-  - set_fact:
-      new_events_logging: "{{ current_events_logging.json | combine(current_realm_item.events_logging , recursive=True ) }}"
-
-  - name: "Update event logging configuration of realm: {{ current_realm_item.name }}"
-    uri:
-      url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm_item.name }}/events/config"
-      method: "PUT"
-      body_format: json
-      body:
-        "{{ new_events_logging }}"
-      headers:
-        Authorization: "Bearer {{ tokens.json.access_token }}"
-      status_code: "204"
-
+# Unnecessary block - use then when in the include_tasks task.``
+- name: Tasks
   when: current_realm_item.events_logging is defined
+  block:
+    - name: Acquire tokens
+      ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
+    - name: "Get current event logging configuration of realm: {{ current_realm_item.name }}"
+      ansible.builtin.uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm_item.name }}/events/config"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        status_code: 200
+      register: current_events_logging
+
+    - name: Set Fact
+      ansible.builtin.set_fact:
+        new_events_logging: "{{ current_events_logging.json | combine(current_realm_item.events_logging, recursive=True) }}"
+
+    - name: "Update event logging configuration of realm: {{ current_realm_item.name }}"
+      ansible.builtin.uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm_item.name }}/events/config"
+        method: PUT
+        body_format: json
+        body:
+          "{{ new_events_logging }}"
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        status_code: 204

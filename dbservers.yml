@@ -1,5 +1,6 @@
 ---
-
-- hosts: db
+# dbservers.yml
+- name: Provision Database servers
+  hosts: db
   roles:
     - postgresql

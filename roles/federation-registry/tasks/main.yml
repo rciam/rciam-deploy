@@ -1,3 +1,5 @@
 ---
-  - include: "{{task}}.yml"
-    become: yes
+# this has got to be the weirdest way I've seen tasks included.
+- name: "Include {{ task }}"
+  ansible.builtin.include_tasks: "{{ task }}.yml"
+    # become: true

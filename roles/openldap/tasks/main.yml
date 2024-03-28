@@ -1,24 +1,27 @@
 ---
 # tasks file for ansible-openldap
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
 
-- include: install-Debian.yml
-  when: ansible_os_family == "Debian"
+- name: Install Debian
+  ansible.builtin.include_tasks: install-Debian.yml
+  when: ansible_os_family == 'Debian'
   tags:
     - install
     - openldap:install
 
-- include: configure.yml
+- name: Configure
+  ansible.builtin.include_tasks: configure.yml
   tags:
     - config
     - openldap:config
 
-- include: populate.yml
+- name: Populate
+  ansible.builtin.include_tasks: populate.yml
   tags:
     - openldap:populate

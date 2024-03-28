@@ -1,9 +1,8 @@
 ---
-
 - name: Ensure that the vm has java 11
-  apt:
+  ansible.builtin.apt:
     name: openjdk-11-jdk
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true

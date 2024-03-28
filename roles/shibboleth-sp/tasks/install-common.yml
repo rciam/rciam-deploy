@@ -1,11 +1,12 @@
 ---
 - name: Ensure required Shibboleth SP dirs exist
-  file: 
+  ansible.builtin.file:
     path: "{{ shibboleth_sp_conf_path }}/{{ item }}"
     state: directory
     owner: "{{ shibboleth_sp_user }}"
     group: "{{ shibboleth_sp_group }}"
+    mode: "0755"
   with_items:
     - metadata
     - cert
-  become: yes
+  become: true

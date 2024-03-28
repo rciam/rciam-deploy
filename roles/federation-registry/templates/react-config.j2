@@ -1,7 +1,7 @@
 {
   "host": {
     {% for tenant in federation_registry_tenant_config %}
-      "{{ tenant.name }}":"{{tenant.backend_uri}}" {% if federation_registry_tenant_config|length != loop.index %} , {% endif %} 
+      "{{ tenant.name }}":"{{tenant.backend_uri}}" {% if federation_registry_tenant_config|length != loop.index %} , {% endif %}
     {% endfor %}
   },
   "basename": "{{federation_registry_react_base_url}}"

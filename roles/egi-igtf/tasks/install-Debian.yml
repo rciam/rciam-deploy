@@ -1,19 +1,19 @@
 ---
 - name: Ensure EUGridPMA apt key is installed (Debian)
-  apt_key: 
+  ansible.builtin.apt_key:
     url: "{{ egi_igtf_repo_key_url }}"
-    state: present 
-  become: yes
+    state: present
+  become: true
 
 - name: Ensure EGI Trust Anchor repository is included (Debian)
-  apt_repository: 
-    repo: "deb {{ egi_igtf_repo_url }} egi-igtf {{ egi_igtf_components }}" 
-    state: present 
-  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb {{ egi_igtf_repo_url }} egi-igtf {{ egi_igtf_components }}"
+    state: present
+  become: true
 
 - name: Ensure latest versions of EGI Trust Anchors are installed (Debian)
-  apt:
-    name: ca-policy-egi-core
-    state: latest
-    update_cache: yes
-  become: yes
+  ansible.builtin.apt:
+    name: ca-policy-egi-core # This really needs a version attached to it!
+    state: present
+    update_cache: true
+  become: true

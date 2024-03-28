@@ -1,3 +1,2 @@
 ---
-
-common_set_tz_cmd: "dpkg-reconfigure --frontend noninteractive tzdata"
+common_set_tz_cmd: dpkg-reconfigure --frontend noninteractive tzdata

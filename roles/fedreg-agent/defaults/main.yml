@@ -17,9 +17,9 @@ fedreg_agent_registry_requirements_url: "https://raw.githubusercontent.com/rciam
 # Service
 fedreg_agent_services_path: /etc/systemd/system
 fedreg_agent_log_conf: "{{ fedreg_agent_conf_dir }}/logger.conf"
-fedreg_agent_enable_ssp: no
-fedreg_agent_enable_mitreid: no
-fedreg_agent_enable_keycloak: no
+fedreg_agent_enable_ssp: false
+fedreg_agent_enable_mitreid: false
+fedreg_agent_enable_keycloak: false
 
 ## Federation registry agent parameters
 # fedreg_agent_ams:

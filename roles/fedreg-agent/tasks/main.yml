@@ -1,12 +1,10 @@
 ---
 # tasks file for fedreg-agent
-
 - name: Configuration tasks
-  include: "configure-common.yml"
+  ansible.builtin.include_tasks: "configure-common.yml"
 
 - name: Deploy tasks
-  include: "deploy.yml"
+  ansible.builtin.include_tasks: "deploy.yml"
 
 - name: Setup services
-  include: "services.yml"
-
+  ansible.builtin.include_tasks: "services.yml"

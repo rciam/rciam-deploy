@@ -1,8 +1,7 @@
 # file: cmrolesuiservers.yml
-
 ---
-
-- hosts: registry
+- name: Deploy Comanage registry UI
+  hosts: registry
   roles:
     - { role: git, tags: git }
     - { role: apache, tags: apache }

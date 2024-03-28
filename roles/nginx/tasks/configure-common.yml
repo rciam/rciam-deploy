@@ -1,58 +1,57 @@
 # file: nginx/tasks/configure-common.yml
 #
 ---
-
-- name: Ensure file with custom DH parameters for DHE ciphers exists
-  shell: openssl dhparam -dsaparam -out {{ nginx_dhparam_file }} {{ nginx_dhparam_size }}
+- name: Ensure file with custom DH parameters for DHE ciphers exists # noqa command-instead-of-shell
+  ansible.builtin.shell: openssl dhparam -dsaparam -out {{ nginx_dhparam_file }} {{ nginx_dhparam_size }}
   args:
     chdir: "{{ nginx_conf_path }}"
     creates: "{{ nginx_conf_path }}/{{ nginx_dhparam_file }}"
-  become: yes
+  become: true
   notify: Restart nginx
   when: nginx_dhparam_file is defined
 
 - name: Ensure nginx service is configured
-  template:
+  ansible.builtin.template:
     src: nginx-{{ ansible_os_family }}.conf.j2
     dest: "{{ nginx_conf_path }}/nginx.conf"
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-  become: yes
+    mode: "0644"
+    backup: true
+  become: true
   notify: Restart nginx
 
 - name: Disable default nginx Virtual Host configuration
-  file:
+  ansible.builtin.file:
     path: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_default_vhost_filename }}"
     state: absent
-  become: yes
+  become: true
   notify: Restart nginx
   when: nginx_remove_default_vhost
 
-# Configure nginx Virtual Host SSL certificates
-- include: configure-ssl-cert.yml
+- name: Configure nginx Virtual Host SSL certificates
+  ansible.builtin.include_tasks: configure-ssl-cert.yml
   when: nginx_vhosts is defined
   tags:
     - nginx:config:cert
 
 - name: Add nginx Virtual Host configuration
-  template:
+  ansible.builtin.template:
     src: "vhosts.conf.j2"
     dest: "{{ nginx_conf_path }}/sites-available/{{ nginx_vhosts_filename }}"
     owner: root
     group: root
-    mode: 0644
-    backup: yes
-  become: yes
+    mode: "0644"
+    backup: true
+  become: true
   notify: Restart nginx
   when: nginx_create_vhosts
 
 - name: Enable nginx Virtual Host configuration
-  file:
+  ansible.builtin.file:
     src: "{{ nginx_conf_path }}/sites-available/{{ nginx_vhosts_filename }}"
     dest: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_vhosts_filename }}"
     state: link
-  become: yes
+  become: true
   notify: Restart nginx
   when: nginx_create_vhosts

@@ -1,10 +1,7 @@
 ---
-
-
-- name: restart webserver
-  service:
+# ssp-modules/handlers/main.yml
+- name: Restart webserver
+  ansible.builtin.service:
     name: "{{ ssp_webserver }}"
     state: restarted
-  become: yes
-
-
+  become: true

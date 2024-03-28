@@ -1,8 +1,8 @@
 ---
 
-ssp_default_webserver: "httpd"
-ssp_default_webuser: "apache"
-ssp_default_webgroup: "apache"
+ssp_default_webserver: httpd
+ssp_default_webuser: apache
+ssp_default_webgroup: apache
 
 ssp_default_mod_cron_deps:
-  - "curl"
+  - curl

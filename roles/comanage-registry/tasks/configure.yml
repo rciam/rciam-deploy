@@ -1,51 +1,51 @@
 ---
-
 - name: Configure COmanage Registry database connections
-  template:
-    src: "database.php.j2"
+  ansible.builtin.template:
+    src: database.php.j2
     dest: "{{ comanage_path }}/local/Config/database.php"
     owner: "{{ comanage_webserver_user }}"
     group: "{{ comanage_webserver_group }}"
-    mode: 0600
-    backup: yes
-  become: yes
+    mode: "0600"
+    backup: true
+  become: true
   tags:
-  - comanage-registry:config:db
+    - comanage-registry:config:db
 
 - name: Configure COmanage Registry email settings
-  template:
-    src: "email.php.j2"
+  ansible.builtin.template:
+    src: email.php.j2
     dest: "{{ comanage_path }}/local/Config/email.php"
     owner: "{{ comanage_webserver_user }}"
     group: "{{ comanage_webserver_group }}"
-    mode: 0600
-    backup: yes
-  become: yes
+    mode: "0600"
+    backup: true
+  become: true
   tags:
-  - comanage-registry:config:email
+    - comanage-registry:config:email
 
 - name: Configure COmanage Registry ldap entitlement settings
-  template:
-    src: "ldap.php.j2"
+  ansible.builtin.template:
+    src: ldap.php.j2
     dest: "{{ comanage_path }}/local/Config/ldap.php"
     owner: "{{ comanage_webserver_user }}"
     group: "{{ comanage_webserver_group }}"
-    mode: 0600
-    backup: yes
-  become: yes
+    mode: "0600"
+    backup: true
+  become: true
   tags:
-  - comanage-registry:config:ldap
+    - comanage-registry:config:ldap
 
 # Seed: cat /dev/urandom | tr -dc '0-9' | fold -w 29 | head -n 1 | xargs echo -n
 # Salt: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1 | xargs echo -n
 - name: Configure COmanage Registry security.salt and security.seed
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ comanage_path }}/local/Config/{{ item }}"
     owner: "{{ comanage_webserver_user }}"
     group: "{{ comanage_webserver_group }}"
-    backup: yes
-  become: yes
+    mode: "0600"
+    backup: true
+  become: true
   loop:
     - security.salt
     - security.seed
@@ -53,82 +53,84 @@
     - comanage-registry:config:security
 
 - name: Configure COmanage Registry app/webroot/.htaccess
-  blockinfile:
+  ansible.builtin.blockinfile:
     dest: "{{ comanage_path }}/app/webroot/.htaccess"
-    backup: yes
+    backup: true
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
-    insertafter: "EOF"
+    insertafter: EOF
     block: "{{ comanage_app_webroot_htaccess }}"
   when: comanage_app_webroot_htaccess is defined
-  become: yes
+  become: true
   tags:
-  - comanage-registry:config:webroot
+    - comanage-registry:config:webroot
 
 - name: Configure COmanage Registry auth session name
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ item }}"
-    regexp: "^session_name"
-    line: 'session_name("{{ comanage_session_name }}");'
+    regexp: ^session_name
+    line: session_name("{{ comanage_session_name }}");
   with_items:
-     - "{{ comanage_path }}/app/webroot/auth/login/index.php"
-     - "{{ comanage_path }}/app/webroot/auth/logout/index.php"
-  become: yes
+    - "{{ comanage_path }}/app/webroot/auth/login/index.php"
+    - "{{ comanage_path }}/app/webroot/auth/logout/index.php"
+  become: true
   tags:
-  - comanage-registry:config:webroot
+    - comanage-registry:config:webroot
 
 - name: Configure COmanage Registry logout location
-  replace:
+  ansible.builtin.replace:
     dest: "{{ comanage_path }}/app/webroot/auth/logout/index.php"
-    backup: yes
-    regexp: '\/registry\/users\/logout'
+    backup: true
+    regexp: \/registry\/users\/logout
     replace: "{{ comanage_logout_location }}"
   when: comanage_logout_location is defined
-  become: yes
+  become: true
   tags:
-  - comanage-registry:config:webroot
+    - comanage-registry:config:webroot
 
 - name: Configure COmanage Registry timezone cookie name
-  replace:
+  ansible.builtin.replace:
     dest: "{{ item }}"
-    backup: yes
-    regexp: "cm_registry_tz_auto"
+    backup: true
+    regexp: cm_registry_tz_auto
     replace: "{{ comanage_timezone_cookie_name }}"
   with_items:
-     - "{{ comanage_path }}/app/Controller/AppController.php"
-     - "{{ comanage_path }}/app/View/Layouts/default.ctp"
-     - "{{ comanage_path }}/app/View/Layouts/lightbox.ctp"
+    - "{{ comanage_path }}/app/Controller/AppController.php"
+    - "{{ comanage_path }}/app/View/Layouts/default.ctp"
+    - "{{ comanage_path }}/app/View/Layouts/lightbox.ctp"
   when: comanage_timezone_cookie_name is defined
-  become: yes
+  become: true
 
 # According to COmanage this is not a mandatory step for the setup
 - name: Configure COmanage Registry core.php
-  template:
-    src: "core.php.j2"
+  ansible.builtin.template:
+    src: core.php.j2
     dest: "{{ comanage_path }}/app/Config/core.php"
     owner: root
     group: root
-    backup: yes
-  become: yes
+    backup: true
+    mode: "0600"
+  become: true
   tags:
-  - comanage-registry:config:core
+    - comanage-registry:config:core
 
 - name: Configure COmanage Registry bootstrap.php
-  template:
-    src: "bootstrap.php.j2"
+  ansible.builtin.template:
+    src: bootstrap.php.j2
     dest: "{{ comanage_path }}/app/Config/bootstrap.php"
     owner: root
     group: root
-    backup: yes
-  become: yes
+    mode: "0600"
+    backup: true
+  become: true
   tags:
-  - comanage-registry:config:bootstrap
+    - comanage-registry:config:bootstrap
 
 - name: Add ENV vars in cron.d file
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     job: "{{ item.job }}"
     user: "{{ item.user }}"
-    env: yes
+    env: true
     cron_file: "{{ item.filename }}"
     state: present
   loop: "{{ comanage_cron_env | default([]) }}"
@@ -136,7 +138,7 @@
   when: comanage_cron_env is defined and comanage_cron_jobs is defined and comanage_cron_jobs_enabled
 
 - name: Ensure COmanage Registry cron jobs are installed
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.name }}"
     minute: "{{ item.minute | default(omit) }}"
     hour: "{{ item.hour | default(omit) }}"
@@ -153,10 +155,10 @@
 
 # Tasks adding/copying/replacing files
 - name: Update/Copy tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: static_files.yml
     apply:
       tags:
-      - comanage-registry:config:staticfiles
+        - comanage-registry:config:staticfiles
   tags:
-  - comanage-registry:config:staticfiles
+    - comanage-registry:config:staticfiles

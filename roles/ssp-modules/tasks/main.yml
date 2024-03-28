@@ -1,18 +1,17 @@
 ---
-
-
+# ssp-modules/tasks/main.yml
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
   tags:
     - always
 
-# Install OS-specific packages
-- include: install-common-Ubuntu.yml
+- name: Install OS-specific packages
+  ansible.builtin.include_tasks: install-common-Ubuntu.yml
   when: ansible_os_family == 'Debian' and ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'focal'
   tags:
     - install
@@ -20,22 +19,22 @@
     - ssp:install:mods
     - ssp-modules:install
 
-# Run OS-independent installation tasks
-- include: install-common.yml
+- name: Run OS-independent installation tasks
+  ansible.builtin.include_tasks: install-common.yml
   tags:
     - install
     - ssp:install
     - ssp:install:mods
     - ssp-modules:install
 
-# Run OS-independent installation tasks
-- include: install-db.yml
+- name: Run OS-independent installation tasks
+  ansible.builtin.include_tasks: install-db.yml
   tags:
     - never
     - ssp-modules:install:db
 
-# Apply OS-independent configuration
-- include: configure-common.yml
+- name: Apply OS-independent configuration
+  ansible.builtin.include_tasks: configure-common.yml
   tags:
     - config
     - ssp:config

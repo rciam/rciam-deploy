@@ -1,35 +1,34 @@
 ---
 # tasks file for fedreg-agent
-
 - name: Install basic common utils
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
-    state: latest
+    state: preset
   loop:
     - git
     - python3-pip
-  become: yes
+  become: true
   tags:
     - agent
     - basic_common_utils
 
 - name: Upgrade pip3
-  pip:
+  ansible.builtin.pip:
     name: pip
-    state: latest
+    state: present
     extra_args: --upgrade --user
     executable: pip3
-  become: yes
+  become: true
   tags:
     - agent
     - python
 
 - name: Install Virtualenv via pip3
-  pip:
+  ansible.builtin.pip:
     name: virtualenv
-    state: latest
+    state: present
     executable: pip3
-  become: yes
+  become: true
   tags:
     - agent
     - python

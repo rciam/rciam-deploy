@@ -1,8 +1,9 @@
 # file: orcid2samlservers.yml
-# 
+#
 ---
 
-- hosts: orcid2saml
+- name: Deploy ORCID 2 SAML hosts
+  hosts: orcid2saml
   roles:
     # - { role: apache, tags: apache }
     # - { role: php, tags: php }

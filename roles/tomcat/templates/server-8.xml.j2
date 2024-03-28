@@ -72,7 +72,7 @@
          Define a non-SSL HTTP/1.1 Connector on port 8080
     -->
 {% for connector in tomcat_connectors %}
-    <Connector port="{{ connector.port }}" 
+    <Connector port="{{ connector.port }}"
                protocol="{{ connector.protocol }}"
 {% if connector.address is defined %}
                address="{{ connector.address }}"

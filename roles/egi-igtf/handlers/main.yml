@@ -1,0 +1,4 @@
+- name: Update /etc/ssl/certs and certificates.crt with EGI Trust Anchors (Debian) # noqa no-changed-when
+  ansible.builtin.command: "/usr/sbin/update-ca-certificates -f"
+  become: true
+  listen: Update certs

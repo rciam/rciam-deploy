@@ -1,32 +1,42 @@
 ---
 - name: Stop PostgreSQL
-  service:
+  ansible.builtin.service:
     name: "{{ postgresql_service }}"
     state: "stopped"
-  become: yes
+  become: true
 
 - name: Remove PostgreSQL data dir
-  file: 
+  ansible.builtin.file:
     path: "{{ postgresql_data_path }}/main"
     state: absent
-  become: yes
+  become: true
 
 - name: Take base backup of PostgreSQL database
-  shell: "{{ item }}"
+  ansible.builtin.shell: "{{ item }}" # noqa command-instead-of-shell
   environment:
     PGPASSWORD: "{{ postgresql_replication_password }}"
-  become: yes
+  become: true
   become_user: "{{ postgresql_user }}"
+  changed_when: false
   with_items:
-    - pg_basebackup -h {{ postgresql_master_host }} -p {{  postgresql_master_port }} -D {{ postgresql_data_path }}/main -U {{ postgresql_replication_user }} -X stream -R
+    - |-
+      pg_basebackup \
+        -h {{ postgresql_master_host }} \
+        -p {{  postgresql_master_port }} \
+        -D {{ postgresql_data_path }}/main \
+        -U {{ postgresql_replication_user }} \
+        -X stream \
+        -R
     - sleep 15
+# sleep should be a wait_for task after this one
+
 
 - name: Configure PostgreSQL replication
-  template: 
-    src: recovery.conf.j2 
+  ansible.builtin.template:
+    src: recovery.conf.j2
     dest: "{{ postgresql_data_path }}/main/recovery.conf"
     owner: "{{ postgresql_user }}"
     group: "{{ postgresql_group }}"
-    mode: 0640
-  become: yes
+    mode: "0640"
+  become: true
   when: postgresql_version is version('12', '<')

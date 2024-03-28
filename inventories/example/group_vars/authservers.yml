@@ -16,7 +16,7 @@ ssp_alias: proxy
 
 # Select where to store session information:
 # `phpsession` Uses the built-in session management in PHP (default).
-# `memcache`   Uses memcached to cache sessions in memory. 
+# `memcache`   Uses memcached to cache sessions in memory.
 #              Sessions can be distributed and replicated among several
 #              memcached servers, enabling both load-balancing and fail-over.
 # `sql`        Stores session information in a SQL database (WIP).
@@ -74,7 +74,7 @@ ssp_authsources_saml:
     # Whether logout requests and logout responses received received by
     # this SP should be validated. Default is false.
     redirect_validate: true
-    # Whether to sign authentication requests sent from this SP. Default is 
+    # Whether to sign authentication requests sent from this SP. Default is
     # false.
     sign_authnrequest: true
     # Whether to sign logout messages sent from this SP. Default is false.
@@ -118,7 +118,7 @@ ssp_authsources_saml:
         attribute_values:
           - "http://www.geant.net/uri/dataprotection-code-of-conduct/v1"
           - "http://refeds.org/category/research-and-scholarship"
-    # Optional list of contacts in addition to the technical contact configured 
+    # Optional list of contacts in addition to the technical contact configured
     # through config/config.php
     contacts:
       # The type of contact. The possible values are `technical`, `support`,
@@ -136,7 +136,7 @@ ssp_authsources_saml:
         #telephone_numbers: "+31(0)12345678"
     # List of attributes this SP requests from the IdP. This list will be added
     # to the generated metadata.
-    # The attributes will be added without a `NameFormat` by default. Use the 
+    # The attributes will be added without a `NameFormat` by default. Use the
     # name_format option to specify the `NameFormat` for the attributes.
     attributes:
       name_format: "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
@@ -153,7 +153,7 @@ ssp_authsources_saml:
         mail: "urn:oid:0.9.2342.19200300.100.1.3"
         #eduPersonEntitlement: "urn:oid:1.3.6.1.4.1.5923.1.1.1.7"
         #eduPersonAssurance: "urn:oid:1.3.6.1.4.1.5923.1.1.1.11"
-    # The format of the NameID we request from the IdP. Defaults to the 
+    # The format of the NameID we request from the IdP. Defaults to the
     # transient format if unspecified.
     #name_id_policy: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
 
@@ -165,7 +165,7 @@ ssp_idp_shib13_enabled: false
 # Hosted IdP metadata
 ssp_idp_hosts:
   # The entity ID should be a URI. It can also be specified as `__DYNAMIC:1__`,
-  # `__DYNAMIC:2__`, ... in which case, the entity ID will be generated 
+  # `__DYNAMIC:2__`, ... in which case, the entity ID will be generated
   # automatically.
   - entity_id: "__DYNAMIC:1__"
     # The hostname for this IdP. One of the IdPs can also have its `host` set
@@ -189,7 +189,7 @@ ssp_idp_hosts:
     redirect_validate: true
     # The authentication source to be used to authenticate users on this IdP.
     auth: sso
-    # Optional list of contacts in addition to the technical contact configured 
+    # Optional list of contacts in addition to the technical contact configured
     # through config/config.php
     contacts:
       # The type of contact. The possible values are `technical`, `support`,
@@ -205,20 +205,20 @@ ssp_idp_hosts:
         email_address: "bob.builder@aai.example.eu"
         # Optional telephone number of the contact person.
         #telephone_numbers: "+31(0)12345678"
-    # A list with scopes for this IdP. The scopes will be added to the 
+    # A list with scopes for this IdP. The scopes will be added to the
     # generated XML metadata. A scope can either be a domain name or a regular
     # expression matching a number of domains.
     scopes:
       - example.eu
     # Localised names of the organisation responsible for this IdP.
-    organization_name: 
+    organization_name:
       en: Example.eu
     # Localised user-friendly names of the organisation responsible for this
     # IdP.
-    organization_display_name: 
+    organization_display_name:
       en: Example.eu
     # Localised URLs of the organisation responsible for this IdP.
-    organization_url: 
+    organization_url:
       en: "https://www.example.eu/"
     # SAML V2.0 Metadata Extensions for Login and Discovery
     # UIInfo Items
@@ -255,7 +255,7 @@ ssp_idp_hosts:
     privacy_statement_url:
       en: "https://aai.example.eu/privacy/en"
     # DiscoHints items
-    # List of IPv4 and IPv6 addresses in CIDR notation serviced by or 
+    # List of IPv4 and IPv6 addresses in CIDR notation serviced by or
     # associated with this IdP.
     #ip_hints:
     #  - "83.212.96.0/19"
@@ -286,41 +286,41 @@ ssp_idp_hosts:
     # from authentication sources.
     authproc:
       - "89":
-          # Maps attribute OIDs to names. 
+          # Maps attribute OIDs to names.
           class: "core:AttributeMap"
           oid2name:
       - "90":
           # Requires `consent` in `ssp_mods_enabled`.
           class: "consent:Consent"
-          # The Consent storage backend. Currently only `consent:Cookie` is 
+          # The Consent storage backend. Currently only `consent:Cookie` is
           # supported. This option is optional. If omitted, the user is still
           # asked to consent, but the decision is not saved.
           store: "consent:Cookie"
           # Optional flag that indicates whether the values of the attributes
           # should be used in calculating the unique hashes that identify the
-          # consent. If includeValues is set and the value of an attribute 
+          # consent. If includeValues is set and the value of an attribute
           # changes, then the consent becomes invalid. Defaults to false.
           includeValues: true
-          # Optional flag that indicates whether the "Remember" consent 
+          # Optional flag that indicates whether the "Remember" consent
           # checkbox is checkd by default. Defaults to false.
           #checked: false
           # Indicates whether the "Yes" or "No" button is in fucus by default.
-          # This option is optional and can take the value 'yes' or 'no'. 
+          # This option is optional and can take the value 'yes' or 'no'.
           # If omitted, neither will recive focus.
           focus: "no"
           # Optional list of attributes whose values should be hidden.
           # Default behaviour is that all attribute values are shown.
           #hiddenAttributes:
       - "91":
-          # Maps attribute names to OIDs. 
+          # Maps attribute names to OIDs.
           # Usually combined with SAML:2.0:attrname-format:uri
           class: "core:AttributeMap"
           name2oid:
     extra_parameters: |
       'attributeencodings' => array(
           // eduPersonTargetedID with oid NameFormat.
-          'urn:oid:1.3.6.1.4.1.5923.1.1.1.10' => 'raw', 
-      ), 
+          'urn:oid:1.3.6.1.4.1.5923.1.1.1.10' => 'raw',
+      ),
 
 # List of SSP modules to enable
 ssp_mods_enabled:
@@ -329,11 +329,11 @@ ssp_mods_enabled:
   - discopower
   - consent
   - smartattributes
-  - memcacheMonitor 
+  - memcacheMonitor
   #- authfacebook
 
 # Configuration options for automated SAML metadata management.
-# Requires `metarefresh` and `cron` modules in `ssp_mods_enabled`.  
+# Requires `metarefresh` and `cron` modules in `ssp_mods_enabled`.
 #
 # Global blacklist: Optional list of entityIDs that should be excluded from ALL
 # metadata sets.
@@ -349,7 +349,7 @@ ssp_mod_metarefresh_sets:
     sources:
       # The URL where the metadata will be fetched from.
       - url: "https://md.aai.example.eu/aggregates/edugain-metadata.xml"
-        # The fingerprint of the certificate used to sign the metadata. 
+        # The fingerprint of the certificate used to sign the metadata.
         # You can omit this option if you don't want to validate the signature
         # on the metadata.
         #validate_fingerprint: "59:1D:4B:46:70:46:3E:ED:A9:1F:CC:81:6D:C0:AF:2A:09:2A:A8:01"
@@ -411,4 +411,3 @@ apache_vhosts_ssl:
       <Directory {{ ssp_path }}/www>
         Require all granted
       </Directory>
-

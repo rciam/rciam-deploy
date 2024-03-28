@@ -8,17 +8,18 @@
 
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- set_fact:
+- name: Keycloak | roles | clients | set fact
+  ansible.builtin.set_fact:
     body: "{{ client_roles | json_query(query) | default([]) }}"
   vars:
-    query: "{% if client_default_role_mode=='add' %}[?contains(`{{ realm_and_client_roles[1].add | to_json }}`, name)]{% elif client_default_role_mode=='remove' %}[?contains(`{{ realm_and_client_roles[1].remove | to_json }}`, name)]{% endif %}"
+    query: "{% if client_default_role_mode == 'add' %}[?contains(`{{ realm_and_client_roles[1].add | to_json }}`, name )]{% elif client_default_role_mode == 'remove' %}[?contains(`{{ realm_and_client_roles[1].remove | to_json }}`, name )]{% endif %}" # noqa yaml[line-length]
 
-- name: "{{ client_default_role_mode }} default-roles in realm {{ realm_and_client_roles[0].name }}"
-  uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ realm_and_client_roles[0].name }}/roles/default-roles-{{ realm_and_client_roles[0].name | lower }}/composites"
-    method: "{% if client_default_role_mode=='add' %}POST{% elif client_default_role_mode=='remove' %}DELETE{% endif %}"
+- name: "{{ client_default_role_mode }} default-roles in realm {{ realm_and_client_roles[0].name }}" # noqa name[template]
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ realm_and_client_roles[0].name }}/roles/default-roles-{{ realm_and_client_roles[0].name | lower }}/composites" # noqa yaml[line-length]
+    method: "{% if client_default_role_mode == 'add' %}POST{% elif client_default_role_mode == 'remove' %}DELETE{% endif %}"
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"

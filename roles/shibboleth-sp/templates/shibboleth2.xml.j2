@@ -60,7 +60,7 @@
     <RequestMapper type="Native">
         <RequestMap applicationId="default">
 {% for host in shibboleth_sp_request_mapper %}
-        <Host name="{{ host.name }}" 
+        <Host name="{{ host.name }}"
 {% if host.applicationId is defined %}
             applicationId="{{ host.applicationId }}"
 {% endif %}
@@ -83,7 +83,7 @@
     To customize behavior for specific resources on Apache, and to link vhosts or
     resources to ApplicationOverride settings below, use web server options/commands.
     See https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPConfigurationElements for help.
-    
+
     For examples with the RequestMap XML syntax instead, see the example-shibboleth2.xml
     file, and the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapHowTo topic.
     -->
@@ -106,10 +106,10 @@
         Note that while we default checkAddress to "false", this has a negative impact on the
         security of your site. Stealing sessions via cookie theft is much easier with this disabled.
         -->
-        <Sessions lifetime="{{ shibboleth_sp_session.lifetime }}" 
-                  timeout="{{ shibboleth_sp_session.timeout }}" 
+        <Sessions lifetime="{{ shibboleth_sp_session.lifetime }}"
+                  timeout="{{ shibboleth_sp_session.timeout }}"
                   relayState="{{ shibboleth_sp_session.relay_state }}"
-                  checkAddress="{{ shibboleth_sp_session.check_address }}" 
+                  checkAddress="{{ shibboleth_sp_session.check_address }}"
 {% if shibboleth_sp_session.consistent_address is defined %}
                   consistentAddress="{{ shibboleth_sp_session.consistent_address }}"
 {% endif %}
@@ -136,7 +136,7 @@
             You can also override entityID on /Login query string, or in RequestMap/htaccess.
             See https://wiki.shibboleth.net/confluence/display/SP3/SSO
             -->
-            <SSO 
+            <SSO
 {% if shibboleth_sp_sso.entity_id is defined %}
                 entityID="{{ shibboleth_sp_sso.entity_id }}"
 {% endif %}
@@ -152,7 +152,7 @@
 
             <!-- SAML and local-only logout. -->
             <Logout>{{ shibboleth_sp_logout.protocols }}</Logout>
-            
+
 {% for handler in shibboleth_sp_handlers | default([]) %}
             <Handler type="{{ handler.type }}" Location="{{ handler.location }}"
 {% if handler.signing is defined %}
@@ -176,9 +176,9 @@
         <Errors supportContact="{{ shibboleth_sp_supportcontact_email }}"
             helpLocation="/about.html"
             styleSheet="/shibboleth-sp/main.css"/>
-        
+
 {% for metadata in shibboleth_sp_metadata_providers %}
-        <MetadataProvider type="XML" 
+        <MetadataProvider type="XML"
 {% if metadata.uri is defined %}
 {% if shibboleth_sp_version is version('3.0', '>=') %}
             url="{{ metadata.uri }}"
@@ -187,7 +187,7 @@
 {% endif %}
 {% endif %}
 {% if metadata.backing_file_path is defined %}
-            backingFilePath="{{ metadata.backing_file_path }}" 
+            backingFilePath="{{ metadata.backing_file_path }}"
 {% endif %}
 {% if metadata.reload_interval is defined %}
             reloadInterval="{{ metadata.reload_interval }}"
@@ -208,7 +208,7 @@
 {% endfor %}
 
 {% for resolver in shibboleth_sp_attribute_resolvers %}
-        <AttributeResolver type="{{ resolver.type }}" 
+        <AttributeResolver type="{{ resolver.type }}"
 {% if resolver.subject_match is defined %}
             subjectMatch="{{ resolver.subject_match }}"
 {% endif %}
@@ -299,7 +299,7 @@
 {% endfor %}
 {% endif %}
     </ApplicationDefaults>
-    
+
     <!-- Policies that determine how to process and authenticate runtime messages. -->
     <SecurityPolicyProvider type="XML" validate="true" path="security-policy.xml"/>
 

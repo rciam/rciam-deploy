@@ -1,21 +1,33 @@
 ---
 
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Configuring IdP: {{ item[1].alias }} Get current IdPs list for realm: {{ item[0].name }}"
-  include_tasks: blocks/helpers/get_realm_idps_list.yml
+- name: "Configuring IdP: {{ item[1].alias }} Get current IdPs list for realm: {{ item[0].name }}" # noqa name[template]
+  ansible.builtin.include_tasks: blocks/helpers/get_realm_idps_list.yml
 
-- set_fact:
+- name: Set new idp fact
+  ansible.builtin.set_fact:
     new_idp: "{% if item[1].alias not in idps_list %}true{% else %}false{% endif %}"
 
-- name: "{% if new_idp %}Add{% else %}Update{% endif %} idp: {{ item[1].alias }}"
-  uri:
+- name: "Add idp: {{ item[1].alias }}"
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{ item[1].alias }}{% endif %}"
-    method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
+    method: POST
     body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    body:
-      "{{ item[1] }}"
-    status_code: "{% if new_idp %}201{% else %}204{% endif %}"
+    body: "{{ item[1] }}"
+    status_code: 201
+  when: new_idp
+
+- name: "Update idp: {{ item[1].alias }}"
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{ item[1].alias }}{% endif %}"
+    method: PUT
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ item[1] }}"
+    status_code: 204
+  when: not new_idp

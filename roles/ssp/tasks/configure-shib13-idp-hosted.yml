@@ -1,15 +1,15 @@
 ---
-
 - name: Configure SSP hosted SAML 1.1 IdP metadata
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ ssp_metadatadir }}/shib13-idp-hosted.php"
-    backup: yes
-    force: yes
+    backup: true
+    force: true
+    mode: "0600"
   with_first_found:
-    - "metadata/shib13-idp-hosted-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2"
-    - "metadata/shib13-idp-hosted-{{ ssp_major_version }}.php.j2"
-    - "metadata/shib13-idp-hosted.php.j2"
-  become: yes
+    - metadata/shib13-idp-hosted-{{ ssp_major_version }}.{{ ssp_minor_version }}.php.j2
+    - metadata/shib13-idp-hosted-{{ ssp_major_version }}.php.j2
+    - metadata/shib13-idp-hosted.php.j2
+  become: true
   tags:
     - ssp:config:shib13-idp-hosted

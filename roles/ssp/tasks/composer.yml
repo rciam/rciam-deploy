@@ -1,77 +1,91 @@
 ---
-
 - name: Create installation directory for composer
-  file:
+  ansible.builtin.file:
     state: directory
-    path: '{{ ssp_composer_install_directory }}'
-  become: yes
+    path: "{{ ssp_composer_install_directory }}"
+    mode: "0644"
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer
 
-- name: check if exist composer executable exists
-  stat:
+- name: Check if exist composer executable exists
+  ansible.builtin.stat:
     path: "{{ ssp_composer_executable }}"
   register: composer_exists
-  become: yes
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer
 
-- name: Download composer
+# Use uri here
+- name: Download composer # noqa command-instead-of-module no-changed-when
   ansible.builtin.command: curl -sS https://getcomposer.org/installer -o composer-setup.php
   args:
-    chdir: '{{ ssp_composer_install_directory }}'
-  when: composer_exists.stat.exists == False
-  become: yes
+    chdir: "{{ ssp_composer_install_directory }}"
+  when: not composer_exists.stat.exists
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer
+  creates: "{{ ssp_composer_install_directory }}/composer-setup.php"
 
-- name: Generate composer hash
+# Use uri here
+- name: Generate composer hash # noqa command-instead-of-module
   ansible.builtin.command: curl -sS https://composer.github.io/installer.sig
   register: composerhash
-  when: composer_exists.stat.exists == False
-  become: yes
+  when: not composer_exists.stat.exists
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer
+  changed_when: false # noqa no-changed-when
 
 - name: Print composer hash
   ansible.builtin.debug:
     msg: "Composer hash is: {{ composerhash.stdout }}"
   when: composerhash.stdout is defined
-  become: yes
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer
 
-- name: Verify composer
-  command: php -r "if (hash_file('SHA384', 'composer-setup.php') === '{{ composerhash.stdout }}') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+- name: Verify composer # noqa command-instead-of-module
+  ansible.builtin.command: |-
+    php -r \
+      "if (hash_file('SHA384', 'composer-setup.php') === '{{ composerhash.stdout }}') \
+        { echo 'Installer verified'; }  \
+      else \
+      { echo 'Installer corrupt'; unlink('composer-setup.php'); } \
+      echo PHP_EOL;"
   args:
-    chdir: '{{ ssp_composer_install_directory }}'
-  when: composer_exists.stat.exists == False
-  become: yes
+    chdir: "{{ ssp_composer_install_directory }}"
+  when: not composer_exists.stat.exists
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer
+  changed_when: false
+  failed_when: false1
 
-- name: Composer setup
+# Use community.general.composer here
+- name: Composer setup # noqa no-changed-when
   ansible.builtin.command: php composer-setup.php
   args:
-    chdir: '{{ ssp_composer_install_directory }}'
-  when: composer_exists.stat.exists == False
-  become: yes
+    chdir: "{{ ssp_composer_install_directory }}"
+  when: not composer_exists.stat.exists
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer
+  changed_when: false
 
-- name: Move Composer globally
-  ansible.builtin.command: "mv composer.phar {{ ssp_composer_executable }}"
+- name: Move Composer globally # noqa no-changed-when
+  ansible.builtin.command: mv composer.phar {{ ssp_composer_executable }}
   args:
-    chdir: '{{ ssp_composer_install_directory }}'
-  become: yes
-  when: composer_exists.stat.exists == False
+    chdir: "{{ ssp_composer_install_directory }}"
+  become: true
+  when: not composer_exists.stat.exists
   tags:
     - ssp:install
     - ssp:install:composer
@@ -79,8 +93,8 @@
 - name: Set permissions on Composer
   ansible.builtin.file:
     path: "{{ ssp_composer_executable }}"
-    mode: "a+x"
-  become: yes
+    mode: a+x
+  become: true
   tags:
     - ssp:install
     - ssp:install:composer

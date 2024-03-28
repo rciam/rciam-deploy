@@ -1,17 +1,17 @@
 ---
 
-php_webserver: "apache2"
+php_webserver: apache2
 
 php_default_packages:
-  - "libapache2-mod-php7.4"
+  - libapache2-mod-php7.4
 
-php_default_conf_scan_dir: "/etc/php/7.4/apache2/conf.d"
+php_default_conf_scan_dir: /etc/php/7.4/apache2/conf.d
 
 # Only when php_alt_repo is set to true
 php_apt_repositories:
-  - "deb https://packages.sury.org/php/ bullseye main"
+  - deb https://packages.sury.org/php/ bullseye main
 
-php_apt_key: "https://packages.sury.org/php/apt.gpg"
+php_apt_key: https://packages.sury.org/php/apt.gpg
 
 php_apt_packages:
   - apt-transport-https

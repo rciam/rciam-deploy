@@ -1,12 +1,11 @@
 ---
-
 - name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
+  ansible.builtin.include_tasks: blocks/helpers/get_tokens.yml
 
-- name: "Find full payload of all roles in the composite list"
-  uri:
+- name: Find full payload of all roles in the composite list
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/{{ composite_name }}"
-    method: "GET"
+    method: GET
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 200
@@ -15,14 +14,15 @@
   with_items: "{{ item[1].composites }}"
   register: search_results
 
-- set_fact:
+- name: Keycloak | roles | Set composite_list_complete fact
+  ansible.builtin.set_fact:
     composite_list_complete: "{{ search_results | json_query(query) | default([]) }}"
   vars:
     query: 'results[].json'
 
 
-- name: "Add composites of role {{ item[1].name }} in realm {{ item[0].name }}"
-  uri:
+- name: "Add composites of role {{ item[1].name }} in realm {{ item[0].name }}" # noqa name[template]
+  ansible.builtin.uri:
     url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/roles/{{ item[1].name }}/composites"
     method: "POST"
     body_format: json

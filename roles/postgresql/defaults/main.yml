@@ -4,47 +4,47 @@
 
 # Override default PostgreSQL version
 # See postgresql_default_version defined in postgresql/vars/
-#postgresql_version: "11"
+# postgresql_version: "11"
 
 # Override default PostgreSQL configuration path
 # See postgresql_default_conf_path in postgresql/vars/
-#postgresql_conf_path: "/etc/postgresql/{{ postgresql_version }}"
+# postgresql_conf_path: "/etc/postgresql/{{ postgresql_version }}"
 
 # Override default PostgreSQL data path
 # See postgresql_default_data_path in postgresql/vars/
-#postgresql_data_path: "/var/lib/postgresql/{{ postgresql_version }}"
+# postgresql_data_path: "/var/lib/postgresql/{{ postgresql_version }}"
 
 # Override default PostgreSQL service name
 # See postgresql_default_service in postgresql/vars/
-#postgresql_service: "postgresql"
+# postgresql_service: "postgresql"
 
 # Override default PostgreSQL user
 # See postgresql_default_user in postgresql/vars/
-#postgresql_user: "postgresql"
+# postgresql_user: "postgresql"
 
 # Override default PostgreSQL group
 # See postgresql_default_group in postgresql/vars/
-#postgresql_group: "postgresql"
+# postgresql_group: "postgresql"
 
 postgresql_clients:
     # Connection type:
     # - "local": Unix-domain socket
     # - "host": plain or SSL-encrypted TCP/IP socket
-    # - "hostssl": SSL-encrypted TCP/IP socket 
-    # - "hostnossl": plain TCP/IP socket 
+    # - "hostssl": SSL-encrypted TCP/IP socket
+    # - "hostnossl": plain TCP/IP socket
   - connection_type: "local"
     # Database: "all", "sameuser", "samerole", "replication", a database name,
-    # or a comma-separated list thereof. The "all" keyword does not match 
+    # or a comma-separated list thereof. The "all" keyword does not match
     # "replication". Access to replication must be enabled in a separate record
     database: "all"
     # User: "all", a user name, a group name prefixed with "+", or a
     # comma-separated list thereof. In both the database and user fields you
-    # can also write a file name prefixed with "@" to include names from a 
+    # can also write a file name prefixed with "@" to include names from a
     # separate file.
     user: "postgres"
     # Address (for non-"local" connection_type only): the set of hosts the
     # client matches. It can be a host name, or it is made up of an IP address
-    # and a CIDR mask that is an integer (between 0 and 32 (IPv4) or 128 
+    # and a CIDR mask that is an integer (between 0 and 32 (IPv4) or 128
     # (IPv6) inclusive) that specifies the number of significant bits in the
     # mask. A host name that starts with a dot (.) matches a suffix of the
     # actual host name. Alternatively, you can write an IP address and netmask
@@ -52,10 +52,10 @@ postgresql_clients:
     # CIDR-address, you can write "samehost" to match any of the server's own
     # IP addresses, or "samenet" to match any address in any subnet that the
     # server is directly connected to.
-    #address:
-    # Method: "trust", "reject", "md5", "password", "gss", "sspi", "ident", 
+    # address:
+    # Method: "trust", "reject", "md5", "password", "gss", "sspi", "ident",
     # "peer", "pam", "ldap", "radius" or "cert". Note that # "password" sends
-    #  passwords in clear text; "md5" is preferred since it sends encrypted 
+    #  passwords in clear text; "md5" is preferred since it sends encrypted
     # passwords.
     method: "peer"
   - connection_type: "local"
@@ -73,22 +73,22 @@ postgresql_clients:
     address: "::1/128"
     method: "md5"
 
-#postgresql_replication_user: "repuser"
-#postgresql_replication_password: "repuser"
+# postgresql_replication_user: "repuser"
+# postgresql_replication_password: "repuser"
 
 postgresql_users: []
     # Username
-  #- name: "theuser"
+    # - name: "theuser"
     # (Optional) Whether the password is stored hashed in the database
-    #encrypted: yes
+    # encrypted: yes
     # (Optional) User password
-    #password: "thepassword"
+    # password: "thepassword"
     # (Optional) Name of database where permissions will be granted
-    #db: "thedatabase"
-    # (Optional) Privileges string in the format: 
+    # db: "thedatabase"
+    # (Optional) Privileges string in the format:
     # "table:priv1,priv2"
-    #priv: 
-    # (Optional) Role attributes string in the format: 
+    # priv:
+    # (Optional) Role attributes string in the format:
     # "CREATEDB,CREATEROLE,SUPERUSER"
     # Available options:
     # - [NO]SUPERUSER
@@ -98,40 +98,40 @@ postgresql_users: []
     # - [NO]INHERIT
     # - [NO]LOGIN
     # - [NO]REPLICATION
-    #role_attr_flags:
+    # role_attr_flags:
 
 postgresql_databases: []
     # Name of the database
-  #- name: "thedatabase"
+    # - name: "thedatabase"
     # (Optional) Name of the role to set as owner of the database
-    #owner: "theuser"
+    #   owner: "theuser"
     # (Optional) Encoding of the database
-    #encoding: "UTF8" 
+    #   encoding: "UTF8"
     # (Optional) Collation order (LC_COLLATE) to use in the database. Must
     # match collation order of template database unless template0 is used as
     # template.
-    #lc_collate: "en_US.UTF-8"
+    #   lc_collate: "en_US.UTF-8"
     # (Optional) Character classification (LC_CTYPE) to use in the database.
     # Must match LC_CTYPE of template database unless template0 is used as
     # template.
-    #lc_ctype: "en_US.UTF-8"
+    #   lc_ctype: "en_US.UTF-8"
     # (Optional) Template used to create the database
-    #template: "thetemplate"
+    #   template: "thetemplate"
 
 postgresql_privs: []
-    # Name of database to connect to 
-  #- database: "thedatabase"
+    # Name of database to connect to
+    # - database: "thedatabase"
     # Comma separated list of role (user/group) names to set permissions for.
     # The special value PUBLIC can be provided instead to set permissions for
     # the implicitly defined PUBLIC group.
-    #roles: "theuser"
+    # roles: "theuser"
     # (Optional) Whether role may grant/revoke the specified privileges/group
     # memberships to others. Set to no to revoke GRANT OPTION, leave
     # unspecified to make no changes. grant_option only has an effect if state
     # is present.
-    #grant_option: yes
+    # grant_option: yes
     # (Optional) Comma separated list of privileges to grant/revoke.
-    #privs:
+    # privs:
     # Type of database object to set privileges on:
     # - table
     # - sequence
@@ -141,20 +141,20 @@ postgresql_privs: []
     # - language
     # - tablespace
     # - group
-    #type: "table"
+    # type: "table"
     # (Optional) Comma separated list of database objects to set privileges on.
     # If type is table or sequence, the special value ALL_IN_SCHEMA can be
     # provided instead to specify all database objects of type type in the
-    # schema specified via schema. 
+    # schema specified via schema.
     # If type is database, this parameter can be omitted, in which case
     # privileges are set for the database specified via database.
     # If type is function, colons (":") in object names will be replaced with
     # commas
-    #objs:
+    # objs:
     # (Optional) Schema that contains the database objects specified via objs.
     # May only be provided if type is table, sequence or function. Defaults to
-    # public in these cases. 
-    #schema: public
+    # public in these cases.
+    # schema: public
 
 # What IP address(es) to listen on
 postgresql_listen_addresses: "localhost"
@@ -166,9 +166,9 @@ postgresql_max_connections: 100
 # Min 128kB
 postgresql_shared_buffers: "128MB"
 
-# Enables/disables the use of huge memory pages for PostgreSQL. 
-# Valid values are: 
-# - try (default) 
+# Enables/disables the use of huge memory pages for PostgreSQL.
+# Valid values are:
+# - try (default)
 # - on
 # - off
 # The use of huge pages results in smaller page tables and less CPU time spent
@@ -176,7 +176,7 @@ postgresql_shared_buffers: "128MB"
 postgresql_huge_pages_mode: "try"
 
 # Number of huge memory pages to be allocated
-#postgresql_huge_pages_number: 0
+# postgresql_huge_pages_number: 0
 
 # Min 64kB
 postgresql_work_mem: "4MB"
@@ -204,23 +204,27 @@ postgresql_wal_keep_segments: 0
 
 # Standby server settings (ignored on a master server)
 
-# Master/primary server host 
+# Master/primary server host
 postgresql_master_host: "{{ groups['dbmaster'][0] }}"
 
-# Master/primary server port 
+# Master/primary server port
 postgresql_master_port: "{{ hostvars[groups['dbmaster'][0]]['postgresql_port'] | default(postgresql_port) }}"
- 
+
 # "on" allows queries during recovery
 postgresql_hot_standby_mode: "off"
 
 # If set, the PostgreSQL server will try to connect to the master using this
 # connection string and receive XLOG records continuously.
 # e.g. 'host={{ postgresql_master_host }} port={{ postgresql_master_port }}'
-#postgresql_master_conninfo: "host={{ postgresql_master_host }} port={{ postgresql_master_port }} user={{ postgresql_replication_user }} password={{ postgresql_replication_password }}"
+# postgresql_master_conninfo: # This should be done with a join
+  # "host={{ postgresql_master_host }}
+  # port={{ postgresql_master_port }}
+  # user={{ postgresql_replication_user }}
+  # password={{ postgresql_replication_password }}"
 
 # By default, a standby server keeps restoring XLOG records from the primary
 # indefinitely. If you want to stop the standby mode, finish recovery and open
 # the system in read/write mode, specify a path to a trigger file. The server
 # will poll the trigger file path periodically and start as a primary server
 # when it's found.
-#postgresql_trigger_file: "/tmp/postgresql.trigger.5432"
+# postgresql_trigger_file: "/tmp/postgresql.trigger.5432"

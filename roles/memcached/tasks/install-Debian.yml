@@ -1,7 +1,6 @@
 ---
-
 - name: Update package cache (Debian)
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true

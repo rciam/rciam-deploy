@@ -2,7 +2,8 @@
 #
 ---
 
-- hosts: registry
+- name: Deploy Registry Servers
+  hosts: registry
   roles:
     - { role: git, tags: git }
     - { role: apache, tags: apache }
@@ -15,4 +16,6 @@
 # Deploy clean COmanage environment
 # ansible-playbook -v -i inventories/instances/hosts.ini registryservers.yml --tags "comanage-registry" --ask-vault-pass
 # Deploy changes.
-# ansible-playbook -v -i inventories/instances/hosts.ini registryservers.yml --tags [comanage-registry,comanage-registry:install,comanage-registry:config,] --ask-vault-pass
+# ansible-playbook -v -i inventories/instances/hosts.ini registryservers.yml \
+# --tags [comanage-registry,comanage-registry:install,comanage-registry:config,] \
+# --ask-vault-pass

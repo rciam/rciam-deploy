@@ -3,51 +3,51 @@
 ---
 
 - name: Ensure util dependencies are installed
-  apt:
+  ansible.builtin.apt:
     name:
       - git
       - python3-venv
     state: present
-    install_recommends: no
-    update_cache: yes
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
-  become: yes
+  become: true
 
 - name: Ensure PPA is installed for MaxMind (required for rciam-ip2country)
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: 'ppa:maxmind/ppa'
     state: present
-    update_cache: yes
+    update_cache: true
     codename: trusty
-  when: 
+  when:
     - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
     - rciam_utils_ip2country.db_file_extension is defined and rciam_utils_ip2country.db_file_extension == "dat"
-  become: yes
+  become: true
 
 - name: Ensure dependencies for rciam-ip2country are installed
-  apt:
+  ansible.builtin.apt:
     name:
       - build-essential
       - python3-dev
     state: present
-    install_recommends: no
-    update_cache: yes
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
-  when: 
+  when:
     - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
-  become: yes
+  become: true
 
 - name: Ensure additional dependencies for rciam-ip2country (legacy version only) are installed
-  apt:
+  ansible.builtin.apt:
     name:
       - libgeoip1
       - libgeoip-dev
       - geoip-bin
     state: present
-    install_recommends: no
-    update_cache: yes
+    install_recommends: false
+    update_cache: true
     cache_valid_time: 86400
-  when: 
+  when:
     - rciam_utils | selectattr("name", "equalto", "rciam-ip2country") | list | length == 1
     - rciam_utils_ip2country.db_file_extension is defined and rciam_utils_ip2country.db_file_extension == "dat"
-  become: yes
+  become: true

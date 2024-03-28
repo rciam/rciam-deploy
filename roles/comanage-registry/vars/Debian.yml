@@ -1,4 +1,4 @@
 ---
 
-comanage_webserver_user: "www-data"
-comanage_webserver_group: "www-data"
+comanage_webserver_user: www-data
+comanage_webserver_group: www-data

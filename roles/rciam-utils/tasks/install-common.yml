@@ -2,40 +2,40 @@
 ---
 
 - name: Ensure util groups exist
-  group:
+  ansible.builtin.group:
     name: "{{ item.user.group }}"
-    system: yes
+    system: true
   loop: "{{ rciam_utils }}"
-  become: yes
+  become: true
 
 - name: Ensure util users exist
-  user:
+  ansible.builtin.user:
     name: "{{ item.user.name }}"
     groups: "{{ item.user.group }}"
-    comment: "{{ item.user.gecos }}" 
+    comment: "{{ item.user.gecos }}"
     shell: "{{ item.user.shell }}"
     home: "{{ item.user.path }}"
-    system: yes
-    create_home: yes
+    system: true
+    create_home: true
     skeleton: "/empty"
   loop: "{{ rciam_utils }}"
-  become: yes
+  become: true
 
 - name: Ensure util code checkouts are up-to-date
-  git:
+  ansible.builtin.git:
     repo: "{{ item.repo }}"
     dest: "{{ item.path }}"
     version: "{{ item.version }}"
   loop: "{{ rciam_utils }}"
-  become: yes
+  become: true
   become_user: "{{ item.user.name }}"
 
 - name: Ensure util python requirements are installed in virtualenvs
-  pip:
+  ansible.builtin.pip:
     requirements: "{{ item.path }}/requirements.txt"
     virtualenv: "{{ item.path }}/.venv"
     virtualenv_command: python3 -m venv
-    state: latest
+    state: present
   loop: "{{ rciam_utils }}"
-  become: yes
+  become: true
   become_user: "{{ item.user.name }}"

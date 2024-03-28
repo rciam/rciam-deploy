@@ -1,8 +1,7 @@
 # file: keycloak/vars/16.yml
 #
 ---
-
-namespaces:
+namespaces: # noqa var-naming[no-role-prefix]
   domain: "urn:jboss:domain:19.0"
   domain_server: "urn:jboss:domain:keycloak-server:1.1"
 

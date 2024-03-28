@@ -1,4 +1,4 @@
 ---
-
-#this jar should match with the default version of postgresql of the target machine. i.e. for debian 10, it's the postgresql-42.2.22.jar
+# this jar should match with the default version of postgresql of the target machine.
+# i.e. for debian 10, it's the postgresql-42.2.22.jar
 keycloak_postgresql_jar_name: "postgresql-42.2.22.jar"

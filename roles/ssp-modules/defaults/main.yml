@@ -1,14 +1,13 @@
 ---
-
+# ssp-modules/defaults/main.yml
 
 ssp_mods_extra_enabled: []
 ssp_modules_db: []
 
-
 # Examples of use cases:
 
 ## Modules
-#ssp_mods_extra_enabled:
+# ssp_mods_extra_enabled:
 #  - name: "module1"
 #    path: "{{ ssp_path }}/modules/module1_directory"
 #    repo_url: "https://github.com/example/module1.git"
@@ -53,7 +52,7 @@ ssp_mods_extra_files: []
 #    dest_path: "{{ ssp_path }}/modules/theme/dictionaries/default.definition.json"
 
 ## Database
-#ssp_modules_db:
+# ssp_modules_db:
 #  - db_host: "127.0.0.1" or "{{ lookup('dig', groups['dbmaster'][0]) }}"
 #    db_name: database_name or "{{ rciam_dbs.proxy.name }}"
 #    db_username: database_username or "{{ rciam_dbs.proxy.owner_username }}"
@@ -138,7 +137,7 @@ ssp_mods_extra_files: []
 #   prefix: ""
 #   persistent: no
 #   #slaves:
-#   #  - dsn: "mysql:host=slavedbhost;port=3306;dbname=STATS;charset=utf8" 
+#   #  - dsn: "mysql:host=slavedbhost;port=3306;dbname=STATS;charset=utf8"
 #   #    username: "stats"
 #   #    password: "stats"
 #   #    persistent: no

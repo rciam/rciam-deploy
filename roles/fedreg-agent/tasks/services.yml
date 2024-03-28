@@ -1,91 +1,90 @@
 - name: Create deployer configuration file
-  template:
+  ansible.builtin.template:
     src: deployers.config.json.j2
     dest: "{{ fedreg_agent_conf_dir }}/{{ deployers_config_name }}"
-    backup: yes
+    backup: true
+    mode: "0644"
   when: fedreg_agent_enable_ssp or fedreg_agent_enable_mitreid or fedreg_agent_enable_keycloak
-  become: yes
+  become: true
   tags:
     - agent
     - config
+  notify: Reload systemd
 
 - name: Create MITREid deployer service file
-  template:
+  ansible.builtin.template:
     src: deployer_mitreid.service.j2
     dest: "{{ fedreg_agent_services_path }}/{{ deployer_mitreid_name }}.service"
-    backup: yes
+    backup: true
+    mode: "0644"
   register: mitreid_service
   when: fedreg_agent_enable_mitreid
-  become: yes
+  become: true
   tags:
     - agent
     - service
+  notify: Reload systemd
 
 - name: Create Keycloak deployer service file
-  template:
+  ansible.builtin.template:
     src: deployer_keycloak.service.j2
     dest: "{{ fedreg_agent_services_path }}/{{ deployer_keycloak_name }}.service"
-    backup: yes
+    backup: true
+    mode: "0644"
   register: keycloak_service
   when: fedreg_agent_enable_keycloak
-  become: yes
+  become: true
   tags:
     - agent
     - service
+  notify: Reload systemd
 
 - name: Create SSP deployer service file
-  template:
+  ansible.builtin.template:
     src: deployer_ssp.service.j2
     dest: "{{ fedreg_agent_services_path }}/{{ deployer_ssp_name }}.service"
-    backup: yes
+    backup: true
+    mode: "0644"
   register: ssp_service
   when: fedreg_agent_enable_ssp
-  become: yes
+  become: true
   tags:
     - agent
     - service
-
-- name: Reload systemd
-  command: systemctl daemon-reload
-  when: mitreid_service.changed or ssp_service.changed or keycloak_service.changed
-  become: yes
-  tags:
-    - agent
-    - service
-    - daemon-reload
+  notify: Reload systemd
 
 
 - name: MitreId federation registry service enable
-  service:
+  ansible.builtin.service:
     name: '{{ deployer_mitreid_name }}'
-    enabled: yes
+    enabled: true
     state: restarted
   when: fedreg_agent_enable_mitreid
-  become: yes
+  become: true
   tags:
     - agent
     - service
     - service_enable
 
 - name: Keycloak deployer service enable
-  service:
+  ansible.builtin.service:
     name: '{{ deployer_keycloak_name }}'
-    enabled: yes
+    enabled: true
     state: restarted
   when: fedreg_agent_enable_keycloak
-  become: yes
+  become: true
   tags:
     - agent
     - service
     - service_enable
 
 - name: SSP federation registry service enable
-  service:
+  ansible.builtin.service:
     name: '{{ deployer_ssp_name }}'
-    enabled: yes
+    enabled: true
     state: restarted
   when: fedreg_agent_enable_ssp
-  become: yes
+  become: true
   tags:
     - agent
     - service

@@ -8,6 +8,15 @@ repos:
     - id: end-of-file-fixer
     - id: check-yaml
     - id: check-added-large-files
+    - id: requirements-txt-fixer
+
+- repo: https://github.com/Yelp/detect-secrets
+  rev: v1.4.0
+  hooks:
+    - id: detect-secrets
+      args:
+        - --baseline
+        - .secrets.baseline
 
 - repo: https://github.com/ansible-community/ansible-lint
   rev: v24.2.1
@@ -18,11 +27,15 @@ repos:
       exclude: .github
       additional_dependencies:
         - ansible-core>=2.16.0
-      args: [
-        "--exclude", ".pre-commit-config.yaml",
-        "--exclude", "roles/" # Exclude roles for now.
-      ]
-
+      args:
+        - --exclude
+        - .pre-commit-config.yaml
+        - icingaagents.yml
+        # For some reason noqa is not being picked up on these files
+        - roles/common/handlers/main.yml
+        - authzkeys.yml
+        # ssp-modules is a bad name for a role
+        - roles/ssp-modules
 
 - repo: https://github.com/python-jsonschema/check-jsonschema
   rev: 0.28.0

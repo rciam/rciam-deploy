@@ -1,70 +1,70 @@
 # file: tomcat/tasks/main.yml
 #
 ---
-
 - name: Include OS-specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release}}.yml"
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
   tags:
     - always
 
 - name: Define tomcat version
-  set_fact:
+  ansible.builtin.set_fact:
     tomcat_version: "{{ tomcat_default_version }}"
   when: tomcat_version is not defined
   tags:
     - always
 
 - name: Define tomcat package name
-  set_fact:
+  ansible.builtin.set_fact:
     tomcat_package: "{{ tomcat_default_package }}"
   when: tomcat_package is not defined
   tags:
     - always
 
 - name: Define tomcat service name
-  set_fact:
+  ansible.builtin.set_fact:
     tomcat_service: "{{ tomcat_default_service }}"
   when: tomcat_service is not defined
   tags:
     - always
 
 - name: Define tomcat configuration path
-  set_fact:
+  ansible.builtin.set_fact:
     tomcat_conf_path: "{{ tomcat_default_conf_path }}"
   when: tomcat_conf_path is not defined
   tags:
     - always
 
 - name: Define tomcat JAVA_HOME
-  set_fact:
+  ansible.builtin.set_fact:
     tomcat_java_home: "{{ tomcat_default_java_home }}"
   when: tomcat_java_home is not defined
   tags:
     - always
 
-# Install OS-specific packages
-- include: install-Debian.yml
+- name: Install OS-specific packages
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-#- include: install-CentOS.yml
-#  when: ansible_os_family == 'CentOS'
 
-# Apply OS-independent configuration
-- include: configure-common.yml
+# - include: install-CentOS.yml
+#   when: ansible_os_family == 'CentOS'
 
-# Deploy .war file
-- include: deploy-webapp.yml
+- name: Apply OS-independent configuration
+  ansible.builtin.include_tasks: configure-common.yml
+
+- name: Deploy .war file
+  ansible.builtin.include_tasks: deploy-webapp.yml
   tags:
     - never
     - tomcat:deploy
 
 - name: Ensure Tomcat service is started and enabled on boot
-  service:
+  ansible.builtin.service:
     name: "{{ tomcat_service }}"
-    state: "started"
-    enabled: yes
-  become: yes
+    state: started
+    enabled: true
+  become: true

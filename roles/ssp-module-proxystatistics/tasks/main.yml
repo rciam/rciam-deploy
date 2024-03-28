@@ -1,6 +1,5 @@
 ---
-# Run OS-independent installation tasks
-- include: install-common.yml
-
-# Apply OS-independent configuration
-- include: configure-common.yml
+- name: Run OS-independent installation tasks
+  ansible.builtin.include_tasks: install-common.yml
+- name: Apply OS-independent configuration
+  ansible.builtin.include_tasks: configure-common.yml

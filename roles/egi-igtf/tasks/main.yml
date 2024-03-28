@@ -1,12 +1,12 @@
 ---
-
+# egi-igtf/tasks/main.yml
 - name: Include OS-specific variables
-  include_vars: "{{ ansible_os_family }}.yml"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 
-# Run OS-specific installation tasks
-- include: install-Debian.yml
+- name: Run OS-specific installation tasks
+  ansible.builtin.include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
 
-# Apply OS-specific configuration
-- include: configure-Debian.yml
+- name: Apply OS-specific configuration
+  ansible.builtin.include_tasks: configure-Debian.yml
   when: ansible_os_family == 'Debian'

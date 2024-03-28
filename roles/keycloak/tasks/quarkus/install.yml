@@ -1,92 +1,89 @@
 ---
-
-##### Set service user as owner of keycloak base dir
-- block:
+- name: Set service user as owner of keycloak base dir
+  become: true
+  tags: "keycloak:install:setup_file_permissions"
+  block:
     - name: "Setting everything under keycloak_home dir to belong to user: {{ keycloak_service_user }}"
-      file:
+      ansible.builtin.file:
         dest: "{{ keycloak_home }}"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
-        recurse: yes
-  become: yes
-  tags: "keycloak:install:setup_file_permissions"
+        recurse: true
 
 
 ######### Install configuration templates
-- block:
-
+- name: Install configuration templates
+  tags: "keycloak:install:config"
+  block:
     - name: Set the appropriate permissions for the keycloak's config folder
-      file:
+      ansible.builtin.file:
         path: "{{ keycloak_home }}/conf"
         state: directory
-        mode: 0700
-      become: yes
+        mode: "0700"
+      become: true
 
     - name: Installing keycloak main configuration (keycloak.conf)
-      template:
-        mode: 0600
+      ansible.builtin.template:
+        mode: "0600"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
         src: "templates/{{ keycloak_version }}/keycloak.conf.j2"
         dest: "{{ keycloak_home }}/conf/keycloak.conf"
-      become: yes
+      become: true
 
     - name: Installing keycloak cache configuration (cache-ispn-jdbc-ping.xml)
-      template:
-        mode: 0600
+      ansible.builtin.template:
+        mode: "0600"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
         src: "templates/{{ keycloak_version }}/cache-ispn-jdbc-ping.xml.j2"
         dest: "{{ keycloak_home }}/conf/cache-ispn-jdbc-ping.xml"
-      become: yes
+      become: true
 
     - name: Installing keycloak quarkus configuration (quarkus.properties)
-      template:
-        mode: 0600
+      ansible.builtin.template:
+        mode: "0600"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
         src: "templates/{{ keycloak_version }}/quarkus.properties.j2"
         dest: "{{ keycloak_home }}/conf/quarkus.properties"
-      become: yes
-
-  tags: "keycloak:install:config"
-
+      become: true
 
 #### Setup logcleaner script
 - name: "Task block: Setup logcleaner script"
+  become: true
+  tags: "keycloak:install:setup_logcleaner"
   block:
     - name: "Ensure the logs folder exists"
-      file:
+      ansible.builtin.file:
         path: "{{ keycloak_logs_folder }}"
         state: directory
         mode: '0755'
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
-        recurse: yes
+        recurse: true
     - name: "Install the logcleaner script template"
-      template:
+      ansible.builtin.template:
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_user }}"
-        mode: 0644
+        mode: "0644"
         src: templates/logcleaner.sh.j2
         dest: "{{ keycloak_home }}/logcleaner.sh"
     - name: "Create the cronjob"
-      cron:
+      ansible.builtin.cron:
         name: keycloak logcleaner
         day: "*"
         hour: "0"
         minute: "0"
         user: "{{ keycloak_service_user }}"
         job: "sh {{ keycloak_home }}/logcleaner.sh {{ keycloak_logs_folder }} {{ keycloak_logs_max_days }}"
-  become: yes
-  tags: "keycloak:install:setup_logcleaner"
 
 
 ### install other plugins
 
 # would loop over block of tasks within install_plugin.yml, but looping on blocks is not allowed in ansible
 - name: Install other plugins
-  include_tasks: "quarkus/install_plugin.yml"
+  ansible.builtin.include_tasks: quarkus/install_plugin.yml
   when: keycloak_plugins is defined
   loop: "{{ lookup('dict', keycloak_plugins, wantlist=True) }}"
   tags: "keycloak:install:plugins"
@@ -94,37 +91,33 @@
 
 #### setup admin user (it's just adding a file with env variables which are picked up by keycloak upon startup)
 - name: "Set env variables for admin user configuration"
-  template:
+  ansible.builtin.template:
     owner: "{{ keycloak_service_user }}"
     group: "{{ keycloak_service_user }}"
-    mode: 0600
+    mode: "0600"
     src: "templates/{{ keycloak_version }}/env.conf.j2"
     dest: "{{ keycloak_home }}/conf/env.conf"
-  become: yes
+  become: true
   tags: "keycloak:config:setup_admin_user"
 
 
 ############### Setup keycloak as a service
 
 - name: "Setup keycloak as a service"
-  template:
+  ansible.builtin.template:
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
     src: templates/keycloak.service.quarkus.j2
     dest: /etc/systemd/system/keycloak.service
-  become: yes
+  become: true
   tags: "keycloak:install:systemd_service"
 
 - name: "Restart keycloak"
-  systemd:
+  ansible.builtin.systemd:
     name: keycloak
     state: restarted
-    daemon_reload: yes
-    enabled: yes
-  become: yes
+    daemon_reload: true
+    enabled: true
+  become: true
   tags: "keycloak:install:restart_sys_service"
-
-
-
-

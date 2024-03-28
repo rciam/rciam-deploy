@@ -1,10 +1,9 @@
 ---
-
 - name: Configure Vim system-wide defaults
-  template:
+  ansible.builtin.template:
     src: etc/vim/vimrc.j2
     dest: /etc/vim/vimrc
     owner: root
     group: root
-    mode: 0644
-  become: yes
+    mode: "0644"
+  become: true
