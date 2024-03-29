@@ -1,47 +1,33 @@
+# file: keycloak/tasks/blocks/configure_agm.yml
+# Configure Advanced Group Management extension
+# - loop_var: keycloak_realm
 ---
 
-- name: Acquire tokens
-  include_tasks: blocks/helpers/get_tokens.yml
-
-- name: Configure user attribute configuration for advanced group management plugin
+- name: "Update AGM member user attribute configuration Configure for realm {{ keycloak_realm.name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/agm/admin/member-user-attribute/configuration"
+    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/agm/admin/member-user-attribute/configuration"
     method: "POST"
-    body_format: json
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
+    body_format: json
     body:
-      "{{ body_payload }}"
+      userAttribute: "{{ keycloak_realm.member_user_attribute_configuration.userAttribute }}"
+      urnNamespace: "{{ keycloak_realm.member_user_attribute_configuration.urnNamespace }}"
+      authority: "{{ keycloak_realm.member_user_attribute_configuration.authority | default(omit) }}"
+      signatureMessage: "{{ keycloak_realm.member_user_attribute_configuration.signatureMessage }}"
     status_code: "204"
-    with_items: "{{ keycloak_plugins.group.add_to_realms }}"
-    run_once: true
-    vars:
-      - body_payload:
-          userAttribute: "{{ item.member_user_attribute_configuration.userAttribute }}"
-          urnNamespace: "{{ item.member_user_attribute_configuration.urnNamespace }}"
-          authority: "{{ item.member_user_attribute_configuration.authority }}"
-          signatureMessage: "{{ item.member_user_attribute_configuration.signatureMessage }}"
 
-- name: Find group configuration rules
+- name: "Get current AGM configuration rules for realm {{ keycloak_realm.name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/admin/realms/{{ item.name }}/agm/admin/configuration-rules"
+    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/agm/admin/configuration-rules"
     method: GET
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
-    status_code: [200]
-  register: "found_configuration_rules"
+    status_code: "200"
+  register: "found_agm_conf_rules"
 
-- set_fact:
-    found_configuration_rules: "{{ found_configuration_rules.json | default([]) }}"
-
-- include_tasks: blocks/configuration_rules/create_update_configuration_rules.yml
-  with_items: "{{ item.configuration_rules.create_update | default([]) }}"
+- name: "Apply desired AGM configuration rules to realm {{ keycloak_realm.name }}"
+  include_tasks: blocks/agm/configuration_rules.yml
+  loop: "{{ keycloak_realm.configuration_rules }}"
   loop_control:
-    loop_var: current_configuration_rules
-  run_once: true
-
-- include_tasks: blocks/configuration_rules/delete_configuration_rules.yml
-  with_items: "{{ item.configuration_rules.delete | default([]) }}"
-  loop_control:
-    loop_var: del_configuration_rules
-  run_once: true
+    loop_var: desired_agm_conf_rule

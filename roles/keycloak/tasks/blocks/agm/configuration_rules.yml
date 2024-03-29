@@ -1,0 +1,39 @@
+# file: keycloak/tasks/blocks/agm/configuration_rules.yml
+# Configure Advanced Group Management extension: Configuration rules
+# - found AGM configuraton rules: found_agm_conf_rules
+# - current Keycloak realm: keycloak_realm
+# - loop_var: desired_agm_conf_rule
+---
+
+- name: "Get matching AGM configuration rule for {{ desired_agm_conf_rule }} in realm {{ keycloak_realm.name }}"
+  ansible.builtin.set_fact:
+    matching_agm_conf_rule: "{{ found_agm_conf_rules.json | selectattr('field', 'equalto', desired_agm_conf_rule.field) | selectattr('type', 'equalto', desired_agm_conf_rule.type) | first | default({}) }}"
+
+- name: "Determine appropriate HTTP method based on state of desired AGM configuration rule for {{ desired_agm_conf_rule }} in realm {{ keycloak_realm.name }}"
+  ansible.builtin.set_fact:
+    desired_agm_conf_rule_http_method: "{{ 
+      'POST' if desired_agm_conf_rule.state == 'present' and not matching_agm_conf_rule else 
+      'PUT' if matching_agm_conf_rule and desired_agm_conf_rule.state == 'present' else 
+      'DELETE' if matching_agm_conf_rule and desired_agm_conf_rule.state == 'absent' else 
+      'ignore' }}"
+
+- name: "Filter desired AGM configuration rule data for {{ desired_agm_conf_rule }} in realm {{ keycloak_realm.name }}"
+  ansible.builtin.set_fact:
+    desired_agm_conf_rule_filtered: "{{ desired_agm_conf_rule | dict2items | selectattr('key', 'ne', 'state') | items2dict }}"
+
+- name: "Prepare desired AGM configuration rule data for {{ desired_agm_conf_rule }} in realm {{ keycloak_realm.name }}"
+  ansible.builtin.set_fact:
+    desired_agm_conf_rule_http_body: "{%if matching_agm_conf_rule %}{{ matching_agm_conf_rule | combine(desired_agm_conf_rule_filtered ) }}{% else %}{{ desired_agm_conf_rule_filtered }}{% endif %}"
+
+- name: "{{ desired_agm_conf_rule_http_method}} AGM configuration rule data {{ desired_agm_conf_rule_http_body }} in realm {{ keycloak_realm.name }}"
+  when: desired_agm_conf_rule_http_method != 'ignore'  # Skip when HTTP method is ignore
+  ansible.builtin.uri:
+    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/agm/admin/configuration-rules{{ '/' + matching_agm_conf_rule.id if matching_agm_conf_rule else '' }}"
+    method: "{{ desired_agm_conf_rule_http_method }}"
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body_format: json
+    body: "{{ desired_agm_conf_rule_http_body }}"
+    status_code:
+      - 200  # Success for update (PUT)
+      - 204  # Success for creation (POST) or deletion (DELETE)
