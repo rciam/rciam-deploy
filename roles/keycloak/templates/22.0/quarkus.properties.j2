@@ -3,5 +3,13 @@ quarkus.log.file.rotation.max-file-size=10T
 quarkus.log.file.rotation.file-suffix=.yyyy-MM-dd
 quarkus.log.file.rotation.rotate-on-boot=false
 
+{% if keycloak_log_level is defined %}
+{% if keycloak_log_level.saml is defined %}
 quarkus.log.category."org.apache.xml.security.encryption.XMLCipher".level={{ keycloak_log_level.saml }}
 quarkus.log.category."org.keycloak.saml.SAMLRequestParser".level={{ keycloak_log_level.saml }}
+{% endif %}
+{% if keycloak_log_level.oidc is defined %}
+quarkus.log.category."org.keycloak.broker.oidc.OIDCIdentityProvider".level={{ keycloak_log_level.oidc }}
+{% endif %}
+{% endif %}
+
