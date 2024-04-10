@@ -40,8 +40,12 @@ keycloak_logs_folder: "/var/log/keycloak"
 
 keycloak_logs_max_days: 548  # that's ~18 months
 
-keycloak_log_level:
-  saml: INFO
+# Controls the logging verbosity for specific auth protocols.
+# Uncomment and customise to adjust logging levels as needed
+# for monitoring or troubleshooting.
+#keycloak_log_level:
+#  saml: INFO
+#  oidc: INFO
 
 keycloak_keystores: "/srv/keycloak-keys"
 
