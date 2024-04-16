@@ -1,0 +1,14 @@
+# file: static_files.yml
+#
+---
+
+- hosts: "{{ target_group }}"
+  tasks:
+    - name: "Ensure static files for {{ target_group }} hosts are copied"
+      copy:
+        src: "{{ static_files_src }}"
+        dest: "{{ static_files_dest }}"
+        owner: "{{ static_files_owner | default('root') }}"
+        group: "{{ static_files_owner | default('root') }}"
+        mode: "{{ static_files_mode | default('0644') }}"
+      become: yes
