@@ -167,6 +167,18 @@ keycloak_themes:
 #        adminEventsEnabled: true
 #        eventsListeners: ["jboss-logging"]  # optional. if you want you can override with the array with the desired ones. Add "metrics-communication" for metrics plugin
 #        enabledEventTypes: ["UPDATE_CONSENT_ERROR", "SEND_RESET_PASSWORD", "GRANT_CONSENT",…] # optional. if you want you can override with the array with the desired ones
+#      authentication:
+#        # Controls whether users can review their profile attributes that
+#        # Keycloak retrieves from an identity provider after their first login.
+#        # Possible values:
+#        #   - "on": Users are presented with the profile page requesting
+#        #     additional information
+#        #   - "missing" (default): Users are presented with the profile page
+#        #     only if the identity provider does not provide mandatory
+#        #     information, such as email, first name, or last name
+#        #   - "off": Users are not presented with the profile page
+#        # See https://www.keycloak.org/docs/latest/server_admin/#default-first-login-flow-authenticators
+#        updateProfileOnFirstLogin: "missing"
 #      client_registration_policies:
 #        create_update:
 #          - name: "Allowed Client Scopes"

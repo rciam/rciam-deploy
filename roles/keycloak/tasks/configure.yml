@@ -115,11 +115,22 @@
         - skip_missing: True
       run_once: true
 
-    - name: "Check if there is any default IdP (will skip the WAYF and redirect to that one) defined"
-      include_tasks: blocks/configure_default_idp.yml
-      with_items: "{{ keycloak_config.realms | default([]) }}"
-      loop_control:
-        loop_var: current_realm
+    - name: "Setup authentication"
+      block:
+        - name: "Configure Default IdP and skip WAYF if Default IdP is set"
+          include_tasks: blocks/authentication/configure_default_idp.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+        - name: "Configure first broker login flow"
+          include_tasks: blocks/authentication/configure_first_broker_login.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+      tags:
+        - "keycloak:config:realm:authentication"
 
     - name: "Configure client scopes (block)"
       block:
