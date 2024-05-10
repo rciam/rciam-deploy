@@ -168,6 +168,17 @@ keycloak_themes:
 #        eventsListeners: ["jboss-logging"]  # optional. if you want you can override with the array with the desired ones. Add "metrics-communication" for metrics plugin
 #        enabledEventTypes: ["UPDATE_CONSENT_ERROR", "SEND_RESET_PASSWORD", "GRANT_CONSENT",…] # optional. if you want you can override with the array with the desired ones
 #      authentication:
+#        # Configure 'browser' authentication flow
+#        browser:
+#           # Controls cookies used during the 'browser' authentication flow.
+#           # Possible values:
+#           #   - "REQUIRED":  Forces the client browser to send cookies for
+#           #     authentication.
+#           #   - "ALTERNATIVE" (default): Allows authentication with or without
+#           #     cookies.
+#           #   - "DISABLED": Disables cookie usage completely for browser
+#           #     authentication.
+#           cookie: "ALTERNATIVE"
 #        # Controls whether users can review their profile attributes that
 #        # Keycloak retrieves from an identity provider after their first login.
 #        # Possible values:

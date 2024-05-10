@@ -117,8 +117,8 @@
 
     - name: "Setup authentication"
       block:
-        - name: "Configure Default IdP and skip WAYF if Default IdP is set"
-          include_tasks: blocks/authentication/configure_default_idp.yml
+        - name: "Configure 'browser' authentication flow"
+          include_tasks: blocks/authentication/configure_browser_flow.yml
           with_items: "{{ keycloak_config.realms | default([]) }}"
           loop_control:
             loop_var: current_realm
