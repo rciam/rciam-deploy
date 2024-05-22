@@ -1,3 +1,5 @@
+# file: tasks/blocks/helpers/get_idp_mappers_list.yml
+#
 ---
 
 - name: "Get list of idp's mappers"
@@ -8,8 +10,12 @@
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 200
   register: "idp_mappers_result"
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 - set_fact:
     idp_mapper_match: "{{ idp_mappers_result.json | json_query(query) | default([]) }}"
   vars:
     query: '[?name == `{{ item[1].name }}` ].{name: name, id: id }'
+  tags:
+    - "keycloak:config:realm:idp_mappers"

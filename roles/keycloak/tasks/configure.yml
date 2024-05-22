@@ -117,13 +117,15 @@
         - "keycloak:config:realm:idps"
         - "keycloak:config:realm:oidc_idps"
 
-    - name: Setup IdP mappers
+    - name: "Configure IdP Mappers"
       include_tasks: blocks/configure_idp_mappers.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "idp_mappers"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:idp_mappers"
 
     - name: "Setup authentication"
       block:

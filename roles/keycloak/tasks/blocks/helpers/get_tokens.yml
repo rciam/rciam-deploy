@@ -14,6 +14,7 @@
   tags:
     - "keycloak:config:realm:federations"
     - "keycloak:config:realm:idps"
+    - "keycloak:config:realm:idp_mappers"
     - "keycloak:config:realm:oidc_idps"
     - "keycloak:config:realm:saml_idps"
     - "keycloak:config:realm:social_idps"
