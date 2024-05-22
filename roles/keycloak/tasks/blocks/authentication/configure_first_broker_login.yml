@@ -37,7 +37,6 @@
           update.profile.on.first.login: "{{ current_realm.authentication.updateProfileOnFirstLogin | default('missing') }}"
           terms_and_conditions: "{{ current_realm.authentication.termsAndConditions | default('false') }}"
       status_code: 204
-    #when: review_profile_id
     when: authentication_config_id
 
-  when: current_realm.authentication.updateProfileOnFirstLogin is defined || current_realm.authentication.termsAndConditions is defined
+  when: current_realm.authentication.updateProfileOnFirstLogin is defined or current_realm.authentication.termsAndConditions is defined
