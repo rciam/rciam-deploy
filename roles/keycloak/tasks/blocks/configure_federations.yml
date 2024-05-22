@@ -2,23 +2,35 @@
 
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
+  tags:
+    - "keycloak:config:realm:federations"
 
 - name: "Initiating federation search in keycloak"
   include_tasks: blocks/helpers/search_realm_federations.yml
+  tags:
+    - "keycloak:config:realm:federations"
 
 - set_fact:
     federation_exists: "{{ realm_federation_matches | length > 0 }}"
+  tags:
+    - "keycloak:config:realm:federations"
 
 - set_fact:
     additional_info:
       internalId: "{{ realm_federation_matches[0].internalId }}"
   when: federation_exists
+  tags:
+    - "keycloak:config:realm:federations"
 
 - set_fact:
     body: "{% if federation_exists %}{{ item[1] | combine(additional_info , recursive=True ) }}{% else %}{{ item[1] }}{% endif %}"
+  tags:
+    - "keycloak:config:realm:federations"
 
 - set_fact: # remove the 'mappers' field from the body (if it exists)
     body: '{{  body | dict2items | rejectattr("key", "equalto", "mappers") | list | items2dict }}'
+  tags:
+    - "keycloak:config:realm:federations"
 
 - name: "Configuring federation {{ item[1].alias }}"
   uri:
@@ -30,10 +42,14 @@
     body:
       "{{ body }}"
     status_code: 201
+  tags:
+    - "keycloak:config:realm:federations"
 
   #get once more the federation_matches. now federation_matches should contain exactly one object in the list with the internalId and alias of the current federation
 - name: "Initiating federation search in keycloak"
   include_tasks: blocks/helpers/search_realm_federations.yml
+  tags:
+    - "keycloak:config:realm:federations"
 
 - name: "Configuring mappers of the federation {{ item[1].alias }} of the realm: {{ item[0].name }}"
   block:
@@ -60,4 +76,6 @@
       run_once: true
 
   when: "realm_federation_matches | length > 0"
+  tags:
+    - "keycloak:config:realm:federations"
 

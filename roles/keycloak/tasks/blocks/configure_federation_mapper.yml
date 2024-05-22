@@ -10,19 +10,25 @@
     mapper_matches: "{{ existing_mappers_name_id | json_query(query) | default([]) }}"
   vars:
     query: '[?name == `{{ mapper.name }}` ].{id: id, name: name }'
-
+  tags:
+    - "keycloak:config:realm:federations"
 
 - set_fact:
     mapper_exists: "{{ mapper_matches | length > 0 }}"
+  tags:
+    - "keycloak:config:realm:federations"
 
 - set_fact:
     additional_info:
       id: "{{ mapper_matches[0].id }}"
   when: mapper_exists
+  tags:
+    - "keycloak:config:realm:federations"
 
 - set_fact:
     body: "{% if mapper_exists %}{{ mapper | combine(additional_info , recursive=True ) }}{% else %}{{ mapper }}{% endif %}"
-
+  tags:
+    - "keycloak:config:realm:federations"
 
 - name: "{% if mapper_exists %} Update {% else %} Create {% endif %} federation mapper {{ mapper.name }}"
   uri:
@@ -34,7 +40,8 @@
     body:
       "{{ body }}"
     status_code: "{% if mapper_exists %}204{% else %}201{% endif %}"
-
+  tags:
+    - "keycloak:config:realm:federations"
 
 # this is meant to run after a successful first deployment of the federations and the mappers (that's why the "when: mapper_exists")
 # You should execute it only when you are sure that the federation(s) are fully populated
@@ -46,3 +53,5 @@
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 204
   when: mapper_exists
+  tags:
+    - "keycloak:config:realm:federations"
