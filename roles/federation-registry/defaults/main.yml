@@ -1,6 +1,10 @@
 # file: group_vars/all/main.yml
 #
 ---
+
+# Hostname of RCIAM Federation Registry service
+federation_registry_hostname: "federation.rciam.example.org"
+
 # Path of known hosts file
 federation_registry_known_hosts_path: "~/.ssh/known_hosts"
 # Ams Configuration
@@ -37,14 +41,14 @@ federation_registry_init_script: "setup_tenant.sql"
 federation_registry_admin_key: "authentication_for_admin_endpoints"
 federation_registry_react_base_url: "/federation"
 federation_registry_cors: "federation-registry-base-url"
-# Hostname of vm that hosts the nginx
-federation_registry_nginx_hostname: "hostname"
+# This has been deprecated in favour of federation_registry_hostname
+federation_registry_nginx_hostname: "{{ federation_registry_hostname }}"
 rciam_dbs:
   federation:
-    name: "service_registry_db"
-    owner_username: "federation_admin"
+    name: "federation_registry"
+    owner_username: "federation_registry_admin"
     owner_password: "password"
-    host: "hostname"
+    host: "db.rciam.example.org"
     port: 5432
     script_path: /home/debian/setup_db.sql
 federation_registry_tenant_config:
