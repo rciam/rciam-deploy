@@ -22,7 +22,6 @@
       status_code: "200"
       timeout: 600
 
-
 # configure AUP, realm keys, etc
 - name: Configure the keycloak (AUP, realm keys, etc)
   block:
@@ -75,37 +74,48 @@
       tags:
         - "keycloak:config:realm:roles"
 
-    - name: Setup federations
+    - name: "Configure Identity Federations"
       include_tasks: blocks/configure_federations.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "federations"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:federations"
 
-    - name: Setup social IdPs
+    - name: "Configure Social IdPs"
       include_tasks: blocks/configure_social_idps.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "social_idps"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:idps"
+        - "keycloak:config:realm:social_idps"
 
-    - name: Setup saml IdPs
+    - name: "Configure SAML IdPs"
       include_tasks: blocks/configure_idps.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "saml_idps"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:idps"
+        - "keycloak:config:realm:saml_idps"
 
-    - name: Setup oidc IdPs
+    - name: "Configure OIDC IdPs"
       include_tasks: blocks/configure_idps.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "oidc_idps"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:idps"
+        - "keycloak:config:realm:oidc_idps"
 
     - name: Setup IdP mappers
       include_tasks: blocks/configure_idp_mappers.yml

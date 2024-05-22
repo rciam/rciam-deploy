@@ -2,11 +2,17 @@
 
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
+  tags:
+    - "keycloak:config:realm:idps"
+    - "keycloak:config:realm:social_idps"
 
 - name: "Get current IdP with alias : {{ item[1].alias }} and realm: {{ item[0].name }}"
   include_tasks: blocks/helpers/get_realm_idp.yml
   vars:
     alias: "{{ item[1].alias }}"
+  tags:
+    - "keycloak:config:realm:idps"
+    - "keycloak:config:realm:social_idps"
 
 - name: "{% if new_idp %}Add{% else %}Update{% endif %} idp: {{ item[1].alias }}"
   uri:
@@ -18,3 +24,6 @@
     body:
       "{{ item[1] }}"
     status_code: "{% if new_idp %}201{% else %}204{% endif %}"
+  tags:
+    - "keycloak:config:realm:idps"
+    - "keycloak:config:realm:social_idps"

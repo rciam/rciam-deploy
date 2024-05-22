@@ -8,6 +8,16 @@
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: [200, 404]
   register: "idp_result"
+  tags:
+    - "keycloak:config:realm:idps"
+    - "keycloak:config:realm:oidc_idps"
+    - "keycloak:config:realm:saml_idps"
+    - "keycloak:config:realm:social_idps"
 
 - set_fact:
     new_idp: "{% if idp_result.status == 200 %}false{% else %}true{% endif %}"
+  tags:
+    - "keycloak:config:realm:idps"
+    - "keycloak:config:realm:oidc_idps"
+    - "keycloak:config:realm:saml_idps"
+    - "keycloak:config:realm:social_idps"
