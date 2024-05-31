@@ -6,3 +6,4 @@
     - {role: federation-registry, task: postgres,tags: ['never','postgres']}
     - {role: federation-registry, task: configure-ams}
     - {role: federation-registry, task: deploy}
+    - {role: federation-registry, task: deploy-documentation,tags: ['never','documentation']}

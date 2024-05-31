@@ -56,5 +56,14 @@ federation_registry_tenant_config:
     backend_uri: "https://tenant1/federation-backend/"
   - name: "tenant2_name"
     backend_uri: "https://tenant2/federation-backend/"
+federation_swagger:
+  git_repo: "https://github.com/swagger-api/swagger-ui.git"
+  branch: "4.x"
+  base_path:  "/var/www/swagger-ui"
+federation_docusaurus:
+  root_dir: "/var/www/docs"
+  git_repo: "https://github.com/rciam/federation-docs.git"
+  branch: "master"
+  base_path:  "/var/www/federation-docs"
 
 

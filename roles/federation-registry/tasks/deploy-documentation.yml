@@ -1,0 +1,65 @@
+---
+- name: Clean Swagger clone directory
+  file:
+    state: absent
+    path: "{{ federation_swagger.base_path }}"
+- name: Clone Swagger UI Repo
+  git:
+    repo: "{{federation_swagger.git_repo}}"
+    version: "{{federation_swagger.branch}}"
+    dest: "{{federation_swagger.base_path}}"
+    force: yes
+
+- name: Update Swagger Configuration
+  template:
+    src: swagger-config.j2
+    dest: "{{federation_swagger.base_path}}/dist/swagger-initializer.js"
+    backup: yes
+
+
+
+- name: Clean Docusaurus root directory
+  file:
+    state: absent
+    path: "{{ federation_docusaurus.root_dir }}"
+
+- name: Ensure Docusaurus root directory exists
+  file:
+    path: "{{ federation_docusaurus.root_dir }}"
+    state: directory
+    owner: root
+    group: root
+  become: yes
+
+- name: Clean Docusaurus clone directory
+  file:
+    state: absent
+    path: "{{ federation_docusaurus.base_path }}"
+
+- name: Clone Docusaurus Repo
+  git:
+    repo: "{{federation_docusaurus.git_repo}}"
+    version: "{{federation_docusaurus.branch}}"
+    dest: "{{federation_docusaurus.base_path}}"
+    force: yes
+
+- name: Update Docusaurus Configuration
+  template:
+    src: docusaurus-config.j2
+    dest: "{{federation_docusaurus.base_path}}/docusaurus.config.js"
+    backup: yes
+
+- name: Install node modules for Docusaurus
+  npm:
+    path: "{{federation_docusaurus.base_path}}"
+
+- name: Build Docusaurus documentation with legacy OpenSSL provider
+  shell: |
+    export NODE_OPTIONS=--openssl-legacy-provider
+    npm run build
+  args:
+    chdir: "{{federation_docusaurus.base_path}}"
+    executable: /bin/bash
+
+
+
