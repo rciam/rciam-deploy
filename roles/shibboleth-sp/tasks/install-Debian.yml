@@ -2,7 +2,7 @@
 
 - name: Ensure Shibboleth SP Apache module is installed (Debian)
   apt:
-    name: libapache2-mod-shib2
+    name: "{{ shibboleth_sp_apache_mod }}"
     state: present
     update_cache: yes
     install_recommends: no
