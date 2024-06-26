@@ -103,6 +103,15 @@
       owner: root
       mode: 0664
       backup: true
+
+  - name: Copy Tenant Favicon Files
+    copy:
+      src: "{{ inventory_dir }}/files/icons/"
+      dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/public/"
+      force: yes
+      owner: root
+      mode: 0664
+      backup: true
       
   - name: Agent env
     template:
