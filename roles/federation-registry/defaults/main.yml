@@ -66,4 +66,3 @@ federation_docusaurus:
   branch: "master"
   base_path:  "/var/www/federation-docs"
 
-
