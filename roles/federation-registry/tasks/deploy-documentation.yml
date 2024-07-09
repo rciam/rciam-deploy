@@ -16,8 +16,6 @@
     dest: "{{federation_swagger.base_path}}/dist/swagger-initializer.js"
     backup: yes
 
-
-
 - name: Clean Docusaurus root directory
   file:
     state: absent
