@@ -88,7 +88,7 @@
 
   - name: Copy Federation Configuration
     copy:
-      src: "{{ inventory_dir }}/files/config.json"
+      src: "{{ federation_files_path }}/config.json"
       dest: "{{federation_registry_express_path}}/JavaScript/config.json"
       force: yes
       owner: root
@@ -97,7 +97,7 @@
 
   - name: Copy Tenant Configuration Files
     copy:
-      src: "{{ inventory_dir }}/files/tenant_config/"
+      src: "{{ federation_files_path }}/tenant_config/"
       dest: "{{ federation_registry_express_path }}/JavaScript/tenant_config/"
       force: yes
       owner: root
@@ -106,7 +106,7 @@
 
   - name: Copy Tenant Favicon Files
     copy:
-      src: "{{ inventory_dir }}/files/icons/"
+      src: "{{federation_files_path}}/icons/"
       dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/public/"
       force: yes
       owner: root
