@@ -10,6 +10,7 @@
     "home_page_title":"Federation Registry",
     "footer_description": "Copyright ©2016-2023 | Federation Registry service provided by GRNET, receiving funding from the <a href='' target='_blank' rel='noopener noreferrer'>Founder Name</a> and the <a href='' target='_blank' rel='noopener noreferrer'>Project</a>",
     "theme_color": "#0A559C",
+    "documentation": "https://documentation-link",
     "service_integration_notification": {
       "enabled": false,
       "email": "ticketing-system@mail.com",
