@@ -30,17 +30,32 @@
           providerId: "{{ item[1].data.providerId }}"
         status_code: 200
       register: idp_result
+      when: not new_idp
 
-    - name: "Setup saml IdP {{ item[1].data.alias }}"
+    - name: "Create saml IdP {{ item[1].data.alias }}"
       uri:
-        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances{% if new_idp %}{% else %}/{{ item[1].data.alias }}{% endif %}"
-        method: "{% if new_idp %}POST{% else %}PUT{% endif %}"
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances"
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ tokens.json.access_token }}"
+        body:
+          "{{ item[1].data }}"
+        status_code: 201
+      when: new_idp
+
+    - name: "Update saml IdP {{ item[1].data.alias }}"
+      uri:
+        url: "{{ keycloak_proxy_host }}/admin/realms/{{ item[0].name }}/identity-provider/instances/{{ item[1].data.alias }}"
+        method: PUT
         body_format: json
         headers:
           Authorization: "Bearer {{ tokens.json.access_token }}"
         body:
           "{{ { 'config': idp_result.json } | combine( item[1].data, recursive=True ) }}"
-        status_code: "{% if new_idp %}201{% else %}204{% endif %}"
+        status_code: 204
+      when: not new_idp
+
   tags:
     - "keycloak:config:realm:idps"
     - "keycloak:config:realm:oidc_idps"
