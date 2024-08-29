@@ -8,7 +8,7 @@ upstream {{ upstream_group.name }} {
     {{ upstream_group.load_balancing_method }};
 {% endif %}
 {% for upstream_server in upstream_group.servers %}
-    server {{ upstream_server.address }} 
+    server {{ upstream_server.address }}
         weight={{ upstream_server.weight | default(1) }}
 {% if upstream_server.backup is defined and upstream_server.backup %}
         backup
