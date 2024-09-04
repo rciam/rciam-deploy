@@ -30,7 +30,7 @@
           providerId: "{{ item[1].data.providerId }}"
         status_code: 200
       register: idp_result
-      when: item[1].data.config.autoUpdate == "true"
+      when: item[1].data.config.autoUpdate == "true" or (item[1].metadataUrl is defined and new_idp)
 
     - name: "Setup autoUpdate {{ item[1].providerId }} IdP {{ item[1].data.alias }}"
       uri:
@@ -42,7 +42,7 @@
         body:
           "{{ { 'config': idp_result.json } | combine( item[1].data, recursive=True ) }}"
         status_code: "{% if new_idp %}201{% else %}204{% endif %}"
-      when: item[1].data.config.autoUpdate == "true"
+      when: item[1].data.config.autoUpdate == "true" or (item[1].metadataUrl is defined and new_idp)
 
     - name: "Setup no autoUpdate {{ item[1].providerId }} IdP {{ item[1].data.alias }}"
       uri:
@@ -54,7 +54,7 @@
         body:
           "{{ item[1].data }}"
         status_code: "{% if new_idp %}201{% else %}204{% endif %}"
-      when: item[1].data.config.autoUpdate != "true"
+      when: item[1].metadataUrl is undefined or ( item[1].data.config.autoUpdate != "true" and !new_idp)
 
   tags:
     - "keycloak:config:realm:idps"
