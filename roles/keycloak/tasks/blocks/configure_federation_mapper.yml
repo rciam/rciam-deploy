@@ -6,6 +6,11 @@
 # existing_mappers_name_id -> contains the current federation mappers id,name pairs i.e. [{id:"mapper_id", name:"mapper_name"}, ...]
 # mapper -> contains the new mapper json (from ansible config vars) i.e. {"config":{},"identityProviderMapper":"hardcoded-attribute-idp-mapper","name":"test_mapper2"}
 
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+  tags:
+    - "keycloak:config:realm:federations"
+
 - set_fact:
     mapper_matches: "{{ existing_mappers_name_id | json_query(query) | default([]) }}"
   vars:
