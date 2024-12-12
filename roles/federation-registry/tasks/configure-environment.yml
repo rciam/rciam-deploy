@@ -22,3 +22,21 @@
   npm:
     name: pm2
     global: yes
+
+- name: Ensure Federation Pm2 Group Exists
+  group:
+    name: "{{ federation_pm2_user.group }}"
+    system: yes
+  become: yes
+
+- name: Ensure Federation Pm2 User Exists
+  user:
+    name: "{{ federation_pm2_user.name }}"
+    groups: "{{ federation_pm2_user.group }}"
+    comment: "{{ federation_pm2_user.gecos }}" 
+    shell: "{{ federation_pm2_user.shell }}"
+    home: "{{ federation_pm2_user.home }}"
+    system: yes
+    create_home: yes
+    skeleton: "/empty"
+  become: yes
