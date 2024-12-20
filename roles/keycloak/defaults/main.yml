@@ -186,7 +186,10 @@ keycloak_themes:
 #        #     additional information
 #        #   - "missing" (default): Users are presented with the profile page
 #        #     only if the identity provider does not provide mandatory
-#        #     information, such as email, first name, or last name
+#        #     information, such as email, first name, or last name. User can change all values.
+#        #   - "missing-only": Users are presented with the profile page
+#        #     only if the identity provider does not provide mandatory
+#        #     information, such as email, first name, or last name. User can change only empty values.
 #        #   - "off": Users are not presented with the profile page
 #        # See https://www.keycloak.org/docs/latest/server_admin/#default-first-login-flow-authenticators
 #        updateProfileOnFirstLogin: "missing"
