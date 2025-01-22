@@ -179,25 +179,27 @@ keycloak_themes:
 #           #   - "DISABLED": Disables cookie usage completely for browser
 #           #     authentication.
 #           cookie: "ALTERNATIVE"
+#        # Configure 'first-broker-login' authentication flow
 #        # Controls whether users can review their profile attributes that
 #        # Keycloak retrieves from an identity provider after their first login.
 #        # Possible values:
 #        #   - "on": Users are presented with the profile page requesting
 #        #     additional information
-#        #   - "missing" (default): Users are presented with the profile page
+#        #   - "missing" : Users are presented with the profile page
 #        #     only if the identity provider does not provide mandatory
 #        #     information, such as email, first name, or last name. User can change all values.
-#        #   - "missing-only": Users are presented with the profile page
+#        #   - "missing-only"(default): Users are presented with the profile page
 #        #     only if the identity provider does not provide mandatory
 #        #     information, such as email, first name, or last name. User can change only empty values.
 #        #   - "off": Users are not presented with the profile page
 #        # See https://www.keycloak.org/docs/latest/server_admin/#default-first-login-flow-authenticators
-#        updateProfileOnFirstLogin: "missing"
+#        updateProfileOnFirstLogin: "missing-only"
 #        # Controls whether users will be required to accept terms and
 #        # conditions before their profile is recorded (initial sign up). You
 #        # need to enable 'Terms and Conditions' Required action for this to
 #        # take effect. Defaults to "false".
 #        termsAndConditions: "true"
+#        hideUsername: "true"
 #      client_registration_policies:
 #        create_update:
 #          - name: "Allowed Client Scopes"
