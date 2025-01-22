@@ -193,6 +193,11 @@ keycloak_themes:
 #        #   - "off": Users are not presented with the profile page
 #        # See https://www.keycloak.org/docs/latest/server_admin/#default-first-login-flow-authenticators
 #        updateProfileOnFirstLogin: "missing"
+#        # Controls whether users will be required to accept terms and
+#        # conditions before their profile is recorded (initial sign up). You
+#        # need to enable 'Terms and Conditions' Required action for this to
+#        # take effect. Defaults to "false".
+#        termsAndConditions: "true"
 #      client_registration_policies:
 #        create_update:
 #          - name: "Allowed Client Scopes"

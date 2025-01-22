@@ -23,7 +23,6 @@ federation_registry_ams:
   project: "project"
   sub: "push-subscription"
   topic: "deployment-results-topic"
-federation_registry_pm2_conf_path: "/home/debian"
 federation_registry_react_folder: "federation-registry-frontend"
 federation_registry_project_path: "/var/www/rciam-federation-registry"
 federation_registry_react_path: "{{federation_registry_project_path}}/{{federation_registry_react_folder}}"
@@ -65,4 +64,10 @@ federation_docusaurus:
   git_repo: "https://github.com/rciam/federation-docs.git"
   branch: "master"
   base_path:  "/var/www/federation-docs"
+federation_pm2_user:
+  name: "federation-registry"
+  group: "federation-registry"
+  gecos: "RCIAM Federation Registry,,,"
+  shell: "/bin/bash"
+  home: "/home/federation-registry"
 

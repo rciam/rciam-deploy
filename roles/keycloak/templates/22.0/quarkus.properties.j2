@@ -11,5 +11,8 @@ quarkus.log.category."org.keycloak.saml.SAMLRequestParser".level={{ keycloak_log
 {% if keycloak_log_level.oidc is defined %}
 quarkus.log.category."org.keycloak.broker.oidc.OIDCIdentityProvider".level={{ keycloak_log_level.oidc }}
 {% endif %}
+{% if keycloak_log_level.federation is defined %}
+quarkus.log.category."org.keycloak.broker.saml.federation.SAMLFederationProvider".level={{ keycloak_log_level.federation }}
+{% endif %}
 {% endif %}
 
