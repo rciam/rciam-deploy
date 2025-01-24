@@ -185,20 +185,25 @@ keycloak_themes:
 #        # Possible values:
 #        #   - "on": Users are presented with the profile page requesting
 #        #     additional information
-#        #   - "missing" : Users are presented with the profile page
+#        #   - "missing": Users are presented with the profile page
 #        #     only if the identity provider does not provide mandatory
-#        #     information, such as email, first name, or last name. User can change all values.
-#        #   - "missing-only"(default): Users are presented with the profile page
-#        #     only if the identity provider does not provide mandatory
-#        #     information, such as email, first name, or last name. User can change only empty values.
+#        #     information, such as email, first name, or last name. Users
+#        #     can change all values.
+#        #   - "missing-only" (default): Users are presented with the profile
+#        #     page only if the identity provider does not provide mandatory
+#        #     information, such as email, first name, or last name. Users
+#        #     can change only empty values.
 #        #   - "off": Users are not presented with the profile page
 #        # See https://www.keycloak.org/docs/latest/server_admin/#default-first-login-flow-authenticators
-#        updateProfileOnFirstLogin: "missing-only"
+#        #updateProfileOnFirstLogin: "missing-only"
 #        # Controls whether users will be required to accept terms and
 #        # conditions before their profile is recorded (initial sign up). You
 #        # need to enable 'Terms and Conditions' Required action for this to
 #        # take effect. Defaults to "false".
 #        termsAndConditions: "true"
+#        # Hides the username field during the first broker login flow. When
+#        # hidden, the username cannot be modified during this process.
+#        # Defaults to "false".
 #        hideUsername: "true"
 #      client_registration_policies:
 #        create_update:
