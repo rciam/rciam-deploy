@@ -27,6 +27,7 @@
     state: absent
     path: "{{ federation_registry_project_path }}/{{ federation_registry_ams_agent_folder }}"
   ignore_errors: true
+  when: "federation_registry_ams is defined"
 
 - name: Clone the repository
   git:
@@ -40,6 +41,7 @@
 
 - name: Move Ams Agent to /var/www
   shell: mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_ams_agent_folder }} {{ federation_registry_project_path }}
+  when: "federation_registry_ams is defined"
 
 - name: Move Swagger File to /var/www
   shell: mv {{ federation_registry_git.clone_dest }}/swagger.json {{ federation_registry_project_path }}
@@ -73,6 +75,8 @@
 - name: Install node modules for ams-agent
   npm:
     path: "{{ federation_registry_ams_agent_path }}"
+  when: "federation_registry_ams is defined"
+
 
 - name: React config
   template:
@@ -121,12 +125,16 @@
     src: ams-env.j2
     dest: "{{ federation_registry_ams_agent_path }}/.env"
     backup: yes
+  when: "federation_registry_ams is defined"
+
 
 - name: Agent config
   template:
     src: ams_authorized_users.j2
     dest: "{{ federation_registry_ams_agent_path }}/config.json"
     backup: yes
+  when: "federation_registry_ams is defined"
+
 
 - name: Delete existing pm2 processes if running
   command:
@@ -173,7 +181,7 @@
 
 - name: Start Pm2 Processes
   command:
-    cmd: "pm2 start ecosystem.config.js"
+    cmd: "pm2 start {{ federation_pm2_user.home }}/ecosystem.config.js"
   ignore_errors: yes
   become: yes
   become_user: "{{ federation_pm2_user.name }}"
@@ -202,4 +210,6 @@
       x-api-key: "{{ federation_registry_ams.admin_token }}"
     body_format: json
   when:
-  - "not ams_is_verif"
+  - federation_registry_ams is defined
+  - not ams_is_verif
+

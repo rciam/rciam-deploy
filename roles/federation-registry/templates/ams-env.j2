@@ -1,7 +1,7 @@
-AMS_PROJECT={{federation_registry_ams.project}}
-AMS_BASE_URL={{federation_registry_ams.host}}
-AMS_USER_TOKEN={{federation_registry_ams.token}}
-AMS_ADMIN_TOKEN={{federation_registry_ams.admin_token}}
+AMS_PROJECT={{federation_registry_ams.project | default('')}}
+AMS_BASE_URL={{federation_registry_ams.host | default('')}}
+AMS_USER_TOKEN={{federation_registry_ams.token | default('')}}
+AMS_ADMIN_TOKEN={{federation_registry_ams.admin_token | default('')}}
 EXPRESS_URL=http://localhost:5000
-EXPRESS_KEY={{federation_registry_ams.agent_key}}
+EXPRESS_KEY={{federation_registry_ams.agent_key | default('')}}
 ENV={{federation_registry_deployment_env}}
