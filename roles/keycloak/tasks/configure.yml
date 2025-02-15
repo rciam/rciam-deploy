@@ -178,13 +178,12 @@
   block:
     - name: Acquire tokens
       include_tasks: blocks/helpers/get_tokens.yml
-    - name: "Configure wayf plugin"
+    - name: Configure wayf plugin
       include_tasks: blocks/configure_theme.yml
-      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
-
-  when: wayf_enabled == true
-  vars:
-    wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
+      loop: "{{ keycloak_plugins.wayf.theme.add_to_realms | default([]) }}"
+      loop_control:
+        loop_var: keycloak_realm
+  when: keycloak_plugins.wayf is defined and keycloak_plugins.wayf.enabled | default(false) | bool
   tags:
     - "keycloak:config:plugin"
     - "keycloak:config:plugin:wayf"
@@ -196,11 +195,10 @@
       include_tasks: blocks/helpers/get_tokens.yml
     - name: "Configure RCIAM Advanced Group Management (AGM) extension"
       include_tasks: blocks/configure_agm.yml
-      loop: "{{ keycloak_plugins.group.add_to_realms }}"
+      loop: "{{ keycloak_plugins.group.add_to_realms | default([]) }}"
       loop_control:
         loop_var: keycloak_realm
       run_once: true
-
   when: keycloak_plugins.group.enabled | default(false)
   tags:
     - "keycloak:config:plugin"
