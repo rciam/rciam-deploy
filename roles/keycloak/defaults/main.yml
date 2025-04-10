@@ -204,6 +204,10 @@ keycloak_themes:
 #        # hidden, the username cannot be modified during this process.
 #        # Defaults to "false".
 #        hideUsername: "true"
+#        # Show 'Preferred username' field in order to fulfill uid user attribute
+#        # Defaults to "false".
+#        createUid: "false"
+
 #      client_registration_policies:
 #        create_update:
 #          - name: "Allowed Client Scopes"
