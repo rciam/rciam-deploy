@@ -204,9 +204,10 @@ keycloak_themes:
 #        # hidden, the username cannot be modified during this process.
 #        # Defaults to "false".
 #        hideUsername: "true"
-#        # Show 'Preferred username' field in order to fulfill uid user attribute
+#        # Shows the 'Preferred username' field during the first broker login
+#        # flow. When enabled, the value is stored in the 'uid' user attribute.
 #        # Defaults to "false".
-#        createUid: "false"
+#        createUid: "true"
 
 #      client_registration_policies:
 #        create_update:
