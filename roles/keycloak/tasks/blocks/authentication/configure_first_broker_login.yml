@@ -37,6 +37,7 @@
           update.profile.on.first.login: "{{ current_realm.authentication.updateProfileOnFirstLogin | default('missing-only') }}"
           terms_and_conditions: "{{ current_realm.authentication.termsAndConditions | default('false') }}"
           hideUsername: "{{ current_realm.authentication.hideUsername | default('false') }}"
+          createUid: "{{ current_realm.authentication.createUid | default('false') }}"
       status_code: 204
     when: authentication_config_id
 
