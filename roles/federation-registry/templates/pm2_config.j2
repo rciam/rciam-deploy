@@ -1,14 +1,15 @@
 module.exports = {
-  apps : [
-  {% if inventory_hostname in groups['ams-agent'] %}
+  apps: [
+  {% if groups.get('ams-agent', []) | length > 0 and inventory_hostname in groups['ams-agent'] %}
     {
       name        : "ams_agent",
       script      : "{{federation_registry_ams_agent_path}}/app.js",
     },
   {% endif %}
-  {
-    name       : "express",
-    script     : "{{federation_registry_express_path}}/JavaScript/index.js",
-    node_args  : "{{ federation_registry_node_args | default('--use-openssl-ca') }}"
-  }]
+    {
+      name       : "express",
+      script     : "{{federation_registry_express_path}}/JavaScript/index.js",
+      node_args  : "{{ federation_registry_node_args | default('--use-openssl-ca') }}"
+    }
+  ]
 }

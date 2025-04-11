@@ -1,8 +1,8 @@
 REDIRECT_URI=https://{{federation_registry_nginx_hostname}}/federation-backend/callback/
 EXPRESS_BASE = https://{{federation_registry_nginx_hostname}}
-AMS_AGENT_KEY={{federation_registry_ams.agent_key}}
-AMS_AUTH_KEY={{ams_auth_key}}
-AMS_VER_HASH = {{ams_verif_hash}}
+AMS_AGENT_KEY={{federation_registry_ams.agent_key  | default('')}}
+AMS_AUTH_KEY={{ams_auth_key | default('')}}
+AMS_VER_HASH = {{ams_verif_hash | default('')}}
 ADMIN_AUTH_KEY = {{federation_registry_admin_key}}
 CORS = {{federation_registry_cors}}
 TOKEN_KEY = {{federation_registry_backend_token_key}}
