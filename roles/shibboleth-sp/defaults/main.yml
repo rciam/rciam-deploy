@@ -152,9 +152,24 @@ shibboleth_sp_attribute_extractors:
       reloadChanges: "false"
       path: "attribute-map.xml"
 
+
+# In order to create the Shibboleth configuration below:
+#   <AttributeResolver type="Query" subjectMatch="true"></AttributeResolver>
+#   <AttributeResolver type="Transform" source="eduPersonScopedAffiliation">
+#       <Regex match="^(.+)@(.+)" dest="eduPersonPrimaryAffiliation">$1</Regex>
+#   </AttributeResolver>
+#
+# the yaml structure should be the following:
 shibboleth_sp_attribute_resolvers:
   - type: "Query"
-    subject_match: "true"
+    subjectMatch: "true"
+#  - type: "Transform"
+#    source: "eduPersonScopedAffiliation"
+#    regex:
+#    - value: "$1"
+#      properties:
+#        match: "^(.+)@(.+)"
+#        dest: "eduPersonPrimaryAffiliation"
 
 # The default settings can be overridden by creating ApplicationOverride
 # elements. When you use virtual hosting, there is no special handler
