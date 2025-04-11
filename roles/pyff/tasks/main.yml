@@ -1,0 +1,14 @@
+---
+# tasks file for pyff
+# Include OS-specific installation tasks
+- include: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+#- include: install-RedHat.yml
+#  when: ansible_os_family == 'RedHat'
+  tags:
+    - pyff:install
+
+# Include OS-independent configuration tasks
+- include: configure.yml
+  tags:
+    - pyff:config
