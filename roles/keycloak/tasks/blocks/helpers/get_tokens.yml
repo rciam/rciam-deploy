@@ -10,4 +10,12 @@
       username: "{{keycloak_admin.user}}"
       password: "{{keycloak_admin.pass}}"
       grant_type: "password"
+  run_once: true
   register: "tokens"    # token is in "tokens.json.access_token"
+  tags:
+    - "keycloak:config:realm:federations"
+    - "keycloak:config:realm:idps"
+    - "keycloak:config:realm:idp_mappers"
+    - "keycloak:config:realm:oidc_idps"
+    - "keycloak:config:realm:saml_idps"
+    - "keycloak:config:realm:social_idps"

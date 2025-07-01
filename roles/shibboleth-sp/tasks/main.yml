@@ -47,6 +47,13 @@
   tags:
     - always
 
+- name: Define Shibboleth SP Apache module
+  set_fact:
+    shibboleth_sp_apache_mod: "{{ shibboleth_sp_default_apache_mod }}"
+  when: shibboleth_sp_apache_mod is not defined
+  tags:
+    - always
+
 # Install OS-specific packages
 - include: install-Debian.yml
   when: ansible_os_family == 'Debian'

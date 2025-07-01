@@ -15,7 +15,7 @@
   pip: 
     requirements: /tmp/requirements_{{ build_branch }}.txt
     virtualenv: "{{ fedreg_agent_venv_path }}"
-    virtualenv_python: "{{ fedreg_agent_venv_python }}"
+    virtualenv_command: "{{ fedreg_agent_venv_command }}"
   become: yes
   tags:
     - agent
@@ -27,7 +27,7 @@
   pip:
     name: rciam-federation-registry-agent
     virtualenv: "{{ fedreg_agent_venv_path }}"
-    virtualenv_python: "{{ fedreg_agent_venv_python }}"
+    virtualenv_command: "{{ fedreg_agent_venv_command }}"
     extra_args: -i https://test.pypi.org/simple/
     state: latest
   become: yes
@@ -41,14 +41,13 @@
   pip:
     name: rciam-federation-registry-agent
     virtualenv: "{{ fedreg_agent_venv_path }}"
-    virtualenv_python: "{{ fedreg_agent_venv_python }}"
+    virtualenv_command: "{{ fedreg_agent_venv_command }}"
     state: latest
   become: yes
   tags:
    - agent
    - python
    - requirements
-
 
 - name: "Ensure {{ fedreg_agent_conf_dir }} dir exists"
   file:

@@ -232,11 +232,11 @@ $metadata['{{ idp.entity_id }}'] = array(
         ),
 {% elif idp.authproc_raw is defined %}
         'authproc' => array(
-            {{ idp.authproc_raw | indent(width=12, indentfirst=False) }}
+            {{ idp.authproc_raw | indent(width=12, first=False) }}
         ),
 {% endif %}
 {% if idp.extra_parameters is defined %}
-{{ idp.extra_parameters | indent(width=8, indentfirst=True) }}
+{{ idp.extra_parameters | indent(width=8, first=True) }}
 {% endif %}
 	/*
 	 * Uncomment the following to specify the registration information in the

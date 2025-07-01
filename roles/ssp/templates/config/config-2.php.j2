@@ -1042,7 +1042,7 @@ $config = [
 {% endfor %}
 {% endfor %}
 {% elif ssp_authproc_idp_raw is defined %}
-        {{ ssp_authproc_idp_raw | indent(width=8, indentfirst=False) }}
+        {{ ssp_authproc_idp_raw | indent(width=8, first=False) }}
 {% endif %}
     ],
 
@@ -1073,7 +1073,7 @@ $config = [
 {% endfor %}
 {% endfor %}
 {% elif ssp_authproc_sp_raw is defined %}
-        {{ ssp_authproc_sp_raw | indent(width=8, indentfirst=False) }}
+        {{ ssp_authproc_sp_raw | indent(width=8, first=False) }}
 {% endif %}
     ],
 

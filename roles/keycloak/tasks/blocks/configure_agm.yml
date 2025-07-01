@@ -1,0 +1,34 @@
+# file: keycloak/tasks/blocks/configure_agm.yml
+# Configure Advanced Group Management extension
+# - loop_var: keycloak_realm
+---
+
+- name: "Update AGM member user attribute configuration Configure for realm {{ keycloak_realm.name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/agm/admin/member-user-attribute/configuration"
+    method: "POST"
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body_format: json
+    body:
+      userAttribute: "{{ keycloak_realm.member_user_attribute_configuration.userAttribute }}"
+      urnNamespace: "{{ keycloak_realm.member_user_attribute_configuration.urnNamespace }}"
+      authority: "{{ keycloak_realm.member_user_attribute_configuration.authority | default(omit) }}"
+      signatureMessage: "{{ keycloak_realm.member_user_attribute_configuration.signatureMessage }}"
+    status_code: "204"
+
+- name: "Get current AGM configuration rules for realm {{ keycloak_realm.name }}"
+  uri:
+    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/agm/admin/configuration-rules"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: "200"
+  register: "found_agm_conf_rules"
+
+- name: "Apply desired AGM configuration rules to realm {{ keycloak_realm.name }}"
+  include_tasks: blocks/agm/configuration_rules.yml
+  loop: "{{ keycloak_realm.configuration_rules }}"
+  loop_control:
+    loop_var: desired_agm_conf_rule
+  when: keycloak_realm.configuration_rules is defined and keycloak_realm.configuration_rules

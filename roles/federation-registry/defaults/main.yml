@@ -1,6 +1,10 @@
 # file: group_vars/all/main.yml
 #
 ---
+
+# Hostname of RCIAM Federation Registry service
+federation_registry_hostname: "federation.rciam.example.org"
+
 # Path of known hosts file
 federation_registry_known_hosts_path: "~/.ssh/known_hosts"
 # Ams Configuration
@@ -19,7 +23,6 @@ federation_registry_ams:
   project: "project"
   sub: "push-subscription"
   topic: "deployment-results-topic"
-federation_registry_pm2_conf_path: "/home/debian"
 federation_registry_react_folder: "federation-registry-frontend"
 federation_registry_project_path: "/var/www/rciam-federation-registry"
 federation_registry_react_path: "{{federation_registry_project_path}}/{{federation_registry_react_folder}}"
@@ -37,14 +40,14 @@ federation_registry_init_script: "setup_tenant.sql"
 federation_registry_admin_key: "authentication_for_admin_endpoints"
 federation_registry_react_base_url: "/federation"
 federation_registry_cors: "federation-registry-base-url"
-# Hostname of vm that hosts the nginx
-federation_registry_nginx_hostname: "hostname"
+# This has been deprecated in favour of federation_registry_hostname
+federation_registry_nginx_hostname: "{{ federation_registry_hostname }}"
 rciam_dbs:
   federation:
-    name: "service_registry_db"
-    owner_username: "federation_admin"
+    name: "federation_registry"
+    owner_username: "federation_registry_admin"
     owner_password: "password"
-    host: "hostname"
+    host: "db.rciam.example.org"
     port: 5432
     script_path: /home/debian/setup_db.sql
 federation_registry_tenant_config:
@@ -52,5 +55,19 @@ federation_registry_tenant_config:
     backend_uri: "https://tenant1/federation-backend/"
   - name: "tenant2_name"
     backend_uri: "https://tenant2/federation-backend/"
-
+federation_swagger:
+  git_repo: "https://github.com/swagger-api/swagger-ui.git"
+  branch: "4.x"
+  base_path:  "/var/www/swagger-ui"
+federation_docusaurus:
+  root_dir: "/var/www/docs"
+  git_repo: "https://github.com/rciam/federation-docs.git"
+  branch: "master"
+  base_path:  "/var/www/federation-docs"
+federation_pm2_user:
+  name: "federation-registry"
+  group: "federation-registry"
+  gecos: "RCIAM Federation Registry,,,"
+  shell: "/bin/bash"
+  home: "/home/federation-registry"
 

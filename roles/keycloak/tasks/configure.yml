@@ -22,7 +22,6 @@
       status_code: "200"
       timeout: 600
 
-
 # configure AUP, realm keys, etc
 - name: Configure the keycloak (AUP, realm keys, etc)
   block:
@@ -72,44 +71,78 @@
 
     - name: Setup roles
       include_tasks: blocks/roles_configuration/configure.yml
+      tags:
+        - "keycloak:config:realm:roles"
 
-    - name: Setup federations
+    - name: "Configure Identity Federations"
       include_tasks: blocks/configure_federations.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "federations"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:federations"
 
-    - name: Setup social IdPs
+    - name: "Configure Social IdPs"
       include_tasks: blocks/configure_social_idps.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "social_idps"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:idps"
+        - "keycloak:config:realm:social_idps"
 
-    - name: Setup saml IdPs
-      include_tasks: blocks/configure_saml_idps.yml
+    - name: "Configure SAML IdPs"
+      include_tasks: blocks/configure_idps.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "saml_idps"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:idps"
+        - "keycloak:config:realm:saml_idps"
 
-    - name: Setup IdP mappers
+    - name: "Configure OIDC IdPs"
+      include_tasks: blocks/configure_idps.yml
+      with_subelements:
+        - "{{ keycloak_config.realms | default([]) }} "
+        - "oidc_idps"
+        - skip_missing: True
+      run_once: true
+      tags:
+        - "keycloak:config:realm:idps"
+        - "keycloak:config:realm:oidc_idps"
+
+    - name: "Configure IdP Mappers"
       include_tasks: blocks/configure_idp_mappers.yml
       with_subelements:
         - "{{ keycloak_config.realms | default([]) }} "
         - "idp_mappers"
         - skip_missing: True
       run_once: true
+      tags:
+        - "keycloak:config:realm:idp_mappers"
 
-    - name: "Check if there is any default IdP (will skip the WAYF and redirect to that one) defined"
-      include_tasks: blocks/configure_default_idp.yml
-      with_items: "{{ keycloak_config.realms | default([]) }}"
-      loop_control:
-        loop_var: current_realm
+    - name: "Setup authentication"
+      block:
+        - name: "Configure 'browser' authentication flow"
+          include_tasks: blocks/authentication/configure_browser_flow.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+        - name: "Configure first broker login flow"
+          include_tasks: blocks/authentication/configure_first_broker_login.yml
+          with_items: "{{ keycloak_config.realms | default([]) }}"
+          loop_control:
+            loop_var: current_realm
+          run_once: true
+      tags:
+        - "keycloak:config:realm:authentication"
 
     - name: "Configure client scopes (block)"
       block:
@@ -145,43 +178,28 @@
   block:
     - name: Acquire tokens
       include_tasks: blocks/helpers/get_tokens.yml
-    - name: "Configure wayf plugin"
+    - name: Configure wayf plugin
       include_tasks: blocks/configure_theme.yml
-      with_items: "{{ keycloak_plugins.wayf.theme.add_to_realms }}"
-
-  when: wayf_enabled == true
-  vars:
-    wayf_enabled: "{{ keycloak_plugins.wayf.enabled | default(false) }}"
+      loop: "{{ keycloak_plugins.wayf.theme.add_to_realms | default([]) }}"
+      loop_control:
+        loop_var: keycloak_realm
+  when: keycloak_plugins.wayf is defined and keycloak_plugins.wayf.enabled | default(false) | bool
   tags:
     - "keycloak:config:plugin"
     - "keycloak:config:plugin:wayf"
 
-### advanced group management plugin
-- name: Configure advanced group management plugin
+### RCIAM Advanced Group Management (AGM) extension
+- name: "Configure RCIAM Advanced Group Management (AGM) extension"
   block:
     - name: Acquire tokens
       include_tasks: blocks/helpers/get_tokens.yml
-    - name: Configure user attribute configuration for advanced group management plugin
-      uri:
-        url: "{{ keycloak_proxy_host }}/realms/{{ item.name }}/agm/admin/member-user-attribute/configuration"
-        method: "POST"
-        body_format: json
-        headers:
-          Authorization: "Bearer {{ tokens.json.access_token }}"
-        body:
-          "{{ body_payload }}"
-        status_code: "204"
-      with_items: "{{ keycloak_plugins.group.add_to_realms }}"
+    - name: "Configure RCIAM Advanced Group Management (AGM) extension"
+      include_tasks: blocks/configure_agm.yml
+      loop: "{{ keycloak_plugins.group.add_to_realms | default([]) }}"
+      loop_control:
+        loop_var: keycloak_realm
       run_once: true
-      vars:
-        - body_payload:
-            userAttribute: "{{ item.member_user_attribute_configuration.userAttribute }}"
-            urnNamespace: "{{ item.member_user_attribute_configuration.urnNamespace }}"
-            authority: "{{ item.member_user_attribute_configuration.authority }}"
-
-  when: group_enabled == true
-  vars:
-    group_enabled: "{{ keycloak_plugins.group.enabled | default(false) }}"
+  when: keycloak_plugins.group.enabled | default(false)
   tags:
     - "keycloak:config:plugin"
     - "keycloak:config:plugin:group"

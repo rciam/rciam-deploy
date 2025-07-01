@@ -8,7 +8,7 @@ upstream {{ upstream_group.name }} {
     {{ upstream_group.load_balancing_method }};
 {% endif %}
 {% for upstream_server in upstream_group.servers %}
-    server {{ upstream_server.address }} 
+    server {{ upstream_server.address }}
         weight={{ upstream_server.weight | default(1) }}
 {% if upstream_server.backup is defined and upstream_server.backup %}
         backup
@@ -31,7 +31,10 @@ geo {{ geos.name }} {
 }
 {% endfor %}
 {% endif %}
+{% if nginx_extra_config is defined %}
 
+{{ nginx_extra_config }}
+{% endif %}
 {% for vhost in nginx_vhosts %}
 server {
 {% if vhost.listen is defined %}
@@ -51,7 +54,7 @@ server {
 {% endif %}
 {% if vhost.extra_parameters is defined %}
 
-    {{ vhost.extra_parameters | indent(width=4, indentfirst=False) }}
+    {{ vhost.extra_parameters | indent(width=4, first=False) }}
 {% endif %}
 }
 {% endfor %}

@@ -279,7 +279,7 @@ $config = array(
         ),
 {% elif authsource.authproc_raw is defined %}
         'authproc' => array(
-            {{ authsource.authproc_raw | indent(width=12, indentfirst=False) }}
+            {{ authsource.authproc_raw | indent(width=12, first=False) }}
         ),
 {% endif %}
     ),
@@ -327,7 +327,7 @@ $config = array(
 {% endfor %}
 {% endif %}
 {% if ssp_authsources_extra_config is defined %}
-  {{ ssp_authsources_extra_config | indent(width=4, indentfirst=False) }}
+  {{ ssp_authsources_extra_config | indent(width=4, first=False) }}
 
 {% endif %}
 );

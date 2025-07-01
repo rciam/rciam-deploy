@@ -1,27 +1,42 @@
 ---
+- name: Install dependencies
+  apt:
+    pkg:
+      - curl
+      - git
+      - nginx
 
-  - name: Install dependencies
-    apt:
-      pkg:
-        - curl
-        - git
-        - nginx
+- name: Add node repository
+  shell: curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+  args:
+    warn: no
 
-  - name: Add node repository
-    shell: curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
-    args:
-      warn: no
+- name: Install node and npm
+  apt:
+    pkg:
+      - build-essential
+      - nodejs
+      - npm
 
-  - name: Install node and npm
-    apt:
-      pkg:
-        - build-essential
-        - nodejs
-        - npm
+- name: Install pm2
+  npm:
+    name: pm2
+    global: yes
 
-  - name: Install pm2
-    npm:
-        name: pm2
-        global: yes
+- name: Ensure Federation Pm2 Group Exists
+  group:
+    name: "{{ federation_pm2_user.group }}"
+    system: yes
+  become: yes
 
-
+- name: Ensure Federation Pm2 User Exists
+  user:
+    name: "{{ federation_pm2_user.name }}"
+    groups: "{{ federation_pm2_user.group }}"
+    comment: "{{ federation_pm2_user.gecos }}" 
+    shell: "{{ federation_pm2_user.shell }}"
+    home: "{{ federation_pm2_user.home }}"
+    system: yes
+    create_home: yes
+    skeleton: "/empty"
+  become: yes

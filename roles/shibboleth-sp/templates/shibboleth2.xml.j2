@@ -53,7 +53,7 @@
 {% endif %}
 {% endif %}
 {% if shibboleth_sp_extra_conf is defined %}
-    {{ shibboleth_sp_extra_conf | indent(width=4, indentfirst=False) }}
+    {{ shibboleth_sp_extra_conf | indent(width=4, first=False) }}
 {% endif %}
 
 {% if shibboleth_sp_request_mapper is defined %}
@@ -293,7 +293,7 @@
 {% endif %}
 {% if override.extra_conf is defined %}
 
-    {{ override.extra_conf | indent(width=12, indentfirst=False) }}
+    {{ override.extra_conf | indent(width=12, first=False) }}
 {% endif %}
         </ApplicationOverride>
 {% endfor %}

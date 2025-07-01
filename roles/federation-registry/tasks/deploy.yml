@@ -1,169 +1,205 @@
 ---
-  - name: Check if project exists
-    stat:
-      path: "{{ federation_registry_git.clone_dest }}"
-    register: project_stat
+- name: Check if project exists
+  stat:
+    path: "{{ federation_registry_git.clone_dest }}"
+  register: project_stat
 
-  - name: Clean clone directory
-    file:
-      state: absent
-      path: "{{ federation_registry_git.clone_dest }}"
-    when: project_stat.stat.exists
+- name: Clean clone directory
+  file:
+    state: absent
+    path: "{{ federation_registry_git.clone_dest }}"
+  when: project_stat.stat.exists
 
-  - name: Clean Frontend Folder
-    file:
-      state: absent
-      path: "{{federation_registry_project_path}}/{{federation_registry_react_folder}}"
-    ignore_errors: true
+- name: Clean Frontend Folder
+  file:
+    state: absent
+    path: "{{ federation_registry_project_path }}/{{ federation_registry_react_folder }}"
+  ignore_errors: true
 
-  - name: Clean Backend Folder
-    file:
-      state: absent
-      path: "{{federation_registry_project_path}}/{{federation_registry_express_folder}}"
-    ignore_errors: true
+- name: Clean Backend Folder
+  file:
+    state: absent
+    path: "{{ federation_registry_project_path }}/{{ federation_registry_express_folder }}"
+  ignore_errors: true
 
-  - name: Clean Ams Agent Folder
-    file:
-      state: absent
-      path: "{{federation_registry_project_path}}/{{federation_registry_ams_agent_folder}}"
-    ignore_errors: true
+- name: Clean Ams Agent Folder
+  file:
+    state: absent
+    path: "{{ federation_registry_project_path }}/{{ federation_registry_ams_agent_folder }}"
+  ignore_errors: true
 
-  - name: Clone the repository
-    git:
-      repo: "{{federation_registry_git.git_repo}}"
-      version: "{{federation_registry_git.git_branch}}"
-      dest: "{{federation_registry_git.clone_dest}}"
-      force: yes
+- name: Clone the repository
+  git:
+    repo: "{{ federation_registry_git.git_repo }}"
+    version: "{{ federation_registry_git.git_branch }}"
+    dest: "{{ federation_registry_git.clone_dest }}"
+    force: yes
 
-  - name: Move Federation Backend to /var/www
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_express_folder}} {{federation_registry_project_path}} 
+- name: Move Federation Backend to /var/www
+  shell: mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_express_folder }} {{ federation_registry_project_path }}
 
-  - name: Move Ams Agent to /var/www
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_ams_agent_folder}} {{federation_registry_project_path}} 
-  
-  - name: Move Swagger File to /var/www
-    shell: mv {{federation_registry_git.clone_dest}}/swagger.json {{federation_registry_project_path}}
+- name: Move Ams Agent to /var/www
+  shell: mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_ams_agent_folder }} {{ federation_registry_project_path }}
 
-  - name: Create React Folder
-    shell: mkdir {{federation_registry_project_path}}/{{federation_registry_react_folder}} 
-    ignore_errors: True
+- name: Move Swagger File to /var/www
+  shell: mv {{ federation_registry_git.clone_dest }}/swagger.json {{ federation_registry_project_path }}
 
-  - name: Load package.json contents to package variable
-    slurp:
-      src: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/package.json"
-    register: imported_var
+- name: Create React Folder
+  shell: mkdir {{ federation_registry_project_path }}/{{ federation_registry_react_folder }}
+  ignore_errors: True
 
-  - name: Append homepage value to package variable
-    set_fact:
-      imported_var: "{{ imported_var.content|b64decode|from_json | default([]) | combine({ 'homepage': federation_registry_react_base_url}) }}"
+- name: Load package.json contents to package variable
+  slurp:
+    src: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/package.json"
+  register: imported_var
 
-  - name: Write package variable to package.json
-    copy: 
-      content: "{{ imported_var | to_nice_json }}" 
-      dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/package.json"
-     
-  - name: Install node modules for react
-    npm:
-      path: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}"
+- name: Append homepage value to package variable
+  set_fact:
+    imported_var: "{{ imported_var.content|b64decode|from_json | default([]) | combine({ 'homepage': federation_registry_react_base_url }) }}"
 
-  - name: Install node modules for express
-    npm:
-      path: "{{federation_registry_express_path}}"
+- name: Write package variable to package.json
+  copy:
+    content: "{{ imported_var | to_nice_json }}"
+    dest: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/package.json"
 
-  - name: Install node modules for ams-agent
-    npm:
-      path: "{{federation_registry_ams_agent_path}}"
+- name: Install node modules for react
+  npm:
+    path: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}"
 
-  - name: React config
-    template:
-      src: react-config.j2
-      dest: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/src/config.json"
-      backup: yes
+- name: Install node modules for express
+  npm:
+    path: "{{ federation_registry_express_path }}"
 
-  - name: Configure express db_config
-    template:
-      src: db_config.j2
-      dest: "{{federation_registry_express_path}}/db-config/db-config.json"
-      backup: yes
+- name: Install node modules for ams-agent
+  npm:
+    path: "{{ federation_registry_ams_agent_path }}"
 
-  - name: Copy Tenant Configuration
-    copy:
-      src: "{{ inventory_dir }}/files/config.json"
-      dest: "{{federation_registry_express_path}}/JavaScript/config.json"
-      force: yes
-      owner: root
-      mode: 0664
-      backup: true
+- name: React config
+  template:
+    src: react-config.j2
+    dest: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/src/config.json"
+    backup: yes
 
-  - name: Agent env
-    template:
-      src: ams-env.j2
-      dest: "{{federation_registry_ams_agent_path}}/.env"
-      backup: yes
+- name: Configure express db_config
+  template:
+    src: db_config.j2
+    dest: "{{ federation_registry_express_path }}/db-config/db-config.json"
+    backup: yes
 
-  - name: Agent config
-    template:
-      src: ams_authorized_users.j2
-      dest: "{{federation_registry_ams_agent_path}}/config.json"
-      backup: yes
+- name: Copy Federation Configuration
+  copy:
+    src: "{{ federation_files_path }}/config.json"
+    dest: "{{ federation_registry_express_path }}/JavaScript/config.json"
+    force: yes
+    owner: "{{federation_pm2_user.name}}"
+    group: "{{federation_pm2_user.group}}"
+    mode: '0644'
+    backup: true
 
-  - name: delete existing pm2 processes if running
-    command: "pm2 delete all"
-    ignore_errors: True
+- name: Copy Tenant Configuration Files
+  copy:
+    src: "{{ federation_files_path }}/tenant_config/"
+    dest: "{{ federation_registry_express_path }}/JavaScript/tenant_config/"
+    force: yes
+    owner: "{{federation_pm2_user.name}}"
+    group: "{{federation_pm2_user.group}}"
+    mode: '0644'
+    backup: true
 
-  - name: Create pm2 ecosystem
-    template:
-     src: pm2_config.j2
-     dest: "{{federation_registry_pm2_conf_path}}/ecosystem.config.js"
-     backup: yes
-  
-  - name: react build
-    shell: "npm run build"
-    args:
-      chdir: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}"
-      executable: /bin/bash
+- name: Copy Tenant Favicon Files
+  copy:
+    src: "{{ federation_files_path }}/icons/"
+    dest: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/public/"
+    force: yes
+    owner: "{{federation_pm2_user.name}}"
+    group: "{{federation_pm2_user.group}}"
+    mode: '0644'
+    backup: true
 
-  - name: Creates federation directory
-    file:
-      path: "{{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}}"
-      state: directory
-    when: federation_registry_react_base_url != "/"
+- name: Agent env
+  template:
+    src: ams-env.j2
+    dest: "{{ federation_registry_ams_agent_path }}/.env"
+    backup: yes
 
-  - name: Move files from build folder to base folder
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/build/* {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}}
-    when: federation_registry_react_base_url != "/" 
+- name: Agent config
+  template:
+    src: ams_authorized_users.j2
+    dest: "{{ federation_registry_ams_agent_path }}/config.json"
+    backup: yes
 
-  - name: Move base folder inside build folder
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}} {{federation_registry_project_path}}/{{federation_registry_react_folder}}{{federation_registry_react_base_url}} 
-    when: federation_registry_react_base_url != "/"
+- name: Delete existing pm2 processes if running
+  command:
+    cmd: "pm2 delete all"
+  failed_when: false
+  become: yes
+  become_user: "{{ federation_pm2_user.name }}"
 
-  - name: Move base folder inside build folder
-    shell: mv {{federation_registry_git.clone_dest}}/{{federation_registry_react_folder}}/build/* {{federation_registry_project_path}}/{{federation_registry_react_folder}} 
-    when: federation_registry_react_base_url == "/" 
+- name: Create pm2 ecosystem
+  template:
+    src: pm2_config.j2
+    dest: "{{ federation_pm2_user.home }}/ecosystem.config.js"
+    backup: yes
 
-  - name: Express env
-    template:
-      src: express-env.j2
-      dest: "{{federation_registry_express_path}}/JavaScript/.env"
-      backup: yes
+- name: React build
+  shell: "npm run build"
+  args:
+    chdir: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}"
+    executable: /bin/bash
 
-  - name: start Pm2 processes
-    command: "pm2 start ecosystem.config.js"
+- name: Creates federation directory
+  file:
+    path: "{{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}{{ federation_registry_react_base_url }}"
+    state: directory
+  when: federation_registry_react_base_url != "/"
 
-  - name: restart Pm2 processes
-    command: "pm2 restart all"
+- name: Move files from build folder to base folder
+  shell: mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/build/* {{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}{{ federation_registry_react_base_url }}
+  when: federation_registry_react_base_url != "/"
 
-  - debug:
-      msg: ams_is_verif
+- name: Move base folder inside build folder
+  shell: mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}{{ federation_registry_react_base_url }} {{ federation_registry_project_path }}/{{ federation_registry_react_folder }}{{ federation_registry_react_base_url }}
+  when: federation_registry_react_base_url != "/"
 
-  - name: Verify push endpoint if not verified
-    run_once: true
-    uri:
-      url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:verifyPushEndpoint?key={{ federation_registry_ams.admin_token }}"
-      method: POST
-      return_content: yes
-      headers:
-        Content-Type: "application/json"
-      body_format: json
-    when:
-      - "not ams_is_verif"
+- name: Move base folder inside build folder
+  shell: mv {{ federation_registry_git.clone_dest }}/{{ federation_registry_react_folder }}/build/* {{ federation_registry_project_path }}/{{ federation_registry_react_folder }}
+  when: federation_registry_react_base_url == "/"
+
+- name: Express env
+  template:
+    src: express-env.j2
+    dest: "{{ federation_registry_express_path }}/JavaScript/.env"
+    backup: yes
+
+- name: Start Pm2 Processes
+  command:
+    cmd: "pm2 start ecosystem.config.js"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{ federation_pm2_user.name }}"
+
+- name: Ensure Pm2 Processes are saved
+  command:
+    cmd: "pm2 save"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{ federation_pm2_user.name }}"
+
+- name: Ensure Pm2 Startup Script exists
+  command:
+    cmd: "env PATH=$PATH:/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u {{federation_pm2_user.name}} --hp {{federation_pm2_user.home}}"
+  ignore_errors: yes
+  become: yes
+
+- name: Verify push endpoint if not verified
+  run_once: true
+  uri:
+    url: "{{ federation_registry_ams.host }}/projects/{{ federation_registry_ams.project }}/subscriptions/{{ federation_registry_ams.sub }}:verifyPushEndpoint?key={{ federation_registry_ams.admin_token }}"
+    method: POST
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+      x-api-key: "{{ federation_registry_ams.admin_token }}"
+    body_format: json
+  when:
+  - "not ams_is_verif"

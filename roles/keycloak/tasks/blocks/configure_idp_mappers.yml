@@ -1,26 +1,40 @@
+# file: tasks/blocks/configure_idp_mappers.yml
+#
 ---
 
 - name: Acquire tokens
   include_tasks: blocks/helpers/get_tokens.yml
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 - name: "Get current mappers of idp: {{ item[0].name }}"
   include_tasks: blocks/helpers/get_idp_mappers_list.yml
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 - set_fact:
     mapper_exists: "{{ idp_mapper_match | length > 0 }}"
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 - set_fact:
     additional_info:
       id: "{{ idp_mapper_match[0].id }}"
   when: mapper_exists
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 - set_fact:
     body: "{{ item[1] | combine(additional_info , recursive=True ) }}"
   when: mapper_exists
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 - set_fact:
     body: "{{ item[1] }}"
   when: not mapper_exists
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 - name: "{% if mapper_exists %}Update{% else %}Add{% endif %} idp mapper: {{ item[1].name }} for idp: {{ item[1].identityProviderAlias }}"
   uri:
@@ -32,6 +46,8 @@
     body:
       "{{ body }}"
     status_code: "{% if mapper_exists %}204{% else %}201{% endif %}"
+  tags:
+    - "keycloak:config:realm:idp_mappers"
 
 
 

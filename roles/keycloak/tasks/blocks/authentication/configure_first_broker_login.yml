@@ -1,0 +1,44 @@
+---
+
+- block:
+
+  - name: Acquire tokens
+    include_tasks: blocks/helpers/get_tokens.yml
+
+  - name: "Get all executions of the 'first broker login' authentication flow of realm {{ current_realm.name }}"
+    uri:
+      url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/authentication/flows/first%20broker%20login/executions"
+      method: GET
+      headers:
+        Authorization: "Bearer {{ tokens.json.access_token }}"
+      status_code: 200
+    register: "current_realm_firstbrokerlogin_executions"
+
+  - set_fact:
+      review_profile_matches: "{{ current_realm_firstbrokerlogin_executions.json | json_query(query) | default([]) }}"
+    vars:
+      query: '[?providerId == `idp-review-profile` ]'
+
+  - set_fact:
+      authentication_config_id: "{{ review_profile_matches[0].authenticationConfig }}"
+    when: review_profile_matches | length > 0
+
+  - name: "Updating review profile config for realm {{ current_realm.name }}"
+    uri:
+      #url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/authentication/config/{{ review_profile_id }}"
+      url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/authentication/config/{{ authentication_config_id }}"
+      method: PUT
+      body_format: json
+      headers:
+        Authorization: "Bearer {{ tokens.json.access_token }}"
+      body:
+        alias: "review profile config"
+        config:
+          update.profile.on.first.login: "{{ current_realm.authentication.updateProfileOnFirstLogin | default('missing-only') }}"
+          terms_and_conditions: "{{ current_realm.authentication.termsAndConditions | default('false') }}"
+          hideUsername: "{{ current_realm.authentication.hideUsername | default('false') }}"
+          createUid: "{{ current_realm.authentication.createUid | default('false') }}"
+      status_code: 204
+    when: authentication_config_id
+
+  when: current_realm.authentication.updateProfileOnFirstLogin is defined or current_realm.authentication.termsAndConditions is defined
