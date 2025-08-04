@@ -9,6 +9,7 @@
     register: response
     run_once: true
     failed_when: response.status != 409 and response.status != 200
+    when: "federation_registry_ams is defined"
 
   - name: Modify acl for topic
     run_once: true
@@ -21,6 +22,7 @@
         Content-Type: "application/json"
         x-api-key: "{{ federation_registry_ams.admin_token }}"
       body_format: json
+    when: "federation_registry_ams is defined"
 
   - name: Delete express push subscription
     uri:
@@ -32,6 +34,7 @@
     register: response
     run_once: true
     failed_when: response.status != 409 and response.status != 200 and response.status != 404
+    when: "federation_registry_ams is defined"
 
   - name: Create express push subscription
     uri:
@@ -45,6 +48,7 @@
       return_content: yes
     run_once: true
     register: post_ams_push_config_response
+    when: "federation_registry_ams is defined"
 
   - name: Get express push subscription
     uri:
@@ -55,8 +59,8 @@
         x-api-key: "{{ federation_registry_ams.admin_token }}"
     register: get_ams_push_response
     ignore_errors: yes
+    when: "post_ams_push_config_response is defined and federation_registry_ams is defined"
     run_once: true
-    when: "post_ams_push_config_response is defined"
 
   - name: Modify Acl for Push Subscription
     uri:
@@ -68,6 +72,7 @@
         x-api-key: "{{ federation_registry_ams.admin_token }}"
       body_format: json
     run_once: true
+    when: federation_registry_ams is defined
 
   - name: Save Ams Facts
     run_once: true
@@ -77,6 +82,7 @@
     when:
       - "get_ams_push_response.json.pushConfig.authorizationHeader.value is defined"
       - "get_ams_push_response.json.pushConfig.verificationHash is defined"
+      - "federation_registry_ams is defined"
   
   - debug:
       var: ams_verif_hash
@@ -84,4 +90,4 @@
     run_once: true
     set_fact:
       ams_is_verif: "{{get_ams_push_response.json.pushConfig.verified}}"
-    when: "get_ams_push_response.json.pushConfig.verified is defined"
+    when: "get_ams_push_response.json.pushConfig.verified is defined and federation_registry_ams is defined"
