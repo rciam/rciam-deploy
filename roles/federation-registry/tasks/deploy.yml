@@ -77,7 +77,6 @@
     path: "{{ federation_registry_ams_agent_path }}"
   when: "federation_registry_ams is defined"
 
-
 - name: React config
   template:
     src: react-config.j2
@@ -97,8 +96,9 @@
     force: yes
     owner: "{{federation_pm2_user.name}}"
     group: "{{federation_pm2_user.group}}"
-    mode: '0644'
+    mode: "0644"
     backup: true
+  tags: deploy-configuration
 
 - name: Copy Tenant Configuration Files
   copy:
@@ -107,8 +107,9 @@
     force: yes
     owner: "{{federation_pm2_user.name}}"
     group: "{{federation_pm2_user.group}}"
-    mode: '0644'
+    mode: "0644"
     backup: true
+  tags: deploy-configuration
 
 - name: Copy Tenant Favicon Files
   copy:
@@ -117,8 +118,9 @@
     force: yes
     owner: "{{federation_pm2_user.name}}"
     group: "{{federation_pm2_user.group}}"
-    mode: '0644'
+    mode: "0644"
     backup: true
+  tags: deploy-configuration
 
 - name: Agent env
   template:
@@ -127,14 +129,12 @@
     backup: yes
   when: "federation_registry_ams is defined"
 
-
 - name: Agent config
   template:
     src: ams_authorized_users.j2
     dest: "{{ federation_registry_ams_agent_path }}/config.json"
     backup: yes
   when: "federation_registry_ams is defined"
-
 
 - name: Delete existing pm2 processes if running
   command:
@@ -192,6 +192,13 @@
   ignore_errors: yes
   become: yes
   become_user: "{{ federation_pm2_user.name }}"
+
+- name: Restart all pm2 processes
+  command:
+    cmd: "pm2 restart all"
+  become: yes
+  become_user: "{{ federation_pm2_user.name }}"
+  tags: deploy-configuration
 
 - name: Ensure Pm2 Startup Script exists
   command:
