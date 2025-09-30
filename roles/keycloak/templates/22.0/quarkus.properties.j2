@@ -10,6 +10,8 @@ quarkus.log.category."org.keycloak.saml.SAMLRequestParser".level={{ keycloak_log
 {% endif %}
 {% if keycloak_log_level.oidc is defined %}
 quarkus.log.category."org.keycloak.broker.oidc.OIDCIdentityProvider".level={{ keycloak_log_level.oidc }}
+quarkus.log.category."org.keycloak.broker.oidc.OIDCIdentityProviderFactory".level={{ keycloak_log_level.oidc }}
+quarkus.log.category."org.keycloak.protocol.oidc.OIDCWellKnownProvider".level={{ keycloak_log_level.oidc }}
 {% endif %}
 {% if keycloak_log_level.federation is defined %}
 quarkus.log.category."org.keycloak.broker.saml.federation.SAMLFederationProvider".level={{ keycloak_log_level.federation }}
