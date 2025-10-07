@@ -1,0 +1,25 @@
+# file: tasks/blocks/authentication/configure_browser_flow.yml
+#
+---
+
+- block:
+
+  - name: Acquire tokens
+    include_tasks: blocks/helpers/get_tokens.yml
+  
+  - name: "Get all executions of the 'browser' authentication flow of realm {{ current_realm.name }}"
+    uri:
+      url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/authentication/flows/browser/executions"
+      method: GET
+      headers:
+        Authorization: "Bearer {{ tokens.json.access_token }}"
+      status_code: 200
+    register: "current_realm_browser_executions"
+
+  - name: "Configure 'browser' authentication flow of realm {{ current_realm.name }}: Default IdP"
+    include_tasks: blocks/authentication/configure_default_idp.yml
+    when: current_realm.defaultIdPAlias is defined and current_realm.defaultIdPAlias
+
+  - name: "Configure 'browser' authentication flow of realm {{ current_realm.name }}: Cookie requirement"
+    include_tasks: blocks/authentication/configure_browser_flow_cookie.yml
+    when: current_realm.authentication.browser.cookie is defined
