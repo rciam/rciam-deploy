@@ -1,0 +1,8 @@
+---
+
+- name: Ensure Java 21 is installed
+  apt:
+    name: openjdk-21-jdk
+    state: present
+    update_cache: yes
+  become: yes
