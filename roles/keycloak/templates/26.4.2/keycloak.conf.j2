@@ -12,6 +12,11 @@ db-url=jdbc:postgresql://{{ keycloak_db_host }}/{{ keycloak_db.name }}
 # The file path to a private key in PEM format.
 #https-certificate-key-file=${kc.home.dir}conf/server.key.pem
 
+# ------------------------------------------------------------------
+# 1. ALLOW PLAIN HTTP (NGINX does TLS)
+# ------------------------------------------------------------------
+http-enabled=true
+
 {% if keycloak_proxy_headers %} 
 # Configure how Keycloak interprets reverse proxy headers 
 proxy-headers={{ keycloak_proxy_headers }} 
@@ -38,8 +43,3 @@ log-file={{ keycloak_logs_folder }}/server.log
 #log-level=INFO,org.infinispan:DEBUG,org.jgroups:DEBUG
 
 health-enabled={{ keycloak_health_enabled | default(False) | string | lower }}
-
-# ------------------------------------------------------------------
-# 1. ALLOW PLAIN HTTP (NGINX does TLS)
-# ------------------------------------------------------------------
-http-enabled=true
