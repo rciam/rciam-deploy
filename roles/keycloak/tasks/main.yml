@@ -13,23 +13,13 @@
   tags:
     - always
 
-- block:
-    - name: Split Keycloak version string into parts
-      set_fact:
-        keycloak_version_parts: "{{ keycloak_version.split('.') }}"
-    - name: Define Keycloak major version number
-      set_fact:
-        keycloak_major_version: "{{ keycloak_version_parts[0] }}"
-      tags:
-        - always
-    - name: Define Keycloak minor version number
-      set_fact:
-        keycloak_minor_version: "{{ keycloak_version_parts[1] }}"
-      tags:
-        - always
-    - name: Define Keycloak patch version number only when specified in version string
-      set_fact:
-        keycloak_patch_version: "{{ keycloak_version_parts[2] | default(omit) }}"
+- name: Split Keycloak version string into parts
+  set_fact:
+    keycloak_major_version: "{{ keycloak_version_parts[0] }}"
+    keycloak_minor_version: "{{ keycloak_version_parts[1] if keycloak_version_parts | length > 1 else '0' }}"
+    keycloak_patch_version: "{{ keycloak_version_parts[2] if keycloak_version_parts | length > 2 else '0' }}"
+  vars:
+    keycloak_version_parts: "{{ keycloak_version.split('.') }}"
   tags:
     - always
 
