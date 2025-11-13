@@ -17,10 +17,7 @@ db-url=jdbc:postgresql://{{ keycloak_db_host }}/{{ keycloak_db.name }}
 # ------------------------------------------------------------------
 http-enabled=true
 
-{% if keycloak_proxy_headers %} 
-# Configure how Keycloak interprets reverse proxy headers 
-proxy-headers={{ keycloak_proxy_headers }} 
-{% endif %}
+{% if keycloak_proxy_headers %}proxy-headers={{ keycloak_proxy_headers }}{% endif %}
 
 # Do not attach route to cookies and rely on the session affinity capabilities from reverse proxy
 #spi-sticky-session-encoder-infinispan-should-attach-route=false
