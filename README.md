@@ -10,7 +10,7 @@ A collection of Ansible playbooks and roles for deploying RCIAM to enable secure
 
 On the managed nodes, you need a way to communicate, normally ssh, which by default uses sftp. If this is not available you can switch to scp in `ansible.cfg`. You will also need:
 
-* Python 2 (version 2.6 or later) or Python 3 (version 3.5 or later)
+* Python 3 (version 3.5 or later, tested with python version = 3.10.19)
 * `sudo` (unless the default ansible `become_method` is overriden)
 
 ## Control Machine Requirements
@@ -23,7 +23,11 @@ You can easily install all the prerequisites with the following two commands:
     ansible-galaxy install arillso.logrotate
     🍺
 
-**Tested Ansible version:** `2.10.7`
+**Tested Ansible version:** 
+```
+ansible==10.7.0
+ansible-core==2.17.14
+```
 
 ## Configuration
 
