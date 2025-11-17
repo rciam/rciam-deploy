@@ -33,7 +33,7 @@
     - always
 
 ### Install Java with OS-specific packages
-- include: "java/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+- include_tasks: "java/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
   tags:
     - always
 
