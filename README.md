@@ -19,6 +19,7 @@ On the control machine, you need a recent version of Ansible Core and some neces
 You can easily install all the prerequisites with the following two commands:
 
     pip install -r requirements.txt
+    ansible-galaxy collection install -r collections/requirements.yml
     ansible-galaxy install -r roles/requirements.yml
     🍺
 
