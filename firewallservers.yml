@@ -2,6 +2,8 @@
 #
 ---
 
-- hosts: all
+- name: Configure nftables firewall
+  hosts: all
+  become: true
   roles:
-    - { role: ipr-cnrs.nftables, become: yes }
+    - ipr-cnrs.nftables
