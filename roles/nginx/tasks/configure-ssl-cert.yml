@@ -27,8 +27,9 @@
     - item.certificate_file is defined
     - item.certificate is defined
   become: true
+  no_log: true
   notify:
-    - Restart nginx
+    - reload nginx
 
 - name: Ensure nginx SSL certificate key directories exist
   ansible.builtin.file:
@@ -57,4 +58,4 @@
   become: true
   no_log: true
   notify:
-    - Restart nginx
+    - reload nginx

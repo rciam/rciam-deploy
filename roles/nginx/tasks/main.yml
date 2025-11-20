@@ -2,28 +2,23 @@
 #
 ---
 
-- name: Fail if OS is not Debian family
+- name: Fail on unsupported OS family
   ansible.builtin.fail:
-    msg: "This role supports only Debian-family systems."
+    msg: >-
+      This role supports only Debian OS family
+      (found {{ ansible_os_family }}).
   when: ansible_os_family != 'Debian'
 
-- name: Include OS-specific variables
+- name: "Load {{ ansible_os_family }}-specific variables"
   ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 
-# Install OS-specific packages
-- name: Install nginx packages on Debian
-  ansible.builtin.include_tasks: install-Debian.yml
-  when: ansible_os_family == 'Debian'
+- name: Install required packages
+  ansible.builtin.import_tasks: install.yml
 
-#- name: Install nginx packages on RedHat
-#  ansible.builtin.include_tasks: install-RedHat.yml
-#  when: ansible_os_family == 'RedHat'
+- name: Configure service
+  ansible.builtin.import_tasks: configure.yml
 
-# Apply OS-independent configuration
-- name: Apply common nginx configuration
-  ansible.builtin.include_tasks: configure-common.yml
-
-- name: Ensure nginx service is started and enabled on boot
+- name: "Ensure {{ nginx_service }} service is started and enabled on boot"
   ansible.builtin.service:
     name: "{{ nginx_service }}"
     state: started

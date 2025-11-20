@@ -1,7 +1,15 @@
+# nginx/handlers/main.yml
+#
 ---
 
-- name: Restart nginx
+- name: reload nginx
   ansible.builtin.service:
-    name: nginx 
+    name: "{{ nginx_service }}"
+    state: reloaded
+  become: true
+
+- name: restart nginx
+  ansible.builtin.service:
+    name: "{{ nginx_service }}"
     state: restarted
   become: true

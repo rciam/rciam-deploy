@@ -1,0 +1,9 @@
+# nginx/tasks/install.yml
+#
+---
+
+- name: "Ensure nginx server is installed ({{ ansible_os_family }})"
+  ansible.builtin.package:
+    name: "{{ nginx_package }}"
+    state: present
+  become: true

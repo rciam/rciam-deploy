@@ -1,4 +1,4 @@
-# file: nginx/tasks/configure-common.yml
+# file: nginx/tasks/configure.yml
 #
 ---
 
@@ -8,7 +8,7 @@
     chdir: "{{ nginx_conf_path }}"
     creates: "{{ nginx_conf_path }}/{{ nginx_dhparam_file }}"
   become: true
-  notify: Restart nginx
+  notify: restart nginx
   when: nginx_dhparam_file is defined
 
 - name: Ensure nginx service is configured
@@ -20,15 +20,17 @@
     mode: '0644'
     backup: true
   become: true
-  notify: Restart nginx
+  notify: restart nginx
 
 - name: Disable default nginx Virtual Host configuration
   ansible.builtin.file:
     path: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_default_vhost_filename }}"
     state: absent
   become: true
-  notify: Restart nginx
-  when: nginx_remove_default_vhost
+  notify: reload nginx
+  when:
+    - nginx_remove_default_vhost
+    - - ansible_os_family == 'Debian'
 
 - name: Configure nginx Virtual Host SSL certificates
   ansible.builtin.include_tasks: configure-ssl-cert.yml
@@ -45,7 +47,7 @@
     mode: '0644'
     backup: true
   become: true
-  notify: Restart nginx
+  notify: reload nginx
   when: nginx_create_vhosts
 
 - name: Enable nginx Virtual Host configuration
@@ -54,5 +56,5 @@
     dest: "{{ nginx_conf_path }}/sites-enabled/{{ nginx_vhosts_filename }}"
     state: link
   become: true
-  notify: Restart nginx
+  notify: reload nginx
   when: nginx_create_vhosts
