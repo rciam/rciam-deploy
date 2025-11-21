@@ -1,23 +1,26 @@
+# file: apache/tasks/main.yml
+#
 ---
 
-- name: Include OS-specific variables
-  include_vars: "{{ ansible_os_family }}.yml"
+- name: Fail on unsupported OS family
+  ansible.builtin.fail:
+    msg: >-
+      This role supports only Debian and RedHat OS families
+      (found {{ ansible_os_family }}).
+  when: ansible_os_family not in ['Debian', 'RedHat']
 
-# Install OS-specific packages
-- include: install-Debian.yml
-  when: ansible_os_family == 'Debian'
-- include: install-RedHat.yml
-  when: ansible_os_family == 'RedHat'
+- name: "Load {{ ansible_os_family }}-specific variables"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 
-# Apply OS-specific configuration
-- include: configure-Debian.yml
-  when: ansible_os_family == 'Debian'
-- include: configure-RedHat.yml
-  when: ansible_os_family == 'RedHat'
+- name: Install required packages
+  ansible.builtin.import_tasks: install.yml
 
-- name: Ensure Apache service is at selected state and enabled on boot
-  service:
+- name: Configure service
+  ansible.builtin.import_tasks: configure.yml
+
+- name: "Ensure {{ apache_service }} service is {{ apache_state }} and enabled on boot"
+  ansible.builtin.service:
     name: "{{ apache_service }}"
     state: "{{ apache_state }}"
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true

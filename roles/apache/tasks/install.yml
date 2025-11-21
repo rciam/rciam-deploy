@@ -1,0 +1,19 @@
+# roles/apache/tasks/install.yml
+#
+---
+
+- name: Install Apache package
+  ansible.builtin.package:
+    name: "{{ apache_package }}"
+    state: present
+  become: true
+
+- name: Install Apache module packages
+  ansible.builtin.package:
+    name: "{{ apache_mods_installed }}"
+    state: present
+  become: true
+  when:
+    - apache_mods_installed is defined
+    - apache_mods_installed | length > 0
+  notify: restart apache

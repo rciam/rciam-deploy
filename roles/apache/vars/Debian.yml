@@ -1,8 +1,11 @@
+# apache/vars/Debian.yml
+#
 ---
 
 apache_service: apache2
 apache_conf_path: /etc/apache2
-apache_user: "www-data"
-apache_group: "www-data"
+apache_package: apache2
+apache_user: www-data
+apache_group: www-data
 
 apache_default_vhost_filename: 000-default.conf

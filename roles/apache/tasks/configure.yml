@@ -1,0 +1,29 @@
+# apache2/tasks/configure.yml
+
+- name: Configure SSL certificates
+  ansible.builtin.include_tasks: configure-ssl-cert.yml
+  when:
+    - apache_create_vhosts | default(false)
+    - apache_vhosts_ssl is defined
+    - apache_vhosts_ssl | length > 0
+
+- name: "Configure OS-specific settings ({{ ansible_os_family }})"
+  ansible.builtin.include_tasks: "configure-{{ ansible_os_family }}.yml"
+
+- name: Enable required Apache modules
+  community.general.apache2_module:
+    state: present
+    name: "{{ item }}"
+  with_items: "{{ apache_mods_enabled }}"
+  become: true
+  notify:
+    - reload apache
+
+- name: Disable unnecessary Apache modules
+  community.general.apache2_module:
+    state: absent
+    name: "{{ item }}"
+  with_items: "{{ apache_mods_disabled }}"
+  become: true
+  notify:
+    - reload apache
