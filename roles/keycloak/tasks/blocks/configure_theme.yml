@@ -5,7 +5,7 @@
 
 - name: "Add {{ keycloak_plugins.wayf.theme.name }} theme's terms of use for the realm {{ keycloak_realm.name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/theme-info/terms-of-use"
+    url: "{{ keycloak_host }}/realms/{{ keycloak_realm.name }}/theme-info/terms-of-use"
     method: POST
     body_format: raw
     headers:
@@ -17,7 +17,7 @@
 
 - name: "Add {{ keycloak_plugins.wayf.theme.name }} theme's configuration for the realm {{ keycloak_realm.name }}"
   uri:
-    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/theme-info/theme-config"
+    url: "{{ keycloak_host }}/realms/{{ keycloak_realm.name }}/theme-info/theme-config"
     method: POST
     body_format: json
     headers:
@@ -28,7 +28,7 @@
 
 - name: "Add resource files"
   uri:
-    url: "{{ keycloak_proxy_host }}/realms/{{ keycloak_realm.name }}/theme-info/resource/{{ theme_realm_resource.filename }}"
+    url: "{{ keycloak_host }}/realms/{{ keycloak_realm.name }}/theme-info/resource/{{ theme_realm_resource.filename }}"
     method: POST
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"

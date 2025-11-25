@@ -32,8 +32,20 @@
   tags:
     - always
 
-### Install Java with OS-specific packages
-- include_tasks: "java/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+- name: Fail if both HTTP and HTTPS are disabled
+  fail:
+    msg: >
+      Keycloak cannot run with both HTTP and HTTPS listeners disabled.
+      http-enabled={{ keycloak_http_enabled }},
+      https-enabled={{ keycloak_https_enabled }}
+  when:
+    - not keycloak_http_enabled | bool
+    - not keycloak_https_enabled | bool
+  tags:
+    - always
+
+- name: Install Java with OS-specific packages
+  include_tasks: "java/{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
   tags:
     - always
 

@@ -11,8 +11,6 @@ keycloak_service_user: "keycloak"
 # Extra run params used in the keycloak systemd service. Multiple `-D` params can be specified.  E.g. uncomment the following to enable technology preview features
 #keycloak_extra_run_params: "-Dkeycloak.profile=preview"
 
-keycloak_base_url_path: "auth" # The base URL path for frontend and backend requests. Note that this cannot be empty.
-
 keycloak_admin:
   user: "<SET AN ADMIN USER>"
   pass: "<SET AN ADMIN PASS>"
@@ -23,12 +21,46 @@ keycloak_db:
   pass: "<DB USER PASSWORD>"
 
 keycloak_db_host: "{{ groups['db'][0] }}"
-keycloak_proxy_host: "http://localhost:{{ keycloak_bind_port }}/{{ keycloak_base_url_path }}"
 
 keycloak_home: "/srv/keycloak"
 
+# Enables HTTP listener (`http-enabled` option)
+keycloak_http_enabled: true
+
+# Enables HTTPS listener (`https-enabled` option)
+keycloak_https_enabled: false
+
+# Sets bind address (`http-host` option)
 keycloak_bind_address: "0.0.0.0"
+
+# Sets HTTP port (`http-port`)
 keycloak_bind_port: "8080"
+
+# The base URL path for frontend and backend requests.
+# Note that this cannot be empty.
+keycloak_base_url_path: "auth"
+
+# Sets the `hostname` option
+keycloak_proxy_host: "http://localhost:{{ keycloak_bind_port }}/{{ keycloak_base_url_path }}"
+
+# Full Keycloak base URL (scheme + host + port + base path)
+keycloak_host: >-
+  {{
+    (
+      'https'
+      if keycloak_https_enabled | bool
+      else 'http'
+    )
+    ~ '://'
+    ~ (
+        'localhost'
+        if keycloak_bind_address in ['0.0.0.0', '::']
+        else keycloak_bind_address
+      )
+    ~ ':' ~ keycloak_bind_port
+    ~ '/'
+    ~ (keycloak_base_url_path | trim('/'))
+  }}
 
 keycloak_java_opts: "-Xms1024m -Xmx2048m -XX:MaxPermSize=768m"
 
@@ -48,8 +80,8 @@ keycloak_logs_max_days: 548  # that's ~18 months
 
 keycloak_keystores: "/srv/keycloak-keys"
 
-# If the server should expose health check endpoints. Defaults to false 
-keycloak_health_enabled: no
+# If the server should expose health check endpoints. Defaults to false
+keycloak_health_enabled: false
 
 # Themes to apply to all realms defined under 'keycloak_config.realms'.
 # You can override theme settings for specific realms by defining
@@ -59,9 +91,9 @@ keycloak_themes:
   account: "rciam"
   #email: "keycloak" # Uncomment and customise if necessary
 
-# How Keycloak interprets reverse proxy headers. 
-# Allowed values: "xforwarded" or "forwarded". 
-# Leave commented when no proxy (or TLS passthrough). 
+# How Keycloak interprets reverse proxy headers.
+# Allowed values: "xforwarded" or "forwarded".
+# Leave commented when no proxy (or TLS passthrough).
 #keycloak_proxy_headers: forwarded
 
 ### plugins
