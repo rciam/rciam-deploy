@@ -1,0 +1,94 @@
+---
+# scope vars:
+# current_realm = the current realm (loop item) of the config
+
+
+
+
+- name: Acquire tokens
+  include_tasks: blocks/helpers/get_tokens.yml
+
+
+
+  vars:
+    desired_user_attributes:
+      - name: "organization"
+        displayName: "Organization"
+        required: false
+        readOnly: false
+        validations:
+          length:
+            min: 0
+            max: 255
+
+      - name: "employeeId"
+        displayName: "Employee ID"
+        multivalued: false
+        required:
+          roles: ["admin"]
+        permissions:
+          view: ["admin"]
+          edit: ["admin"]
+
+      - name: "department"
+        displayName: "Department"
+        multivalued: false
+        required:
+          roles: ["user"]
+        permissions:
+          view: ["user", "admin"]
+          edit: ["admin"]
+
+
+- name: Get existing user-profile
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/users/profile"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+  register: current_user_profile
+
+- name: Build merged user-profile
+  set_fact:
+    merged_user_profile:
+      attributes: "{{ desired_user_attributes }}"
+
+- name: Update Keycloak user-profile
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/users/profile"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ merged_user_profile }}"
+    body_format: json
+    status_code: 204
+
+
+
+- name: Get existing user-profile
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/users/profile"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    status_code: [200]
+  register: current_user_profile
+
+
+- name: Merge desired attributes
+  set_fact:
+    merged_user_profile:
+      attributes: "{{ current_user_profile.json.attributes | default([]) 
+                      + desired_user_attributes }}"
+
+- name: Update Keycloak realm user-profile
+  uri:
+    url: "{{ keycloak_proxy_host }}/admin/realms/{{ current_realm.name }}/users/profile"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ tokens.json.access_token }}"
+    body: "{{ merged_user_profile }}"
+    body_format: json
+    status_code: 204
+
+

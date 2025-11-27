@@ -171,6 +171,15 @@
       tags:
         - "keycloak:config:realm:client_reg_policies"
 
+    - name: "Configure users profile"
+      include_tasks: blocks/configure_users_profile.yml
+      with_items: "{{ keycloak_config.realms | default([]) }}"
+      loop_control:
+        loop_var: current_realm
+      run_once: true
+      tags:
+        - "keycloak:config:realm:users_profile"
+
   tags: "keycloak:config:realm"
 
 ### wayf plugin configuration
