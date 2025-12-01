@@ -173,6 +173,29 @@
 
   tags: "keycloak:config:realm"
 
+- name: Configure User Profile
+  community.general.keycloak_userprofile:
+    auth_keycloak_url: "{{ keycloak_proxy_host }}"
+    auth_realm: "{{ keycloak_auth_realm | default('master') }}"
+    auth_username: "{{ keycloak_admin.user | default(omit) }}"
+    auth_password: "{{ keycloak_admin.pass | default(omit) }}"
+
+    realm: "{{ current_realm.name }}"
+    state: present
+    config:
+      kc_user_profile_config:
+        - unmanagedAttributePolicy: "{{ current_realm.user_profile.unmanaged_attribute_policy | default('ENABLED') }}"
+          attributes: "{{ current_realm.user_profile.attributes | default(omit) }}"
+          # you can also add groups, scopes, etc. here the same way
+  loop: "{{ keycloak_config.realms | default([]) }}"
+  loop_control:
+    loop_var: current_realm
+    label: "{{ current_realm.name }}"
+  when: current_realm.user_profile is defined
+  run_once: true
+  tags:
+    - keycloak:config:realm:user_profile
+
 ### wayf plugin configuration
 - name: Configure wayf plugin
   block:
