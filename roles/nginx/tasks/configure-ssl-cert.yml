@@ -3,54 +3,59 @@
 ---
 
 - name: Ensure nginx SSL certificate directories exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.certificate_file | dirname }}"
     owner: "{{ nginx_ssl_certificate_file_owner }}"
     group: "{{ nginx_ssl_certificate_file_group }}"
     state: directory
-  with_items:
-    - "{{ nginx_vhosts }}"
-  when: item.certificate_file is defined and item.certificate is defined
-  become: yes
+  loop: "{{ nginx_vhosts }}"
+  when:
+    - item.certificate_file is defined
+    - item.certificate is defined
+  become: true
 
 - name: Ensure nginx SSL certificates are copied
-  copy:
+  ansible.builtin.copy:
     dest: "{{ item.certificate_file }}"
     content: "{{ item.certificate }}"
     owner: "{{ nginx_ssl_certificate_file_owner }}"
     group: "{{ nginx_ssl_certificate_file_group }}"
     mode: "{{ nginx_ssl_certificate_file_mode }}"
-    backup: yes
-  with_items:
-    - "{{ nginx_vhosts }}"
-  when: item.certificate_file is defined and item.certificate is defined
-  become: yes
+    backup: true
+  loop: "{{ nginx_vhosts }}"
+  when:
+    - item.certificate_file is defined
+    - item.certificate is defined
+  become: true
+  no_log: true
   notify:
-    - Restart nginx
+    - reload nginx
 
 - name: Ensure nginx SSL certificate key directories exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.certificate_key_file | dirname }}"
     owner: "{{ nginx_ssl_certificate_key_file_owner }}"
     group: "{{ nginx_ssl_certificate_key_file_group }}"
     state: directory
-  with_items:
-    - "{{ nginx_vhosts }}"
-  when: item.certificate_key_file is defined and item.certificate_key is defined
-  become: yes
+  loop: "{{ nginx_vhosts }}"
+  when:
+    - item.certificate_key_file is defined
+    - item.certificate_key is defined
+  become: true
 
 - name: Ensure nginx SSL certificate keys are copied
-  copy:
+  ansible.builtin.copy:
     dest: "{{ item.certificate_key_file }}"
     content: '{{ item.certificate_key }}'
     owner: "{{ nginx_ssl_certificate_key_file_owner }}"
     group: "{{ nginx_ssl_certificate_key_file_group }}"
     mode: "{{ nginx_ssl_certificate_key_file_mode }}"
-    backup: yes
-  with_items:
-    - "{{ nginx_vhosts }}"
-  when: item.certificate_key_file is defined and item.certificate_key is defined
-  become: yes
-  no_log: yes
+    backup: true
+  loop: "{{ nginx_vhosts }}"
+  when:
+    - item.certificate_key_file is defined
+    - item.certificate_key is defined
+  become: true
+  no_log: true
   notify:
-    - Restart nginx
+    - reload nginx

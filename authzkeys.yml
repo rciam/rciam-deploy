@@ -1,7 +1,8 @@
 # file: authzkeys.yml
 #
-# Playbook for managing SSH authorized keys in ~/.ssh/authorized_keys.
-# 
+# Playbook for managing SSH authorized keys in
+# ~{{ ansible_user }}/.ssh/authorized_keys.
+#
 # The `authz_keys_paths` variable needs to be defined to specify the paths
 # to files containing the public keys. You can include keys based on matching
 # files or specifying individual paths.
@@ -15,26 +16,36 @@
 # authz_keys_paths:
 #  - "{{ inventory_dir }}/files/authorized_keys/devs/alice.pub"
 #  - "{{ inventory_dir }}/files/authorized_keys/ops/bob.pub"
-# 
+#
 # N.B. The playbook will *remove* all other non-specified keys from the
 # authorized_keys file. Defining authz_keys_paths as an empty list
 # will result in an *empty* authorized_keys file
 #
 ---
 
-- hosts: all
+- name: Manage SSH authorized keys (exclusive)
+  hosts: all
 
   tasks:
+    - name: Ensure authz_keys_paths is defined (can be an empty list)
+      ansible.builtin.assert:
+        that:
+          - authz_keys_paths is defined
+          - authz_keys_paths is not none
+        fail_msg: "authz_keys_paths must be defined (may be an empty list if you want an empty authorized_keys)."
 
-    - set_fact: 
+    - name: Set list fact from key files
+      ansible.builtin.set_fact:
         authzkeys_list: "{{ lookup('file', item) }}"
       register: authzkeys
       with_fileglob: "{{ authz_keys_paths }}"
 
-    - set_fact:
+    - name: Build authorized_keys string
+      ansible.builtin.set_fact:
         authzkeys_string: "{{ authzkeys.results | map(attribute='ansible_facts.authzkeys_list') | join('\n') }}"
 
-    - ansible.posix.authorized_key:
+    - name: Deploy exclusive authorized_keys
+      ansible.posix.authorized_key:
         user: "{{ ansible_user }}"
         key: "{{ authzkeys_string }}"
         exclusive: true

@@ -1,3 +1,10 @@
+# See https://github.com/github/gitignore/blob/main/Global/Ansible.gitignore
+# BEGIN Ansible.gitignore
+*.retry
+.ansible/
+# END Ansible.gitignore
+collections/
+
 # See https://github.com/github/gitignore/blob/master/Global/OSX.gitignore
 # BEGIN OSX.gitignore
 .DS_Store

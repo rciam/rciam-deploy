@@ -1,3 +1,5 @@
+# roles/apache/defaults/main.yml
+#
 ---
 
 apache_http_port: 80
@@ -17,7 +19,7 @@ apache_listen_directives: |
 # Set to one of:  Full | OS | Minimal | Minor | Major | Prod
 # where Full conveys the most information, and Prod the least.
 apache_server_tokens: "OS"
-# Set to one of:  On | Off | EMail 
+# Set to one of:  On | Off | EMail
 # Set to "EMail" to also include a mailto: link to the ServerAdmin.
 apache_server_signature: "On"
 # Set to one of:  On | Off | extended
@@ -34,7 +36,7 @@ apache_remove_default_page: false
 apache_remove_default_vhost: true
 
 apache_vhosts:
-  # Additional properties: `serveradmin`, `serveralias`, `usecanonicalname`, 
+  # Additional properties: `serveradmin`, `serveralias`, `usecanonicalname`,
   # `extra_parameters`.
   - servername: "{{ inventory_hostname }}"
     documentroot: "/var/www/html"
@@ -63,18 +65,25 @@ apache_ssl_certificate_key_file_group: "root"
 # Permissions of the file containing the SSL certificate key
 apache_ssl_certificate_key_file_mode: "0600"
 
-apache_ignore_missing_ssl_certificate: true
-
 #apache_ssl_protocol: "All -SSLv2 -SSLv3"
 #apache_ssl_cipher_suite: "AES256+EECDH:AES256+EDH"
 
 # Initial apache state, i.e. `started`, `stopped`, `restarted`, or `reloaded`
 apache_state: "started"
 
-#install additional modules
+# List of installed modules
 apache_mods_installed: []
+# Examples for Debian:
+#  - libapache2-mod-auth-openidc
+#  - libapache2-mod-shib
+# Examples for RedHat
+#  - mod_ssl
+#  - mod_auth_openidc
 
-# Only used on Debian/Ubuntu.
-apache_mods_enabled:
-  - ssl
+# List of enabled modules
+apache_mods_enabled: []
+#  - ssl
+#  - rewrite
+
+# List of disabled modules
 apache_mods_disabled: []

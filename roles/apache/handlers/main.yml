@@ -1,7 +1,15 @@
+# apache/handlers/main.yml
+#
 ---
 
+- name: reload apache
+  ansible.builtin.service:
+    name: "{{ apache_service }}"
+    state: reloaded
+  become: true
+
 - name: restart apache
-  service:
+  ansible.builtin.service:
     name: "{{ apache_service }}"
     state: restarted
-  become: yes
+  become: true

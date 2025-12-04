@@ -1,0 +1,7 @@
+---
+
+roles:
+  - name: ipr-cnrs.nftables
+    version: "v2.2.6"
+  - name: arillso.logrotate
+    version: "1.6.1"
