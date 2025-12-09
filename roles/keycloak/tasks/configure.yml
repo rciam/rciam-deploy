@@ -186,6 +186,7 @@
       kc_user_profile_config:
         - unmanagedAttributePolicy: "{{ current_realm.user_profile.unmanaged_attribute_policy | default('ENABLED') }}"
           attributes: "{{ current_realm.user_profile.attributes | default(omit) }}"
+          groups: "{{ current_realm.user_profile.groups | default(omit) }}"
           # you can also add groups, scopes, etc. here the same way
   loop: "{{ keycloak_config.realms | default([]) }}"
   loop_control:
