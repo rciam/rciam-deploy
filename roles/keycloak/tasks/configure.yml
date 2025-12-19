@@ -224,29 +224,6 @@
   notify: "Restart keycloak"
   tags: ["keycloak:remove:plugins"]
 
-# - name: Find all deprecated plugin JARs
-#   ansible.builtin.find:
-#     paths: "{{ keycloak_home }}/providers"
-#     patterns: "{{ [plugins_to_remove | default([]), keycloak_plugins.remove_plugins.patterns | default([])] | flatten | select('string') | list }}"
-#     recurse: no
-#   register: found_plugins
-#   tags: ["keycloak:remove:plugins"]
-
-# - name: Remove found JAR files
-#   become: yes
-#   ansible.builtin.file:
-#     path: "{{ item.path }}"
-#     state: absent
-#   loop: "{{ found_plugins.files | default([]) }}"
-#   loop_control:
-#     label: "Removing: {{ item.path }}"
-#   when: >
-#     (plugins_to_remove is defined) or
-#     (keycloak_plugins.remove_plugins is defined) or
-#     (force_plugin_removal | default(false) | bool)
-#   notify: "Restart keycloak"
-#   tags: ["keycloak:remove:plugins"]
-
 ### wayf plugin configuration
 - name: Configure wayf plugin
   block:
