@@ -83,6 +83,12 @@ keycloak_keystores: "/srv/keycloak-keys"
 # If the server should expose health check endpoints. Defaults to false
 keycloak_health_enabled: false
 
+plugins_to_remove:
+# you can add here plugins you want to remove
+#  - keycloak-orcid-*.jar
+#  - testidi-*.md
+
+
 # Themes to apply to all realms defined under 'keycloak_config.realms'.
 # You can override theme settings for specific realms by defining
 # 'keycloak_config.realms.<REALM>.themes'
@@ -94,7 +100,7 @@ keycloak_themes:
 # How Keycloak interprets reverse proxy headers.
 # Allowed values: "xforwarded" or "forwarded".
 # Leave commented when no proxy (or TLS passthrough).
-#keycloak_proxy_headers: forwarded
+#keycloak_proxy_headers: forwarded  
 
 ### plugins
 ### wayf plugin works ONLY with "stage" branch of keycloak (need to have commit fe055820980dbcb79d5aae2b4dce78b840b912b0)

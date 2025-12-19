@@ -197,33 +197,27 @@
   tags:
     - keycloak:config:realm:user_profile
 
-- name: Ensure all deprecated plugin JARs are removed
-  vars:
-    keycloak_basdir: /srv/keycloak
-  loop:
-    - 'keycloak-orcid-*.jar'
+- name: Find all deprecated plugin JARs
+  ansible.builtin.find:
+    paths: "{{ keycloak_home }}/providers"
+    patterns: "{{ plugins_to_remove | default([]) }}"
+    recurse: no
+  register: found_plugins
+  tags: ["keycloak:remove:plugins"]
+
+- name: Remove found JAR files
+  become: yes
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ found_plugins.files | default([]) }}"
   loop_control:
-    label: "Pattern: {{ item }}"
-  tags:
-    - keycloak:remove:oldplugins 
-  block:
-    - name: Find files matching pattern {{ item }}
-      ansible.builtin.find:
-        paths: "{{ keycloak_basedir }}/providers"
-        recurse: no
-        patterns: "{{ item }}"
-      register: found_files
-
-    - name: Remove found file {{ file_to_remove.path | basename }}
-      ansible.builtin.file:
-        path: "{{ file_to_remove.path }}"
-        state: absent
-      loop: "{{ found_files.files }}"
-      loop_control:
-        loop_var: file_to_remove
-      when: found_files.files | length > 0
-      notify: Restart Keycloak
-
+    label: "Removing: {{ item.path }}"
+  when: 
+    - found_plugins.matched is defined
+    - found_plugins.matched > 0
+  notify: Restart keycloak
+  tags: ["keycloak:remove:plugins"]
 
 ### wayf plugin configuration
 - name: Configure wayf plugin
