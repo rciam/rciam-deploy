@@ -1,0 +1,43 @@
+db=postgres
+db-username={{ keycloak_db.user }}
+db-password={{ keycloak_db.pass }}
+db-url=jdbc:postgresql://{{ keycloak_db_host }}/{{ keycloak_db.name }}
+
+
+# HTTP
+
+# The file path to a server certificate or certificate chain in PEM format.
+#https-certificate-file=${kc.home.dir}conf/server.crt.pem
+
+# The file path to a private key in PEM format.
+#https-certificate-key-file=${kc.home.dir}conf/server.key.pem
+
+# Allow HTTP (TLS is terminated upstream)
+http-enabled=true
+
+{% if keycloak_proxy_headers -%}
+# Configure how Keycloak interprets reverse proxy headers
+proxy-headers={{ keycloak_proxy_headers }}
+{%- endif %}
+
+# Do not attach route to cookies and rely on the session affinity capabilities from reverse proxy
+#spi-sticky-session-encoder-infinispan-should-attach-route=false
+
+# Hostname for the Keycloak server.
+hostname={{ keycloak_proxy_host }}
+
+
+cache=ispn
+# Allows to apply custom cache configuration (e.g. cache-ispn-jdbc-ping.xml.j2) 
+# without triggering the deprecation warning about modifying defaults. 
+# Required when using a custom Infinispan XML file in production. 
+cache-config-mutate=true
+cache-config-file=cache-ispn-jdbc-ping.xml
+
+http-relative-path=/{{ keycloak_base_url_path }}
+
+log=file,console
+log-file={{ keycloak_logs_folder }}/server.log
+#log-level=INFO,org.infinispan:DEBUG,org.jgroups:DEBUG
+
+health-enabled={{ keycloak_health_enabled | default(False) | string | lower }}
