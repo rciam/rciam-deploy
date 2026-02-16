@@ -57,6 +57,6 @@
     headers:
       Authorization: "Bearer {{ tokens.json.access_token }}"
     status_code: 204
-  when: mapper_exists
+  when: not mapper_exists
   tags:
     - "keycloak:config:realm:federations"
