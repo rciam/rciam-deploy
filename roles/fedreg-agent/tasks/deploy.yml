@@ -12,7 +12,7 @@
     - requirements
 
 - name: Install python requirements
-  pip: 
+  pip:
     requirements: /tmp/requirements_{{ build_branch }}.txt
     virtualenv: "{{ fedreg_agent_venv_path }}"
     virtualenv_command: "{{ fedreg_agent_venv_command }}"
