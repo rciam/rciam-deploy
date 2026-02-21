@@ -8,6 +8,7 @@
   loop:
     - git
     - python3-venv
+    - python3-packaging
   become: yes
   tags:
     - agent
