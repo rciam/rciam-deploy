@@ -26,6 +26,15 @@
     status_code: 201
   when: keycloak_realm.config is defined
 
+- name: Multipart field name based on Keycloak version
+  set_fact:
+    kc_which_version: >-
+      {% if keycloak_major_version|int >= 26 %}
+      input
+      {% else %}
+      file
+      {% endif %}
+
 - name: "Add resource files"
   uri:
     url: "{{ keycloak_host }}/realms/{{ keycloak_realm.name }}/theme-info/resource/{{ theme_realm_resource.filename }}"
@@ -34,9 +43,7 @@
       Authorization: "Bearer {{ tokens.json.access_token }}"
     body_format: form-multipart
     body:
-      file:
-        filename: "{{ theme_realm_resource.path }}"
-        mime_type: application/octet-stream
+      "{{ kc_which_version }}": "{{ theme_realm_resource.path }}"
     status_code: 201
   loop_control:
     loop_var: theme_realm_resource
