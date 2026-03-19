@@ -15,7 +15,7 @@
     - "keycloak:config:realm:social_idps"
 
 - set_fact:
-    new_idp: "{% if idp_result.status == 200 %}false{% else %}true{% endif %}"
+    new_idp: "{{ idp_result.status == 400 }}"
   tags:
     - "keycloak:config:realm:idps"
     - "keycloak:config:realm:oidc_idps"

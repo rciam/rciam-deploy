@@ -6,6 +6,10 @@
     - "keycloak:config:realm:idps"
     - "keycloak:config:realm:social_idps"
 
+- name: "Reset IdP flag for {{ item[1].alias }}"
+  set_fact:
+    new_idp: false
+
 - name: "Get current IdP with alias : {{ item[1].alias }} and realm: {{ item[0].name }}"
   include_tasks: blocks/helpers/get_realm_idp.yml
   vars:

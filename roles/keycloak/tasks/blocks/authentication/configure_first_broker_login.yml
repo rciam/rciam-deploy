@@ -39,6 +39,8 @@
           hideUsername: "{{ current_realm.authentication.hideUsername | default('false') }}"
           createUid: "{{ current_realm.authentication.createUid | default('false') }}"
       status_code: 204
-    when: authentication_config_id
+    when:
+      - authentication_config_id is defined
+      - authentication_config_id | string | length > 0
 
   when: current_realm.authentication.updateProfileOnFirstLogin is defined or current_realm.authentication.termsAndConditions is defined

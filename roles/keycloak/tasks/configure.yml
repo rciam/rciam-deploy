@@ -36,7 +36,7 @@
     - name: Configure keys
       include_tasks: blocks/keys/configure_keys.yml
       with_subelements:
-        - "{{ keycloak_config.realms | default([]) }} "
+        - "{{ keycloak_config.realms | default([]) }}"
         - "keys"
         - skip_missing: True
 
@@ -77,7 +77,7 @@
     - name: "Configure Identity Federations"
       include_tasks: blocks/configure_federations.yml
       with_subelements:
-        - "{{ keycloak_config.realms | default([]) }} "
+        - "{{ keycloak_config.realms | default([]) }}"
         - "federations"
         - skip_missing: True
       run_once: true
@@ -87,7 +87,7 @@
     - name: "Configure Social IdPs"
       include_tasks: blocks/configure_social_idps.yml
       with_subelements:
-        - "{{ keycloak_config.realms | default([]) }} "
+        - "{{ keycloak_config.realms | default([]) }}"
         - "social_idps"
         - skip_missing: True
       run_once: true
@@ -98,7 +98,7 @@
     - name: "Configure SAML IdPs"
       include_tasks: blocks/configure_idps.yml
       with_subelements:
-        - "{{ keycloak_config.realms | default([]) }} "
+        - "{{ keycloak_config.realms | default([]) }}"
         - "saml_idps"
         - skip_missing: True
       run_once: true
@@ -109,7 +109,7 @@
     - name: "Configure OIDC IdPs"
       include_tasks: blocks/configure_idps.yml
       with_subelements:
-        - "{{ keycloak_config.realms | default([]) }} "
+        - "{{ keycloak_config.realms | default([]) }}"
         - "oidc_idps"
         - skip_missing: True
       run_once: true
@@ -120,7 +120,7 @@
     - name: "Configure IdP Mappers"
       include_tasks: blocks/configure_idp_mappers.yml
       with_subelements:
-        - "{{ keycloak_config.realms | default([]) }} "
+        - "{{ keycloak_config.realms | default([]) }}"
         - "idp_mappers"
         - skip_missing: True
       run_once: true
@@ -155,7 +155,7 @@
         - name: "Add new / update existing client scopes"
           include_tasks: blocks/configure_client_scopes.yml
           with_subelements:
-            - "{{keycloak_config.realms | default([])}} "
+            - "{{keycloak_config.realms | default([])}}"
             - "client_scopes"
             - skip_missing: True
           run_once: true
@@ -272,10 +272,10 @@
       with_items: "{{ keycloak_config.realms | default([]) }}"
       run_once: true
       vars:
-        - body_payload:
-            loginTheme: "{{ item.themes.login | default(keycloak_themes.login) | default(omit) }}"
-            accountTheme: "{{ item.themes.account | default(keycloak_themes.account) | default(omit) }}"
-            emailTheme: "{{ item.themes.email | default(keycloak_themes.email) | default(omit) }}"
+        body_payload:
+          loginTheme: "{{ item.themes.login | default(keycloak_themes.login) | default(omit) }}"
+          accountTheme: "{{ item.themes.account | default(keycloak_themes.account) | default(omit) }}"
+          emailTheme: "{{ item.themes.email | default(keycloak_themes.email) | default(omit) }}"
   tags:
     - "keycloak:config:realm"
     - "keycloak:config:realm:themes"

@@ -25,7 +25,7 @@ You can easily install all the prerequisites with the following two commands:
 
 **Tested Ansible Core version:**
 ```
-ansible-core==2.17.14
+ansible-core==2.19.7
 ```
 
 ## Configuration

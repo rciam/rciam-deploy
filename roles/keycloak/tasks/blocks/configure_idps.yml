@@ -11,6 +11,7 @@
   include_tasks: blocks/helpers/get_realm_idp.yml
   vars:
     alias: "{{ item[1].data.alias }}"
+    new_idp: false
   tags:
     - "keycloak:config:realm:idps"
     - "keycloak:config:realm:oidc_idps"
