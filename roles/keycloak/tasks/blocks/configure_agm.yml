@@ -31,4 +31,6 @@
   loop: "{{ keycloak_realm.configuration_rules }}"
   loop_control:
     loop_var: desired_agm_conf_rule
-  when: keycloak_realm.configuration_rules is defined and keycloak_realm.configuration_rules | length > 0
+  when:
+    - keycloak_realm.configuration_rules is defined
+    - keycloak_realm.configuration_rules | length > 0

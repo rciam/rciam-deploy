@@ -18,7 +18,9 @@
 
   - name: "Configure 'browser' authentication flow of realm {{ current_realm.name }}: Default IdP"
     include_tasks: blocks/authentication/configure_default_idp.yml
-    when: current_realm.defaultIdPAlias is defined and current_realm.defaultIdPAlias
+    when:
+      - current_realm.defaultIdPAlias is defined
+      - current_realm.defaultIdPAlias | string | length > 0
 
   - name: "Configure 'browser' authentication flow of realm {{ current_realm.name }}: Cookie requirement"
     include_tasks: blocks/authentication/configure_browser_flow_cookie.yml
