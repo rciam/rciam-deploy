@@ -25,19 +25,48 @@
     body: "{{ keycloak_realm.config }}"
     status_code: 201
   when: keycloak_realm.config is defined
+- name: Create temporary resource directory
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: "keycloak_theme_res_"
+  register: temp_theme_dir
 
-- name: "Add resource files"
-  uri:
-    url: "{{ keycloak_host }}/realms/{{ keycloak_realm.name }}/theme-info/resource/{{ theme_realm_resource.filename }}"
-    method: POST
-    headers:
-      Authorization: "Bearer {{ tokens.json.access_token }}"
-    body_format: form-multipart
-    body:
-      file:
-        filename: "{{ theme_realm_resource.path }}"
-        mime_type: application/octet-stream
-    status_code: 201
+- name: Transfer resource files to remote node
+  copy:
+    src: "{{ theme_realm_resource.path }}"
+    dest: "{{ temp_theme_dir.path }}/{{ theme_realm_resource.filename }}"
+    mode: "0644"
+  loop: "{{ keycloak_realm.resources | default([]) }}"
   loop_control:
     loop_var: theme_realm_resource
-  with_items: "{{ keycloak_realm.resources | default([]) }}"
+
+- name: Upload resource files
+  block:
+    - name: Add resource files via curl
+      command:
+        argv:
+          - curl
+          - -s
+          - -o
+          - /dev/null
+          - -w
+          - "%{http_code}"
+          - -X
+          - POST
+          - "{{ keycloak_host }}/realms/{{ keycloak_realm.name }}/theme-info/resource/{{ theme_realm_resource.filename }}"
+          - -H
+          - "Authorization: Bearer {{ tokens.json.access_token }}"
+          - -F
+          # Force the form field name to be 'file'
+          - "file=@{{ temp_theme_dir.path }}/{{ theme_realm_resource.filename }}"
+      register: kc_upload_result
+      changed_when: kc_upload_result.stdout == '201'
+      failed_when: kc_upload_result.stdout not in ['200', '201']
+      loop: "{{ keycloak_realm.resources | default([]) }}"
+      loop_control:
+        loop_var: theme_realm_resource
+  always:
+    - name: Cleanup temporary resource directory
+      file:
+        path: "{{ temp_theme_dir.path }}"
+        state: absent
