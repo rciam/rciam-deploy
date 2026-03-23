@@ -1,19 +1,37 @@
+# egi-igtf/tasks/install-Debian.yml
+#
 ---
-- name: Ensure EUGridPMA apt key is installed (Debian)
-  apt_key: 
-    url: "{{ egi_igtf_repo_key_url }}"
-    state: present 
-  become: yes
+
+- name: Ensure /etc/apt/keyrings directory exists (required for Debian < 12)
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Ensure Python dependencies for DEB822 are present
+  ansible.builtin.apt:
+    name:
+      - python3-apt
+      - python3-debian
+    state: present
+    update_cache: true
+  become: true
 
 - name: Ensure EGI Trust Anchor repository is included (Debian)
-  apt_repository: 
-    repo: "deb {{ egi_igtf_repo_url }} egi-igtf {{ egi_igtf_components }}" 
-    state: present 
-  become: yes
+  ansible.builtin.deb822_repository:
+    name: egi-igtf
+    types: [deb]
+    uris: "{{ egi_igtf_repo_url }}"
+    suites: [egi-igtf]
+    components: "{{ egi_igtf_components | split(' ') }}"
+    signed_by: "{{ egi_igtf_repo_key_url }}"
+    state: present
+  become: true
 
 - name: Ensure latest versions of EGI Trust Anchors are installed (Debian)
-  apt:
+  ansible.builtin.apt:
     name: ca-policy-egi-core
     state: latest
-    update_cache: yes
-  become: yes
+    update_cache: true
+  become: true
