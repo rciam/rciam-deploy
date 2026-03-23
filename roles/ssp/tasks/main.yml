@@ -76,19 +76,19 @@
 
 
 # Install OS-specific packages
-- include: install-Debian.yml
+- include_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
-- include: install-RedHat.yml
+- include_tasks: install-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
 # Run OS-independent installation tasks
-- include: install-common.yml
+- include_tasks: install-common.yml
   tags:
     - install
     - ssp:install
 
 # Apply OS-independent configuration
-- include: configure-common.yml
+- include_tasks: configure-common.yml
   tags:
     - config
     - ssp:config

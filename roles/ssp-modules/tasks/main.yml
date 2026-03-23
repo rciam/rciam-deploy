@@ -12,7 +12,7 @@
     - always
 
 # Install OS-specific packages
-- include: install-common-Ubuntu.yml
+- include_tasks: install-common-Ubuntu.yml
   when: ansible_os_family == 'Debian' and ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'focal'
   tags:
     - install
@@ -21,7 +21,7 @@
     - ssp-modules:install
 
 # Run OS-independent installation tasks
-- include: install-common.yml
+- include_tasks: install-common.yml
   tags:
     - install
     - ssp:install
@@ -29,13 +29,13 @@
     - ssp-modules:install
 
 # Run OS-independent installation tasks
-- include: install-db.yml
+- include_tasks: install-db.yml
   tags:
     - never
     - ssp-modules:install:db
 
 # Apply OS-independent configuration
-- include: configure-common.yml
+- include_tasks: configure-common.yml
   tags:
     - config
     - ssp:config

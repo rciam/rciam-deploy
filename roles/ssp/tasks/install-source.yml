@@ -16,13 +16,13 @@
 - include_tasks: composer.yml
   when: (ssp_composer_install is defined) and (ssp_composer_install|bool == True)
 
-- name: Install/Update SimplesamlPHP
-  composer:
-    command: update
-    working_dir: "{{ ssp_path }}"
-    composer_executable: "{{ ssp_composer_executable }}"
-    ignore_platform_reqs: true
-    no_scripts: true
-  become: true
-  tags:
-    - ssp:install:source
+#- name: Install/Update SimplesamlPHP
+#  composer:
+#    command: update
+#    working_dir: "{{ ssp_path }}"
+#    composer_executable: "{{ ssp_composer_executable }}"
+#    ignore_platform_reqs: true
+#    no_scripts: true
+#  become: true
+#  tags:
+#    - ssp:install:source

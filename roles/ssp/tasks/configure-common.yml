@@ -2,7 +2,6 @@
 #
 ---
 
-
 - name: Configure SSP
   template:
     src: "{{ item }}"
@@ -15,6 +14,7 @@
     - "config/config.php.j2"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:config
 
 - name: Generate self-signed SP certificates
@@ -26,6 +26,7 @@
   when: item.ssl_certificate_generate | default(True) | bool == True
   become: yes
   tags:
+    - ssp:config
     - ssp:config:authsources
 
 - name: Copy SP SSL certificate (.crt)
@@ -39,6 +40,7 @@
   when: item.ssl_certificate_generate | default(True) | bool == False
   become: yes
   tags:
+    - ssp:config
     - ssp:config:authsources
 
 - name: Copy SP SSL certificate (.key)
@@ -53,6 +55,7 @@
   become: yes
   no_log: yes
   tags:
+    - ssp:config
     - ssp:config:authsources
 
 - name: Ensure SP certificate keys are installed
@@ -66,6 +69,7 @@
   when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate_key is defined
   become: yes
   tags:
+    - ssp:config
     - ssp:config:authsources
 
 - name: Ensure SP certificates are installed
@@ -79,6 +83,7 @@
   when: item.ssl_certificate_generate | default(True) | bool == False or item.ssl_certificate is defined
   become: yes
   tags:
+    - ssp:config
     - ssp:config:authsources
 
 - name: Configure SSP authN sources
@@ -93,6 +98,7 @@
     - "config/authsources.php.j2"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:authsources
 
 - name: Generate self-signed IdP certificates
@@ -104,6 +110,7 @@
   when: (ssp_idp_saml20_enabled or ssp_idp_shib13_enabled) and item.ssl_certificate_generate | default(True)
   become: yes
   tags:
+    - ssp:config
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
@@ -119,6 +126,7 @@
   become: yes
   no_log: yes
   tags:
+    - ssp:config
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
@@ -134,6 +142,7 @@
   become: yes
   no_log: yes
   tags:
+    - ssp:config
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
@@ -148,6 +157,7 @@
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
   become: yes
   tags:
+    - ssp:config
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
@@ -162,6 +172,7 @@
   when: ssp_idp_saml20_enabled or ssp_idp_shib13_enabled
   become: yes
   tags:
+    - ssp:config
     - ssp:config:saml20-idp-hosted
     - ssp:config:shib13-idp-hosted
 
@@ -169,12 +180,14 @@
   include_tasks: configure-saml20-idp-hosted.yml
   when: ssp_idp_saml20_enabled
   tags:
+    - ssp:config
     - ssp:config:saml20-idp-hosted
 
 - name: Configure SSP hosted SAML 1.1 IdP metadata
   include_tasks: configure-shib13-idp-hosted.yml
   when: ssp_idp_shib13_enabled
   tags:
+    - ssp:config
     - ssp:config:shib13-idp-hosted
 
 - name: Ensure SSP extra files are copied
@@ -186,6 +199,7 @@
   when: item.src_path is defined and item.dest_path is defined
   become: yes
   tags:
+    - ssp:config
     - ssp:config:files
 
 - name: Enable required SSP modules
@@ -196,6 +210,7 @@
   when: "{{ ssp_major_version|float < 2}}"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
 
 - name: Disable unnecessary SSP modules
@@ -206,6 +221,7 @@
   when: "{{ ssp_major_version|float < 2}}"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
 
 - name: Ensure required SSP metarefresh module dirs exist
@@ -214,6 +230,7 @@
   when: "'metarefresh' in ssp_mods_enabled"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
     - ssp:config:mods:metarefresh
 
@@ -231,6 +248,7 @@
   register: ssp_mod_metarefresh_config
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
     - ssp:config:mods:metarefresh
 
@@ -247,6 +265,7 @@
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
     - ssp:config:mods:cron
     - ssp:config:mods:metarefresh
@@ -271,6 +290,7 @@
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
     - ssp:config:mods:cron
     - ssp:config:mods:metarefresh
@@ -284,6 +304,7 @@
   when: "'cron' in ssp_mods_enabled"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
     - ssp:config:mods:cron
     - ssp:config:mods:metarefresh
@@ -301,6 +322,7 @@
   when: "'discopower' in ssp_mods_enabled"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
     - ssp:config:mods:discopower
 
@@ -317,6 +339,7 @@
   when: "'discopower' in ssp_mods_enabled and ssp_mod_discopower_dictionaries is defined"
   become: yes
   tags:
+    - ssp:config
     - ssp:config:mods
     - ssp:config:mods:discopower
 

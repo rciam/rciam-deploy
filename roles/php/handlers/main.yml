@@ -1,7 +1,9 @@
+# php/handlers/main.yml
+#
 ---
 
 - name: restart webserver
-  service:
+  ansible.builtin.service:
     name: "{{ php_webserver }}"
     state: restarted
-  become: yes
+  become: true

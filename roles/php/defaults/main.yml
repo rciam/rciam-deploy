@@ -1,7 +1,7 @@
 ---
 
 # Whether to install PHP packages from alternative repository
-php_alt_repo: no
+php_alt_repo: false
 
 # Override default list of PHP packages to install.
 # See php_default_packages in php/vars/
