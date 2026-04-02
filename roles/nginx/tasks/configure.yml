@@ -30,7 +30,7 @@
   notify: reload nginx
   when:
     - nginx_remove_default_vhost
-    - - ansible_os_family == 'Debian'
+    - ansible_os_family == 'Debian'
 
 - name: Configure nginx Virtual Host SSL certificates
   ansible.builtin.include_tasks: configure-ssl-cert.yml
