@@ -22,6 +22,9 @@ api_path = {{ item.config.api.path }}
 client_id = {{ item.config.oidc.client_id }}
 client_secret = {{ item.config.oidc.client_secret }}
 issuer = {{ item.config.oidc.issuer }}
+scopes = {{ item.config.oidc.scopes | default(metrics_oidc_scopes_default, true) }}
+entitlement_claim = {{ item.config.oidc.entitlement_claim | default(metrics_oidc_entitlement_claim_default, true) }}
+sub_claim = {{ item.config.oidc.sub_claim | default(metrics_oidc_sub_claim_default, true) }}
 {% endif %}
 
 {% if item.config.log is defined -%}
