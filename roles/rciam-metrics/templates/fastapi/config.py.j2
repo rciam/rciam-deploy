@@ -15,9 +15,9 @@ host = {{ item.config.api.hostname }}
 client = {{ item.config.api.client }}
 domain = {{ item.config.api.domain }}
 api_path = {{ item.config.api.path }}
-scopes = {{ item.config.oidc.scopes }}
-entitlement_claim = {{ item.config.oidc.entitlement_claim }}
-sub_claim = {{ item.config.oidc.sub_claim }}
+scopes = {{ item.config.oidc.scopes | default(metrics_oidc_scopes_default, true) }}
+entitlement_claim = {{ item.config.oidc.entitlement_claim | default(metrics_oidc_entitlement_claim_default, true) }}
+sub_claim = {{ item.config.oidc.sub_claim | default(metrics_oidc_sub_claim_default, true) }}
 {% endif %}
 
 {% if item.config.oidc is defined -%}

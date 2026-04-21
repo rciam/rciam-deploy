@@ -7,6 +7,9 @@ metrics_repo: https://github.com/rciam/rciam-metrics-dev
 metrics_release: 1.0.0
 metrics_fast_api_folder_name: app
 metrics_ip2country_dir: ip2country_directory
+metrics_oidc_scopes_default: "openid profile email voperson_id eduperson_entitlement"
+metrics_oidc_entitlement_claim_default: "eduperson_entitlement"
+metrics_oidc_sub_claim_default: "voperson_id"
 
 # Whether to install RCIAM metrics cron job; Enabled by default
 metrics_cron_enabled: yes
@@ -89,6 +92,10 @@ metrics_config:
         client_secret: client-secret
         client_redirect_uri: https://metrics.rciam.example.org/callback
         issuer: https://tenant1.rciam.example.org/auth/realms/rciam
+        # Overrides global OIDC defaults for this tenant
+        scopes: "openid profile email entitlements"
+        entitlement_claim: "entitlements"
+        sub_claim: "sub"
       frontend: |
         "api_url": "https://metrics.rciam.example.org/metrics/api/v1",
         "website_url": "https://www.metrics.rciam.example.org/",
