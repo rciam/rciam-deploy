@@ -16,12 +16,15 @@
       delay: 10
       timeout: 180
   #wait for service to respond
-  - name: Waiting for service to be up and running...
-    uri:
-      url: "http://{{ keycloak_local_address }}:8080/{{ keycloak_base_url_path }}"
-      status_code: "200"
-      timeout: 600
-
+- name: Waiting for service to be up and running...
+  ansible.builtin.uri:
+    url: "http://{{ keycloak_local_address }}:8080/{{ keycloak_base_url_path }}"
+    status_code: 200
+    timeout: 10  # Max time per HTTP request
+  register: keycloak_web_check
+  until: keycloak_web_check.status == 200
+  retries: 15
+  delay: 10
 # configure AUP, realm keys, etc
 - name: Configure the keycloak (AUP, realm keys, etc)
   block:
