@@ -1,0 +1,69 @@
+{{ ansible_managed | comment }}
+{% set opa_cmd = [opa_bin_path + ' run --server'] %}
+{% set _ = opa_cmd.append('--config-file ' + opa_conf_dir + '/config.yaml') %}
+{% set _ = opa_cmd.append('--addr ' + opa_scheme + '://' + opa_listen_addr + ':' + (opa_listen_port | string)) %}
+{% set _ = opa_cmd.append('--log-level ' + opa_log_level) %}
+{% set _ = opa_cmd.append('--log-format ' + opa_log_format) %}
+{% if opa_tls_enabled %}
+{% set _ = opa_cmd.append('--tls-cert-file ' + opa_tls_cert_file) %}
+{% set _ = opa_cmd.append('--tls-private-key-file ' + opa_tls_key_file) %}
+{% if opa_tls_ca_cert_file | length > 0 %}
+{% set _ = opa_cmd.append('--tls-ca-cert-file ' + opa_tls_ca_cert_file) %}
+{% endif %}
+{% endif %}
+{% set _ = opa_cmd.append('--authentication ' + opa_authentication) %}
+{% set _ = opa_cmd.append('--authorization ' + opa_authorization) %}
+{% set _ = opa_cmd.append('--disable-telemetry') %}
+{% if opa_policy_mode == 'local' and opa_watch_policies %}
+{% set _ = opa_cmd.append('--watch') %}
+{% endif %}
+{% set _ = opa_cmd.extend(opa_extra_args) %}
+{% if opa_authorization == 'basic' and opa_manage_authz_policy %}
+{% set _ = opa_cmd.append(opa_conf_dir + '/system-authz.rego') %}
+{% endif %}
+{% if opa_policy_mode == 'local' %}
+{% set _ = opa_cmd.append(opa_policy_dir) %}
+{% endif %}
+[Unit]
+Description=Open Policy Agent (OPA) policy decision point
+Documentation=https://www.openpolicyagent.org/docs
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ opa_user }}
+Group={{ opa_group }}
+ExecStart={{ opa_cmd | join(' \\\n    ') }}
+
+Restart=on-failure
+RestartSec=5s
+
+# Logging: stdout/stderr (runtime, access and decision logs) go to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=opa
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths={{ opa_data_dir }}
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallArchitectures=native
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

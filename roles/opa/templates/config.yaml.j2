@@ -1,0 +1,22 @@
+{{ ansible_managed | comment }}
+{# Build the OPA configuration as a dict and render it as YAML.       #}
+{# https://www.openpolicyagent.org/docs/configuration                 #}
+{% set cfg = {} %}
+{% if opa_services | length > 0 %}
+{% set _ = cfg.update({'services': opa_services}) %}
+{% endif %}
+{% if opa_policy_mode == 'bundle' and opa_bundles | length > 0 %}
+{% set bundles = {} %}
+{% for name, bundle in opa_bundles.items() %}
+{% set _ = bundles.update({name: dict(bundle, persist=bundle.persist | default(opa_bundle_persist))}) %}
+{% endfor %}
+{% set _ = cfg.update({'bundles': bundles, 'persistence_directory': opa_data_dir + '/bundles'}) %}
+{% endif %}
+{% if opa_default_decision | length > 0 %}
+{% set _ = cfg.update({'default_decision': opa_default_decision}) %}
+{% endif %}
+{% if opa_decision_logs_console %}
+{% set _ = cfg.update({'decision_logs': {'console': true}}) %}
+{% endif %}
+{% set _ = cfg.update(opa_extra_config) %}
+{{ cfg | to_nice_yaml(indent=2) }}

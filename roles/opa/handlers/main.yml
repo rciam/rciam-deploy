@@ -1,0 +1,10 @@
+# file: opa/handlers/main.yml
+#
+---
+
+- name: Restart opa
+  systemd:
+    name: opa
+    state: restarted
+    daemon_reload: yes
+  become: yes

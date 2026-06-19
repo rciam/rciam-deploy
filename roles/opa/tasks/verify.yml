@@ -1,0 +1,67 @@
+# file: opa/tasks/verify.yml
+#
+---
+
+- name: Apply pending OPA restarts before verification
+  meta: flush_handlers
+
+- name: Build verification facts
+  set_fact:
+    opa_verify_base_url: "{{ opa_scheme }}://{{ '127.0.0.1' if opa_listen_addr in ['0.0.0.0', '::'] else opa_listen_addr }}:{{ opa_listen_port }}"
+    opa_verify_headers: >-
+      {{ {'Authorization': 'Bearer ' + (opa_api_tokens | first).token}
+         if (opa_authentication == 'token' and opa_api_tokens | length > 0)
+         else {} }}
+
+- name: Wait for the OPA REST API to come up
+  wait_for:
+    host: "{{ '127.0.0.1' if opa_listen_addr in ['0.0.0.0', '::'] else opa_listen_addr }}"
+    port: "{{ opa_listen_port }}"
+    timeout: 30
+
+- name: Query the OPA health endpoint
+  uri:
+    url: "{{ opa_verify_base_url }}/health?bundles=true"
+    validate_certs: no
+    status_code: 200
+  register: opa_health
+  retries: 12
+  delay: 5
+  until: opa_health.status == 200
+
+- name: Evaluate the sample rule (expect allow == true)
+  uri:
+    url: "{{ opa_verify_base_url }}/v1/data/rciam/authz/allow"
+    method: POST
+    body_format: json
+    body:
+      input:
+        method: GET
+        path: /public
+    headers: "{{ opa_verify_headers }}"
+    validate_certs: no
+  register: opa_sample_allow
+  when: opa_sample_policy_enabled | bool and opa_policy_mode == "local"
+
+- name: Evaluate the sample rule (expect allow == false)
+  uri:
+    url: "{{ opa_verify_base_url }}/v1/data/rciam/authz/allow"
+    method: POST
+    body_format: json
+    body:
+      input:
+        method: DELETE
+        path: /private
+    headers: "{{ opa_verify_headers }}"
+    validate_certs: no
+  register: opa_sample_deny
+  when: opa_sample_policy_enabled | bool and opa_policy_mode == "local"
+
+- name: Assert that the sample rule evaluates correctly
+  assert:
+    that:
+      - opa_sample_allow.json.result is true
+      - opa_sample_deny.json.result is false
+    success_msg: "OPA is up and the sample policy evaluates as expected."
+    fail_msg: "OPA responded but the sample policy did not evaluate as expected."
+  when: opa_sample_policy_enabled | bool and opa_policy_mode == "local"

@@ -1,0 +1,166 @@
+# file: opa/defaults/main.yml
+#
+---
+
+#########################################################################
+# Binary installation
+#########################################################################
+
+# OPA release version (without the leading "v")
+opa_version: "1.17.1"
+
+# Architecture of the static binary to download.
+# Maps the ansible_architecture fact to the OPA release asset naming.
+opa_arch: "{{ 'arm64' if ansible_facts.architecture | default('x86_64') == 'aarch64' else 'amd64' }}"
+
+# Download URLs of the statically linked binary and its SHA256 checksum
+opa_download_url: "https://github.com/open-policy-agent/opa/releases/download/v{{ opa_version }}/opa_linux_{{ opa_arch }}_static"
+opa_checksum_url: "{{ opa_download_url }}.sha256"
+
+# Installation layout: versioned binaries under opa_install_dir and a
+# stable symlink at opa_bin_path. Upgrading opa_version installs the new
+# binary side-by-side and atomically switches the symlink.
+opa_install_dir: /opt/opa
+opa_bin_path: /usr/local/bin/opa
+
+#########################################################################
+# Service user / directories
+#########################################################################
+
+opa_user: opa
+opa_group: opa
+
+# Configuration directory (config file, policies)
+opa_conf_dir: /etc/opa
+
+# Directory holding local Rego policies and data documents.
+# This is the "policy mount point" for local file-based deployments.
+opa_policy_dir: "{{ opa_conf_dir }}/policies"
+
+# Writable state directory (bundle persistence / disk storage)
+opa_data_dir: /var/lib/opa
+
+#########################################################################
+# Server / API connectivity (PEP -> PDP)
+#########################################################################
+
+# Listen address and port of the REST API. The default binds to localhost
+# only; set opa_listen_addr to "0.0.0.0" (and enable TLS + API authn)
+# to expose the PDP to remote Policy Enforcement Points.
+opa_listen_addr: "127.0.0.1"
+opa_listen_port: 8181
+opa_scheme: "{{ 'https' if opa_tls_enabled else 'http' }}"
+
+# TLS termination for the OPA REST API. Strongly recommended whenever
+# the API is exposed beyond localhost. The certificate/key must already
+# be present on the host (e.g. deployed by the letsencrypt role).
+opa_tls_enabled: false
+opa_tls_cert_file: ""
+opa_tls_key_file: ""
+# Optional CA bundle for mutual TLS client authentication
+# (used with opa_authentication: "tls")
+opa_tls_ca_cert_file: ""
+
+# API authentication scheme: "off", "token" or "tls"
+# https://www.openpolicyagent.org/docs/security
+opa_authentication: "off"
+# API authorization scheme: "off" or "basic". When "basic", OPA evaluates
+# data.system.authz.allow for every API request.
+opa_authorization: "off"
+
+# Bearer tokens accepted by the API when opa_authentication is "token"
+# and opa_authorization is "basic". A system.authz policy granting access
+# to these identities is rendered automatically. Example:
+# opa_api_tokens:
+#   - name: pep-service
+#     token: "{{ vault_opa_pep_token }}"
+opa_api_tokens: []
+
+# Render and load the system.authz policy when opa_authorization is "basic".
+# Set to false if your remote bundle already ships its own system.authz
+# package (e.g. the RI-SCALE bundle), as OPA does not allow local files to
+# overlap with bundle-owned paths.
+opa_manage_authz_policy: true
+
+#########################################################################
+# Policy sources and live updates
+#########################################################################
+
+# Policy distribution mode:
+#   "local"  - load Rego/data files from opa_policy_dir and live-reload
+#              them on change (file watching via `opa run --watch`)
+#   "bundle" - poll bundles from a remote service (opa_services /
+#              opa_bundles below); local files are not loaded
+opa_policy_mode: "local"
+
+# Live-reload local policies on file change (local mode only)
+opa_watch_policies: true
+
+# Deploy the bundled sample policy (rciam/authz) and its data document.
+# Disable once real policies are managed.
+opa_sample_policy_enabled: true
+
+# Additional local policy/data files to deploy into opa_policy_dir.
+# Items support either "src" (file) or "content" (inline). Example:
+# opa_policy_files:
+#   - name: myapp.rego
+#     src: files/policies/myapp.rego
+#   - name: data.json
+#     content: "{{ my_data | to_nice_json }}"
+opa_policy_files: []
+
+# Remote bundle configuration (bundle mode). Rendered verbatim into the
+# OPA configuration file. See:
+# https://www.openpolicyagent.org/docs/management-bundles
+# Example (RI-SCALE bundle from the GitHub container registry):
+# opa_services:
+#   gh:
+#     url: https://ghcr.io
+#     type: oci
+#     credentials:
+#       bearer:
+#         scheme: "Bearer"
+#         token: "{{ vault_ghcr_token }}"
+# opa_bundles:
+#   dep:
+#     service: gh
+#     resource: ghcr.io/ri-scale/opa-dep:latest
+#     persist: true
+#     polling:
+#       min_delay_seconds: 60
+#       max_delay_seconds: 120
+opa_services: {}
+opa_bundles: {}
+
+# Persist downloaded bundles across restarts (bundle mode)
+opa_bundle_persist: true
+
+#########################################################################
+# Decisions / logging
+#########################################################################
+
+# Optional default decision evaluated for queries against "/" (POST /)
+# e.g. "rciam/authz/allow" or "dep"
+opa_default_decision: ""
+
+# Log decision inputs and results to the console (-> journald) for
+# auditability. https://www.openpolicyagent.org/docs/management-decision-logs
+opa_decision_logs_console: true
+
+# OPA runtime log level (debug|info|error) and format (text|json|json-pretty)
+opa_log_level: info
+opa_log_format: json
+
+# Extra arguments appended to the `opa run` command line
+opa_extra_args: []
+
+# Arbitrary extra configuration merged into the OPA config file
+# (takes precedence over the keys generated by this role)
+opa_extra_config: {}
+
+#########################################################################
+# Verification
+#########################################################################
+
+# Run post-deployment smoke tests (health endpoint + sample rule query)
+opa_verify: true
