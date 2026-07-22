@@ -13,6 +13,8 @@
       - nginx
       - python3-virtualenv
       - libpq-dev
+      - python3-packaging
+      - python3-setuptools
     state: present
     install_recommends: no
     update_cache: yes

@@ -11,12 +11,25 @@
   user:
     name: "{{ metrics_user.name }}"
     groups: "{{ metrics_user.group }}"
-    comment: "{{ metrics_user.gecos }}" 
+    comment: "{{ metrics_user.gecos }}"
     shell: "{{ metrics_user.shell }}"
     home: "{{ metrics_user.path }}"
     system: yes
     create_home: yes
     skeleton: "/empty"
+  become: yes
+
+- name: Ensure metrics user home directory is traversable by nginx
+  # The user module creates the home directory as 0700 by default, which
+  # blocks www-data (nginx) from traversing into it to follow the
+  # frontend symlinks under {{ metrics_path }}/javascript/. Only adds the
+  # execute bit for "other" so nginx can traverse; doesn't grant read/list,
+  # and files further down the tree (e.g. config.*.py, mode 0400) keep
+  # their own stricter permissions regardless.
+  file:
+    path: "{{ metrics_user.path }}"
+    state: directory
+    mode: "o+x"
   become: yes
 
 - name: Upgrade pip3
