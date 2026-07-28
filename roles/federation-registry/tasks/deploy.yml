@@ -202,9 +202,9 @@
 
 - name: Ensure Pm2 Startup Script exists
   command:
-    cmd: "env PATH=$PATH:/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u {{federation_pm2_user.name}} --hp {{federation_pm2_user.home}}"
+    cmd: "env PATH=$PATH:/usr/bin /usr/bin/pm2 startup systemd -u {{federation_pm2_user.name}} --hp {{federation_pm2_user.home}}"
   ignore_errors: yes
-  become: yes
+  become: yes 
 
 - name: Verify push endpoint if not verified
   run_once: true
