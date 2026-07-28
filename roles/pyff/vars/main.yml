@@ -1,0 +1,4 @@
+---
+# vars file for pyff
+pyff_default_group: www-data
+pyff_default_user: www-data

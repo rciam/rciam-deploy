@@ -1,0 +1,32 @@
+[Unit]
+Description=pyff service
+After=network.target
+
+[Service]
+Environment=PYFF_PIPELINE={{ pyff_working_directory }}/pipeline.yml
+Environment=PYFF_UPDATE_FREQUENCY={{ pyff_update_frequency }}
+Environment=PYFF_PUBLIC_URL=http://{{ pyff_public_url }}:{{ pyff_public_port }}
+Type=notify
+# the specific user that our service will run as
+User={{ pyff_default_user }}
+Group={{ pyff_default_group }}
+RuntimeDirectory=pyff
+WorkingDirectory={{ pyff_working_directory }}
+ExecStart={{ pyff_virtual_environment }}/bin/gunicorn \
+    --log-config debug.ini \
+    --workers=1 \
+    --reload \
+    --preload \
+    --bind {{ pyff_bind_url }}:{{ pyff_bind_port }} \
+    --threads 4 \
+    --worker-tmp-dir=/dev/shm \
+    pyff.wsgi:app
+ExecStop=/bin/kill -9 HUP $MAINPID
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=10s
+TimeoutStartSec=600
+TimeoutStopSec=600
+
+[Install]
+WantedBy=multi-user.target

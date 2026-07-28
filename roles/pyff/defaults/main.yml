@@ -1,0 +1,19 @@
+---
+# defaults file for pyff
+pyff_bind_port: 8080
+pyff_bind_url: 127.0.0.1
+pyff_public_url: 127.0.0.1
+pyff_public_port: 8080
+pyff_pipeline: 127.0.0.1
+pyff_working_directory: pyff-service
+pyff_virtual_environment: "{{ pyff_working_directory }}/.venv"
+pyff_update_frequency: 300
+# OS
+pyff_version: 2.0.0
+
+#  SSL Key used to sign the metadata
+# pyff_ssl_cert:
+# pyff_ssl_cert_key:
+
+metadata_urls:
+  - http://mds.edugain.org

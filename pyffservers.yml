@@ -1,0 +1,8 @@
+# file: pyffservers.yml
+#
+---
+
+- hosts: pyff
+  roles:
+    - { role: git, tags: git }
+    - { role: pyff, tags: pyff }
