@@ -1,0 +1,84 @@
+# file: opa/tasks/configure.yml
+#
+---
+
+- name: Install OPA configuration file
+  template:
+    src: config.yaml.j2
+    dest: "{{ opa_conf_dir }}/config.yaml"
+    owner: root
+    group: "{{ opa_group }}"
+    mode: "0640"
+  become: true
+  notify: Restart opa
+
+- name: Install sample policy (rciam/authz)
+  copy:
+    src: "{{ item }}"
+    dest: "{{ opa_policy_dir }}/{{ item }}"
+    owner: root
+    group: "{{ opa_group }}"
+    mode: "0640"
+  loop:
+    - sample-authz.rego
+    - sample-data.json
+  when:
+    - opa_sample_policy_enabled | bool
+    - opa_policy_mode == "local"
+  become: true
+  notify: Restart opa
+
+- name: Remove sample policy when disabled
+  file:
+    path: "{{ opa_policy_dir }}/{{ item }}"
+    state: absent
+  loop:
+    - sample-authz.rego
+    - sample-data.json
+  when: not opa_sample_policy_enabled or opa_policy_mode != "local"
+  become: true
+  notify: Restart opa
+
+- name: Install custom policy files
+  copy:
+    src: "{{ item.src | default(omit) }}"
+    content: "{{ item.content | default(omit) }}"
+    dest: "{{ opa_policy_dir }}/{{ item.name }}"
+    owner: root
+    group: "{{ opa_group }}"
+    mode: "0640"
+  loop: "{{ opa_policy_files }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: opa_policy_mode == "local"
+  become: true
+  notify: Restart opa
+
+- name: Install API authorization policy (system.authz)
+  template:
+    src: system-authz.rego.j2
+    dest: "{{ opa_conf_dir }}/system-authz.rego"
+    owner: root
+    group: "{{ opa_group }}"
+    mode: "0640"
+  when: opa_authorization == "basic" and opa_manage_authz_policy | bool
+  become: true
+  notify: Restart opa
+
+- name: Remove API authorization policy when disabled
+  file:
+    path: "{{ opa_conf_dir }}/system-authz.rego"
+    state: absent
+  when: opa_authorization != "basic" or not opa_manage_authz_policy
+  become: true
+  notify: Restart opa
+
+- name: Check syntax of deployed policies
+  command: >-
+    {{ opa_bin_path }} check
+    {% if opa_policy_mode == "local" %}{{ opa_policy_dir }}{% endif %}
+    {% if opa_authorization == "basic" and opa_manage_authz_policy %}{{ opa_conf_dir }}/system-authz.rego{% endif %}
+  when: opa_policy_mode == "local" or (opa_authorization == "basic" and opa_manage_authz_policy)
+  become: true
+  changed_when: false
+  check_mode: no

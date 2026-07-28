@@ -1,0 +1,35 @@
+# file: opa/tasks/main.yml
+#
+---
+
+- name: Verify role prerequisites
+  assert:
+    that:
+      - ansible_service_mgr == "systemd"
+      - opa_policy_mode in ["local", "bundle"]
+      - not opa_tls_enabled or (opa_tls_cert_file | length > 0 and opa_tls_key_file | length > 0)
+      - opa_authentication in ["off", "token", "tls"]
+      - opa_authorization in ["off", "basic"]
+      - opa_policy_mode != "bundle" or (opa_bundles | length > 0)
+    fail_msg: >-
+      Invalid OPA role configuration: a systemd-based host is required,
+      opa_policy_mode must be "local" or "bundle" (with opa_bundles defined),
+      and TLS requires both opa_tls_cert_file and opa_tls_key_file.
+  tags: always
+
+- name: Install OPA binary
+  import_tasks: install.yml
+  tags: "opa:install"
+
+- name: Configure OPA
+  import_tasks: configure.yml
+  tags: "opa:configure"
+
+- name: Setup OPA systemd service
+  import_tasks: service.yml
+  tags: "opa:service"
+
+- name: Verify OPA deployment
+  import_tasks: verify.yml
+  when: opa_verify | bool
+  tags: "opa:verify"

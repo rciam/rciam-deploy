@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+#
+# Authorization policy for the OPA REST API itself.
+# Evaluated by OPA for every API request when --authorization=basic.
+# https://www.openpolicyagent.org/docs/security
+
+package system.authz
+
+# Bearer tokens of clients (PEPs) allowed to access the API
+{% if opa_api_tokens | length > 0 %}
+allowed_tokens := {
+{% for entry in opa_api_tokens %}
+    # {{ entry.name | default('client ' ~ loop.index) }}
+    "{{ entry.token }}"{{ "," if not loop.last else "" }}
+{% endfor %}
+}
+{% else %}
+allowed_tokens := set()
+{% endif %}
+
+default allow := false
+
+# Allow unauthenticated access to the health endpoint (for monitoring)
+allow if {
+    input.path[0] == "health"
+}
+
+# Allow clients presenting a known bearer token
+allow if {
+    input.identity in allowed_tokens
+}

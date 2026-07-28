@@ -1,0 +1,58 @@
+# file: opa/tasks/install.yml
+#
+---
+
+- name: Create OPA system group
+  group:
+    name: "{{ opa_group }}"
+    system: yes
+  become: true
+
+- name: Create OPA system user
+  user:
+    name: "{{ opa_user }}"
+    group: "{{ opa_group }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    home: "{{ opa_data_dir }}"
+    create_home: no
+  become: true
+
+- name: Create OPA directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ opa_group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "{{ opa_install_dir }}", owner: root, mode: "0755" }
+    - { path: "{{ opa_conf_dir }}", owner: root, mode: "0750" }
+    - { path: "{{ opa_policy_dir }}", owner: root, mode: "0750" }
+    - { path: "{{ opa_data_dir }}", owner: "{{ opa_user }}", mode: "0750" }
+  become: true
+
+- name: Fetch SHA256 checksum of the OPA static binary
+  uri:
+    url: "{{ opa_checksum_url }}"
+    return_content: yes
+  register: opa_checksum_response
+  check_mode: no
+
+- name: Download OPA static binary
+  get_url:
+    url: "{{ opa_download_url }}"
+    dest: "{{ opa_install_dir }}/opa-{{ opa_version }}"
+    checksum: "sha256:{{ opa_checksum_response.content.split() | first }}"
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Symlink the opa binary to the installed version
+  file:
+    src: "{{ opa_install_dir }}/opa-{{ opa_version }}"
+    dest: "{{ opa_bin_path }}"
+    state: link
+  become: true
+  notify: Restart opa

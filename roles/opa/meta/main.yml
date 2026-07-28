@@ -1,0 +1,23 @@
+# file: opa/meta/main.yml
+#
+---
+
+galaxy_info:
+  author: GRNET
+  description: >-
+    Deploy Open Policy Agent (OPA) as a native static binary managed by
+    systemd, acting as a Policy Decision Point (PDP).
+  license: Apache-2.0
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - trixie
+  galaxy_tags:
+    - opa
+    - policy
+    - authorization
+    - security
+
+dependencies: []
