@@ -1,7 +1,7 @@
 ---
 
 # Include OS-specific installation tasks
-- include_tasks: install-Debian.yml
+- import_tasks: install-Debian.yml
   when: ansible_os_family == 'Debian'
   tags:
     - rciam-metrics:install

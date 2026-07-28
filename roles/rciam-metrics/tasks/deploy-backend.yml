@@ -95,6 +95,40 @@
   tags:
     - rciam-metrics:deploy-backend:logging
 
+- name: Ensure react folder is owned by metrics user
+  # {{ metrics_react_folder_name }} (javascript/) is only ever created as
+  # an implicit intermediate parent by deploy-frontend's "Ensure release
+  # directory exists" task, which targets a deeper per-tenant path. The
+  # file module doesn't apply owner/group to intermediates it has to
+  # create along the way, only to the exact path given - so this
+  # directory was left root:root (become:yes runs as root). Fix it here,
+  # once, tenant-independent, before deploy-frontend ever runs.
+  file:
+    path: "{{ metrics_path }}/{{ metrics_react_folder_name }}"
+    state: directory
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+  become: true
+  tags:
+    - rciam-metrics:deploy-backend:symlink
+
+- name: Ensure symlink target directories exist
+  # On a host's first-ever deploy, deploy_backend runs before
+  # deploy_frontend (see the workflow's job needs:), so the frontend
+  # directory this symlink points at may not exist yet. Ensure it's
+  # there (as a placeholder if needed) so the link doesn't depend on
+  # deploy order; deploy_frontend will populate it afterwards either way.
+  file:
+    path: "{{ item.symlink.target }}"
+    state: directory
+    owner: "{{ metrics_user.name }}"
+    group: "{{ metrics_user.group }}"
+  loop: "{{ metrics_config | default([]) }}"
+  become: true
+  when: item.symlink is defined
+  tags:
+    - rciam-metrics:deploy-backend:symlink
+
 - name: Create Symbolic links
   file:
     src: "{{ item.symlink.target }}"
