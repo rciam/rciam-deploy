@@ -200,6 +200,31 @@
   tags:
     - keycloak:config:realm:user_profile
 
+- name: Configure Proxied Token Introspection Translation Rules
+  community.general.keycloak_component:
+    auth_keycloak_url: "{{ keycloak_proxy_host }}"
+    auth_client_id: "{{ keycloak_auth_client_id | default('admin-cli') }}"
+    auth_realm: "{{ keycloak_auth_realm | default('master') }}"
+    auth_username: "{{ keycloak_admin.user | default(omit) }}"
+    auth_password: "{{ keycloak_admin.pass | default(omit) }}"
+
+    name: "{{ item.name }}"
+    # In keycloak_component, parent_id defines the target realm endpoint (/admin/realms/{parent_id}/components)
+    parent_id: "{{ item.realm }}"
+    provider_type: "{{ item.provider_type | default(item.component_type) }}"
+    provider_id: "{{ item.provider_id }}"
+    state: "{{ item.state | default('present') }}"
+    config: "{{ item.config }}"
+  loop: "{{ keycloak_proxied_token_introspection_rules | default([]) }}"
+  loop_control:
+    label: "{{ item.realm }} - {{ item.name }}"
+  when:
+    - keycloak_proxied_token_introspection_rules is defined
+    - keycloak_proxied_token_introspection_rules | length > 0
+  run_once: true
+  tags:
+    - keycloak:config:realm:introspection_translation
+
 - name: Find all deprecated plugin JARs
   ansible.builtin.find:
     paths: "{{ keycloak_home }}/providers"
